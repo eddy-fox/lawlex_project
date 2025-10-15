@@ -1,14 +1,11 @@
-package com.lawlex.project_test.dto;
+package com.soldesk.team_project.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class InnerMemberDTO {
-
-    
-}public class MemberDTO {
+public class MemberDTO {
 
     private Integer memberIdx;
     private String memberId;
