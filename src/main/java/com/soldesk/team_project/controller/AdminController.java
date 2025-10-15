@@ -1,4 +1,4 @@
-package com.lawlex.project_test.controller;
+package com.soldesk.team_project.controller;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.lawlex.project_test.dto.MemberDTO;
-import com.lawlex.project_test.service.MemberService;
+import com.soldesk.team_project.dto.MemberDTO;
+import com.soldesk.team_project.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
