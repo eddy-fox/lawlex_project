@@ -24,20 +24,20 @@ public class AdminController {
 
     @GetMapping("/memberManagement")
     public String memberList(
-        @RequestParam(required = false) String keyword, 
-        @RequestParam("searchType") String type, Model model) {
+        @RequestParam(value = "keyword",required = false) String keyword, Model model, 
+        @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType) {
         
         List<MemberDTO> memberList;
 
         if (keyword == null || keyword.trim().isEmpty()) {
             memberList = memberService.getAllMember();
         } else {
-            memberList = memberService.searchMembers(type, keyword);
+            memberList = memberService.searchMembers(searchType, keyword);
         }
 
         model.addAttribute("memberList", memberList);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("type", type);
+        model.addAttribute("searchType", searchType);
         return "admin/memberManagement";
     }
     @PostMapping("/memberManagement")
