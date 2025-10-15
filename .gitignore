@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# build.gradle 파일을 명시적으로 추적 대상에 포함 (예외 처리)
+!build.gradle
