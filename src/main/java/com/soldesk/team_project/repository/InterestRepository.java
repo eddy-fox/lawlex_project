@@ -1,4 +1,4 @@
-package com.lawlex.project_test.repository;
+package com.soldesk.team_project.repository;
 
 public class InterestRepository {
     
