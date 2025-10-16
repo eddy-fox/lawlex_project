@@ -8,7 +8,7 @@
    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="~{include/header :: header}"></div>
+<div class="include" th:replace="~{include/header :: header}"></div>
 <!-- page-해당패이지에이름 | 예시 page-index page-main page-memberManagement등등-->
        <main class="page-index"> 
             <section class="hero">
@@ -233,7 +233,7 @@
                 </div>
             </section>
        </main>
-       <div th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/더미.js}"></script>
+       <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
 </body>
 </html>
