@@ -53,6 +53,7 @@ public class MemberService {
     //     return memberEntity;
     // }
 
+    // 전체 회원 조회
     public List<MemberDTO> getAllMember() {
         List<MemberEntity> memberEntityList = memberRepository.findAll();
         
@@ -60,16 +61,26 @@ public class MemberService {
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
 
-    // public List<MemberDTO> searchMembers(String type, String keyword) {
-    //     List<MemberEntity> memberEntityList;
+    // 태그 별 특정 회원 검색
+    public List<MemberDTO> searchMembers(String searchType, String keyword) {
+        List<MemberEntity> memberEntityList;
 
-    //     if (type.equals("all")) {
-
-    //     } else {
-    //         switch (type) {
-    //             case "idx": return memberRepository.findByIdx
-    //         }
-    //     }
-    // }
+        if (searchType.equals("all")) {
+            memberEntityList = memberRepository.findAll();
+        } else {
+            switch (searchType) {
+                case "idx": memberEntityList = memberRepository.findByMemberIdx(Integer.valueOf(keyword)); break;
+                case "id": memberEntityList = memberRepository.findByMemberIdContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
+                case "name": memberEntityList = memberRepository.findByMemberNameContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
+                case "idnum": memberEntityList = memberRepository.findByMemberIdnumContainingOrderByMemberIdnumAsc(keyword); break;
+                case "email": memberEntityList = memberRepository.findByMemberEmailContainingIgnoreCaseOrderByMemberEmailAsc(keyword); break;
+                case "phone": memberEntityList = memberRepository.findByMemberPhoneContainingOrderByMemberPhoneAsc(keyword); break;
+                case "nickname": memberEntityList = memberRepository.findByMemberNicknameContainingIgnoreCaseOrderByMemberNicknameAsc(keyword); break;
+                default: memberEntityList = memberRepository.findAll(); break;
+            }
+        }
+        return memberEntityList.stream()
+            .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
+    }
 
 }
