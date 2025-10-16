@@ -19,4 +19,6 @@ public class MemberDTO {
     private String memberNickname;
     private Integer interestIdx;
 
+    private String interestName;
+
 }
