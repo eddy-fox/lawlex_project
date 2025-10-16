@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+        <header class="header">
+        <div class="container">
+            <div class="logo-area">
+                <img src="#" class="logo-img">
+                <h1 class="logo-text">LawLex</h1>
+            </div>
+            <div class="inout">
+                <a th:href="@{aAll}">개발용 모든 링크 모음</a>
+                <a href="#">로그인</a>
+                <a href="#">로그아웃</a>
+                <a href="#">마이페이지</a>
+                <a th:href="@{/admin/memberManagement}">관리자 페이지</a>
+            </div>
+        </div>
+
+        <hr class="header-line">
+
+        <nav class="main-menu">
+            <a href="#">상담</a>
+            <a href="#">실시간 상담</a>
+            <a href="#">News</a>
+            <a href="#">랭킹</a>
+            <a href="#">문의</a>
+        </nav>
+    </header>
+</body>
+</html>
