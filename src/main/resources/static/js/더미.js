@@ -1,4 +1,4 @@
-// 실험용 지워질 예정
+// test 지워질 예정
 
 document.addEventListener('DOMContentLoaded', () => {
     // 버튼 요소들을 ID를 이용해 선택

@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-        <header class="header">
+    <header class="header" th:fragment="header">
         <div class="container">
             <div class="logo-area">
                 <img src="#" class="logo-img">
@@ -14,15 +14,16 @@
             </div>
             <div class="inout">
                 <a th:href="@{aAll}">개발용 모든 링크 모음</a>
-                <a href="#">로그인</a>
-                <a href="#">로그아웃</a>
-                <a href="#">마이페이지</a>
-                <a th:href="@{/admin/memberManagement}">관리자 페이지</a>
+                <div> <!-- th:if="${loginMember != null}" 로그인 성공 -->
+                    <a href="#">로그아웃</a>
+                    <a href="#">마이페이지</a>
+                    <a th:href="@{/admin/memberManagement}">관리자 페이지</a><!-- th:if="${loginMember.role == 'ADMIN'} 관리자로 로그인 한다면" -->
+                </div>
+                <div> <!-- th:unless=$"loginMember != null" 로그인 실패 로그아웃 상태 -->
+                    <a href="#">로그인</a>
+                </div>
             </div>
         </div>
-
-        <hr class="header-line">
-
         <nav class="main-menu">
             <a href="#">상담</a>
             <a href="#">실시간 상담</a>
