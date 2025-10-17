@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
+import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
