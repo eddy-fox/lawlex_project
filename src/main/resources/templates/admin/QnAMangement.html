@@ -56,12 +56,12 @@
                 <td>20251017</td>
                 <td>Y</td>
             </tr>
-            <tr onclick="location.href='#'" style="cursor: pointer;" th:each="q : ${qList}">
-                <td><span th:text="${q.qIdx}"></span></td>
-                <td><span th:text="${q.memberId}"></span></td>
-                <td><span th:text="${q.qTitle}"></span></td>
-                <td><span th:text="${q.qRegDate}"></span></td>
-                <td><span th:text="${q.qSecret}"></span></td>
+            <tr onclick="location.href='#'" style="cursor: pointer;" th:each="nq : ${newQuestions}">
+                <td><span th:text="${nq.qIdx}"></span></td>
+                <td><span th:text="${nq.memberId}"></span></td>
+                <td><span th:text="${nq.qTitle}"></span></td>
+                <td><span th:text="${nq.qRegDate}"></span></td>
+                <td><span th:text="${nq.qSecret}"></span></td>
             </tr>
         </table>
     </div>
@@ -83,12 +83,12 @@
                 <td>20251017</td>
                 <td>Y</td>
             </tr>
-            <tr onclick="location.href='#'" style="cursor: pointer;" th:each="q : ${qList}">
-                <td><span th:text="${q.qIdx}"></span></td>
-                <td><span th:text="${q.memberId}"></span></td>
-                <td><span th:text="${q.qTitle}"></span></td>
-                <td><span th:text="${q.qRegDate}"></span></td>
-                <td><span th:text="${q.qSecret}"></span></td>
+            <tr onclick="location.href='#'" style="cursor: pointer;" th:each="cq : ${completedQuestions}">
+                <td><span th:text="${cq.qIdx}"></span></td>
+                <td><span th:text="${cq.memberId}"></span></td>
+                <td><span th:text="${cq.qTitle}"></span></td>
+                <td><span th:text="${cq.qRegDate}"></span></td>
+                <td><span th:text="${cq.qSecret}"></span></td>
             </tr>
         </table>
     </div>

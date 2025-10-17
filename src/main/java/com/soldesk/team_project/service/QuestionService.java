@@ -1,10 +1,16 @@
 package com.soldesk.team_project.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.QuestionEntity;
 import com.soldesk.team_project.repository.QuestionRepositiory;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +29,13 @@ public class QuestionService {
         questionDTO.setMemberId(questionEntity.getMember().getMemberId());
 
         return questionDTO;
+    }
+
+    public List<QuestionDTO> getNewQuestions() {
+        List<QuestionEntity> questionEntity = questionRepository.findAll();
+        
+        return memberEntityList.stream()
+            .map(questionEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
     
 }
