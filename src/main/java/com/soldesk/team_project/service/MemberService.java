@@ -31,7 +31,7 @@ public class MemberService {
         memberDTO.setMemberPhone(memberEntity.getMemberPhone());
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
-        memberDTO.setInterestIdx(memberEntity.getInterestIdx());
+        memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
 
         return memberDTO;
     }
@@ -65,19 +65,15 @@ public class MemberService {
     public List<MemberDTO> searchMembers(String searchType, String keyword) {
         List<MemberEntity> memberEntityList;
 
-        if (searchType.equals("all")) {
-            memberEntityList = memberRepository.findAll();
-        } else {
-            switch (searchType) {
-                case "idx": memberEntityList = memberRepository.findByMemberIdx(Integer.valueOf(keyword)); break;
-                case "id": memberEntityList = memberRepository.findByMemberIdContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
-                case "name": memberEntityList = memberRepository.findByMemberNameContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
-                case "idnum": memberEntityList = memberRepository.findByMemberIdnumContainingOrderByMemberIdnumAsc(keyword); break;
-                case "email": memberEntityList = memberRepository.findByMemberEmailContainingIgnoreCaseOrderByMemberEmailAsc(keyword); break;
-                case "phone": memberEntityList = memberRepository.findByMemberPhoneContainingOrderByMemberPhoneAsc(keyword); break;
-                case "nickname": memberEntityList = memberRepository.findByMemberNicknameContainingIgnoreCaseOrderByMemberNicknameAsc(keyword); break;
-                default: memberEntityList = memberRepository.findAll(); break;
-            }
+        switch (searchType) {
+            case "idx": memberEntityList = memberRepository.findByMemberIdx(Integer.valueOf(keyword)); break;
+            case "id": memberEntityList = memberRepository.findByMemberIdContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
+            case "name": memberEntityList = memberRepository.findByMemberNameContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
+            case "idnum": memberEntityList = memberRepository.findByMemberIdnumContainingOrderByMemberIdnumAsc(keyword); break;
+            case "email": memberEntityList = memberRepository.findByMemberEmailContainingIgnoreCaseOrderByMemberEmailAsc(keyword); break;
+            case "phone": memberEntityList = memberRepository.findByMemberPhoneContainingOrderByMemberPhoneAsc(keyword); break;
+            case "nickname": memberEntityList = memberRepository.findByMemberNicknameContainingIgnoreCaseOrderByMemberNicknameAsc(keyword); break;
+            default: memberEntityList = memberRepository.findAll(); break;
         }
         return memberEntityList.stream()
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
