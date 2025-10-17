@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
     
     private final MemberService memberService;
+    private final LawyerService lawyerService;
 
     @GetMapping("/memberManagement")
     public String memberList(
@@ -49,6 +50,35 @@ public class AdminController {
         redirectAttributes.addAttribute("keyword", keyword);
         redirectAttributes.addAttribute("searchType", searchType);
         return "redirect:/admin/memberManagement";
+    }
+
+    @GetMapping("/lawyerManagement")
+    public String lawyerList(
+        @RequestParam(value = "keyword",required = false) String keyword, Model model, 
+        @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType) {
+        
+        List<LawyerDTO> lawyerList;
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            lawyerList = lawyerService.getAllLawyer();
+        } else {
+            lawyerList = lawyerService.searchLawyers(searchType, keyword);
+        }
+
+        model.addAttribute("lawyerList", lawyerList);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("searchType", searchType);
+        return "admin/lawyerManagement";
+    }
+    @PostMapping("/lawyerManagement")
+    public String lawyerSearch(
+        @RequestParam String keyword, 
+        @RequestParam String searchType,
+        RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addAttribute("keyword", keyword);
+        redirectAttributes.addAttribute("searchType", searchType);
+        return "redirect:/admin/lawyerManagement";
     }
 
 }
