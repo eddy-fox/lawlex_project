@@ -56,11 +56,11 @@ public class LawyerService {
             case "idx": lawyerEntityList = lawyerRepository.findByLawyerIdx(Integer.valueOf(keyword)); break;
             case "id": lawyerEntityList = lawyerRepository.findByLawyerIdContainingIgnoreCaseOrderByLawyerIdAsc(keyword); break;
             case "name": lawyerEntityList = lawyerRepository.findByLawyerNameContainingIgnoreCaseOrderByLawyerIdAsc(keyword); break;
-            case "idnum": lawyerEntityList = lawyerRepository.findByLawyerIdnumContainingOrderByMemberIdnumAsc(keyword); break;
+            case "idnum": lawyerEntityList = lawyerRepository.findByLawyerIdnumContainingOrderByLawyerIdnumAsc(keyword); break;
             case "email": lawyerEntityList = lawyerRepository.findByLawyerEmailContainingIgnoreCaseOrderByLawyerEmailAsc(keyword); break;
             case "phone": lawyerEntityList = lawyerRepository.findByLawyerPhoneContainingOrderByLawyerPhoneAsc(keyword); break;
             case "nickname": lawyerEntityList = lawyerRepository.findByLawyerNicknameContainingIgnoreCaseOrderByLawyerNicknameAsc(keyword); break;
-            case "auth": lawyerEntityList = lawyerRepository.findByLawyerAuthContainingOrderByLawyerAuthAsc(Integer.valueOf(keyword)); break;
+            case "auth": lawyerEntityList = lawyerRepository.findByLawyerAuthOrderByLawyerAuthAsc(Integer.valueOf(keyword)); break;
             case "address": lawyerEntityList = lawyerRepository.findByLawyerAddressContainingIgnoreCaseOrderByLawyerAddressAsc(keyword); break;
             case "tel": lawyerEntityList = lawyerRepository.findByLawyerTelContainingOrderByLawyerTelAsc(keyword); break;
             case "comment": lawyerEntityList = lawyerRepository.findByLawyerCommentContainingIgnoreCaseOrderByLawyerCommentAsc(keyword); break;
