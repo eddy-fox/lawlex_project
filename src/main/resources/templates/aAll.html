@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <a th:href="@{/}">index.html</a>
+    <li><a th:href="@{/html}">기본틀</a></li>
+    <ul><p>nav</p> 필요한 분들 알아서 하시면 된니다  이건 마무리에 지울꺼에요
+        <li><a href="#">실시간 상담</a></li>
+        <li><a href="#">상담</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="#">랭킹</a></li>
+        <li><a href="#">문의</a></li>
+    </ul>
+    <ul><p>inout</p>
+        <li><a href="@{/member/login}">로그인</a></li>
+        <li><a href="#">로그아웃</a></li>
+        <li><a href="#">마이페이지</a></li>
+        <li><a th:href="@{/admin/memberManagement}">관리자 페이지</a></li>
+    </ul>
+</body>
+</html>
