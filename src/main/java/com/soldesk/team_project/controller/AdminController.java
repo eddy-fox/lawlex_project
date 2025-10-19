@@ -94,12 +94,16 @@ public class AdminController {
         List<QuestionDTO> newQuestions;
         List<QuestionDTO> completedQuestions;
 
+        String qNew = "N";
+        String qCompleted = "Y";
+
+
         if (keyword == null || keyword.trim().isEmpty()) {
-            newQuestions = questionService.getNewQuestions();
-            completedQuestions = questionService.getCompletedQuestions();
+            newQuestions = questionService.getNewQuestions(qNew);
+            completedQuestions = questionService.getCompletedQuestions(qCompleted);
         } else {
-            newQuestions = questionService.searchNewQuestions(searchType, keyword);
-            completedQuestions = questionService.searchCompletedQuestions(searchType, keyword);
+            newQuestions = questionService.searchNewQuestions(searchType, keyword, qNew);
+            completedQuestions = questionService.searchCompletedQuestions(searchType, keyword, qCompleted);
         }
 
         model.addAttribute("newQuestions", newQuestions);
