@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
+import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
+import com.soldesk.team_project.service.QuestionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,11 +26,12 @@ public class AdminController {
     
     private final MemberService memberService;
     private final LawyerService lawyerService;
+    private final QuestionService questionService;
 
     @GetMapping("/memberManagement")
     public String memberList(
         @RequestParam(value = "keyword",required = false) String keyword, Model model, 
-        @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType) {
+        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
         
         List<MemberDTO> memberList;
 
@@ -55,7 +60,7 @@ public class AdminController {
     @GetMapping("/lawyerManagement")
     public String lawyerList(
         @RequestParam(value = "keyword",required = false) String keyword, Model model, 
-        @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType) {
+        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
         
         List<LawyerDTO> lawyerList;
 
@@ -79,6 +84,39 @@ public class AdminController {
         redirectAttributes.addAttribute("keyword", keyword);
         redirectAttributes.addAttribute("searchType", searchType);
         return "redirect:/admin/lawyerManagement";
+    }
+
+    @GetMapping("/QnAManagement")
+    public String questionList(
+        @RequestParam(value = "keyword",required = false) String keyword, Model model, 
+        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
+        
+        List<QuestionDTO> newQuestions;
+        List<QuestionDTO> completedQuestions;
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            newQuestions = questionService.getNewQuestions();
+            completedQuestions = questionService.getCompletedQuestions();
+        } else {
+            newQuestions = questionService.searchNewQuestions(searchType, keyword);
+            completedQuestions = questionService.searchCompletedQuestions(searchType, keyword);
+        }
+
+        model.addAttribute("newQuestions", newQuestions);
+        model.addAttribute("completedQuestions", completedQuestions);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("searchType", searchType);
+        return "admin/QnAManagement";
+    }
+    @PostMapping("/QnAManagement")
+    public String questionSearch(
+        @RequestParam String keyword, 
+        @RequestParam String searchType,
+        RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addAttribute("keyword", keyword);
+        redirectAttributes.addAttribute("searchType", searchType);
+        return "redirect:/admin/QnAManagement";
     }
 
 }

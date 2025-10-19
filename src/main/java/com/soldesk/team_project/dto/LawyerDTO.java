@@ -17,8 +17,22 @@ public class LawyerDTO {
     private String lawyerPhone;
     private String lawyerAgree;
     private String lawyerNickname;
+<<<<<<< HEAD
     private Integer interestIdx;
 
     private String interestName;
 
+=======
+    private Integer lawyerAuth;
+    private String lawyerAddress;
+    private String lawyerTel;
+    private String lawyerImgPath;
+    private String lawyerComment;
+    private Integer lawyerLike;
+    private Integer lawyerAnswerCnt;
+    private Integer interestIdx;
+
+    private String interestName;
+    
+>>>>>>> f777e53d1d673ed96dc12f504f83a1aca9569091
 }
