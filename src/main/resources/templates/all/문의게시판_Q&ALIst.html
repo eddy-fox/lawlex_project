@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>문의게시판 Q&ALIst</title>
+  <style>
+  .llx-inquiry{ --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --navy:#0b2a8e; --soft:#f5f6ff; }
+  .llx-inquiry, .llx-inquiry *{ box-sizing:border-box; font-family: "Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif; }
+  .llx-inquiry{ color:var(--ink); line-height:1.6; }
+  .llx-inquiry .container{ width:min(1120px,94%); margin:24px auto 72px; }
+  .llx-inquiry h1{ font-size:36px; margin:0 0 16px; }
+  .llx-inquiry .btn{ background:var(--navy); color:#fff; border:none; border-radius:6px; height:30px; padding:0 12px; font-size:13px; cursor:pointer }
+  .llx-inquiry .btn.outline{ background:#fff; border:1px solid var(--navy); color:var(--navy) }
+  .llx-inquiry .searchbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin:36px 0 12px }
+  .llx-inquiry .search{ position:relative; display:flex; align-items:center; gap:6px }
+  .llx-inquiry .search input{ width:220px; height:28px; border:1px solid #e0e6ff; border-radius:6px; padding:0 10px 0 26px; outline:none }
+  .llx-inquiry .search svg{ position:absolute; left:6px; width:16px; height:16px; }
+  /* Table list */
+  .llx-inquiry table{ width:100%; border-collapse:collapse; }
+  .llx-inquiry thead th{ text-align:left; color:#1a1a1a; padding:10px 8px; border-bottom:2px solid #0b2a8e; font-size:16px }
+  .llx-inquiry tbody td{ padding:12px 8px; border-bottom:2px solid rgba(11,42,142,.18) }
+  .llx-inquiry .lock{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:#e8eefc; color:var(--navy); margin-right:6px; font-size:12px }
+  .llx-inquiry .check{ color:var(--navy); font-weight:700; font-size:18px }
+  .llx-inquiry .pager{ display:flex; justify-content:center; gap:12px; align-items:center; margin:20px 0 0; color:#555 }
+  /* Write / Detail forms */
+  .llx-inquiry .labelrow{ display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#333; margin-bottom:6px }
+  .llx-inquiry .input{ width:100%; height:40px; border:1.6px solid var(--navy); border-radius:8px; padding:0 12px; outline:none; background:#fff }
+  .llx-inquiry .textarea{ width:100%; min-height:240px; border:1.6px solid var(--navy); border-radius:8px; padding:12px; outline:none; resize:vertical; background:#fff }
+  .llx-inquiry .row-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:10px }
+  .llx-inquiry .meta-line{ display:flex; justify-content:space-between; font-size:12px; color:#333; border-bottom:1.6px solid var(--navy); padding-bottom:4px; margin-bottom:8px }
+  .llx-inquiry .subtext{ font-size:12px; color:#444; margin:6px 0 }
+  /* FAQ */
+  .llx-inquiry .faq-head{ display:flex; align-items:center; justify-content:space-between; margin:12px 0 16px }
+  .llx-inquiry .faq h2{ font-size:40px; margin:6px 0 8px }
+  .llx-inquiry .qa{ border:1px solid #e7e7e7; border-radius:10px; padding:12px 14px; margin:12px 0; background:#fafafa }
+  .llx-inquiry .qa .q{ font-weight:800 }
+  .llx-inquiry .qa .a{ color:#333; margin-top:6px }
+</style>
+</head>
+<body>
+  <main class="llx-inquiry">
+    <div class="container">
+      
+<section class="faq">
+  <div class="faq-head">
+    <h2>FAQ</h2>
+    <button class="btn">문의글 보기</button>
+  </div>
+  <div class="qa">
+      <div class="q">Q. 회원가입은 어떻게 하나요? <span style="color:#888">▾</span></div>
+      <div class="a">A. 상담 메뉴에서 ‘회원가입’ 클릭 후 의뢰인/변호사 유형을 선택해 가입할 수 있습니다.</div>
+    </div>
+<div class="qa">
+      <div class="q">Q. 상담 글은 수정/삭제가 가능한가요?</div>
+      <div class="a">A. 답변이 달리기 전까지만 수정/삭제가 가능합니다.</div>
+    </div>
+<div class="qa">
+      <div class="q">Q. 포인트 충전과 사용은 어떻게 하나요?</div>
+      <div class="a">A. 결제 페이지에서 충전 후 상담·채팅 이용 시 포인트가 차감됩니다.</div>
+    </div>
+<div class="qa">
+      <div class="q">Q. 채팅 상담은 어떤 방식으로 진행되나요?</div>
+      <div class="a">A. 변호사 선택 후 예약하면 1시간 단위로 진행됩니다.</div>
+    </div>
+<div class="qa">
+      <div class="q">Q. 댓글 신고가 누적되면 어떻게 되나요?</div>
+      <div class="a">A. 누적 시 운영정책에 따라 제재가 이뤄질 수 있습니다.</div>
+    </div>
+</section>
+
+    </div>
+  </main>
+</body>
+</html>
