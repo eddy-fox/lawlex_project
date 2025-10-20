@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>상담 게시판</title>
+  <style>
+  .llx-board{ --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --panel:#e5e5e5; --white:#fff; --black:#000;}
+  .llx-board, .llx-board *{ box-sizing:border-box }
+  .llx-board{ color:var(--ink); line-height:1.6; font-family: "Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif;}
+  .llx-board .frame{ width:min(1120px,94%); margin:24px auto 48px; display:grid; grid-template-columns: 220px 1fr; gap:22px; }
+  /* Left Category */
+  .llx-board .leftbar{ padding:16px 12px; border:1px dashed #cfcfcf; border-radius:6px; }
+  .llx-board .cat{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px dashed #e8e8e8; font-size:15px }
+  .llx-board .cat:last-child{ border-bottom:none }
+  .llx-board .dot{ width:18px; height:18px; border-radius:50%; border:1px solid #bdbdbd; display:inline-flex; align-items:center; justify-content:center; font-size:10px; color:#666 }
+  /* Main Panel */
+  .llx-board .panel{ background:#efefef; border-radius:6px; padding:16px; }
+  .llx-board .field-row{ background:#ddd; border-radius:4px; padding:10px 14px; margin-bottom:12px }
+  .llx-board .label{ width:70px; display:inline-block; color:#333; font-weight:600 }
+  .llx-board input[type="text"], .llx-board textarea, .llx-board select{ width:100%; border:none; background:#f5f5f5; padding:10px 12px; outline:none; font-size:14px }
+  .llx-board .tags{ display:flex; gap:12px; padding:6px 0 10px 80px }
+  .llx-board .tag{ font-size:13px; color:#444 }
+  .llx-board textarea{ min-height:320px; resize:vertical }
+  .llx-board .thumbs{ display:flex; gap:18px; align-items:center }
+  .llx-board .thumb{ width:96px; height:96px; background:#d9d9d9; border:1px solid #c8c8c8; display:flex; align-items:center; justify-content:center; color:#444 }
+  .llx-board .right-actions{ margin-left:auto }
+  .llx-board .btn{ background:#ddd; border:1px solid #bdbdbd; border-radius:6px; height:34px; padding:0 12px; font-size:13px; cursor:pointer }
+  .llx-board .btn.black{ background:#000; color:#fff; border-color:#000 }
+  .llx-board .btn.small{ height:28px; font-size:12px }
+  .llx-board .actions-bottom{ background:#d9d9d9; border-radius:4px; padding:10px 14px; display:flex; justify-content:flex-end }
+  /* Table list */
+  .llx-board .table{ background:#efefef; border-radius:6px; padding:12px }
+  .llx-board table{ width:100%; border-collapse:separate; border-spacing:0 10px; }
+  .llx-board th, .llx-board td{ background:#fff; padding:12px 14px; font-size:14px }
+  .llx-board th{ text-align:left; background:#f6f6f6; font-weight:700 }
+  .llx-board .tfoot{ display:flex; justify-content:space-between; align-items:center; background:#d9d9d9; padding:10px 14px; border-radius:4px; margin-top:12px }
+  .llx-board .pager{ text-align:center; font-size:14px }
+  /* Detail */
+  .llx-board .detail{ background:#efefef; border-radius:6px; padding:14px }
+  .llx-board .article{ background:#fff; border:1px solid #dcdcdc; padding:18px 20px; }
+  .llx-board .article h2{ font-size:20px; margin-bottom:6px }
+  .llx-board .article time{ display:block; color:#666; font-size:13px; margin-bottom:12px }
+  .llx-board .edit-links{ text-align:right; margin-top:16px; color:#333; font-size:14px }
+  .llx-board .edit-links a{ margin-left:16px; color:#333; text-decoration:none }
+  .llx-board .answer-bar{ display:flex; align-items:center; gap:10px; background:#d9d9d9; padding:10px 12px; border:1px solid #cfcfcf }
+  .llx-board .mini{ width:64px; height:64px; border:1px solid #cfcfcf; background:#f2f2f2; display:flex; align-items:center; justify-content:center; color:#555; }
+  .llx-board .answer-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .llx-board .chip{ background:#f2f2f2; border:1px solid #d0d0d0; border-radius:6px; padding:6px 10px; font-size:12px }
+  .llx-board .answer{ background:#fff; border:1px solid #dcdcdc; padding:14px 16px; margin-top:10px }
+  .llx-board .answer textarea{ min-height:160px }
+  @media (max-width:1000px){
+    .llx-board .frame{ grid-template-columns: 1fr }
+  }
+</style>
+</head>
+<body>
+  <main class="llx-board">
+    <div class="frame">
+      
+    <aside class="leftbar">
+      <div class="cat">성범죄 <span class="dot">◦</span></div>
+      <div class="cat">재산범죄 <span class="dot">◦</span></div>
+      <div class="cat">교통사고 · 범죄 <span class="dot">◦</span></div>
+      <div class="cat">폭행 · 협박 <span class="dot">◦</span></div>
+      <div class="cat">명예훼손 · 모욕 <span class="dot">◦</span></div>
+      <div class="cat">부동산 · 임대차 <span class="dot">◦</span></div>
+      <div class="cat">금전 · 계약 문제 <span class="dot">◦</span></div>
+      <div class="cat">가족 <span class="dot">◦</span></div>
+      <div class="cat">회사 <span class="dot">◦</span></div>
+      <div class="cat">의료 · 세금 · 행정 <span class="dot">◦</span></div>
+      <div class="cat">지식재산 · 금융 <span class="dot">◦</span></div>
+    </aside>
+    
+      
+<section class="panel">
+  <div class="field-row"><span class="label">제목 :</span><input type="text" placeholder="음주운전으로 사고를 냄"></div>
+  <div class="tags">
+    <span class="tag">교통사고 · 범죄</span>
+    <span class="tag">재산범죄</span>
+  </div>
+  <div class="field-row" style="padding:0">
+    <textarea placeholder="00월 00일 운전하다가 어쩌구 저쩌구"></textarea>
+  </div>
+
+  <div class="field-row" style="display:flex; justify-content:space-between; align-items:center">
+    <div class="thumbs">
+      <div class="thumb">(이미지)</div>
+      <div class="thumb">(이미지)</div>
+    </div>
+    <div class="right-actions">
+      <button class="btn">업로드</button>
+    </div>
+  </div>
+
+  <div class="actions-bottom">
+    <button class="btn">작성완료</button>
+  </div>
+</section>
+
+    </div>
+  </main>
+</body>
+</html>
