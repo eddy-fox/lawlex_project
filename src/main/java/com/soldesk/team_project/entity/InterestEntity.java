@@ -29,5 +29,8 @@ public class InterestEntity {
     
     @OneToMany(mappedBy = "interest")
     private java.util.List<MemberEntity> members;
+
+    @OneToMany(mappedBy = "interest")
+    private java.util.List<LawyerEntity> lawyers;
     
 }
