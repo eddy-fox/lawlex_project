@@ -70,7 +70,7 @@ public class NewsBoardService {
     }
 
     public List<NewsBoardDTO> getAllBoard(int category_idx){
-        List<NewsBoardEntity> boardEntityList = boardRepository.findByCategoryIdxOrderByNewsIdxDesc(category_idx);
+        List<NewsBoardEntity> boardEntityList = boardRepository.findByCategoryCategoryIdxOrderByNewsIdxDesc(category_idx);
         return boardEntityList.stream().map(boardEntity -> convertBoardDTO(boardEntity)).collect(Collectors.toList());
     }
 

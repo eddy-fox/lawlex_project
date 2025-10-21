@@ -11,12 +11,12 @@ import com.soldesk.team_project.entity.NewsBoardEntity;
 public interface NewsBoardRepository extends JpaRepository<NewsBoardEntity, Integer> {
     
     //카테고리별 게시글 조회
-    List<NewsBoardEntity> findByCategoryIdxOrderByNewsIdxDesc(Integer category_idx);
+    List<NewsBoardEntity> findByCategoryCategoryIdxOrderByNewsIdxDesc(Integer categoryIdx);
 
     //최신글
     List<NewsBoardEntity> findAllByOrderByNewsIdxDesc();
 
     
-    int countByCategoryIdx(int category_idx);
+    int countByCategoryCategoryIdx(int categoryIdx);
 
 }
