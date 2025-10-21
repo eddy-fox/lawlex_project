@@ -15,55 +15,40 @@
     <h1>포인트 결제</h1>
     <div>잔여 포인트: 0</div> <br>
 
-    <form id="payment-form" th:action="@{/payment}" method="post">
-        <div class="point-buttons">
-            <label class="point-option">
-                <input type="radio" name="pointOption" value="100:1000" hidden>
-                <div>
-                    <div>100 포인트</div>
-                    <div>1,000 원</div>
-                </div>
-            </label>
-            <label class="point-option">
-                <input type="radio" name="pointOption" value="220:2000" hidden>
-                <div>
-                    <div>220 포인트</div>
-                    <div>2,000 원</div>
-                    <div>+20 포인트</div>
-                </div>
-            </label>
-            <label class="point-option">
-                <input type="radio" name="pointOption" value="600:5000" hidden>
-                <div>
-                    <div>600 포인트</div>
-                    <div>5,000 원</div>
-                    <div>+100 포인트</div>
-                </div>
-            </label>
-            <label class="point-option">
-                <input type="radio" name="pointOption" value="1400:10000" hidden>
-                <div>
-                    <div>1400 포인트</div>
-                    <div>10,000 원</div>
-                    <div>+400 포인트</div>
-                </div>
-            </label>
-            <label class="point-option">
-                <input type="radio" name="pointOption" value="4800:30000" hidden>
-                <div>
-                    <div>4800 포인트</div>
-                    <div>30,000 원</div>
-                    <div>+1800 포인트</div>
-                </div>
-            </label>
-            <label class="point-option">
-                <input type="radio" name="pointOption" value="10000:50000" hidden>
-                <div>
-                    <div>10000 포인트</div>
-                    <div>50,000 원</div>
-                    <div>+5000 포인트</div>
-                </div>
-            </label>
+    <form id="payment-form" th:action="@{/member/point}" method="post">
+        <input type="hidden" name="selectedPoint" id="selectedPoint">
+        <input type="hidden" name="selectedPrice" id="selectedPrice">
+
+        <div id="point-selection">
+            <div class="point-option" data-point="100" data-price="1000">
+                <div>100 포인트</div>
+                <div>1,000 원</div>
+            </div>
+            <div class="point-option" data-point="220" data-price="2000">
+                <div>220 포인트</div>
+                <div>2,000 원</div>
+                <div>+20 포인트</div>
+            </div>
+            <div class="point-option" data-point="600" data-price="5000">
+                <div>600 포인트</div>
+                <div>5,000 원</div>
+                <div>+100 포인트</div>
+            </div>
+            <div class="point-option" data-point="1400" data-price="10000">
+                <div>1400 포인트</div>
+                <div>10,000 원</div>
+                <div>+400 포인트</div>
+            </div>
+            <div class="point-option" data-point="4800" data-price="30000">
+                <div>4800 포인트</div>
+                <div>30,000 원</div>
+                <div>+1800 포인트</div>
+            </div>
+            <div class="point-option" data-point="10000" data-price="50000">
+                <div>10000 포인트</div>
+                <div>50,000 원</div>
+                <div>+5000 포인트</div>
+            </div>
         </div>
         <div>
             <label for="#">결제 주의사항</label>
@@ -166,21 +151,12 @@
         document.getElementById('payment').style.display = 'block';
     }
 
-    // 결제하기 버튼 클릭 시 유효성 검사
+    // 동의 체크박스 확인
     document.getElementById('payment-form').addEventListener('submit', function(e) {
-        // 포인트 선택 확인
-        const selectedPoint = document.querySelector('input[name="pointOption"]:checked');
-        if (!selectedPoint) {
-            alert("결제하려는 포인트를 선택해주세요.");
-            e.preventDefault(); // 제출 막기
-            return;
-        }
-
-        // 동의 체크박스 확인
         const agree = document.getElementById('agree');
         if (!agree.checked) {
             alert("결제 주의사항에 동의해주세요.");
-            e.preventDefault(); // 제출 막기
+            e.preventDefault();
             return;
         }
     });
