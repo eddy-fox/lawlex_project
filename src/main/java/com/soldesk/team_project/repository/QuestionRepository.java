@@ -10,11 +10,12 @@ import com.soldesk.team_project.entity.QuestionEntity;
 @Repository
 public interface QuestionRepository extends JpaRepository<QuestionEntity, Integer>{
 
-    List<QuestionEntity> findByQAnswer(String qAnswer);
+    List<QuestionEntity> findByQuestionAnswerOrderByQuestionIdxDesc(String qAnswer);
 
-    List<QuestionEntity> findByQIdxAndQAnswer(Integer QIdx, String qAnswer);
-    List<QuestionEntity> findByQTitleContainingIgnoreCaseAndQAnswerOrderByQTitleAsc(String QTitle, String qAnswer);
-    List<QuestionEntity> findByQContentContainingIgnoreCaseAndQAnwerOrderByQContentAsc(String QContent, String qAnswer);
-    List<QuestionEntity> findByMemberIdContainingIgnoreCaseAndQAnswerOrderByMemberIdAsc(String MemberId, String qAnswer);
+    List<QuestionEntity> findByQuestionIdxAndQuestionAnswer(Integer qIdx, String qAnswer);
+    List<QuestionEntity> findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qTitle, String qAnswer);
+    List<QuestionEntity> findByQuestionContentContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qContent, String qAnswer);
+    List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String memberId, String qAnswer);
+    // List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndqAnswer(String memberId, String qAnswer);
 
 }

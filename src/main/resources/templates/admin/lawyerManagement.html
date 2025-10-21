@@ -15,7 +15,7 @@
     <div>
         <ul>
             <li><a th:href="@{/admin/memberManagement}">회원 관리</a></li>
-            <li><a th:href="@{/admin/questionManagement}">문의글 관리</a></li>
+            <li><a th:href="@{/admin/QnAManagement}">문의글 관리</a></li>
             <li><a th:href="@{/admin/adManagement}">광고 관리</a></li>
         </ul>
     </div>
@@ -75,12 +75,12 @@
                 <td>010-1234-5678</td>
                 <td>Y</td>
                 <td>이혼, 상속</td>
-                <th>자격번호</th>
-                <th>사무실주소</th>
-                <th>사무실번호</th>
-                <th>한줄소개</th>
-                <th>좋아요 수</th>
-                <th>답변 수</th>
+                <td>00000000</td>
+                <td>서울</td>
+                <td>02-123-1234</td>
+                <td>안녕하세요</td>
+                <td>12</td>
+                <td>1</td>
             </tr>
             <tr onclick="location.href='#'" style="cursor: pointer;" th:each="lawyer : ${lawyerList}">
                 <td><span th:text="${lawyer.lawyerIdx}"></span></td>
