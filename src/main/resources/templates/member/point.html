@@ -62,15 +62,17 @@
     </form>
 
     <!-- 이용 내역 -->
-    <span id="newQnA" onclick="newQnA()" style="cursor: pointer;">새로운 문의</span>
-    <span id="completedQnA" onclick="completedQnA()" style="cursor: pointer;">답변 완료</span>
+    <div>
+        <span id="pointHistory" onclick="point()" style="cursor: pointer;">포인트 이용 내역</span>
+        <span id="paymentHistory" onclick="payment()" style="cursor: pointer;">결제 내역</span>
+    </div>
     
     <!-- 포인트 이용 내역 -->
     <h1>포인트 이용 내역</h1>
     <div>
-        <span onclick="toggleSection('point', this)" style="cursor: pointer;">펼쳐보기 ▼</span>
+        <span onclick="toggleSection('point', this)" style="cursor: pointer;">포인트 이용 내역</span>
     </div>
-
+    
     <div id="point" name="point">
         <div>
             <span>일시</span>
@@ -98,7 +100,7 @@
     <!-- 결제 내역 -->
     <h1>결제 내역</h1>
     <div>
-        <span onclick="toggleSection('payment', this)" style="cursor: pointer;">펼쳐보기 ▼</span>
+        <span onclick="toggleSection('payment', this)" style="cursor: pointer;">결제 내역</span>
     </div>
 
     <div id="payment" name="payment" style="display: none;">
@@ -127,15 +129,23 @@
 
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 <script> // 포인트 이용 내역, 결제 내역 버튼 로직 따로 작동되게 수정해야됨
-function toggleSection(sectionId, toggleElement) {
-    const section = document.getElementById(sectionId);
-    if (section.style.display === 'none') {
-        section.style.display = 'block';
-        toggleElement.textContent = '생략하기 ▲';
-    } else {
-        section.style.display = 'none';
-        toggleElement.textContent = '펼쳐보기 ▼';
+    function toggleSection(sectionId, toggleElement) {
+        const section = document.getElementById(sectionId);
+        if (section.style.display === 'none') {
+            section.style.display = 'block';
+            toggleElement.textContent = '생략하기 ▲';
+        } else {
+            section.style.display = 'none';
+            toggleElement.textContent = '펼쳐보기 ▼';
+        }
     }
-}
+    function point() {
+        document.getElementById('point').style.display = 'block';
+        document.getElementById('payment').style.display = 'none';
+    }
+    function payment() {
+        document.getElementById('point').style.display = 'none';
+        document.getElementById('payment').style.display = 'block';
+    }
 </script>
 </html>
