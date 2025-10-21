@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.soldesk.team_project.dto.AdminDTO;
 import com.soldesk.team_project.dto.CategoryDTO;
-import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.NewsBoardDTO;
 import com.soldesk.team_project.service.NewsBoardService;
 
