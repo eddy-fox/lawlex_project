@@ -4,83 +4,148 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>관리자-문의글관리</title>
 <style>
-.llx-admin, .llx-admin *{ box-sizing:border-box; font-family:"Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif }
-.llx-admin{ --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --panel:#f5f6f8; --blue:#0b1c78; color:var(--ink); }
-.llx-admin .container{ width:min(1080px,94%); margin:28px auto 80px }
-.llx-card{ background:#fff; border:1px solid #e6e8ee; border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(0,0,0,.03) }
-h1{ font-size:22px; margin:4px 0 14px; letter-spacing:-.2px }
+.page-qna, .page-qna *{ box-sizing:border-box; font-family:"Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif }
+.page-qna{ --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --panel:#f5f6f8; --navy:#0b1c78; color:var(--ink) }
+.page-qna .container{ width:min(1080px,94%); margin:28px auto 80px }
+
+h1{ font-size:22px; margin:4px 0 16px; letter-spacing:-.2px }
 .small{ font-size:12px; color:#6b7280 }
-.tabs{ display:flex; gap:14px; align-items:center; margin:6px 2px 14px }
-.tab{ font-weight:800; color:#0f172a; cursor:pointer }
-.tab.muted{ color:#94a3b8 }
-.toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:10px }
+
+/* Tabs */
+.tabs{ display:flex; gap:10px; align-items:center; margin-bottom:12px }
+.tabs a{ text-decoration:none; color:#64748b; font-weight:800 }
+.tabs a.active{ color:#0b1c78 }
+.tabs .sep{ color:#c1c7d0 }
+
+/* Toolbar */
+.toolbar{ display:grid; grid-template-columns: 120px 1fr auto; gap:8px; align-items:center; margin-bottom:10px }
 .select, .input{ height:34px; border:1.6px solid #cfd3dd; border-radius:8px; padding:0 10px; outline:none; background:#fff }
-.input{ width:260px }
+.input{ width:100% }
 .btn{ height:34px; padding:0 12px; border:none; border-radius:8px; background:#0b1c78; color:#fff; font-weight:700; cursor:pointer }
-.btn.gray{ background:#eceff3; color:#0f172a; border:1px solid #e5e7eb }
-.line{ height:1px; background:#e5e7eb; margin:12px 0 }
-.table{ border:1px solid #e6e8ee; border-radius:12px; overflow:hidden; background:#fff }
+
+/* Card table */
+.card{ background:#fff; border:1px solid #e6e8ee; border-radius:12px; overflow:hidden }
 table{ width:100%; border-collapse:collapse }
 thead th{ background:#f7f8fb; font-size:12px; color:#64748b; text-align:left; padding:10px 12px; border-bottom:1px solid #e6e8ee }
 tbody td{ padding:12px; border-bottom:1px solid #eef1f5; font-size:14px }
-.scroll{ max-height:380px; overflow:auto }
-.right{ text-align:right }
 .center{ text-align:center }
-.badge{ display:inline-block; padding:2px 6px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:11px; font-weight:800 }
-.grid2{ display:grid; grid-template-columns: 1fr 320px; gap:16px }
-.ad-list{ display:flex; flex-direction:column; gap:16px }
-.ad-item{ display:grid; grid-template-columns: 1fr 240px; gap:16px; align-items:center; background:#fff; border:1px solid #e6e8ee; border-radius:12px; padding:16px }
-.ad-thumb{ height:92px; background:#e9ecf3; border-radius:8px; display:grid; place-items:center; color:#475569; font-weight:800 }
-.meta{ font-size:12px; color:#475569; display:flex; flex-direction:column; gap:4px }
-.meta .row{ display:flex; justify-content:space-between }
-.meta .actions{ display:flex; gap:8px; margin-top:8px }
-.input.full{ width:100% }
-.form-grid{ display:grid; grid-template-columns: 140px 1fr; gap:12px 16px; align-items:center }
-.form-thumb{ height:160px; background:#e9ecf3; border-radius:10px; display:grid; place-items:center; color:#475569; font-weight:800 }
-.lock{ width:14px; height:14px; border-radius:3px; background:#cbd5e1; display:inline-block }
+.lock{ display:inline-block; width:12px; height:12px; border-radius:3px; background:#dbe7ff; border:1px solid #cfe0ff }
+tfoot td{ padding:10px; color:#9aa1ad; font-size:12px }
+
+/* Scroll area */
+.scroll{ max-height:380px; overflow:auto }
 </style>
 </head>
 <body>
-<main class="llx-admin">
+<main class="page-qna">
   <div class="container">
     <h1>문의글 관리</h1>
-    <div class="tabs">
-      <div class="tab">새로운 문의</div>
-      <div class="tab muted">|</div>
-      <div class="tab muted">답변 완료</div>
-    </div>
+
+    <nav class="tabs" aria-label="문의글 상태 탭">
+      <a href="#" data-tab="new" class="active" id="tab-new">새로운 문의</a>
+      <span class="sep">|</span>
+      <a href="#" data-tab="done" id="tab-done">답변 완료</a>
+    </nav>
+
     <div class="toolbar">
-      <select class="select"><option>관련도</option><option>작성자</option><option>제목</option></select>
-      <input class="input" placeholder="검색">
-      <button class="btn">검색</button>
+      <select class="select" id="searchField" aria-label="검색 필드 선택">
+        <option value="all">관련도</option>
+        <option value="author">작성자</option>
+        <option value="title">제목</option>
+      </select>
+      <input class="input" id="searchInput" placeholder="검색">
+      <button class="btn" id="searchBtn">검색</button>
     </div>
-    <div class="table">
+
+    <div class="card">
       <div class="scroll">
-        <table>
-          <thead><tr>
-            <th style="width:12%">글 번호</th>
-            <th style="width:18%">작성자</th>
-            <th>글 제목</th>
-            <th style="width:12%" class="center">비밀번호</th>
-            <th style="width:14%" class="center">답변 여부</th>
-          </tr></thead>
+        <table id="qnaTable">
+          <thead>
+            <tr>
+              <th style="width:12%">글 번호</th>
+              <th style="width:18%">작성자</th>
+              <th>글 제목</th>
+              <th style="width:12%" class="center">비밀번호</th>
+              <th style="width:14%" class="center">답변 여부</th>
+            </tr>
+          </thead>
           <tbody>
-            <tr>
-              <td>2</td><td>asd123</td><td>****************</td>
+            <tr data-author="asd123" data-title="****************" data-answered="true">
+              <td>2</td>
+              <td>asd123</td>
+              <td>글제목 보이게</td>
               <td class="center"><span class="lock" title="비밀글"></span></td>
-              <td class="center"><input type="checkbox" /></td>
+              <td class="center"><input type="checkbox" checked aria-label="답변 완료"></td>
             </tr>
-            <tr>
-              <td>1</td><td>asd123</td><td>회원 탈퇴는 어디서하나요</td>
+            <tr data-author="asd123" data-title="회원 탈퇴는 어디서하나요" data-answered="false">
+              <td>1</td>
+              <td>asd123</td>
+              <td>회원 탈퇴는 어디서하나요</td>
               <td class="center"></td>
-              <td class="center"><input type="checkbox" /></td>
+              <td class="center"><input type="checkbox" aria-label="답변 완료"></td>
             </tr>
-            <tr><td colspan="5" class="center" style="color:#9aa1ad">… (스크롤)</td></tr>
           </tbody>
+
         </table>
       </div>
     </div>
   </div>
 </main>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tabs a');
+  const table = document.getElementById('qnaTable').tBodies[0];
+  const searchBtn = document.getElementById('searchBtn');
+  const searchInput = document.getElementById('searchInput');
+  const searchField = document.getElementById('searchField');
+
+  function currentTab(){
+    return document.querySelector('.tabs a.active')?.dataset.tab || 'new';
+  }
+
+  function applyFilters(){
+    const q = searchInput.value.trim();
+    const field = searchField.value;
+    const tab = currentTab();
+    const rows = Array.from(table.rows);
+    rows.forEach(row => {
+      // answered from checkbox state (live), fallback to attribute
+      const answered = row.querySelector('input[type="checkbox"]')?.checked ?? (row.dataset.answered === 'true');
+      let visible = true;
+
+      // Tab filter
+      visible = visible && (tab === 'done' ? answered : !answered);
+
+      // Search filter
+      if(q){
+        const author = row.cells[1].textContent.trim();
+        const title  = row.cells[2].textContent.trim();
+        if(field === 'author') visible = visible && author.includes(q);
+        else if(field === 'title') visible = visible && title.includes(q);
+        else visible = visible && (author.includes(q) || title.includes(q));
+      }
+      row.style.display = visible ? '' : 'none';
+    });
+  }
+
+  tabs.forEach(t => t.addEventListener('click', e => {
+    e.preventDefault();
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    applyFilters();
+  }));
+
+  searchBtn.addEventListener('click', applyFilters);
+  searchInput.addEventListener('keydown', e => { if(e.key === 'Enter') applyFilters(); });
+  // Checkbox changes should re-evaluate tab filter
+  document.getElementById('qnaTable').addEventListener('change', e => {
+    if(e.target.matches('input[type="checkbox"]')) applyFilters();
+  });
+
+  applyFilters();
+})();
+</script>
 </body>
 </html>
+<!-- admin > QnAManagement.html -->
