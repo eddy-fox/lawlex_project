@@ -20,23 +20,23 @@ public class AdminEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="admin_idx")
-    private Integer admin_idx;
+    private Integer adminIdx;
 
     @Column(name="admin_id")
-    private String admin_id;
+    private String adminId;
 
     @Column(name="admin_pass")
-    private String admin_pass;
+    private String adminPass;
 
     @Column(name="admin_name")
-    private String admin_name;
+    private String adminName;
 
     @Column(name="admin_email")
-    private String admin_email;
+    private String adminEmail;
 
     @Column(name="admin_phone")
-    private String admin_phone;
+    private String adminPhone;
 
     @Column(name="admin_role")
-    private String admin_role;
+    private String adminRole;
 }
