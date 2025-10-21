@@ -19,13 +19,7 @@
         <div id="payment-method"></div>
         <!-- 이용약관 UI -->
         <div id="agreement"></div>
-        <!-- 쿠폰 체크박스 -->
-        <div class="checkable">
-  <label for="coupon-box" class="checkable__label">
-    <input id="coupon-box" class="checkable__input" type="checkbox" />
-    <span class="checkable__label-text">5,000원 쿠폰 적용</span>
-  </label>
-</div>
+
         <!-- 결제하기 버튼 -->
         <div class="result wrapper">
           <button class="button" id="payment-button" style="margin-top: 30px">
@@ -47,7 +41,7 @@
         // TODO: clientKey는 개발자센터의 결제위젯 연동 키 > 클라이언트 키로 바꾸세요.
         // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
         // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
-        const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+        const clientKey = "test_ck_oEjb0gm23P5GeZ2laN2WVpGwBJn5";
         const customerKey = generateRandomString();
         const tossPayments = TossPayments(clientKey);
         // 회원 결제
