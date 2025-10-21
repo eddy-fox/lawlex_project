@@ -26,22 +26,22 @@ public class QuestionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     @Column(name = "q_idx")
-    private Integer qIdx;
+    private Integer questionIdx;
 
     @Column(name = "q_title")
-    private String qTitle;
+    private String questionTitle;
     
     @Column(name = "q_content")
-    private String qContent;
+    private String questionContent;
     
     @Column(name = "q_regDate")
-    private LocalDate qRegDate;
+    private LocalDate questionRegDate;
     
     @Column(name = "q_secret")
-    private String qSecret;
+    private String questionSecret;
     
     @Column(name = "q_answer")
-    private String qAnswer;
+    private String questionAnswer;
 
     @Column(name = "member_idx", insertable = false, updatable = false)
     private Integer memberIdx;

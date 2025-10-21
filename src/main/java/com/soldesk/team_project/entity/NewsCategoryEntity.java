@@ -23,10 +23,10 @@ public class NewsCategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="category_idx")
-    private Integer category_idx;
+    private Integer categoryIdx;
 
     @Column(name="category_name")
-    private String category_name;
+    private String categoryName;
 
     @OneToMany(mappedBy = "category")
     private List<NewsBoardEntity> boards;

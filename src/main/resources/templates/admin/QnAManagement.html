@@ -22,10 +22,9 @@
 
     <!-- 상단 바 -->
     <div>
-        <ul>
-            <li onclick="newQnA()" id="newQnA">새로운 문의</li>
-            <li onclick="completedQnA()" id="completedQnA">답변 완료</li>
-        </ul>
+        <span id="newQnA" onclick="newQnA()" style="cursor: pointer;">새로운 문의</span>
+        <span id="completedQnA" onclick="completedQnA()" style="cursor: pointer;">답변 완료</span>
+        
         <form th:action="@{/admin/QnAManagement}" method="post">
             <select id="searchType" name="searchType">
                 <option value="idx" selected>글번호</option>
@@ -52,7 +51,7 @@
             <tr onclick="location.href='#'" style="cursor: pointer;">
                 <td>1</td>
                 <td>user01</td>
-                <td>질문</td>
+                <td>새로운 질문</td>
                 <td>20251017</td>
                 <td>Y</td>
             </tr>
@@ -79,8 +78,8 @@
             <tr onclick="location.href='#'" style="cursor: pointer;">
                 <td>1</td>
                 <td>user01</td>
-                <td>질문</td>
-                <td>20251017</td>
+                <td>답변한 질문</td>
+                <td>20251016</td>
                 <td>Y</td>
             </tr>
             <tr onclick="location.href='#'" style="cursor: pointer;" th:each="cq : ${completedQuestions}">
