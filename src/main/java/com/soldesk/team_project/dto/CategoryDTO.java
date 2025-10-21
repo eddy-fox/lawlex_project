@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RankingDTO {
+public class CategoryDTO {
     
-    private Integer rankIdx;
-    private Integer lawyerIdx;
-
+    private Integer category_idx;
+    private String category_name;
 }
