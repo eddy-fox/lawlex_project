@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RrankingDTO {
+public class RankingDTO {
     
     private Integer rankIdx;
     private Integer lawyerIdx;
