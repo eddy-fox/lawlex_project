@@ -12,9 +12,9 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
 
     List<QuestionEntity> findByQAnswer(String qAnswer);
 
-    List<QuestionEntity> findByQIdxAndQAnswer(Integer QIdx, String qAnswer);
+    List<QuestionEntity> findByQIdxAndQAnswer(Integer qIdx, String qAnswer);
     List<QuestionEntity> findByQTitleContainingIgnoreCaseAndQAnswerOrderByQTitleAsc(String QTitle, String qAnswer);
     List<QuestionEntity> findByQContentContainingIgnoreCaseAndQAnwerOrderByQContentAsc(String QContent, String qAnswer);
-    List<QuestionEntity> findByMemberIdContainingIgnoreCaseAndQAnswerOrderByMemberIdAsc(String MemberId, String qAnswer);
+    List<QuestionEntity> findByMemberIdContainingIgnoreCaseAndQAnswerOrderByMemberIdAsc(String memberId, String qAnswer);
 
 }
