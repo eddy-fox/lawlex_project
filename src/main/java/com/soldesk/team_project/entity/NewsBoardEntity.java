@@ -25,25 +25,25 @@ public class NewsBoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="news_idx")
-    private Integer news_idx;
+    private Integer newsIdx;
     
     @Column(name="news_title")
-    private String news_title;
+    private String newsTitle;
 
     @Column(name="news_content")
-    private String news_content;
+    private String newsContent;
 
     @Column(name="news_regDate")
-    private Date news_regDate;
+    private Date newsRegDate;
 
     @Column(name="news_imgPath")
-    private String news_imgPath;
+    private String newsImgPath;
 
     @Column(name="news_like")
-    private Integer news_like;
+    private Integer newsLike;
 
     @Column(name="news_views")
-    private Integer news_views;
+    private Integer newsViews;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="admin_idx")
