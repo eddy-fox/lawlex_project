@@ -15,20 +15,12 @@ public class MemberController {
     public String pointMain() {
         return "member/point";
     }
-    // @PostMapping("/point")
-    // public String pointPayment(
-    //     @RequestParam("pointOption") String pointOption,
-    //     @RequestParam("agree") String agree, Model model
-    // ) throws Exception {
+    @PostMapping("/point")
+    public String productPayment(@RequestParam("selectedProduct") int product, Model model) {
 
-    //     String[] parts = pointOption.split(":");
-    //     String amount = parts[1];
-    //     String point = parts[0];
+        model.addAttribute("product", product);
 
-    //     model.addAttribute("amount", amount);
-    //     model.addAttribute("point", point);
-
-    //     return "payment/checkout";
-    // }
+        return "checkout";
+    }
 
 }
