@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>결제-메인페이지</title>
-<link rel="stylesheet" href="point.css">
+<link rel="stylesheet" th:href="@{/all/point.css}">
+<link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
 <main class="page-point">
   <form action="" class="container">
     <div class="titlebar">
@@ -98,7 +100,8 @@
     </section>
   </form>
 </main>
-
-<script src="point.js"></script>
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+<script th:src="@{/all/point.js}"></script>
 </body>
 </html>
