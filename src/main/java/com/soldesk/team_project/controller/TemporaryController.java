@@ -16,6 +16,10 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
+    @GetMapping("/all/admin/adInfo")
+    public String adInfo(){
+        return "/all/admin/adInfo";
+    }
     @GetMapping("/all/admin/adList")
     public String adList(){
         return "/all/admin/adList";
