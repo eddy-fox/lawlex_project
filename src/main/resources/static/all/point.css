@@ -1,24 +1,15 @@
   @font-face {
     font-family: 'Gooorm Sans';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
+    font-weight: 400;    font-style: normal;    font-display: swap;  }
   @font-face {
     font-family: 'Gooorm Sans';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-  }
+    font-weight: 500;    font-style: normal;    font-display: swap;  }
   @font-face {
     font-family: 'Gooorm Sans';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-  }
+    font-weight: 700;    font-style: normal;    font-display: swap;  }
 
   :root{    --navy:#000777;    --ink:#000000;    --paper:#ffffff;  }
   .page-point, .page-point *{    box-sizing:border-box;
