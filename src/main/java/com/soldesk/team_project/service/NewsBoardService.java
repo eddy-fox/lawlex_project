@@ -28,27 +28,27 @@ public class NewsBoardService {
     
     private NewsBoardDTO convertBoardDTO(NewsBoardEntity boardEntity){
         NewsBoardDTO boardDTO = new NewsBoardDTO();
-        boardDTO.setNews_idx(boardEntity.getNewsIdx());
-        boardDTO.setNews_title(boardEntity.getNewsTitle());
-        boardDTO.setNews_regDate(boardEntity.getNewsRegDate());
-        boardDTO.setNews_imgPath(boardEntity.getNewsImgPath());
-        boardDTO.setNews_views(boardEntity.getNewsViews());
-        boardDTO.setLawyer_idx(boardEntity.getLawyer().getLawyerIdx());
-        boardDTO.setCategory_idx(boardEntity.getCategory().getCategoryIdx());
+        boardDTO.setNewsIdx(boardEntity.getNewsIdx());
+        boardDTO.setNewsTitle(boardEntity.getNewsTitle());
+        boardDTO.setNewsRegDate(boardEntity.getNewsRegDate());
+        boardDTO.setNewsImgPath(boardEntity.getNewsImgPath());
+        boardDTO.setNewsViews(boardEntity.getNewsViews());
+        boardDTO.setLawyerIdx(boardEntity.getLawyer().getLawyerIdx());
+        boardDTO.setCategoryIdx(boardEntity.getCategory().getCategoryIdx());
         return boardDTO;
     }
 
     private NewsBoardEntity convertBoardEntity(NewsBoardDTO boardDTO){
         NewsBoardEntity boardEntity = new NewsBoardEntity();
-        boardEntity.setNewsIdx(boardDTO.getNews_idx());
-        boardEntity.setNewsTitle(boardDTO.getNews_title());
-        boardEntity.setNewsRegDate(boardDTO.getNews_regDate());
-        boardEntity.setNewsImgPath(boardDTO.getNews_imgPath());
-        boardEntity.setNewsLike(boardDTO.getNews_like());
+        boardEntity.setNewsIdx(boardDTO.getNewsIdx());
+        boardEntity.setNewsTitle(boardDTO.getNewsTitle());
+        boardEntity.setNewsRegDate(boardDTO.getNewsRegDate());
+        boardEntity.setNewsImgPath(boardDTO.getNewsImgPath());
+        boardEntity.setNewsLike(boardDTO.getNewsLike());
         
-        LawyerEntity lawyerEntity = lawyerRepository.findById(boardDTO.getLawyer_idx()).orElse(null);
+        LawyerEntity lawyerEntity = lawyerRepository.findById(boardDTO.getLawyerIdx()).orElse(null);
         boardEntity.setLawyer(lawyerEntity);
-        NewsCategoryEntity categoryEntity = categoryRepository.findById(boardDTO.getCategory_idx()).orElse(null);
+        NewsCategoryEntity categoryEntity = categoryRepository.findById(boardDTO.getCategoryIdx()).orElse(null);
         boardEntity.setCategory(categoryEntity);
 
         return boardEntity;
@@ -56,15 +56,15 @@ public class NewsBoardService {
 
     private CategoryDTO convertCategoryDTO(NewsCategoryEntity categoryEntity){
         CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setCategory_idx(categoryEntity.getCategoryIdx());
-        categoryDTO.setCategory_name(categoryEntity.getCategoryName());
+        categoryDTO.setCategoryIdx(categoryEntity.getCategoryIdx());
+        categoryDTO.setCategoryName(categoryEntity.getCategoryName());
         return categoryDTO;
     }
 
     private NewsCategoryEntity convertCategoryEntity(CategoryDTO categoryDTO){
         NewsCategoryEntity categoryEntity = new NewsCategoryEntity();
-        categoryEntity.setCategoryIdx(categoryDTO.getCategory_idx());
-        categoryEntity.setCategoryName(categoryDTO.getCategory_name());
+        categoryEntity.setCategoryIdx(categoryDTO.getCategoryIdx());
+        categoryEntity.setCategoryName(categoryDTO.getCategoryName());
         return categoryEntity;
     }
 
@@ -97,15 +97,11 @@ public class NewsBoardService {
     }
 
     @Transactional
-    public void deleteProcess(int news_idx){
-        boardRepository.deleteById(news_idx);
-    }
-
-    @Transactional
     public void modifyProcess(NewsBoardDTO modifyBoard){
-        NewsBoardEntity boardEntity = boardRepository.findById(modifyBoard.getNews_idx()).orElse(null);
-        boardEntity.setNewsTitle(modifyBoard.getNews_title());
-        boardEntity.setNewsContent(modifyBoard.getNews_content());
+        NewsBoardEntity boardEntity = boardRepository.findById(modifyBoard.getNewsIdx()).orElse(null);
+        boardEntity.setNewsTitle(modifyBoard.getNewsTitle());
+        boardEntity.setNewsContent(modifyBoard.getNewsContent());
+        boardEntity.setNewsImgPath(modifyBoard.getNewsImgPath());
         boardRepository.save(boardEntity);
     }
 

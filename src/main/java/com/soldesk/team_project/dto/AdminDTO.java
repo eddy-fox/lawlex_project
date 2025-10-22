@@ -7,12 +7,12 @@ import lombok.Setter;
 @Setter
 public class AdminDTO {
     
-    private Integer admin_idx;
-    private String admin_id;
-    private String admin_pass;
-    private String admin_name;
-    private String admin_email;
-    private String admin_phone;
-    private String admin_role;
+    private Integer adminIdx;
+    private String adminId;
+    private String adminPass;
+    private String adminName;
+    private String adminEmail;
+    private String adminPhone;
+    private String adminRole;
 
 }
