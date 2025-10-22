@@ -28,9 +28,9 @@ public class MemberController {
     public String productPayment(@RequestParam("selectedProduct") int productNum, Model model) {
 
         ProductDTO product = purchaseService.getProduct(productNum);
-        PurchaseDTO purchase = purchaseService.purchaseProduct(product); // 구매하는 멤버 정보 추가해야함
-        model.addAttribute("purchase", purchase);
-
+        model.addAttribute("product", product);
+        // PurchaseDTO purchase = purchaseService.purchaseProduct(product); // 구매하는 멤버 정보 추가해야함
+        
         return "checkout";
     }
 
