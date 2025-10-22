@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.soldesk.team_project.dto.ProductDTO;
-import com.soldesk.team_project.dto.PurchaseDTO;
 import com.soldesk.team_project.service.PurchaseService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,9 +28,8 @@ public class MemberController {
 
         ProductDTO product = purchaseService.getProduct(productNum);
         model.addAttribute("product", product);
-        // PurchaseDTO purchase = purchaseService.purchaseProduct(product); // 구매하는 멤버 정보 추가해야함
         
-        return "checkout";
+        return "checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
     }
 
 }
