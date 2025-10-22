@@ -16,6 +16,5 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
     List<QuestionEntity> findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qTitle, String qAnswer);
     List<QuestionEntity> findByQuestionContentContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qContent, String qAnswer);
     List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String memberId, String qAnswer);
-    // List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndqAnswer(String memberId, String qAnswer);
 
 }
