@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 문의글 관리</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/all/QnAManagement.css}">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-QnAManagement">
+    <div class="container">
+      <h1>관리자 문의글 관리</h1>
+
+      <div class="topbar">
+        <div class="tabs">
+          <span id="tab-new" class="tab active">새로운 문의</span>
+          <span class="sep">|</span>
+          <span id="tab-done" class="tab">답변 완료</span>
+        </div>
+
+        <form class="searchbar" onsubmit="return false;">
+          <select class="select"><option>글번호</option><option>제목</option><option>내용</option><option>작성자</option></select>
+          <input class="input" placeholder="검색">
+          <button class="btn" type="button">🔍</button>
+        </form>
+      </div>
+
+      <section id="newSection" class="card">
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:12%">글번호</th>
+                <th style="width:16%">작성자</th>
+                <th>제목</th>
+                <th style="width:16%" class="center">작성일</th>
+                <th style="width:10%" class="center">비밀글</th>
+                <th style="width:18%" class="center">상태/답변</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyNew">
+              <tr data-qid="2" data-title="환불 문의드립니다" data-member="asd123" data-date="2025-10-18" data-secret="Y">
+                <td>2</td>
+                <td>asd123</td>
+                <td>환불 문의드립니다</td>
+                <td class="center">2025-10-18</td>
+                <td class="center">Y</td>
+                <td class="center">
+                  <div class="actions">
+                    <span class="badge todo">미답변</span>
+                    <button class="btn small primary answer-btn" type="button">답변</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-qid="1" data-title="회원 탈퇴는 어디서하나요" data-member="asd123" data-date="2025-10-17" data-secret="N">
+                <td>1</td>
+                <td>asd123</td>
+                <td>회원 탈퇴는 어디서하나요</td>
+                <td class="center">2025-10-17</td>
+                <td class="center">N</td>
+                <td class="center">
+                  <div class="actions">
+                    <span class="badge todo">미답변</span>
+                    <button class="btn small primary answer-btn" type="button">답변</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="doneSection" class="card" style="display:none;">
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:12%">글번호</th>
+                <th style="width:16%">작성자</th>
+                <th>제목</th>
+                <th style="width:16%" class="center">작성일</th>
+                <th style="width:10%" class="center">비밀글</th>
+                <th style="width:18%" class="center">상태</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDone">
+              <tr>
+                <td>9</td>
+                <td>user01</td>
+                <td>답변이 완료된 샘플</td>
+                <td class="center">2025-10-10</td>
+                <td class="center">N</td>
+                <td class="center"><span class="badge done">완료</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{QnAManagement.js}"></script>
+</body>
+</html>
