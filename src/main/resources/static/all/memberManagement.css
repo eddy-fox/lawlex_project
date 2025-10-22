@@ -18,16 +18,12 @@
   .tab{ cursor:pointer; color:var(--muted) }
   .tab.active{ color:var(--navy) }
   .sep{ color:#cfd3dd }
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px; /* 살짝 아래 여백 */
-}
+.toolbar {  display: flex;  justify-content: space-between;  align-items: center;
+  margin-bottom: 12px;}
 .toolbar .tabs { margin: 0; }
 .toolbar .searchbar { margin: 0; }
   .toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap }
-  .select, .input{ height:34px; border:1.6px solid var(--line); border-radius:8px; padding:0 10px; outline:none; background:#fff }
+  .select, .input{ width: 100px; height:34px; border:1.6px solid var(--line); border-radius:8px; padding:0 10px; outline:none; background:#fff }
   .input{ width:260px }
   .btn{ height:34px; padding:0 12px; border:1px solid var(--line); border-radius:8px; background:var(--navy); color:#fff; font-weight:700; cursor:pointer; transition:.15s }
   .btn:hover{ background:var(--navy) } /* typo fix: --bavy -> --navy */
