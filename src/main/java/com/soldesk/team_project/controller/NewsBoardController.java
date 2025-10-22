@@ -27,15 +27,15 @@ public class NewsBoardController {
 
 
     @GetMapping
-    public String listBoard(@RequestParam("category_idx") int categogy_idx, Model model){
+    public String listBoard(@RequestParam("categoryIdx") int categogyIdx, Model model){
 
-        List<NewsBoardDTO> boardList = newsboardService.getAllBoard(categogy_idx);
+        List<NewsBoardDTO> boardList = newsboardService.getAllBoard(categogyIdx);
         model.addAttribute("boardList", boardList);
 
-        List<CategoryDTO> categoryList = newsboardService.getAllCategory(categogy_idx);
+        List<CategoryDTO> categoryList = newsboardService.getAllCategory(categogyIdx);
         model.addAttribute("categoryList", categoryList);
 
-        CategoryDTO category = newsboardService.getCategory(categogy_idx);
+        CategoryDTO category = newsboardService.getCategory(categogyIdx);
         model.addAttribute("category", category);
 
         return "newsboard/list";
@@ -43,17 +43,37 @@ public class NewsBoardController {
 
 
     @GetMapping("/write")
-    public String formWrite(@ModelAttribute("writeBoard") NewsBoardDTO writeBoard, @RequestParam("category_idx") int categogy_idx, @SessionAttribute("loginAdmin") AdminDTO loginAdmin){
-        writeBoard.setCategory_idx(categogy_idx);
-        writeBoard.setAdmin_idx(loginAdmin.getAdmin_idx());
+    public String formWrite(@ModelAttribute("writeBoard") NewsBoardDTO writeBoard, @RequestParam("categoryIdx") int categogyIdx, @SessionAttribute("loginAdmin") AdminDTO loginAdmin){
+        writeBoard.setCategoryIdx(categogyIdx);
+        writeBoard.setAdminIdx(loginAdmin.getAdminIdx());
         return "newsboard/write";
     }
 
     @PostMapping("/write")
     public String submitWrite(@ModelAttribute("writeBoard") NewsBoardDTO writeBoard){
-        System.out.println("작성자 정보: " + writeBoard.getLawyer_idx());
+        System.out.println("작성자 정보: " + writeBoard.getLawyerIdx());
         newsboardService.writeProcess(writeBoard);
-        return "redirect:/newsboard/list?category_idx=" + writeBoard.getCategory_idx();
+        return "redirect:/newsboard/list?category_idx=" + writeBoard.getCategoryIdx();
+    }
+
+    @GetMapping("/info")
+    public String showInfo(@RequestParam("newsIdx") int newsIdx, Model model){
+        NewsBoardDTO infoBoard = newsboardService.getNewsBoard(newsIdx);
+        model.addAttribute("infoBoard", infoBoard);
+        return "newsboard/info";
+    }
+
+    @GetMapping("/modify")
+    public String formModify(@RequestParam("newsIdx") int newsIdx, Model model){
+        NewsBoardDTO modifyBoard = newsboardService.getNewsBoard(newsIdx);
+        model.addAttribute("modifyBoard", modifyBoard);
+        return "newsboard/modify";
+    }
+
+    @PostMapping("/modify")
+    public String submitModify(@ModelAttribute("modifyBoard") NewsBoardDTO modifyBoard){
+        newsboardService.modifyProcess(modifyBoard);
+        return "redirect:/newsboard/info?newsIdx=" + modifyBoard.getNewsIdx();
     }
 
 
