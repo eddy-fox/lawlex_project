@@ -25,20 +25,34 @@ public class QuestionService {
         questionDTO.setQRegDate(questionEntity.getQuestionRegDate());
         questionDTO.setQSecret(questionEntity.getQuestionSecret());
         questionDTO.setQAnswer(questionEntity.getQuestionAnswer());
-        questionDTO.setMemberId(questionEntity.getMember().getMemberId());
+        questionDTO.setQActive(questionEntity.getQuestionActive());
+        
+        if (questionEntity.getMemberIdx() != null) {
+            questionDTO.setMemberIdx(questionEntity.getMemberIdx());
+        } else {
+            questionDTO.setMemberIdx(null);
+        }
+
+        if (questionEntity.getLawyerIdx() != null) {
+            questionDTO.setLawyerIdx(questionEntity.getLawyerIdx());
+        } else {
+            questionDTO.setLawyerIdx(null);
+        }
 
         return questionDTO;
     }
 
     // 전체 질문글 조회
     public List<QuestionDTO> getNewQuestions(String qAnswer) { 
-        List<QuestionEntity> questionEntityList = questionRepository.findByQuestionAnswerOrderByQuestionIdxDesc(qAnswer);
+        List<QuestionEntity> questionEntityList = questionRepository.
+            findByQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(qAnswer, 1);
         
         return questionEntityList.stream()
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
     } // 새로운 질문
     public List<QuestionDTO> getCompletedQuestions(String qAnswer) { 
-        List<QuestionEntity> questionEntityList = questionRepository.findByQuestionAnswerOrderByQuestionIdxDesc(qAnswer);
+        List<QuestionEntity> questionEntityList = questionRepository.
+            findByQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(qAnswer, 1);
         
         return questionEntityList.stream()
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
@@ -49,12 +63,16 @@ public class QuestionService {
         List<QuestionEntity> questionEntityList;
 
         switch (searchType) {
-            case "idx": questionEntityList = questionRepository.findByQuestionIdxAndQuestionAnswer(Integer.valueOf(keyword), qAnswer); break;
-            case "title": questionEntityList = questionRepository.findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(keyword, qAnswer); break;
-            case "content": questionEntityList = questionRepository.findByQuestionContentContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(keyword, qAnswer); break;
-            case "id": questionEntityList = questionRepository.findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(keyword, qAnswer); break;
-            // case "id": questionEntityList = questionRepository.findByMember_MemberIdContainingIgnoreCaseAndqAnswer(keyword, qAnswer); break;
-            default: questionEntityList = questionRepository.findByQuestionAnswerOrderByQuestionIdxDesc(qAnswer); break;
+            case "idx": questionEntityList = questionRepository.
+                findByQuestionIdxAndQuestionAnswerAndQuestionActive(Integer.valueOf(keyword), qAnswer, 1); break;
+            case "title": questionEntityList = questionRepository.
+                findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
+            case "content": questionEntityList = questionRepository.
+                findByQuestionContentContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
+            case "id": questionEntityList = questionRepository.
+                findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
+            default: questionEntityList = questionRepository.
+                findByQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(qAnswer, 1); break;
         }
         return questionEntityList.stream()
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
@@ -63,12 +81,16 @@ public class QuestionService {
         List<QuestionEntity> questionEntityList;
 
         switch (searchType) {
-            case "idx": questionEntityList = questionRepository.findByQuestionIdxAndQuestionAnswer(Integer.valueOf(keyword), qAnswer); break;
-            case "title": questionEntityList = questionRepository.findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(keyword, qAnswer); break;
-            case "content": questionEntityList = questionRepository.findByQuestionContentContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(keyword, qAnswer); break;
-            case "id": questionEntityList = questionRepository.findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(keyword, qAnswer); break;
-            // case "id": questionEntityList = questionRepository.findByMember_MemberIdContainingIgnoreCaseAndqAnswer(keyword, qAnswer); break;
-            default: questionEntityList = questionRepository.findByQuestionAnswerOrderByQuestionIdxDesc(qAnswer); break;
+            case "idx": questionEntityList = questionRepository.
+                findByQuestionIdxAndQuestionAnswerAndQuestionActive(Integer.valueOf(keyword), qAnswer, 1); break;
+            case "title": questionEntityList = questionRepository.
+                findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
+            case "content": questionEntityList = questionRepository.
+                findByQuestionContentContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
+            case "id": questionEntityList = questionRepository.
+                findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
+            default: questionEntityList = questionRepository.
+                findByQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(qAnswer, 1); break;
         }
         return questionEntityList.stream()
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
