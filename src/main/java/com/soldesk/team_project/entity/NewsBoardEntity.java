@@ -1,6 +1,7 @@
 package com.soldesk.team_project.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +35,7 @@ public class NewsBoardEntity {
     private String newsContent;
 
     @Column(name="news_regDate")
-    private Date newsRegDate;
+    private LocalDate newsRegDate;
 
     @Column(name="news_imgPath")
     private String newsImgPath;
