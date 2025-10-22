@@ -18,7 +18,9 @@
   tbody tr:hover{background:var(--hover)}
   .tabs{display:flex;gap:14px;align-items:center;font-weight:800;margin:6px 2px 14px}
   .tab{cursor:pointer;color:var(--muted)} .tab.active{color:var(--navy)} .sep{color:#cfd3dd}
-  .select,.input{height:34px;border:1.6px solid var(--line);border-radius:8px;padding:0 10px;background:#fff;outline:none}
+  .topbar .searchber{ margin: 0;}
+  .select, .input{ width: 100px;height:34px; border:1.6px solid var(--line); border-radius:8px; padding:0 10px; outline:none; background:#fff }
+  .input{ width:260px }
   .btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#eceff3;color:var(--ink);font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
   .btn:hover{background:#dce1f5;border-color:#b9c3f0}
   .btn.primary{background:var(--navy);color:#fff;border:none}
