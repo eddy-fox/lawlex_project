@@ -1,6 +1,6 @@
 package com.soldesk.team_project.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,15 +9,15 @@ import lombok.Setter;
 @Setter
 public class NewsBoardDTO {
     
-    private Integer news_idx;
-    private String news_title;
-    private String news_content;
-    private Date news_regDate;
-    private String news_imgPath;
-    private Integer news_like;
-    private Integer news_views;
+    private Integer newsIdx;
+    private String newsTitle;
+    private String newsContent;
+    private LocalDate newsRegDate;
+    private String newsImgPath;
+    private Integer newsLike;
+    private Integer newsViews;
     
-    private Integer admin_idx;
-    private Integer lawyer_idx;
-    private Integer category_idx; 
+    private Integer adminIdx;
+    private Integer lawyerIdx;
+    private Integer categoryIdx; 
 }
