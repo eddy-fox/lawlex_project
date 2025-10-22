@@ -12,9 +12,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+
 @Controller
 public class TemporaryController {
 
+    @GetMapping("/all/member/point")
+    public String point(){
+        return "/all/member/point";
+    }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();
 
