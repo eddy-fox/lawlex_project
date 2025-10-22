@@ -1,58 +1,33 @@
-    /* ================= Gooorm Sans ================= */
-    @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-    @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
-    @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
-
-    :root{      --navy:#000777;      --ink:#0f172a;      --muted:#6b7280;      --line:#e6e8ee;      --panel:#f5f6f8;
-      --paper:#ffffff;      --ok:#0b7d2b;      --danger:#c1121f;    }
-
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{      background:var(--paper);      color:var(--ink);
-      font-family:"Gooorm Sans","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif;
-      line-height:1.5;    }
-
-    .page-QnAManagement{width:min(1080px,94%);margin:28px auto 80px;}
-    h1{font-size:22px;margin-bottom:12px;font-weight:700;color:var(--ink);}
-
-    /* 상단바 */
-    .topbar{      display:flex;      align-items:center;      justify-content:space-between;      gap:12px;
-      flex-wrap:wrap;      margin-bottom:12px;    }
-    .tabs{display:flex;align-items:center;gap:14px;font-weight:800;}
-    .tab{cursor:pointer;color:var(--muted);transition:color .2s;}
-    .tab.active{color:var(--navy);}
-    .tab:hover:not(.active){color:#001366;}
-    .sep{color:#cfd3dd;}
-
-    /* 검색 영역 */
-    .searchbar{display:flex;align-items:center;gap:8px;}
-    .select,.input,.btn{height:34px;border-radius:8px;}
-    .select,.input{      border:1.6px solid var(--line);      background:#fff;      padding:0 10px;
-      outline:none;    }
-    .input::placeholder{color:#9ca3af;}
-
-    /* 버튼 */
-    .btn{      padding:0 12px;      border:1px solid var(--line);      background:#eceff3;      color:var(--ink);
-      font-weight:700;      cursor:pointer;      transition:all .15s;      display:inline-flex;      align-items:center;
-      justify-content:center;    }
-    .btn:hover{background:#dce1f5;border-color:#b9c3f0;}
-    .btn.primary{background:var(--navy);color:#fff;border:none;}
-    .btn.primary:hover{background:#001366;}
-    .btn.small{height:28px;padding:0 10px;border-radius:7px;}
-
-    /* 카드 및 테이블 */
-    .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
-    table{width:100%;border-collapse:collapse;}
-    thead th{      background:var(--panel);      font-size:12px;      color:var(--muted);      text-align:left;
-      padding:10px 12px;      border-bottom:1px solid var(--line);    }
-    tbody td{padding:12px;border-bottom:1px solid #eef1f5;font-size:14px;}
-    tbody tr:hover{background:#f9faff;}
-    .center{text-align:center;}
-
-    /* 상태 / 뱃지 */
-    .actions{display:flex;align-items:center;justify-content:center;gap:6px;}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;}
-    .badge.todo{background:#fff4e5;color:#b45309;}
-    .badge.done{background:#e7f5ec;color:var(--ok);}
-
-    /* 스크롤 */
-    .scroll{max-height:420px;overflow:auto;}
+  @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+  @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+  :root{
+    --navy:#000777; --ink:#0f172a; --muted:#6b7280; --paper:#ffffff;
+    --panel:#f5f6f8; --line:#e6e8ee; --softline:#eef1f5; --hover:#f9faff;
+    --ok:#0b7d2b; --danger:#c1121f; --radius:12px; --shadow:0 1px 2px rgba(0,0,0,.03);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Gooorm Sans","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif;line-height:1.5}
+  .container{width:min(1080px,94%);margin:28px auto 80px}
+  h1{font-size:22px;margin:4px 0 12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .scroll{max-height:420px;overflow:auto}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  thead th{background:var(--panel);font-size:12px;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+  tbody td{padding:12px;border-bottom:1px solid var(--softline);font-size:14px;word-break:keep-all;overflow-wrap:anywhere}
+  tbody tr:hover{background:var(--hover)}
+  .tabs{display:flex;gap:14px;align-items:center;font-weight:800;margin:6px 2px 14px}
+  .tab{cursor:pointer;color:var(--muted)} .tab.active{color:var(--navy)} .sep{color:#cfd3dd}
+  .select,.input{height:34px;border:1.6px solid var(--line);border-radius:8px;padding:0 10px;background:#fff;outline:none}
+  .btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#eceff3;color:var(--ink);font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+  .btn:hover{background:#dce1f5;border-color:#b9c3f0}
+  .btn.primary{background:var(--navy);color:#fff;border:none}
+  .btn.primary:hover{background:#001366}
+  .btn.small{height:28px;padding:0 10px;border-radius:7px}
+  .actions{display:flex;gap:6px;align-items:center;justify-content:center}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;line-height:1}
+  .badge.todo{background:#fff4e5;color:#b45309}
+  .badge.done{background:#e7f5ec;color:var(--ok)}
+  .center{text-align:center}
+  tbody tr[role="link"]{ cursor:pointer }
+  tbody tr[role="link"]:focus{ outline:1px solid var(--navy); outline-offset:-2px; border-radius: 5px;}

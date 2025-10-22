@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자-광고관리-상세</title>
+    <link rel="stylesheet" href="adInfo.css">
+</head>
+<body>
+    <main class="page-adinfo">
+    <div class="container">
+        <h1>광고 관리 상세</h1>
+        <form class="ad-card" action="/admin/ad/update" method="post">
+        <div class="form-grid">
+            <div class="small">신청자</div><div>홍길동 변호사</div>
+            <div class="small">게시일</div><div>2025.10.14</div>
+            <div class="small">게시기간</div><div>14 일</div>
+            <div class="small">조회수</div><div>27회</div>
+
+            <div class="small">이미지</div>
+            <div>
+            <div class="form-thumb" id="thumbBox">이미지</div>
+            <div class="small" style="margin-top:6px">이미지링크/이미지 업로드</div>
+            <div class="fileline">
+                <input class="input full" type="url" id="imgUrl" placeholder="이미지 주소를 입력 (http…)" />
+                <label class="btn" for="imgFile">찾아보기</label>
+                <input id="imgFile" type="file" accept="image/*" style="position:absolute;left:-9999px" />
+            </div>
+
+            <div class="file-info" id="fileInfo">
+                <span class="small">선택된 파일:</span>
+                <span id="fileName" class="file-pill">없음</span>
+            </div>
+            </div>
+
+            <div class="small">링크</div>
+            <div class="fileline">
+            <input class="input full" id="linkInput" value="http://www.soldesk.com/" />
+            <button type="button" class="btn gray" id="previewBtn">미리보기</button>
+            </div>
+        </div>
+        <div class="actions-row">
+            <button type="submit" class="btn">수정</button>
+            <button type="button" class="btn">삭제</button>
+        </div>
+        </form>
+    </div>
+    </main>
+    <script src="adInfo.js"></script>
+</body>
+</html>
