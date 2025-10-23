@@ -16,6 +16,22 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
+    @GetMapping("/all/board/boardWrite")
+    public String boardWrite(){
+        return "/all/board/boardWrite";
+    }
+    @GetMapping("/all/board/boardModify")
+    public String boardModify(){
+        return "/all/board/boardModify";
+    }
+    @GetMapping("/all/board/boardList")
+    public String boardList(){
+        return "/all/board/boardList";
+    }
+    @GetMapping("/all/board/boardAnswer")
+    public String boardAnswer(){
+        return "/all/board/boardAnswer";
+    }
     @GetMapping("/all/admin/memberManagement")
     public String memberManagement(){
         return "/all/admin/memberManagement";

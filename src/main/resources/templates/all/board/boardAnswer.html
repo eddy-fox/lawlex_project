@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/all/boardAnswer.css}">
 </head>
 <body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
   <main class="page-boardAnswer">
     <div class="wrap">
       <div class="backdrop">
@@ -40,7 +41,6 @@
     </div>
   </main>
     <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/all/adInfo.js}"></script> 
   <script th:src="@{/all/boardAnswer.js}"></script>   
 </body>
 </html>
