@@ -16,6 +16,10 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
+    @GetMapping("/all/chat/gMain")
+    public String gMain(){
+        return "/all/chat/gMain";
+    }
     @GetMapping("/all/board/boardWrite")
     public String boardWrite(){
         return "/all/board/boardWrite";
