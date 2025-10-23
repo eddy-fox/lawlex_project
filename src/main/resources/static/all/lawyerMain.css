@@ -1,0 +1,55 @@
+    @font-face{
+      font-family:'Gooorm Sans';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
+      font-weight:400; font-style:normal; font-display:swap;
+    }
+    @font-face{
+      font-family:'Gooorm Sans';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
+      font-weight:500; font-style:normal; font-display:swap;
+    }
+    :root .page-lawyerMain{ --ink:#0f172a; --muted:#6b7280; --bg:#ffffff; --brand:#000777; --brand-ink:#ffffff;
+      --border:#8084bb; --hover:#001366; --danger:#dc2626; --danger-hover:#b91c1c; --overlay: rgba(15, 23, 42, .45); }
+    *{box-sizing:border-box}
+    body .page-lawyerMain{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family:'Gooorm Sans','Pretendard Variable','Noto Sans KR',sans-serif;
+      line-height:1.5; }
+    .page-lawyerMain{ padding:28px 0 96px }
+    .page-lawyerMain .container{ width:min(1080px,94%); margin:0 auto; padding: 0 !important; }
+    .page-lawyerMain .section{ padding: 0 !important; margin-top: 22px;}
+    .page-lawyerMain .section h2{ font-size:20px; margin:0 0 6px }
+    .page-lawyerMain .list{ display:flex; flex-direction:column; gap:12px }
+    .page-lawyerMain .row{
+      background:#ffffff; border:1px solid var(--border); border-radius:14px;
+      padding:14px; display:flex; align-items:center; gap:14px;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .page-lawyerMain .row:hover{ transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: var(--brand); }
+    .page-lawyerMain .client{ flex:0 0 260px }
+    .page-lawyerMain .client input{ width:100%; height:42px; padding:0 12px; border-radius:8px; border:1px solid #cbd5e1; background:#f3f4f6; }
+    .page-lawyerMain .preview{ flex:1; font-size:13px; color:#374151 }
+    .page-lawyerMain .actions{ display:flex; gap:8px }
+    .page-lawyerMain .btn{
+      border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:600; cursor:pointer;
+      background:var(--brand); color:var(--brand-ink);
+      transition: background .15s ease, transform .12s ease, box-shadow .16s ease; }
+    .page-lawyerMain .btn:hover{ background: var(--hover); box-shadow: 0 4px 10px rgba(0,0,0,.08) }
+    .page-lawyerMain .btn:active{ transform: translateY(1px) }
+    .page-lawyerMain .btn.danger{ background:var(--danger) }
+    .page-lawyerMain .btn.danger:hover{ background:var(--danger-hover) }
+    .page-lawyerMain .btn.ghost{ background:#fff; color:var(--ink); border:1px solid #cbd5e1 }
+    .page-lawyerMain .btn.ghost:hover{ border-color: var(--border) }
+    .page-lawyerMain .modal{
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+      background:var(--overlay); padding:20px; }
+    .page-lawyerMain .modal[aria-hidden="false"]{ display:flex; }
+    .page-lawyerMain .dialog{
+      width:min(480px, 94%); background:#fff; border:1px solid var(--border); border-radius:16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.18); padding:22px; transform: translateY(8px);
+      opacity:0; transition: transform .18s ease, opacity .18s ease; }
+    .page-lawyerMain .modal[aria-hidden="false"] .dialog{ transform: translateY(0); opacity:1; }
+    .page-lawyerMain .dialog h3{ margin:0 0 8px; font-size:18px; font-weight:700 }
+    .page-lawyerMain .dialog p{ margin:0 0 16px; font-size:14px; color:#374151 }
+    .page-lawyerMain .dialog .yn{ display:flex; justify-content:flex-end; gap:8px }
+    .page-lawyerMain .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+      clip:rect(0,0,0,0); white-space:nowrap; border:0; }
