@@ -12,14 +12,54 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+
 @Controller
 public class TemporaryController {
-        
-    @GetMapping("/member/login")
-    public String loginPage() {
-        return "member/login";
-    }
 
+    @GetMapping("/all/chat/lawyerMain")
+    public String lawyerMain(){
+        return "/all/chat/lawyerMain";
+    }
+    @GetMapping("/all/chat/gMain")
+    public String gMain(){
+        return "/all/chat/gMain";
+    }
+    @GetMapping("/all/board/boardWrite")
+    public String boardWrite(){
+        return "/all/board/boardWrite";
+    }
+    @GetMapping("/all/board/boardModify")
+    public String boardModify(){
+        return "/all/board/boardModify";
+    }
+    @GetMapping("/all/board/boardList")
+    public String boardList(){
+        return "/all/board/boardList";
+    }
+    @GetMapping("/all/board/boardAnswer")
+    public String boardAnswer(){
+        return "/all/board/boardAnswer";
+    }
+    @GetMapping("/all/admin/memberManagement")
+    public String memberManagement(){
+        return "/all/admin/memberManagement";
+    }
+    @GetMapping("/all/admin/QnAManagement")
+    public String QnAManagement(){
+        return "/all/admin/QnAManagement";
+    }
+    @GetMapping("/all/admin/adInfo")
+    public String adInfo(){
+        return "/all/admin/adInfo";
+    }
+    @GetMapping("/all/admin/adList")
+    public String adList(){
+        return "/all/admin/adList";
+    }
+    @GetMapping("/all/member/point")
+    public String point(){
+        return "/all/member/point";
+    }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();
 

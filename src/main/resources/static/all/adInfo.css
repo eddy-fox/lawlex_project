@@ -1,0 +1,47 @@
+  @font-face {
+    font-family: 'Gooorm Sans';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Gooorm Sans';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
+    font-weight: 500; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Gooorm Sans';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+
+  :root{
+    --ink:#0f172a; --muted:#6b7280; --line:#e6e8ee; --panel:#f5f6f8;
+    --navy:#000777; --paper:#ffffff; --radius:12px; --danger:#c1121f;
+  }
+  .page-adinfo, .page-adinfo *{ box-sizing:border-box; font-family:"Gooorm Sans","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif }
+  body{ margin:0; background:var(--paper); color:var(--ink) }
+  .container{ width:min(1080px,94%); margin:28px auto 80px }
+  h1{ color: var(--navy); font-size:22px; margin:4px 0 14px; letter-spacing:-.2px }
+  .ad-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; box-shadow:0 1px 2px rgba(0,0,0,.03) }
+
+  .small{ font-size:12px; color:#6b7280 }
+  .input{ height:34px; border:1.6px solid #cfd3dd; border-radius:8px; padding:0 10px; outline:none; background:#fff; font:inherit }
+  .input.full{ width:100% }
+  .input:focus{ border-color:var(--navy); box-shadow:0 0 0 3px rgba(0,7,119,.10) }
+
+  .form-grid{ display:grid; grid-template-columns: 140px 1fr; gap:12px 16px; align-items:center }
+  .form-thumb{ height:160px; background:#e9ecf3; border-radius:10px; display:grid; place-items:center; color:#475569; font-weight:800; position:relative; overflow:hidden }
+  .fileline{ margin-top:6px; display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center }
+  .fileline .btn{ min-width:84px; white-space:nowrap }
+
+  .btn{ display:inline-flex; align-items:center; justify-content:center; height:32px; padding:0 12px; border:none; border-radius:8px; background:#eceff3; color:#0f172a; font-weight:700; cursor:pointer; text-decoration:none; border:1px solid var(--line); transition:all .15s }
+  .btn:hover{ background:#dce1f5; border-color:#b9c3f0 }
+  .actions-row{ display:flex; gap:8px; justify-content:flex-end; margin-top:16px }
+
+  .file-info{ display:flex; align-items:center; gap:8px; margin-top:6px; color:#475569 }
+  .file-pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border:1px solid #d7dbe5; border-radius:999px; font-size:12px; background:#f8f9fb }
+  .file-pill .x{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; color:var(--danger); font-weight:700; cursor:pointer; transition:background .15s, transform .1s }
+  .file-pill .x:hover{ background:rgba(193,18,31,.1) }
+  .file-pill .x:active{ transform:translateY(1px) }
+
+  @media (max-width:780px){ .form-grid{ grid-template-columns:1fr } }
