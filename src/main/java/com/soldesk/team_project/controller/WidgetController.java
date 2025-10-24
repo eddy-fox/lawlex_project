@@ -103,10 +103,10 @@ public class WidgetController {
         return "payment/success";
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(HttpServletRequest request, Model model) throws Exception {
-        return "payment/checkout";
-    }
+    // @RequestMapping(value = "/", method = RequestMethod.GET)
+    // public String index(HttpServletRequest request, Model model) throws Exception {
+    //     return "payment/checkout";
+    // }
 
     /**
      * 인증실패처리

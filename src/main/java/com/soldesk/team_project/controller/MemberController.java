@@ -29,7 +29,7 @@ public class MemberController {
         ProductDTO product = purchaseService.getProduct(productNum);
         model.addAttribute("product", product);
         
-        return "checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
+        return "payment/checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
     }
 
 }
