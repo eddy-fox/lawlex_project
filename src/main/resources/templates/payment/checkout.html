@@ -34,7 +34,7 @@
         const button = document.getElementById("payment-button");
         const coupon = document.getElementById("coupon-box");
 
-        let productPrice = [[${product.price}]];
+        let productPrice = "[[${product.price}]]";
         let parts = productPrice.trim().split(" "); 
         let numericPart = parts[0]; // 숫자 부분
         let unitPart = parts[1]; // 글자 부분 (단위)
