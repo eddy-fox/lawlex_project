@@ -34,7 +34,6 @@ public class MemberService {
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
         memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
-        this.memberRepository.save(memberEntity);
 
         return memberDTO;
     }
