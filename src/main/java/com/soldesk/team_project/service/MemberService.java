@@ -33,13 +33,8 @@ public class MemberService {
         memberDTO.setMemberPhone(memberEntity.getMemberPhone());
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
-<<<<<<< HEAD
         memberDTO.setMemberActive(memberEntity.getMemberActive());
         memberDTO.setInterestIdx(memberEntity.getInterestIdx());
-=======
-        memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
-        this.memberRepository.save(memberEntity);
->>>>>>> main
 
         return memberDTO;
     }

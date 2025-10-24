@@ -60,11 +60,9 @@ public class QuestionEntity {
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
 
-<<<<<<< HEAD
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawyer_idx")
     private LawyerEntity lawyer;
-=======
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private List<AnswerEntity> answerList;
     
@@ -75,6 +73,5 @@ public class QuestionEntity {
 
     @ManyToMany
     Set<MemberEntity> voter;
->>>>>>> main
     
 }
