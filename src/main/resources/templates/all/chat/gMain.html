@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>채팅메인 일반회원</title>
+  <link rel="stylesheet" th:href="@{/all/gMain.css}">
+<link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+  <main class="page-gMain">
+    <div class="container">
+
+      <div class="weekday" id="weekday">
+        <button class="chip" data-day="월" type="button">월요일</button>
+        <button class="chip" data-day="화" type="button">화요일</button>
+        <button class="chip is-active" data-day="수" type="button" aria-pressed="true">수요일</button>
+        <button class="chip" data-day="목" type="button">목요일</button>
+        <button class="chip" data-day="금" type="button">금요일</button>
+      </div>
+
+      <section class="cards" id="cards">
+
+        <article class="card" data-days="수,목">
+          <div class="photo">사진</div>
+          <div class="info">
+            <h3 class="name">변호사이름</h3>
+            <div class="meta">상담가능시간 · 09:30~12:00</div>
+          </div>
+          <button class="btn" type="button">신청</button>
+        </article>
+
+        <article class="card" data-days="수,금">
+          <div class="photo">사진</div>
+          <div class="info">
+            <h3 class="name">변호사이름</h3>
+            <div class="meta">상담가능시간 · 13:00~17:00</div>
+          </div>
+          <button class="btn" type="button">신청</button>
+        </article>
+
+        <article class="card" data-days="화,수">
+          <div class="photo">사진</div>
+          <div class="info">
+            <h3 class="name">변호사이름</h3>
+            <div class="meta">상담가능시간 · 10:00~18:00</div>
+          </div>
+          <button class="btn" type="button">신청</button>
+        </article>
+
+        <article class="card" data-days="수">
+          <div class="photo">사진</div>
+          <div class="info">
+            <h3 class="name">변호사이름</h3>
+            <div class="meta">상담가능시간 · 오전/오후 협의</div>
+          </div>
+          <button class="btn" type="button">신청</button>
+        </article>
+
+        <article class="card" data-days="화,수,목,금">
+          <div class="photo">사진</div>
+          <div class="info">
+            <h3 class="name">변호사이름</h3>
+            <div class="meta">상담가능시간 · 상시</div>
+          </div>
+          <button class="btn" type="button">신청</button>
+        </article>
+
+        <article class="card" data-days="수,금">
+          <div class="photo">사진</div>
+          <div class="info">
+            <h3 class="name">변호사이름</h3>
+            <div class="meta">상담가능시간 · 14:00~19:00</div>
+          </div>
+          <button class="btn" type="button">신청</button>
+        </article>
+
+        <p class="empty" id="empty" hidden>해당 요일에 상담 가능한 변호사가 없습니다.</p>
+      </section>
+    </div>
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/all/gMain.js}"></script>
+</body>
+</html>
