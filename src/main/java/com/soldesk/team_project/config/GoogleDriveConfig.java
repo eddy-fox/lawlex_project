@@ -31,7 +31,7 @@ public class GoogleDriveConfig {
                 .createScoped(java.util.List.of("https://www.googleapis.com/auth/drive"));
 
         return new Drive.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(creds))
-                .setApplicationName("MyBoardApp")
+                .setApplicationName("Lawlex")
                 .build();
     }
 }
