@@ -1,0 +1,44 @@
+  @font-face { font-family: 'Gooorm Sans'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2'); font-weight: 400; }
+  @font-face { font-family: 'Gooorm Sans'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2'); font-weight: 700; }
+
+  :root { --brand: #000777; --brand-dark: #000555; --ink: #111827; --muted: #6b7280;
+    --bg: #ffffff; --bg-soft: #f9fafb; --line: #e5e7eb; --blue-50: #eff6ff; --blue-100: #dbeafe;
+    --radius-8: 8px; --radius-12: 12px; --shadow-md: 0 10px 20px rgba(0, 0, 0, .08);
+    --shadow-lg: 0 25px 40px rgba(0, 0, 0, .12); }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body { background: var(--bg); color: var(--ink); line-height: 1.6;
+    font-family: 'Gooorm Sans', 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, 'Apple SD Gothic Neo', sans-serif; }
+
+  .page-joinChoice { text-align: center; padding: 80px 20px; }
+  .page-joinChoice h1 { font-size: 40px; font-weight: 700; margin: 0 0 8px; color: var(--ink); }
+  .page-joinChoice .subtitle { font-size: 18px; color: var(--muted); margin: 0 0 48px; }
+
+  .join-cards { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+
+  .join-card { width: 250px; height: 320px; padding: 32px 24px 28px; background: var(--bg);
+    border: 1px solid var(--line); border-radius: var(--radius-12); box-shadow: var(--shadow-md);
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    transition: transform .2s, box-shadow .2s; }
+  .join-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+  .join-card.user { background: linear-gradient(to bottom right, var(--blue-50), var(--blue-100)); }
+  .join-card.lawyer { background: var(--brand); color: var(--bg); }
+
+  .join-icon { width: 64px; height: 64px; margin: 0 auto 16px; }
+  .join-card h3 { font-size: 20px; font-weight: 700; margin: 8px 0 0; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: var(--radius-8);
+    cursor: pointer; border: 2px solid transparent; text-decoration: none; transition: all .2s; }
+
+  .btn-primary { background: var(--brand); color: var(--bg); }
+  .btn-primary:hover { background: var(--brand-dark); }
+  .btn-outline { background: transparent; color: var(--brand); border-color: var(--brand); }
+  .btn-outline:hover { background: var(--bg-soft); }
+  .join-card.lawyer .btn-outline { border-color: var(--bg); color: var(--bg); }
+  .join-card.lawyer .btn-outline:hover { background: var(--bg); color: var(--brand); }
+
+  @media (max-width: 560px) {
+    .page-joinChoice h1 { font-size: 32px; }
+    .join-card { width: 90%; height: auto; min-height: 320px; } }
