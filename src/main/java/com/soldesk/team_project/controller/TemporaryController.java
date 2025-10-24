@@ -60,6 +60,14 @@ public class TemporaryController {
     public String point(){
         return "/all/member/point";
     }
+    @GetMapping("/all/member/login")
+    public String login(){
+        return "/all/member/login";
+    }
+    @GetMapping("/all/member/loginFind")
+    public String loginFind(){
+        return "/all/member/loginFind";
+    }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();
 

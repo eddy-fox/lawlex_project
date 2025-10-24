@@ -9,96 +9,96 @@
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
-<main class="page-point">
-  <form action="" class="container">
-    <div class="titlebar">
-      <h1>포인트 결제</h1>
-      <span class="small">잔여 포인트: <b>100</b></span>
-    </div>
-    <section class="card split">
-      <div class="payment">
-        <div class="opt-grid">
-          <input class="opt-input" type="radio" name="point" id="opt1" value="1000" checked>
-          <label for="opt1" class="opt">
-            <div class="tag">100 포인트</div>
-            <div class="price">1,000 원</div>
-          </label>
-          <input class="opt-input" type="radio" name="point" id="opt2" value="2000">
-          <label for="opt2" class="opt">
-            <div class="tag">220 포인트</div>
-            <div class="price">2,000 원</div>
-            <div class="bonus">+20 포인트</div>
-          </label>
-          <input class="opt-input" type="radio" name="point" id="opt3" value="5000">
-          <label for="opt3" class="opt">
-            <div class="tag">600 포인트</div>
-            <div class="price">5,000 원</div>
-            <div class="bonus">+100 포인트</div>
-          </label>
-          <input class="opt-input" type="radio" name="point" id="opt4" value="10000">
-          <label for="opt4" class="opt">
-            <div class="tag">1,400 포인트</div>
-            <div class="price">10,000 원</div>
-            <div class="bonus">+400 포인트</div>
-          </label>
-          <input class="opt-input" type="radio" name="point" id="opt5" value="30000">
-          <label for="opt5" class="opt">
-            <div class="tag">4,800 포인트</div>
-            <div class="price">30,000 원</div>
-            <div class="bonus">+1,800 포인트</div>
-          </label>
-          <input class="opt-input" type="radio" name="point" id="opt6" value="50000">
-          <label for="opt6" class="opt">
-            <div class="tag">6,000 포인트</div>
-            <div class="price">50,000 원</div>
-            <div class="bonus">+1,800 포인트</div>
-          </label>
-        </div>
+  <main class="page-point">
+    <form action="" class="container">
+      <div class="titlebar">
+        <h1>포인트 결제</h1>
+        <span class="small">잔여 포인트: <b>100</b></span>
       </div>
-      <aside class="side">
-        <div class="label">결제 요청사유</div>
-        <textarea name="reason" placeholder="내용을 입력해주세요"></textarea>
-        <div class="radio-row">
-          아무도 열람하지않아요
-          <label class="radio-square">
-            <input type="radio" name="private" value="Y" checked><span>네</span>
-          </label>
+      <section class="card split">
+        <div class="payment">
+          <div class="opt-grid">
+            <input class="opt-input" type="radio" name="point" id="opt1" value="1000" checked>
+            <label for="opt1" class="opt">
+              <div class="tag">100 포인트</div>
+              <div class="price">1,000 원</div>
+            </label>
+            <input class="opt-input" type="radio" name="point" id="opt2" value="2000">
+            <label for="opt2" class="opt">
+              <div class="tag">220 포인트</div>
+              <div class="price">2,000 원</div>
+              <div class="bonus">+20 포인트</div>
+            </label>
+            <input class="opt-input" type="radio" name="point" id="opt3" value="5000">
+            <label for="opt3" class="opt">
+              <div class="tag">600 포인트</div>
+              <div class="price">5,000 원</div>
+              <div class="bonus">+100 포인트</div>
+            </label>
+            <input class="opt-input" type="radio" name="point" id="opt4" value="10000">
+            <label for="opt4" class="opt">
+              <div class="tag">1,400 포인트</div>
+              <div class="price">10,000 원</div>
+              <div class="bonus">+400 포인트</div>
+            </label>
+            <input class="opt-input" type="radio" name="point" id="opt5" value="30000">
+            <label for="opt5" class="opt">
+              <div class="tag">4,800 포인트</div>
+              <div class="price">30,000 원</div>
+              <div class="bonus">+1,800 포인트</div>
+            </label>
+            <input class="opt-input" type="radio" name="point" id="opt6" value="50000">
+            <label for="opt6" class="opt">
+              <div class="tag">6,000 포인트</div>
+              <div class="price">50,000 원</div>
+              <div class="bonus">+1,800 포인트</div>
+            </label>
+          </div>
         </div>
-        <button type="submit" class="btn">결제하기</button>
-      </aside>
-    </section>
-    <section>
-      <div class="tabs">
-        <div class="tab active">포인트 이용 내역</div>
-        <div class="tab divider">|</div>
-        <div class="tab">결제 내역</div>
-      </div>
-      <div class="history">
-        <div class="scroll">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:22%">일시</th>
-                <th style="width:15%">유형</th>
-                <th style="width:13%">포인트</th>
-                <th style="width:15%">포인트 증감</th>
-                <th>비고</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>2025-10-01 17:49</td><td>충전</td><td>600 포인트</td><td class="plus">+</td><td></td></tr>
-              <tr><td>2025-09-30 13:22</td><td>사용</td><td>50 포인트</td><td class="minus">-</td><td>상담글 작성</td></tr>
-              <tr><td>2025-09-30 11:46</td><td>사용</td><td>100 포인트</td><td class="minus">-</td><td>1:1 상담 채팅</td></tr>
-              <tr><td colspan="5" style="text-align:center; opacity:.55">…</td></tr>
-            </tbody>
-          </table>
+        <aside class="side">
+          <div class="label">결제 요청사유</div>
+          <textarea name="reason" placeholder="내용을 입력해주세요"></textarea>
+          <div class="radio-row">
+            아무도 열람하지않아요
+            <label class="radio-square">
+              <input type="radio" name="private" value="Y" checked><span>네</span>
+            </label>
+          </div>
+          <button type="submit" class="btn">결제하기</button>
+        </aside>
+      </section>
+      <section>
+        <div class="tabs">
+          <div class="tab active">포인트 이용 내역</div>
+          <div class="tab divider">|</div>
+          <div class="tab">결제 내역</div>
         </div>
-      </div>
-    </section>
-  </form>
-</main>
-<div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/js.js}"></script>
-<script th:src="@{/all/point.js}"></script>
+        <div class="history">
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:22%">일시</th>
+                  <th style="width:15%">유형</th>
+                  <th style="width:13%">포인트</th>
+                  <th style="width:15%">포인트 증감</th>
+                  <th>비고</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>2025-10-01 17:49</td><td>충전</td><td>600 포인트</td><td class="plus">+</td><td></td></tr>
+                <tr><td>2025-09-30 13:22</td><td>사용</td><td>50 포인트</td><td class="minus">-</td><td>상담글 작성</td></tr>
+                <tr><td>2025-09-30 11:46</td><td>사용</td><td>100 포인트</td><td class="minus">-</td><td>1:1 상담 채팅</td></tr>
+                <tr><td colspan="5" style="text-align:center; opacity:.55">…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </form>
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/all/point.js}"></script>
 </body>
 </html>

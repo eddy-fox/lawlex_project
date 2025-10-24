@@ -26,7 +26,7 @@
       transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
     .page-lawyerMain .row:hover{ transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: var(--brand); }
     .page-lawyerMain .client{ flex:0 0 260px }
-    .page-lawyerMain .client input{ width:100%; height:42px; padding:0 12px; border-radius:8px; border:1px solid #cbd5e1; background:#f3f4f6; }
+    .page-lawyerMain .client input{ border: none; outline: none;}
     .page-lawyerMain .preview{ flex:1; font-size:13px; color:#374151 }
     .page-lawyerMain .actions{ display:flex; gap:8px }
     .page-lawyerMain .btn{
