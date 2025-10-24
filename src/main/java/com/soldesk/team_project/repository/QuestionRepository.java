@@ -16,26 +16,10 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
 
     List<QuestionEntity> findByQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String qAnswer, Integer qActive);
 
-    List<QuestionEntity> findByQuestionIdxAndQuestionAnswerAndQuestionActive(Integer qIdx, String qAnswer, Integer qActive);
-    List<QuestionEntity> findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String qTitle, String qAnswer, Integer qActive);
-    List<QuestionEntity> findByQuestionContentContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String qContent, String qAnswer, Integer qActive);
-    List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String memberId, String qAnswer, Integer qActive);
-
-    QuestionEntity findByQuestionTitle(String questionTitle);
-    QuestionEntity findByQuestionTitleAndQuestionContent(String questionTitle, String questionContet);
-    List<QuestionEntity> findByQuestionTitleLike(String questionTitle);
-    Page<QuestionEntity> findAll(Pageable pageable);
-
-    @Query("select "
-            + "distinct q "
-            + "from QuestionEntity q "
-            + "left outer join MemberEntity u1 on q.author=u1 "
-            + "left outer join AnswerEntity a on a.question=q "
-            + "left outer join MemberEntity u2 on a.author=u2 "
-            + "where "
-            + "   q.questionTitle like %:kw% "
-            + "   or q.questionContent like %:kw% "
-            + "   or a.questionContent like %:kw% ")
-    Page<QuestionEntity> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
-
+    List<QuestionEntity> findByQuestionIdxAndQuestionAnswer(Integer qIdx, String qAnswer);
+    List<QuestionEntity> findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qTitle, String qAnswer);
+    List<QuestionEntity> findByQuestionContentContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qContent, String qAnswer);
+    List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String memberId, String qAnswer);
+    // List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndqAnswer(String memberId, String qAnswer);
+    
 }
