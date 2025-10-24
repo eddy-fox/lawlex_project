@@ -9,6 +9,7 @@ public class MemberDTO {
 
     private Integer memberIdx;
     private String memberId;
+
     private String memberPass;
     private String memberPass2;
     private String memberName;

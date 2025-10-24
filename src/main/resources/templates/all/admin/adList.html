@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자-광고관리-리스트</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/all/adList.css}">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+  <main class="page-adlist">
+  <div class="container">
+    <h1>광고 관리</h1>
+
+    <div class="ad-list">
+      <div class="ad-item">
+        <div class="ad-thumb"><img src="#" alt="">광고1</div>
+        <div class="meta">
+          <div class="row"><span>게시일</span><span>2025.10.14</span></div>
+          <div class="row"><span>게시기간</span><span>14일</span></div>
+          <div class="row"><span>신청자</span><span>홍길동 변호사</span></div>
+          <div class="row"><span>조회수</span><span>27회</span></div>
+          <div class="actions">
+            <a href="#" class="btn">수정</a>
+            <a href="#" class="btn">삭제</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="ad-item">
+        <div class="ad-thumb"><img src="#" alt="">광고2</div>
+        <div class="meta">
+          <div class="row"><span>게시일</span><span>2025.10.14</span></div>
+          <div class="row"><span>게시기간</span><span>14일</span></div>
+          <div class="row"><span>신청자</span><span>홍길동 변호사</span></div>
+          <div class="row"><span>조회수</span><span>27회</span></div>
+          <div class="actions">
+            <a href="#" class="btn">수정</a>
+            <a href="#" class="btn">삭제</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="ad-item">
+        <div class="ad-thumb"><img src="#" alt="">광고3</div>
+        <div class="meta">
+          <div class="row"><span>게시일</span><span>2025.10.14</span></div>
+          <div class="row"><span>게시기간</span><span>14일</span></div>
+          <div class="row"><span>신청자</span><span>홍길동 변호사</span></div>
+          <div class="row"><span>조회수</span><span>27회</span></div>
+          <div class="actions">
+            <a href="#" class="btn">수정</a>
+            <a href="#" class="btn">삭제</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/all/adList.js}"></script>
+</body>
+</html>

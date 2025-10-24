@@ -1,10 +1,12 @@
 package com.soldesk.team_project.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
@@ -31,8 +33,13 @@ public class MemberService {
         memberDTO.setMemberPhone(memberEntity.getMemberPhone());
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
+<<<<<<< HEAD
         memberDTO.setMemberActive(memberEntity.getMemberActive());
         memberDTO.setInterestIdx(memberEntity.getInterestIdx());
+=======
+        memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
+        this.memberRepository.save(memberEntity);
+>>>>>>> main
 
         return memberDTO;
     }
@@ -88,4 +95,15 @@ public class MemberService {
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
 
+    //특정 회원 검색
+    public MemberEntity getMember(String memberName) {
+
+        Optional<MemberEntity> member = this.memberRepository.findByMemberName(memberName);
+        if(member.isPresent()) {
+            return member.get();
+        } else {
+            throw new DataNotFoundException("member not found");
+        }
+        
+    }
 }
