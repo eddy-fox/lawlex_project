@@ -7,28 +7,29 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.soldesk.team_project.dto.ProductDTO;
+import com.soldesk.team_project.service.PurchaseService;
+
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping("member")
+@RequiredArgsConstructor
 public class MemberController {
+
+    private final PurchaseService purchaseService;
     
     @GetMapping("/point")
     public String pointMain() {
         return "member/point";
     }
     @PostMapping("/point")
-    public String pointPayment(
-        @RequestParam("pointOption") String pointOption,
-        @RequestParam("agree") String agree, Model model
-    ) throws Exception {
+    public String productPayment(@RequestParam("selectedProduct") int productNum, Model model) {
 
-        String[] parts = pointOption.split(":");
-        String amount = parts[1];
-        String point = parts[0];
-
-        model.addAttribute("amount", amount);
-        model.addAttribute("point", point);
-
-        return "payment/checkout";
+        ProductDTO product = purchaseService.getProduct(productNum);
+        model.addAttribute("product", product);
+        
+        return "checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
     }
 
 }
