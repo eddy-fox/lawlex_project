@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -71,6 +72,9 @@ public class LawyerEntity {
     @Column(name = "lawyer_answerCnt")
     private Integer lawyerAnswerCnt;
 
+    @Column(name = "lawyer_active")
+    private Integer lawyerActive;
+    
     @Column(name = "interest_idx", insertable = false, updatable = false)
     private Integer interestIdx;
     
@@ -78,4 +82,10 @@ public class LawyerEntity {
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
     
+    @OneToMany(mappedBy = "lawyer")
+    private java.util.List<QuestionEntity> question;
+
+    @OneToMany(mappedBy = "lawyer")
+    private java.util.List<PurchaseEntity> purchase;
+
 }

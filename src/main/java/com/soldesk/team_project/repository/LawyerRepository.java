@@ -10,17 +10,19 @@ import com.soldesk.team_project.entity.LawyerEntity;
 @Repository
 public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
 
-    List<LawyerEntity> findByLawyerIdx(Integer lawyerIdx);
-    List<LawyerEntity> findByLawyerIdContainingIgnoreCaseOrderByLawyerIdAsc(String lawyerId);
-    List<LawyerEntity> findByLawyerNameContainingIgnoreCaseOrderByLawyerIdAsc(String lawyerName);
-    List<LawyerEntity> findByLawyerIdnumContainingOrderByLawyerIdnumAsc(String lawyerIdnum);
-    List<LawyerEntity> findByLawyerEmailContainingIgnoreCaseOrderByLawyerEmailAsc(String lawyerEmail);
-    List<LawyerEntity> findByLawyerPhoneContainingOrderByLawyerPhoneAsc(String lawyerPhone);
-    List<LawyerEntity> findByLawyerNicknameContainingIgnoreCaseOrderByLawyerNicknameAsc(String lawyerNickname);
-    List<LawyerEntity> findByLawyerAuthOrderByLawyerAuthAsc(Integer lawyerAuth);
-    List<LawyerEntity> findByLawyerAddressContainingIgnoreCaseOrderByLawyerAddressAsc(String lawyerAddress);
-    List<LawyerEntity> findByLawyerTelContainingOrderByLawyerTelAsc(String lawyerTel);
-    List<LawyerEntity> findByLawyerCommentContainingIgnoreCaseOrderByLawyerCommentAsc(String lawyerComment);
+    List<LawyerEntity> findByLawyerActive(Integer lawyerActive);
+
+    List<LawyerEntity> findByLawyerIdxAndLawyerActive(Integer lawyerIdx, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(String lawyerId, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(String lawyerName, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerIdnumContainingAndLawyerActiveOrderByLawyerIdnumAsc(String lawyerIdnum, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerEmailContainingIgnoreCaseAndLawyerActiveOrderByLawyerEmailAsc(String lawyerEmail, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerPhoneAsc(String lawyerPhone, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerNicknameAsc(String lawyerNickname, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(Integer lawyerAuth, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(String lawyerAddress, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerTelContainingAndLawyerActiveOrderByLawyerTelAsc(String lawyerTel, Integer lawyerActive);
+    List<LawyerEntity> findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerCommentAsc(String lawyerComment, Integer lawyerActive);
     
 } 
 
