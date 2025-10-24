@@ -51,6 +51,9 @@ public class MemberEntity {
     @Column(name = "member_nickname")
     private String memberNickname;
 
+    @Column(name = "member_active")
+    private Integer memberActive;
+
     @Column(name = "interest_idx", insertable = false, updatable = false)
     private Integer interestIdx;
 
@@ -58,5 +61,8 @@ public class MemberEntity {
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
 
+
+    @OneToMany(mappedBy = "member")
+    private java.util.List<PurchaseEntity> purchase;
 
 }

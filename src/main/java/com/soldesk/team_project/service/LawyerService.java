@@ -35,14 +35,15 @@ public class LawyerService {
         lawyerDTO.setLawyerComment(lawyerEntity.getLawyerComment());
         lawyerDTO.setLawyerLike(lawyerEntity.getLawyerLike());
         lawyerDTO.setLawyerAnswerCnt(lawyerEntity.getLawyerAnswerCnt());
-        lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
+        lawyerDTO.setLawyerActive(lawyerEntity.getLawyerActive());
+        lawyerDTO.setInterestIdx(lawyerEntity.getInterestIdx());
 
         return lawyerDTO;
     }
 
     // 전체 변호사 조회
     public List<LawyerDTO> getAllLawyer() {
-        List<LawyerEntity> lawyerEntityList = lawyerRepository.findAll();
+        List<LawyerEntity> lawyerEntityList = lawyerRepository.findByLawyerActive(1);
         
         return lawyerEntityList.stream()
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
@@ -53,19 +54,30 @@ public class LawyerService {
         List<LawyerEntity> lawyerEntityList;
 
         switch (searchType) {
-            case "idx": lawyerEntityList = lawyerRepository.findByLawyerIdx(Integer.valueOf(keyword)); break;
-            case "id": lawyerEntityList = lawyerRepository.findByLawyerIdContainingIgnoreCaseOrderByLawyerIdAsc(keyword); break;
-            case "name": lawyerEntityList = lawyerRepository.findByLawyerNameContainingIgnoreCaseOrderByLawyerIdAsc(keyword); break;
-            case "idnum": lawyerEntityList = lawyerRepository.findByLawyerIdnumContainingOrderByLawyerIdnumAsc(keyword); break;
-            case "email": lawyerEntityList = lawyerRepository.findByLawyerEmailContainingIgnoreCaseOrderByLawyerEmailAsc(keyword); break;
-            case "phone": lawyerEntityList = lawyerRepository.findByLawyerPhoneContainingOrderByLawyerPhoneAsc(keyword); break;
-            case "nickname": lawyerEntityList = lawyerRepository.findByLawyerNicknameContainingIgnoreCaseOrderByLawyerNicknameAsc(keyword); break;
-            case "auth": lawyerEntityList = lawyerRepository.findByLawyerAuthOrderByLawyerAuthAsc(Integer.valueOf(keyword)); break;
-            case "address": lawyerEntityList = lawyerRepository.findByLawyerAddressContainingIgnoreCaseOrderByLawyerAddressAsc(keyword); break;
-            case "tel": lawyerEntityList = lawyerRepository.findByLawyerTelContainingOrderByLawyerTelAsc(keyword); break;
-            case "comment": lawyerEntityList = lawyerRepository.findByLawyerCommentContainingIgnoreCaseOrderByLawyerCommentAsc(keyword); break;
+            case "idx": lawyerEntityList = lawyerRepository.
+                findByLawyerIdxAndLawyerActive(Integer.valueOf(keyword), 1); break;
+            case "id": lawyerEntityList = lawyerRepository.
+                findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1); break;
+            case "name": lawyerEntityList = lawyerRepository.
+                findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1); break;
+            case "idnum": lawyerEntityList = lawyerRepository.
+                findByLawyerIdnumContainingAndLawyerActiveOrderByLawyerIdnumAsc(keyword, 1); break;
+            case "email": lawyerEntityList = lawyerRepository.
+                findByLawyerEmailContainingIgnoreCaseAndLawyerActiveOrderByLawyerEmailAsc(keyword, 1); break;
+            case "phone": lawyerEntityList = lawyerRepository.
+                findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerPhoneAsc(keyword, 1); break;
+            case "nickname": lawyerEntityList = lawyerRepository.
+                findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerNicknameAsc(keyword, 1); break;
+            case "auth": lawyerEntityList = lawyerRepository.
+                findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(Integer.valueOf(keyword), 1); break;
+            case "address": lawyerEntityList = lawyerRepository.
+                findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(keyword, 1); break;
+            case "tel": lawyerEntityList = lawyerRepository.
+                findByLawyerTelContainingAndLawyerActiveOrderByLawyerTelAsc(keyword, 1); break;
+            case "comment": lawyerEntityList = lawyerRepository.
+                findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerCommentAsc(keyword, 1); break;
             
-            default: lawyerEntityList = lawyerRepository.findAll(); break;
+            default: lawyerEntityList = lawyerRepository.findByLawyerActive(1); break;
         }
         return lawyerEntityList.stream()
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());

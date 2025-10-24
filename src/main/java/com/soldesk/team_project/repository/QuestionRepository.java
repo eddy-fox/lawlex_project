@@ -14,7 +14,7 @@ import com.soldesk.team_project.entity.QuestionEntity;
 @Repository
 public interface QuestionRepository extends JpaRepository<QuestionEntity, Integer>{
 
-    List<QuestionEntity> findByQuestionAnswerOrderByQuestionIdxDesc(String qAnswer);
+    List<QuestionEntity> findByQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String qAnswer, Integer qActive);
 
     List<QuestionEntity> findByQuestionIdxAndQuestionAnswer(Integer qIdx, String qAnswer);
     List<QuestionEntity> findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerOrderByQuestionIdxDesc(String qTitle, String qAnswer);
