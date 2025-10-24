@@ -1,16 +1,20 @@
 package com.soldesk.team_project.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.soldesk.team_project.dto.CategoryDTO;
 import com.soldesk.team_project.dto.NewsBoardDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.NewsBoardEntity;
 import com.soldesk.team_project.entity.NewsCategoryEntity;
+import com.soldesk.team_project.infra.DriveUploader;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.NewsBoardRepository;
 import com.soldesk.team_project.repository.NewsCategoryRepository;
@@ -24,6 +28,10 @@ public class NewsBoardService {
     private final NewsCategoryRepository categoryRepository;
     private final NewsBoardRepository boardRepository;
     private final LawyerRepository lawyerRepository;
+    private final DriveUploader driveUploader;
+    
+    @Value("${google.drive.newsboard-folder-id}")
+    private String newsFolderId;
 
     
     private NewsBoardDTO convertBoardDTO(NewsBoardEntity boardEntity){
@@ -35,6 +43,12 @@ public class NewsBoardService {
         boardDTO.setNewsViews(boardEntity.getNewsViews());
         boardDTO.setLawyerIdx(boardEntity.getLawyer().getLawyerIdx());
         boardDTO.setCategoryIdx(boardEntity.getCategory().getCategoryIdx());
+        if(boardEntity.getFileAttached() == 0) { 
+            boardDTO.setFileAttached(boardEntity.getFileAttached());
+        }else{
+            boardDTO.setFileAttached(boardEntity.getFileAttached());
+            boardDTO.setStoredFileName(boardEntity.getStoredFileName());
+        }
         return boardDTO;
     }
 
@@ -45,6 +59,7 @@ public class NewsBoardService {
         boardEntity.setNewsRegDate(boardDTO.getNewsRegDate());
         boardEntity.setNewsImgPath(boardDTO.getNewsImgPath());
         boardEntity.setNewsLike(boardDTO.getNewsLike());
+        
         
         LawyerEntity lawyerEntity = lawyerRepository.findById(boardDTO.getLawyerIdx()).orElse(null);
         boardEntity.setLawyer(lawyerEntity);
@@ -85,10 +100,23 @@ public class NewsBoardService {
     }
 
     @Transactional
-    public void writeProcess(NewsBoardDTO writeBoard){
-        NewsBoardEntity boardEntity = convertBoardEntity(writeBoard);
-        boardRepository.save(boardEntity);
+    public void writeProcess(NewsBoardDTO writeBoard) throws Exception{
+        if(writeBoard.getNewsBoardFile().isEmpty()||writeBoard.getNewsBoardFile()==null){
+            writeBoard.setFileAttached(0);
+            NewsBoardEntity boardEntity = convertBoardEntity(writeBoard);
+            boardRepository.save(boardEntity);
+        }else {
+            MultipartFile newsboardFile = writeBoard.getNewsBoardFile();
+            var info = driveUploader.upload(newsboardFile, newsFolderId);
+            String savePath = info.directUrl(); //구글드라이브 폴더 경로입력
+            writeBoard.setFileAttached(1);
+            writeBoard.setNewsImgPath(savePath);
+            writeBoard.setStoredFileName(info.name());
+            NewsBoardEntity boardEntity = convertBoardEntity(writeBoard);
+            boardRepository.save(boardEntity);
+        }
     }
+    
 
     public NewsBoardDTO getNewsBoard(int news_idx){
         NewsBoardEntity boardEntity = boardRepository.findById(news_idx).orElse(null);
@@ -97,12 +125,27 @@ public class NewsBoardService {
     }
 
     @Transactional
-    public void modifyProcess(NewsBoardDTO modifyBoard){
+    public void modifyProcess(NewsBoardDTO modifyBoard) throws Exception{
+        if(modifyBoard.getFileAttached() == 0){
         NewsBoardEntity boardEntity = boardRepository.findById(modifyBoard.getNewsIdx()).orElse(null);
         boardEntity.setNewsTitle(modifyBoard.getNewsTitle());
         boardEntity.setNewsContent(modifyBoard.getNewsContent());
         boardEntity.setNewsImgPath(modifyBoard.getNewsImgPath());
         boardRepository.save(boardEntity);
+        }else{
+            NewsBoardEntity boardEntity = boardRepository.findById(modifyBoard.getNewsIdx()).orElse(null);
+            
+            boardEntity.setNewsTitle(modifyBoard.getNewsTitle());
+            boardEntity.setNewsContent(modifyBoard.getNewsContent());
+            boardEntity.setNewsImgPath(modifyBoard.getNewsImgPath());
+            MultipartFile newsboardFile = modifyBoard.getNewsBoardFile();
+            var info = driveUploader.upload(newsboardFile, newsFolderId);
+            String savePath = info.directUrl(); //구글드라이브 폴더 경로입력
+            boardEntity.setFileAttached(1);
+            boardEntity.setNewsImgPath(savePath);
+            boardEntity.setStoredFileName(info.name());
+            boardRepository.save(boardEntity);
+        }
     }
 
 
