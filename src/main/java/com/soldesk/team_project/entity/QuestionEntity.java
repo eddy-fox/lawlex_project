@@ -1,7 +1,10 @@
 package com.soldesk.team_project.entity;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +29,6 @@ public class QuestionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "q_idx")
     private Integer questionIdx;
 
@@ -49,5 +53,16 @@ public class QuestionEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    private List<AnswerEntity> answerList;
+    
+    @ManyToOne
+    private MemberEntity author;
+
+    private LocalDate modifyDate;
+
+    @ManyToMany
+    Set<MemberEntity> voter;
     
 }
