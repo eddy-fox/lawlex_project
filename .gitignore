@@ -38,3 +38,6 @@ out/
 
 # build.gradle 파일을 명시적으로 추적 대상에 포함 (예외 처리)
 !build.gradle
+
+# Toss 시크릿키가 들어있는 파일 제외
+src/main/resources/application-secret.properties
