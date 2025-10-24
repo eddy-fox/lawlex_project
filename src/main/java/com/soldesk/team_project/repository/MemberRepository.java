@@ -11,13 +11,15 @@ import com.soldesk.team_project.entity.MemberEntity;
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Integer>{
 
-    List<MemberEntity> findByMemberIdx(Integer memberIdx);
-    List<MemberEntity> findByMemberIdContainingIgnoreCaseOrderByMemberIdAsc(String memberId);
-    List<MemberEntity> findByMemberNameContainingIgnoreCaseOrderByMemberIdAsc(String memberName);
-    List<MemberEntity> findByMemberIdnumContainingOrderByMemberIdnumAsc(String memberIdnum);
-    List<MemberEntity> findByMemberEmailContainingIgnoreCaseOrderByMemberEmailAsc(String memberEmail);
-    List<MemberEntity> findByMemberPhoneContainingOrderByMemberPhoneAsc(String memberPhone);
-    List<MemberEntity> findByMemberNicknameContainingIgnoreCaseOrderByMemberNicknameAsc(String memberNickname);
+    List<MemberEntity> findByMemberActive(Integer memberActive);
+
+    List<MemberEntity> findByMemberIdxAndMemberActive(Integer memberIdx, Integer memberActive);
+    List<MemberEntity> findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(String memberId, Integer memberActive);
+    List<MemberEntity> findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(String memberName, Integer memberActive);
+    List<MemberEntity> findByMemberIdnumContainingAndMemberActiveOrderByMemberIdnumAsc(String memberIdnum, Integer memberActive);
+    List<MemberEntity> findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberEmailAsc(String memberEmail, Integer memberActive);
+    List<MemberEntity> findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(String memberPhone, Integer memberActive);
+    List<MemberEntity> findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(String memberNickname, Integer memberActive);
 
     Optional<MemberEntity> findByMemberName(String memberName);
 
