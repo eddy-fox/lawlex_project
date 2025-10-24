@@ -16,39 +16,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "purchase")
+@Table(name = "point")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PurchaseEntity {
-
+public class PointEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    @Column(name = "purchase_idx")
-    private Integer purchaseIdx;
-    
-    @Column(name = "product_idx", insertable = false, updatable = false)
-    private Integer productIdx;
+    @Column(name = "point_idx")
+    private Integer pointIdx;
+
+    @Column(name = "point_balance")
+    private Integer pointBalance;
+
+    @Column(name = "point_state")
+    private String pointState;
+
+    @Column(name = "point_regDate")
+    private LocalDate pointRegDate;
 
     @Column(name = "member_idx", insertable = false, updatable = false)
     private Integer memberIdx;
 
     @Column(name = "lawyer_idx", insertable = false, updatable = false)
     private Integer lawyerIdx;
-
-    @Column(name = "purchase_id")
-    private String purchaseId;
-
-    @Column(name = "purchase_state")
-    private String purchaseState;
-
-    @Column(name = "purchase_legDate")
-    private LocalDate purchaseLegDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_idx")
-    private ProductEntity product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
@@ -57,5 +50,5 @@ public class PurchaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawyer_idx")
     private LawyerEntity lawyer;
-    
+
 }

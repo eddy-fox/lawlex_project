@@ -1,10 +1,19 @@
 package com.soldesk.team_project.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.soldesk.team_project.dto.PointDTO;
 import com.soldesk.team_project.dto.ProductDTO;
+import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.PointEntity;
 import com.soldesk.team_project.entity.ProductEntity;
+import com.soldesk.team_project.entity.PurchaseEntity;
+import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.repository.PointRepository;
 import com.soldesk.team_project.repository.ProductRepository;
+import com.soldesk.team_project.repository.PurchaseRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +22,11 @@ import lombok.RequiredArgsConstructor;
 public class PurchaseService {
     
     private final ProductRepository productRepository;
+    private final PurchaseRepository purchaseRepository;
+    private final PointRepository pointRepository;
+    private final MemberRepository memberRepository;
 
+    // product Entity -> DTO
     private ProductDTO convertProductDTO (ProductEntity productEntity) {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setProductIdx(productEntity.getProductIdx());
@@ -24,11 +37,113 @@ public class PurchaseService {
         return productDTO;
     }
 
+    // purchase Entity -> DTO
+    private PurchaseDTO convertPurchaseDTO (PurchaseEntity purchaseEntity) {
+        PurchaseDTO purchaseDTO = new PurchaseDTO();
+        purchaseDTO.setPurchaseIdx(purchaseEntity.getPurchaseIdx());
+        purchaseDTO.setPurchaseId(purchaseEntity.getPurchaseId());
+        purchaseDTO.setPurchaseState(purchaseEntity.getPurchaseState());
+        purchaseDTO.setPurchaseLegDate(purchaseEntity.getPurchaseLegDate());
+        purchaseDTO.setProductIdx(purchaseEntity.getProductIdx());
+
+        if (purchaseEntity.getMemberIdx() != null) {
+            purchaseDTO.setMemberIdx(purchaseEntity.getMemberIdx());
+        } else {
+            purchaseDTO.setMemberIdx(null);
+        }
+
+        if (purchaseEntity.getLawyerIdx() != null) {
+            purchaseDTO.setLawyerIdx(purchaseEntity.getLawyerIdx());
+        } else {
+            purchaseDTO.setLawyerIdx(null);
+        }
+
+        return purchaseDTO;
+    }
+
+    // purchase DTO -> Entity
+    private PurchaseEntity convertPurchaseEntity (PurchaseDTO purchaseDTO) {
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setPurchaseId(purchaseDTO.getPurchaseId());
+    
+        ProductEntity productEntity = productRepository.findById(purchaseDTO.getProductIdx()).orElse(null);
+        // MemberEntity memberEntity = memberRepository.findById(purchaseDTO.getMemberIdx()).orElse(null);
+    
+        purchaseEntity.setProduct(productEntity);
+        // purchaseEntity.setMember(memberEntity);
+
+        return purchaseEntity;
+    }
+
+    // 상품 조회
     public ProductDTO getProduct(int productNum) {
         ProductEntity productEntity = productRepository.findByProductIdxAndProductActive(productNum, 1);
         ProductDTO productDTO = convertProductDTO(productEntity);
         
         return productDTO;
+    }
+
+    // 주문 정보 생성
+    public PurchaseDTO createPendingPurchase(int productIdx, String purchaseId) { // 회원정보 추가해야함
+        PurchaseDTO purchaseDTO = new PurchaseDTO();
+        purchaseDTO.setProductIdx(productIdx);
+        // purchaseDTO.setMemberIdx(memberIdx);
+        purchaseDTO.setPurchaseId(purchaseId);
+
+        PurchaseEntity purchaseEntity = convertPurchaseEntity(purchaseDTO);
+        purchaseRepository.save(purchaseEntity);
+
+        return purchaseDTO;
+    }
+
+    // 상품 가격 조회
+    public String getProductPrice(int productNum) {
+        ProductEntity productEntity = productRepository.findByProductIdxAndProductActive(productNum, 1);
+        String productPrice = productEntity.getProductPrice();
+        
+        return productPrice;
+    }
+
+    // 주문 정보 조회
+    public PurchaseDTO getOrderInfo(String purchaseId) {
+        PurchaseEntity purchaseEntity = purchaseRepository.findByPurchaseId(purchaseId);
+        PurchaseDTO purchaseDTO = convertPurchaseDTO(purchaseEntity);
+
+        return purchaseDTO;
+    }
+
+    // 주문 상태 변경
+    @Transactional
+    public void updatePurchaseStatus(String purchaseId, String purchaseState) {
+        PurchaseEntity purchaseEntity = purchaseRepository.findByPurchaseId(purchaseId);
+        purchaseEntity.setPurchaseState(purchaseState);
+        purchaseRepository.save(purchaseEntity);
+    }
+
+    // 회원 포인트 변동
+    @Transactional
+    public void purchasePoint(int memberIdx, int productIdx) {
+        
+        // 1. 상품 내용 조회
+        ProductEntity productEntity = productRepository.findByProductIdxAndProductActive(productIdx, 1);
+        String productContent = productEntity.getProductContent();
+        String[] splitContent = productContent.trim().split(" ");
+        int content = Integer.parseInt(splitContent[0]);
+
+        // 2. 포인트 잔액 변동
+        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
+        int updatePoint = memberEntity.getMemberPoint() + content;
+        memberEntity.setMemberPoint(updatePoint);
+
+        // 3. 포인트 변동사항
+        PointEntity pointEntity = new PointEntity();
+        String pointChanges = content + "포인트 충전";
+        pointEntity.setPointState(pointChanges);
+        pointEntity.setMemberIdx(memberIdx);
+
+        // 4. 저장
+        memberRepository.save(memberEntity);
+        pointRepository.save(pointEntity);
     }
 
 }
