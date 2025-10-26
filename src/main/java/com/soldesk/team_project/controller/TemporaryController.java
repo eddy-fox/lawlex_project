@@ -72,6 +72,14 @@ public class TemporaryController {
     public String loginChoice(){
         return "/all/member/loginChoice";
     }
+    @GetMapping("/all/member/gJoin")
+    public String gJoin(){
+        return "/all/member/gJoin";
+    }
+    @GetMapping("/all/member/lJoin")
+    public String lJoin(){
+        return "/all/member/ljoin";
+    }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();
 

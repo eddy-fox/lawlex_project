@@ -32,11 +32,10 @@
     padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: var(--radius-8);
     cursor: pointer; border: 2px solid transparent; text-decoration: none; transition: all .2s; }
 
-  .btn-primary { background: var(--brand); color: var(--bg); }
-  .btn-primary:hover { background: var(--brand-dark); }
-  .btn-outline { background: transparent; color: var(--brand); border-color: var(--brand); }
-  .btn-outline:hover { background: var(--bg-soft); }
-  .join-card.lawyer .btn-outline { border-color: var(--bg); color: var(--bg); }
+  .btn-primary { width: 120px; height: 55px; background: var(--brand); color: var(--bg); }
+  .btn-primary:hover { background: #000000; }
+  .btn-outline { width: 120px; height: 55px; background: transparent; color: var(--brand); border-color: var(--brand); }
+  .join-card.lawyer .btn-outline { border-color: var(--bg); color: var(--brand); }
   .join-card.lawyer .btn-outline:hover { background: var(--bg); color: var(--brand); }
 
   @media (max-width: 560px) {
