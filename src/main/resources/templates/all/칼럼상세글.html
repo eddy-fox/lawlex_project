@@ -7,7 +7,11 @@
   <style>
   .llx-news{ --ink:#111827; --muted:#a3a3a3; --line:#e5e7eb; --panel:#efefef; --white:#fff; --black:#000;}
   .llx-news, .llx-news *{ box-sizing:border-box }
+<<<<<<< HEAD
   .llx-news{ color:var(--ink); line-height:1.6; font-family: "Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif;}
+=======
+  .llx-news{ color:var(--ink); line-height:1.6; font-family: "Pretendard Variable","Noto Sans KR",system-ui,sans-serif;}
+>>>>>>> 1fe09b7528522ff843706e6fe7dc544619f5d49f
   .llx-news .frame{ width:min(1120px,94%); margin:24px auto 48px; display:grid; grid-template-columns: 220px 1fr; gap:22px; }
   /* Left menu */
   .llx-news .leftbar{ padding:24px 8px; }
@@ -43,7 +47,12 @@
   .llx-news .meta-bar{ display:flex; align-items:center; justify-content:space-between; color:#444; font-size:14px; }
   .llx-news .meta-left{ display:flex; gap:16px; align-items:center }
   .llx-news .meta-left .mini{ width:48px; height:32px; background:#e5e5e5; border:1px solid #cfcfcf; display:flex; align-items:center; justify-content:center; }
+<<<<<<< HEAD
   .llx-news .content-hr{ border-top:1px solid #ddd; margin:14px 0 18px }
+=======
+  /* .llx-news .meta-img{밑으로} */
+  .llx-news .content-hr{ border-top:1px solid #ddd; margin:14px, 0 18px }
+>>>>>>> 1fe09b7528522ff843706e6fe7dc544619f5d49f
   .llx-news .bigimg{ width:100%; height:300px; background:#d9d9d9; border:1px solid #cfcfcf; display:flex; align-items:center; justify-content:center; color:#444 }
   .llx-news .article{ margin:18px 0 }
   /* Comments */
@@ -72,10 +81,20 @@
     <div class="meta-bar">
       <div class="meta-left">
         <span>날짜</span>
+<<<<<<< HEAD
         <div class="mini">사진</div>
         <span>작성자</span>
       </div>
       <div>조회수 65</div>
+=======
+      </div>
+      <!-- 사진과 작성자 가 내려가야 한다 -->
+      <div class="meta-img">
+      <img class="mini">사진
+      <span>작성자</span>
+    </div>
+    <div>조회수 65</div>
+>>>>>>> 1fe09b7528522ff843706e6fe7dc544619f5d49f
     </div>
     <div class="content-hr"></div>
     <div class="bigimg">이미지</div>
@@ -87,8 +106,21 @@
       <div class="inputbar">입력창</div>
       <table>
         <tbody>
+<<<<<<< HEAD
           <tr><td>닉네임</td><td>내용</td><td>날짜</td></tr>
           <tr><td>닉네임</td><td>내용</td><td>날짜</td></tr>
+=======
+          <tr>
+            <td style=" width: 100px;">닉네임</td>
+            <td>내용</td>
+            <td style=" width: 100px;">날짜</td>
+          </tr>
+          <tr>
+            <td>닉네임</td>
+            <td>내용</td>
+            <td>날짜</td>
+          </tr>
+>>>>>>> 1fe09b7528522ff843706e6fe7dc544619f5d49f
         </tbody>
       </table>
     </div>
@@ -98,4 +130,9 @@
     </div>
   </main>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+<!-- newsboard > info.html -->
+>>>>>>> 1fe09b7528522ff843706e6fe7dc544619f5d49f

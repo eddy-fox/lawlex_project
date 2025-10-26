@@ -1,12 +1,16 @@
 package com.soldesk.team_project.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.ui.Model;
@@ -14,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.soldesk.team_project.config.TossProperties;
+import com.soldesk.team_project.dto.ProductDTO;
+import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.service.PurchaseService;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -23,17 +30,19 @@ import java.util.Base64;
 
 @Controller
 @RequestMapping("/payment")
+@RequiredArgsConstructor
 public class WidgetController {
 
     private final TossProperties tossProperties;
+    private final PurchaseService purchaseService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public WidgetController(TossProperties tossProperties) {
-        this.tossProperties = tossProperties;
-    }
+    // public WidgetController(TossProperties tossProperties) {
+    //     this.tossProperties = tossProperties;
+    // }
 
     @RequestMapping(value = "/confirm")
-    public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody) throws Exception {
+    public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody, HttpServletResponse response) throws Exception {
 
         JSONParser parser = new JSONParser();
         String orderId;
@@ -48,6 +57,27 @@ public class WidgetController {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         };
+
+        // 구매 요청 검증
+        PurchaseDTO purchase = purchaseService.getOrderInfo(orderId);
+        if (purchase == null) { // 주문ID 조회
+            response.sendRedirect("/fail?code=404&message=존재하지 않는 주문");
+
+            JSONObject error = new JSONObject();
+            error.put("message", "존재하지 않는 주문입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        
+        String productPrice = purchaseService.getProductPrice(purchase.getProductIdx());
+
+        if (!amount.equals(String.valueOf(productPrice))) {
+            response.sendRedirect("/fail?code=404&message=일치하지 않는 금액");
+
+            JSONObject error = new JSONObject();
+            error.put("message", "결제 금액이 일치하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+
         JSONObject obj = new JSONObject();
         obj.put("orderId", orderId);
         obj.put("amount", amount);
@@ -88,7 +118,23 @@ public class WidgetController {
         JSONObject jsonObject = (JSONObject) parser.parse(reader);
         responseStream.close();
 
-        return ResponseEntity.status(code).body(jsonObject);
+        JSONObject result = new JSONObject();
+        if (isSuccess) {
+            purchaseService.purchasePoint(purchase.getMemberIdx(), purchase.getProductIdx());
+            purchaseService.updatePurchaseStatus(orderId, "success");
+
+            result.put("status", "success");
+            result.put("message", "결제가 성공했습니다.");
+            result.put("data", jsonObject);
+        } else {
+            purchaseService.updatePurchaseStatus(orderId, "fail");
+
+            result.put("status", "fail");
+            result.put("message", "결제에 실패했습니다.");
+            result.put("data", jsonObject);
+        }
+
+        return ResponseEntity.status(code).body(result);
     }
 
     /**
@@ -103,10 +149,10 @@ public class WidgetController {
         return "payment/success";
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index(HttpServletRequest request, Model model) throws Exception {
-        return "payment/checkout";
-    }
+    // @RequestMapping(value = "/", method = RequestMethod.GET)
+    // public String index(HttpServletRequest request, Model model) throws Exception {
+    //     return "payment/checkout";
+    // }
 
     /**
      * 인증실패처리

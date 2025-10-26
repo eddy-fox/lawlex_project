@@ -1,0 +1,43 @@
+  @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+  @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+  :root{ --navy:#000777; --navy-700:#001366; --ink:#0f172a; --muted:#6b7280; --paper:#ffffff;
+    --panel:#f5f6f8; --line:#e6e8ee; --softline:#eef1f5; --radius:12px; --shadow:0 2px 8px rgba(0,0,0,.04);
+    --backdrop:#f3f5ff;}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{ margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Gooorm Sans","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif; line-height:1.5 }
+
+  .page-boardList { padding:20px 0 60px }
+  .page-boardList .wrap{ width:min(1120px,94%); margin:0 auto }
+  .backdrop{ background:var(--backdrop); border:1px solid #e2e6ff; border-radius:16px; padding:14px }
+
+  .top{ display:flex; justify-content:flex-end; }
+  .btn{ height:34px; padding:0 14px; border-radius:10px; background:var(--navy); color:#fff; border:1px solid var(--navy); font-weight:700; cursor:pointer; box-shadow:var(--shadow); display:inline-flex; align-items:center; text-decoration:none }
+  .btn:hover{ background:var(--navy-700); border-color:var(--navy-700) }
+
+  .card{ background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); margin-top:8px }
+  table{ width:100%; border-collapse:collapse; table-layout:fixed }
+  thead th{ background:#f1f3f8; color:#475569; font-size:12px; padding:10px 12px; text-align:left; border-bottom:1px solid var(--line) }
+  tbody td{ padding:14px 12px; border-bottom:1px solid var(--softline); font-size:14px }
+  tbody tr:last-child td{ border-bottom:none }
+  tbody tr:hover td{ background:#fafcff }
+  a.link{ color:inherit; text-decoration:none }
+  a.link:hover{ text-decoration:underline }
+
+  .below{ display:grid; grid-template-columns: 1fr auto auto; gap:12px; align-items:start; padding:12px; border-top:1px solid var(--line); background:#fff }
+  .number{ grid-column:1 / -1; text-align:center; margin-top:20px; font-weight:600; color:#1f2937; user-select:none }
+  .number .angle{ color:#94a3b8; margin:0 6px }
+  .number .num{ display:inline-block; padding:0 6px; color:#94a3b8; font-size:14px; line-height:1 }
+  .number .num.active{ color:var(--navy); font-weight:800; font-size:16px }
+  .controls{ justify-self:end; display:flex; gap:8px; align-items:center }
+  .select, .input{ height:34px; border:1.6px solid var(--line); border-radius:10px; background:#fff; padding:0 10px; outline:none }
+  .input{ width:260px }
+  .searchBtn{ height:34px; padding:0 14px; border-radius:10px; background:var(--navy); color:#fff; border:1px solid var(--navy); font-weight:700; cursor:pointer }
+  .searchBtn:hover{ background:var(--navy-700); border-color:var(--navy-700) }
+  @media (max-width:760px){
+    .below{ grid-template-columns:1fr; }
+    .controls{ justify-self:stretch }
+    .input{ width:auto; flex:1 }
+  }
