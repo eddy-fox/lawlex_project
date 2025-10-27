@@ -9,12 +9,13 @@
   body{ margin:0;background:var(--paper);color:var(--ink);
     font-family:"Gooorm Sans","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif; line-height:1.5 }
 
-  .page-boardList { padding:20px 0 60px }
-  .page-boardList .wrap{ width:min(1120px,94%); margin:0 auto }
+  .page-list { padding:20px 0 60px }
+  .page-list .wrap{ width:min(1120px,94%); margin:0 auto }
   .backdrop{ background:var(--backdrop); border:1px solid #e2e6ff; border-radius:16px; padding:14px }
 
   .top{ display:flex; justify-content:flex-end; }
-  .btn{ height:34px; padding:0 14px; border-radius:10px; background:var(--navy); color:#fff; border:1px solid var(--navy); font-weight:700; cursor:pointer; box-shadow:var(--shadow); display:inline-flex; align-items:center; text-decoration:none }
+  .btn{ height:34px; padding:0 14px; border-radius:10px; background:var(--navy); color:#fff; border:1px solid var(--navy); font-weight:700;
+     cursor:pointer; box-shadow:var(--shadow); display:inline-flex; align-items:center; text-decoration:none }
   .btn:hover{ background:var(--navy-700); border-color:var(--navy-700) }
 
   .card{ background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); margin-top:8px }
