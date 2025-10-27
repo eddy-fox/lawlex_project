@@ -42,7 +42,7 @@ public class ReBoardService {
 
     }
 
-    public void modift(ReBoardEntity reboard, String content) {
+    public void modify(ReBoardEntity reboard, String content) {
 
         reboard.setReboard_content(content);
         reboard.setModifyDate(LocalDate.now());

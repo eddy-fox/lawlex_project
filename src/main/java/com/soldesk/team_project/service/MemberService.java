@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
@@ -21,6 +22,7 @@ public class MemberService {
     
     private final MemberRepository memberRepository;
     // private final InterestRepository interestRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private MemberDTO convertMemberDTO (MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
@@ -101,4 +103,5 @@ public class MemberService {
         }
         
     }
+
 }
