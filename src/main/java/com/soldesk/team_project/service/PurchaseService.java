@@ -33,7 +33,6 @@ public class PurchaseService {
     private PointDTO convertPointDTO (PointEntity pointEntity) {
         PointDTO pointDTO = new PointDTO();
         pointDTO.setPointIdx(pointEntity.getPointIdx());
-        pointDTO.setPointBalance(pointEntity.getPointBalance());
         pointDTO.setPointState(pointEntity.getPointState());
         pointDTO.setPointRegDate(pointEntity.getPointRegDate());
 
@@ -102,7 +101,7 @@ public class PurchaseService {
     }
 
     // 모든 포인트 내역 조회
-    public PointDTO getAllPoint(memberIdx) { // 회원 정보 넣어야함
+    public List<PointDTO> getAllPoint(int memberIdx) { // 회원 정보 넣어야함
         List<PointEntity> pointEntityList = pointRepository.findByMemberIdxOrderByPointIdxDesc(memberIdx); // 회원정보 넣어야함
 
         return pointEntityList.stream()
@@ -110,6 +109,12 @@ public class PurchaseService {
     }
 
     // 모든 구매 내역 조회
+    public List<PurchaseDTO> getAllPurchase(int memberIdx) { // 회원 정보 넣어야함
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findByMemberIdxOrderByPurchaseIdxDesc(memberIdx); // 회원정보 넣어야함
+
+        return purchaseEntityList.stream()
+            .map(purchaseEntity -> convertPurchaseDTO(purchaseEntity)).collect(Collectors.toList());
+    }
 
     // 상품 조회
     public ProductDTO getProduct(int productNum) {

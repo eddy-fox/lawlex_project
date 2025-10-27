@@ -28,9 +28,6 @@ public class PointEntity {
     @Column(name = "point_idx")
     private Integer pointIdx;
 
-    @Column(name = "point_balance")
-    private Integer pointBalance;
-
     @Column(name = "point_state")
     private String pointState;
 
