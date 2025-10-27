@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/all/boardWrite.css}">
+    <link rel="stylesheet" th:href="@{/all/write.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
-<main class="page-boardWrite">
+<main class="page-write">
   <div class="wrap">
     <div class="backdrop">
       <form class="card" id="writeForm">
@@ -65,6 +65,6 @@
   </div>
 </main>  
   <div class="include" th:replace="~{include/footer :: footer}"></div>
-<script th:src="@{/all/boardWrite.js}"></script>  
+<script th:src="@{/all/write.js}"></script>  
 </body>
 </html>

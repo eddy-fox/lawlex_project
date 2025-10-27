@@ -24,21 +24,21 @@ public class TemporaryController {
     public String gMain(){
         return "/all/chat/gMain";
     }
-    @GetMapping("/all/board/boardWrite")
-    public String boardWrite(){
-        return "/all/board/boardWrite";
+    @GetMapping("/all/board/write")
+    public String write(){
+        return "/all/board/write";
     }
-    @GetMapping("/all/board/boardModify")
-    public String boardModify(){
-        return "/all/board/boardModify";
+    @GetMapping("/all/board/modify")
+    public String modify(){
+        return "/all/board/modify";
     }
-    @GetMapping("/all/board/boardList")
-    public String boardList(){
-        return "/all/board/boardList";
+    @GetMapping("/all/board/list")
+    public String list(){
+        return "/all/board/list";
     }
-    @GetMapping("/all/board/boardAnswer")
-    public String boardAnswer(){
-        return "/all/board/boardAnswer";
+    @GetMapping("/all/board/reBoard")
+    public String reBoard(){
+        return "/all/board/reBoard";
     }
     @GetMapping("/all/admin/memberManagement")
     public String memberManagement(){
