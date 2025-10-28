@@ -14,9 +14,9 @@ import com.soldesk.team_project.entity.BoardEntity;
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     
-    BoardEntity findByBoard_title(String board_title);
-    BoardEntity findByBoard_titleAndBoard_content(String board_title, String board_content);
-    List<BoardEntity> findByBoard_titleLike(String board_title);
+    BoardEntity findByBoardTitle(String boardTitle);
+    BoardEntity findByBoardTitleAndBoardContent(String boardTitle, String boardContent);
+    List<BoardEntity> findByBoardTitleLike(String boardTitle);
     Page<BoardEntity> findAll(Pageable pageable);
     Page<BoardEntity> findAll(Specification<BoardEntity> spec, Pageable pageable);
 
@@ -26,10 +26,10 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
             + "left outer join ReBoardEntity a on a.boardEntity=q "
             + "left outer join MemberEntity u2 on a.author=u2 "
             + "where "
-            + "   q.board_title like %:kw% "
-            + "   or q.board_content like %:kw% "
+            + "   q.boardTitle like %:kw% "
+            + "   or q.boardContent like %:kw% "
             + "   or u1.memberId like %:kw% "
-            + "   or a.board_content like %:kw% "
+            + "   or a.boardContent like %:kw% "
             + "   or u2.memberId like %:kw% ")
     Page<BoardEntity> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
     

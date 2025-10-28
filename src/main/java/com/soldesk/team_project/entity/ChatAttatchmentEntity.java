@@ -57,5 +57,5 @@ public class ChatAttatchmentEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="chat_idx")
-    private Integer chatIdx;        // FK → chatdata.chat_idx
+    private ChatdataEntity chatIdx;        // FK → chatdata.chat_idx
 }

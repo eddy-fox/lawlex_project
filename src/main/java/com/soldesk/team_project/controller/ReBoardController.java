@@ -47,7 +47,7 @@ public class ReBoardController {
             return "question_detail";
         }
         ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboard_content(), memberEntity);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoard_idx(), reboardEntity.getReboard_idx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
 
@@ -60,7 +60,7 @@ public class ReBoardController {
         if(!reboardEntity.getAuthor().getMemberId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        reboardForm.setReboard_content(reboardEntity.getReboard_content());
+        reboardForm.setReboard_content(reboardEntity.getReboardContent());
         return "answer_form";
         
     }
@@ -78,7 +78,7 @@ public class ReBoardController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
         this.reboardService.modify(reboardEntity, reboardForm.getReboard_content());
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoard_idx(), reboardEntity.getReboard_idx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
     
@@ -91,18 +91,7 @@ public class ReBoardController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.reboardService.delete(reboardEntity);
-        return String.format("redirect:/board/detail/%s", reboardEntity.getBoard().getBoard_idx());
-
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/vote/{id}")
-    public String reboardVote(Principal principal, @PathVariable("id") Integer id) {
-
-        ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        MemberEntity memberEntity = this.memberService.getMember(principal.getName());
-        this.reboardService.vote(reboardEntity, memberEntity);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoard_idx(), reboardEntity.getReboard_idx());
+        return String.format("redirect:/board/detail/%s", reboardEntity.getBoardEntity().getBoardIdx());
 
     }
 

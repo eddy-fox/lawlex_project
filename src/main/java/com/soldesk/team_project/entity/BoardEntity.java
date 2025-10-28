@@ -12,38 +12,44 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "board")
 public class BoardEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer board_idx;
+    @Column(name = "board_idx")
+    private Integer boardIdx;
 
-    @Column(length = 200)
-    private String board_title;
+    @Column(name = "board_title")
+    private String boardTitle;
 
-    @Column(columnDefinition = "TEXT")
-    private String board_content;
+    @Column(name = "board_content")
+    private String boardContent;
 
-    private LocalDate board_regDate;
+    @Column(name = "board_regDate")
+    private LocalDate boardRegDate;
 
-    private String board_imgPath;
+    @Column(name = "board_imgPath")
+    private String boardImgPath;
 
-    private LocalDate board_caseDate;
+    @Column(name = "board_caseDate")
+    private LocalDate boardCaseDate;
 
-    private Integer board_views;
+    @Column(name = "board_views")
+    private Integer boardViews;
 
     @JoinColumn(name = "member_idx")
-    private MemberEntity member_idx;
+    private MemberEntity memberIdx;
 
     @JoinColumn(name = "interest_idx")
-    private InterestEntity interset_idx;
-
+    private InterestEntity intersetIdx;
 
     //작성자
     @ManyToOne

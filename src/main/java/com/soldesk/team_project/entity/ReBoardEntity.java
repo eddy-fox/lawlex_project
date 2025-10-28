@@ -11,34 +11,38 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "reboard")
 public class ReBoardEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer reboard_idx;
+    @Column(name = "reboard_idx")
+    private Integer reboardIdx;
 
-    @Column(length = 200)
-    private String reboard_title;
+    @Column(name = "reboard_title")
+    private String reboardTitle;
 
-    @Column(columnDefinition = "TEXT")
-    private String reboard_content;
+    @Column(name = "reboard_content")
+    private String reboardContent;
 
-    private LocalDate reboard_regDate;
+    @Column(name = "reboard_regDate")
+    private LocalDate reboardRegDate;
 
     @JoinColumn(name = "board_idx")
-    private BoardEntity board_idx;
+    private BoardEntity boardIdx;
 
     @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer_idx;
+    private LawyerEntity lawyerIdx;
 
     @ManyToOne
-    private BoardEntity board;
+    private BoardEntity boardEntity;
 
     @ManyToOne
     private MemberEntity memberName;
@@ -47,8 +51,5 @@ public class ReBoardEntity {
     private MemberEntity author;
 
     private LocalDate modifyDate;
-
-    @ManyToMany
-    Set<MemberEntity> voter;
 
 }
