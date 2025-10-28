@@ -22,9 +22,9 @@ public class ReBoardService {
     public ReBoardEntity create(BoardEntity board, String content, MemberEntity author) {
 
         ReBoardEntity reboard = new ReBoardEntity();
-        reboard.setReboard_content(content);
-        reboard.setReboard_regDate(LocalDate.now());
-        reboard.setBoard(board);
+        reboard.setReboardContent(content);
+        reboard.setReboardRegDate(LocalDate.now());
+        reboard.setBoardEntity(board);
         reboard.setAuthor(author);
         this.reboardRepository.save(reboard);
         return reboard;
@@ -44,7 +44,7 @@ public class ReBoardService {
 
     public void modify(ReBoardEntity reboard, String content) {
 
-        reboard.setReboard_content(content);
+        reboard.setReboardContent(content);
         reboard.setModifyDate(LocalDate.now());
         this.reboardRepository.save(reboard);
 
@@ -53,13 +53,6 @@ public class ReBoardService {
     public void delete(ReBoardEntity reboard) {
 
         this.reboardRepository.delete(reboard);
-
-    }
-
-    public void vote(ReBoardEntity reboard, MemberEntity member) {
-
-        reboard.getVoter().add(member);
-        this.reboardRepository.save(reboard);
 
     }
     

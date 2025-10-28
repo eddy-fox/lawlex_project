@@ -86,41 +86,41 @@ public class AdminController {
         return "redirect:/admin/lawyerManagement";
     }
 
-    @GetMapping("/QnAManagement")
-    public String questionList(
-        @RequestParam(value = "keyword",required = false) String keyword, Model model, 
-        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
+    // @GetMapping("/QnAManagement")
+    // public String questionList(
+    //     @RequestParam(value = "keyword",required = false) String keyword, Model model, 
+    //     @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
         
-        List<QuestionDTO> newQuestions;
-        List<QuestionDTO> completedQuestions;
+    //     List<QuestionDTO> newQuestions;
+    //     List<QuestionDTO> completedQuestions;
 
-        String qNew = "N";
-        String qCompleted = "Y";
+    //     String qNew = "N";
+    //     String qCompleted = "Y";
 
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            newQuestions = questionService.getNewQuestions(qNew);
-            completedQuestions = questionService.getCompletedQuestions(qCompleted);
-        } else {
-            newQuestions = questionService.searchNewQuestions(searchType, keyword, qNew);
-            completedQuestions = questionService.searchCompletedQuestions(searchType, keyword, qCompleted);
-        }
+    //     if (keyword == null || keyword.trim().isEmpty()) {
+    //         newQuestions = questionService.getNewQuestions(qNew);
+    //         completedQuestions = questionService.getCompletedQuestions(qCompleted);
+    //     } else {
+    //         newQuestions = questionService.searchNewQuestions(searchType, keyword, qNew);
+    //         completedQuestions = questionService.searchCompletedQuestions(searchType, keyword, qCompleted);
+    //     }
 
-        model.addAttribute("newQuestions", newQuestions);
-        model.addAttribute("completedQuestions", completedQuestions);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("searchType", searchType);
-        return "admin/QnAManagement";
-    }
-    @PostMapping("/QnAManagement")
-    public String questionSearch(
-        @RequestParam String keyword, 
-        @RequestParam String searchType,
-        RedirectAttributes redirectAttributes) {
+    //     model.addAttribute("newQuestions", newQuestions);
+    //     model.addAttribute("completedQuestions", completedQuestions);
+    //     model.addAttribute("keyword", keyword);
+    //     model.addAttribute("searchType", searchType);
+    //     return "admin/QnAManagement";
+    // }
+    // @PostMapping("/QnAManagement")
+    // public String questionSearch(
+    //     @RequestParam String keyword, 
+    //     @RequestParam String searchType,
+    //     RedirectAttributes redirectAttributes) {
 
-        redirectAttributes.addAttribute("keyword", keyword);
-        redirectAttributes.addAttribute("searchType", searchType);
-        return "redirect:/admin/QnAManagement";
-    }
+    //     redirectAttributes.addAttribute("keyword", keyword);
+    //     redirectAttributes.addAttribute("searchType", searchType);
+    //     return "redirect:/admin/QnAManagement";
+    // }
 
 }

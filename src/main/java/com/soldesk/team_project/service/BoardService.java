@@ -74,21 +74,21 @@ public class BoardService {
 
     }
 
-    public void create(String board_title, String board_content, MemberEntity member) {
+    public void create(String boardTitle, String boardContent, MemberEntity member) {
 
         BoardEntity q = new BoardEntity();
-        q.setBoard_title(board_title);
-        q.setBoard_content(board_content);
-        q.setBoard_regDate(LocalDate.now());
+        q.setBoardTitle(boardTitle);
+        q.setBoardContent(boardContent);
+        q.setBoardRegDate(LocalDate.now());
         q.setAuthor(member);
         this.boardRepository.save(q);
 
     }
 
-    public void modify(BoardEntity boardEntity, String board_title, String board_content) {
+    public void modify(BoardEntity boardEntity, String boardTitle, String boardContent) {
 
-        boardEntity.setBoard_title(board_title);
-        boardEntity.setBoard_content(board_content);
+        boardEntity.setBoardTitle(boardTitle);
+        boardEntity.setBoardContent(boardContent);
         this.boardRepository.save(boardEntity);
 
     }
