@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GoogleDriveConfig {
 
-    @Value("${google.drive.credentials-json:}")
+    @Value("${google.drive.service-account-key-path}")
     private String credentialsJson;
 
     @Bean

@@ -31,8 +31,8 @@ public class ChatAttatchmentEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="attatchment_id")
-    private Integer attatchmentId;
+    @Column(name="attachment_id")
+    private Integer attachmentId;
 
     @Column(name="file_url")
     private String fileUrl;// 파일 URL/S3 경로
@@ -57,5 +57,5 @@ public class ChatAttatchmentEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="chat_idx")
-    private ChatdataEntity chatIdx;        // FK → chatdata.chat_idx
+    private ChatdataEntity chatData;        // FK → chatdata.chat_idx
 }

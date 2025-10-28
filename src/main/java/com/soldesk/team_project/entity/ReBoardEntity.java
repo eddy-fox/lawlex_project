@@ -35,17 +35,17 @@ public class ReBoardEntity {
     @Column(name = "reboard_regDate")
     private LocalDate reboardRegDate;
 
-    @JoinColumn(name = "board_idx")
-    private BoardEntity boardIdx;
-
+    @ManyToOne
     @JoinColumn(name = "lawyer_idx")
     private LawyerEntity lawyerIdx;
 
     @ManyToOne
-    private BoardEntity boardEntity;
+    @JoinColumn(name = "board_idx")
+    private BoardEntity board;
 
     @ManyToOne
-    private MemberEntity memberName;
+    @JoinColumn(name = "member_idx")
+    private MemberEntity member;
 
     @ManyToOne
     private MemberEntity author;

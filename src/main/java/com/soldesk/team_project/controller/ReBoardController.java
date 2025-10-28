@@ -47,7 +47,7 @@ public class ReBoardController {
             return "question_detail";
         }
         ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboard_content(), memberEntity);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
 
@@ -78,7 +78,7 @@ public class ReBoardController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
         this.reboardService.modify(reboardEntity, reboardForm.getReboard_content());
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
     
@@ -91,7 +91,7 @@ public class ReBoardController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.reboardService.delete(reboardEntity);
-        return String.format("redirect:/board/detail/%s", reboardEntity.getBoardEntity().getBoardIdx());
+        return String.format("redirect:/board/detail/%s", reboardEntity.getBoard().getBoardIdx());
 
     }
 
