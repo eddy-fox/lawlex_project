@@ -88,6 +88,14 @@ public class TemporaryController {
     public String lInfo(){
         return "/all/member/lInfo";
     }
+    @GetMapping("/all/member/gModify")
+    public String gModify(){
+        return "/all/member/gModify";
+    }
+    @GetMapping("/all/member/lModify")
+    public String lModify(){
+        return "/all/member/lModify";
+    }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();
 
