@@ -45,11 +45,13 @@ public class BoardEntity {
     @Column(name = "board_views")
     private Integer boardViews;
 
+    @ManyToOne
     @JoinColumn(name = "member_idx")
-    private MemberEntity memberIdx;
+    private MemberEntity member;
 
+    @ManyToOne
     @JoinColumn(name = "interest_idx")
-    private InterestEntity intersetIdx;
+    private InterestEntity interest;
 
     //작성자
     @ManyToOne
@@ -58,7 +60,7 @@ public class BoardEntity {
     //수정시간
     private LocalDate modifyDate;
 
-    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
     private List<ReBoardEntity> reboardList;
 
 }

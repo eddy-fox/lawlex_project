@@ -1,6 +1,8 @@
 package com.soldesk.team_project.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,9 +58,9 @@ public class ChatdataEntity {
     @JoinColumn(name="chatroom_idx")
     private ChatroomEntity chatroom;
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "chatData", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC, attachmentId ASC")
-    private java.util.List<ChatAttatchmentEntity> attachments = new java.util.ArrayList<>();
+    private List<ChatAttatchmentEntity> attachments = new ArrayList<>();
 
 
 }

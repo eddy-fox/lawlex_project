@@ -24,7 +24,7 @@ public class ReBoardService {
         ReBoardEntity reboard = new ReBoardEntity();
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
-        reboard.setBoardEntity(board);
+        reboard.setBoard(board);
         reboard.setAuthor(author);
         this.reboardRepository.save(reboard);
         return reboard;
