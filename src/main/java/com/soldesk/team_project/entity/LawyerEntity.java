@@ -94,4 +94,7 @@ public class LawyerEntity {
     @OneToMany(mappedBy = "lawyer")
     private java.util.List<PointEntity> point;
 
+    @OneToMany(mappedBy = "lawyer")
+    private java.util.List<AdEntity> ad;
+
 }
