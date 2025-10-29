@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang='ko'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>dy_8 일반회원수정</title>
+<style>
+  :root{ --navy:#000777; --ink:#0f172a; --line:#e2e6ff; --panel:#fff; --shadow:0 8px 26px rgba(0,7,119,.08) }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:var(--ink);font-family:'Gooorm Sans','Pretendard Variable','Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .center{display:grid;place-items:center;padding:48px 16px 80px}
+  .card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+  .inner{padding:22px 20px}
+  .title{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-.2px}
+  .role{color:#64748b;font-size:13px;margin-bottom:10px}
+  .row{display:grid;grid-template-columns:120px 1fr;gap:8px 14px;align-items:center;margin:12px 0}
+  .label{font-size:13px;color:#444}
+  .input{height:38px;border:1.6px solid #cfd3dd;border-radius:10px;padding:0 12px;outline:none;font:inherit}
+  .input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,7,119,.12)}
+  .textarea{min-height:84px;border:1.6px solid #cfd3dd;border-radius:10px;padding:10px;resize:vertical;outline:none;font:inherit}
+  .textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,7,119,.12)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border:1px solid #cfd3dd;border-radius:999px;cursor:pointer}
+  .chip input{appearance:none;width:14px;height:14px;border:1.6px solid #94a3b8;border-radius:3px;display:grid;place-content:center;margin:0}
+  .chip input:checked{background:var(--navy);border-color:var(--navy)}
+  .chip input:checked::after{content:'';width:8px;height:8px;background:#fff;border-radius:1px}
+  .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+  .btn{height:38px;padding:0 16px;border:none;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer}
+  .btn.ghost{background:#eef1ff;color:#0f172a;border:1px solid var(--line)}
+  .btn:active{transform:translateY(1px)}
+  .inline{display:flex;gap:12px;align-items:flex-start}
+  .photo{width:72px;height:96px;border:1px solid #cbd5e1;border-radius:8px;display:grid;place-items:center;color:#64748b;background:#f1f5ff}
+  @media (max-width:600px){ .row{grid-template-columns:1fr} .label{margin-bottom:4px} }
+</style>
+</head>
+<body>
+<main class='page-memberEditGeneral'>
+  <section class='center'>
+    <article class='card'>
+      <div class='inner'>
+        <h1 class='title'>회원수정</h1>
+        <div class='role'>일반회원</div>
+        <div class='row'><label class='label' for='id_g'>아이디 (email)</label><input id='id_g' class='input' type='email' placeholder='example@email.com'></div>
+        <div class='row'><label class='label' for='pw_g'>비밀번호</label><input id='pw_g' class='input' type='password' placeholder='비밀번호 입력'></div>
+        <div class='row'><label class='label' for='pw2_g'>비밀번호 확인</label><input id='pw2_g' class='input' type='password' placeholder='비밀번호 확인'></div>
+        <div class='row'><label class='label' for='nick_g'>닉네임</label><input id='nick_g' class='input' type='text' placeholder='닉네임'></div>
+        <div class='row'><label class='label' for='email_g'>이메일</label><input id='email_g' class='input' type='email' placeholder='이메일'></div>
+        <div class='row' style='align-items:start'><span class='label'>관심분야</span><div class='chips'><label class='chip'><input type='checkbox'> 형사</label><label class='chip'><input type='checkbox'> 민사</label><label class='chip'><input type='checkbox'> 가사</label><label class='chip'><input type='checkbox'> 부동산</label><label class='chip'><input type='checkbox'> 노동</label></div></div>
+        <div class='actions'><button class='btn ghost' type='button'>취소</button><button class='btn' type='submit'>회원수정</button></div>
+      </div>
+    </article>
+  </section>
+</main>
+</body>
+</html>
+<!-- member > gModify.html -->

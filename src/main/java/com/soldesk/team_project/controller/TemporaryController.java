@@ -24,21 +24,21 @@ public class TemporaryController {
     public String gMain(){
         return "/all/chat/gMain";
     }
-    @GetMapping("/all/board/boardWrite")
-    public String boardWrite(){
-        return "/all/board/boardWrite";
+    @GetMapping("/all/board/write")
+    public String write(){
+        return "/all/board/write";
     }
-    @GetMapping("/all/board/boardModify")
-    public String boardModify(){
-        return "/all/board/boardModify";
+    @GetMapping("/all/board/modify")
+    public String modify(){
+        return "/all/board/modify";
     }
-    @GetMapping("/all/board/boardList")
-    public String boardList(){
-        return "/all/board/boardList";
+    @GetMapping("/all/board/list")
+    public String list(){
+        return "/all/board/list";
     }
-    @GetMapping("/all/board/boardAnswer")
-    public String boardAnswer(){
-        return "/all/board/boardAnswer";
+    @GetMapping("/all/board/reBoard")
+    public String reBoard(){
+        return "/all/board/reBoard";
     }
     @GetMapping("/all/admin/memberManagement")
     public String memberManagement(){
@@ -59,6 +59,34 @@ public class TemporaryController {
     @GetMapping("/all/member/point")
     public String point(){
         return "/all/member/point";
+    }
+    @GetMapping("/all/member/login")
+    public String login(){
+        return "/all/member/login";
+    }
+    @GetMapping("/all/member/loginFind")
+    public String loginFind(){
+        return "/all/member/loginFind";
+    }
+    @GetMapping("/all/member/loginChoice")
+    public String loginChoice(){
+        return "/all/member/loginChoice";
+    }
+    @GetMapping("/all/member/gJoin")
+    public String gJoin(){
+        return "/all/member/gJoin";
+    }
+    @GetMapping("/all/member/lJoin")
+    public String lJoin(){
+        return "/all/member/ljoin";
+    }
+    @GetMapping("/all/member/gInfo")
+    public String gInfo(){
+        return "/all/member/gInfo";
+    }
+    @GetMapping("/all/member/lInfo")
+    public String lInfo(){
+        return "/all/member/lInfo";
     }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();

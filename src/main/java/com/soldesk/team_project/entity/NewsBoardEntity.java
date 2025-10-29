@@ -45,6 +45,15 @@ public class NewsBoardEntity {
 
     @Column(name="news_views")
     private Integer newsViews;
+
+    @Column(name="fileName")
+    private String storedFileName;
+
+    @Column(name="fileAttached")
+    private int fileAttached;
+
+    @Column(name="news_active")
+    private int newsActive;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="admin_idx")

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>변호사회원가입</title>
+    <link rel="stylesheet" th:href="@{/all/lJoin.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-lJoin">
+    <section class="center-card">
+    <div class="head">
+        <h1 class="title">회원가입</h1>
+    </div>
+    <form class="form" action="#" method="post">
+        <div class="field">
+        <div class="inline">
+            <input class="input" type="text" placeholder="아이디">
+            <button class="pill" type="button" id="dupBtn">중복확인</button>
+        </div>
+        </div>
+        <div class="field"><input class="input" type="password" placeholder="비밀번호"></div>
+        <div class="field"><input class="input" type="password" placeholder="비밀번호 확인"></div>
+        <div class="field"><input class="input" type="text" placeholder="닉네임"></div>
+        <div class="field"><input class="input" type="email" placeholder="이메일"></div>
+        <div class="field"><input class="input" type="text" placeholder="사무실 주소"></div>
+        <div class="field"><input class="input" type="tel" placeholder="전화번호"></div>
+        <div class="field"><input class="input" type="date" placeholder="생년월일"></div>
+        <div class="field">
+        <div class="inline align-start">
+            <label class="photo" for="photo">사진<input id="photo" type="file" accept="image/*"></label>
+            <div class="flex-1">
+            <input class="input" type="text" placeholder="한줄소개">
+            <label>상담 가능 요일 및 시간대</label>
+            <div class="days">
+                <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
+                <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
+                <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
+                <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
+                <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
+                <input type="checkbox" id="sat" value="토"><label for="sat">토</label>
+                <input type="checkbox" id="sun" value="일"><label for="sun">일</label>
+            </div>
+            <div class="inline">
+                <input id="timeStart" class="input" type="time" style="flex:1">
+                <span style="margin:0 6px">~</span>
+                <input id="timeEnd" class="input" type="time" style="flex:1">
+            </div>
+            <button type="button" class="small-btn" id="addTime">추가</button>
+            <div id="selectedList" class="selected-list"></div>
+            </div>
+        </div>
+        </div>
+        <div class="field">
+        <div class="agree-area">
+            <div class="left">
+            <button class="small-btn" type="button" id="qualifyBtn">자격확인</button>
+            </div>
+            <div class="right">
+            <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
+            <button class="small-btn" type="button" id="verifyBtn">본인인증</button>
+            </div>
+        </div>
+        </div>
+        <div class="divider"></div>
+        <button class="primary-btn" type="submit">회원가입</button>
+    </form>
+    </section>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/all/lJoin.js}"></script>
+</body>
+</html>

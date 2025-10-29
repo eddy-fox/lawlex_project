@@ -18,11 +18,34 @@ public class DriveUploader {
     @Value("${google.drive.make-public:true}")
     private boolean makePublic;
 
+        private static String convertFileName(MultipartFile multipart){
+                String originalFileName = multipart.getOriginalFilename();
+                if(originalFileName == null || originalFileName.isBlank()){
+                        originalFileName = "upload";
+                }
+
+                String ext = ""; 
+                int dot = originalFileName.lastIndexOf('.'); 
+                if (dot != -1 && dot < originalFileName.length() - 1) { 
+                        ext = originalFileName.substring(dot);
+                } // ".png" 
+                originalFileName = originalFileName.substring(0, dot); // 확장자 제외한 이름 
+
+                String base = originalFileName.replaceAll("[\\\\/:*?\"<>|]", "_") // Windows 금지 문자 치환 
+                        .replaceAll("\\s+", "_") // 공백 -> _ 
+                        .trim(); 
+                if (base.isEmpty()) base = "upload";
+                String storedFileName = System.currentTimeMillis() + "_" + base;
+
+                return storedFileName + ext;
+        }
+
+
     // 폴더 지정 업로드
     public UploadedFileInfo upload(MultipartFile multipart, String parentFolderId) throws Exception {
         // 메타데이터
         File metadata = new File();
-        metadata.setName(multipart.getOriginalFilename());
+        metadata.setName(convertFileName(multipart));
         metadata.setParents(java.util.List.of(parentFolderId));
 
         // 파일 본문

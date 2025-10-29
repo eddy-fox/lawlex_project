@@ -1,0 +1,38 @@
+@font-face {
+  font-family: 'Gooorm Sans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
+  font-weight: 400; }
+@font-face {
+  font-family: 'Gooorm Sans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
+  font-weight: 500; }
+@font-face {
+  font-family: 'Gooorm Sans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
+  font-weight: 700; }
+body, input, button {
+  font-family:'Gooorm Sans','Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif; }
+.page-gJoin, .page-gJoin *{box-sizing:border-box}
+.page-gJoin{--ink:#111827;--muted:#6b7280;--line:#e5e7eb;color:var(--ink);line-height:1.6}
+.page-gJoin .center-card{width:min(720px,92%);margin:100px auto;background:#fff;border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.08);padding:50px}
+.page-gJoin .head{display:flex;align-items:center;gap:14px}
+.page-gJoin h1.title{flex:1;text-align:center;font-size:40px;font-weight:800;letter-spacing:-0.02em;margin:0}
+.page-gJoin .form{width:min(560px,90%);margin:56px auto 0}
+.page-gJoin .field{margin-bottom:24px}
+.page-gJoin .input{width:100%;border:none;border-bottom:1px solid var(--line);padding:12px 0 10px;background:transparent;font-size:16px;outline:none}
+.page-gJoin .input::placeholder{color:#a8a8a8}
+.page-gJoin .inline{display:flex;gap:10px;align-items:center}
+.page-gJoin .pill{background:#000;color:#fff;border:1px solid #000;border-radius:8px;font-size:12px;padding:8px 12px;line-height:1;cursor:pointer;white-space:nowrap;transition:background .2s}
+.page-gJoin .pill:hover{background:#222}
+.page-gJoin .agree-area{width:auto;display:flex;gap:8px;align-items:center;margin-top:8px;margin-bottom:8px;flex-direction:row-reverse}
+.page-gJoin .small-btn{background:#000;color:#fff;border:1px solid #000;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;line-height:1;transition:background .2s}
+.page-gJoin .small-btn:hover{background:#222}
+.page-gJoin .divider{width:min(560px,90%);border-top:1px solid var(--line);margin:36px auto 20px}
+.page-gJoin .primary-btn{display:block;width:260px;margin:12px auto 0;height:52px;border:none;border-radius:10px;background:#000;color:#fff;font-size:22px;font-weight:700;cursor:pointer}
+@media (max-width:560px){
+  .page-gJoin h1.title{font-size:32px}
+  .page-gJoin .center-card{margin:64px auto 48px;padding:24px} }
+
+.complete-btn { background:#ECFDF5 !important; color:#047857 !important;
+  border:none !important; font-weight:600; }
+.complete-btn:hover { background:#D1FAE5 !important; }
