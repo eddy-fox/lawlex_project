@@ -81,7 +81,8 @@ public class LawyerEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
-    
 
+    @OneToMany(mappedBy = "lawyer")
+    private java.util.List<AdEntity> ad;
 
 }

@@ -9,7 +9,6 @@ public class MemberDTO {
 
     private Integer memberIdx;
     private String memberId;
-
     private String memberPass;
     private String memberPass2;
     private String memberName;
@@ -18,6 +17,7 @@ public class MemberDTO {
     private String memberPhone;
     private String memberAgree;
     private String memberNickname;
+    private Integer memberPoint;
     private Integer memberActive;
     private Integer interestIdx;
 

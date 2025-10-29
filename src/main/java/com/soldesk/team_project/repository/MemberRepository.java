@@ -11,8 +11,10 @@ import com.soldesk.team_project.entity.MemberEntity;
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Integer>{
 
+    // 모든 일반 회원 조회
     List<MemberEntity> findByMemberActive(Integer memberActive);
 
+    // 검색타입 별 일반 회원 검색
     List<MemberEntity> findByMemberIdxAndMemberActive(Integer memberIdx, Integer memberActive);
     List<MemberEntity> findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(String memberId, Integer memberActive);
     List<MemberEntity> findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(String memberName, Integer memberActive);

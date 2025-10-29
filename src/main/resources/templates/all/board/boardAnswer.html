@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담글_답변_전후</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/all/boardAnswer.css}">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+  <main class="page-boardAnswer">
+    <div class="wrap">
+      <div class="backdrop">
+        <form class="card">
+          <div class="inner">
+            <h1 class="post-title">정보통신망법 침입 및 명예훼손 대응방법</h1>
+            <div class="post-meta">2025-09-29 20:45</div>
+            <div class="post-body">애인의 바람으로 인해 순간적인 감정으로 인해 애인이 전에 사용하던 네이버 로그인 정보를 이용하여 접속 및 회사 앱에 무단 접속한 상황...</div>
+
+            <div class="note" id="replyBox">
+              <div class="note-header">
+                <span class="badge" id="statusText">김현민 변호사님의 답변을 기다리고 있어요.</span>
+                <button id="open" class="btn">답변하기</button>
+              </div>
+              <div id="replyArea" class="hidden">
+                <textarea id="ta" class="textarea" placeholder="1. ~&#10;2. ~&#10;3. ~ 처럼 줄바꿈으로 항목을 쓰면 목록으로 들어갑니다." minlength="10"></textarea>
+                <div class="counter"><span id="count">0</span> / <span id="min">10</span>자 <span id="ok" class="ok hidden">가능</span></div>
+                <div class="actions">
+                  <button id="submit" class="btn" disabled>등록</button>
+                  <button id="cancel" class="btn ghost">취소</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="comments"></div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/all/boardAnswer.js}"></script>   
+</body>
+</html>

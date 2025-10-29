@@ -1,5 +1,7 @@
 package com.soldesk.team_project.dto;
 
+import java.time.LocalDate;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,9 +9,11 @@ import lombok.Setter;
 @Setter
 public class PurchaseDTO {
 
-    private Integer PurchaseIdx;
-    private Integer ProductIdx;
+    private Integer purchaseIdx;
+    private Integer productIdx;
     private Integer memberIdx;
-    private Integer lawyerIdx;
+    private String purchaseId;
+    private String purchaseState;
+    private LocalDate purchaseLegDate;
     
 }

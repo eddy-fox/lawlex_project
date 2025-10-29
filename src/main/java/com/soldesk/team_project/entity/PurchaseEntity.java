@@ -1,5 +1,7 @@
 package com.soldesk.team_project.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +25,7 @@ public class PurchaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    @Column(name = "purchase_idx", insertable = false, updatable = false)
+    @Column(name = "purchase_idx")
     private Integer purchaseIdx;
     
     @Column(name = "product_idx", insertable = false, updatable = false)
@@ -31,9 +33,15 @@ public class PurchaseEntity {
 
     @Column(name = "member_idx", insertable = false, updatable = false)
     private Integer memberIdx;
+    
+    @Column(name = "purchase_id")
+    private String purchaseId;
 
-    @Column(name = "lawyer_idx", insertable = false, updatable = false)
-    private Integer lawyerIdx;
+    @Column(name = "purchase_state")
+    private String purchaseState;
+
+    @Column(name = "purchase_legDate")
+    private LocalDate purchaseLegDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_idx")
@@ -42,9 +50,5 @@ public class PurchaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer;
     
 }
