@@ -13,25 +13,24 @@ import org.springframework.context.annotation.Configuration;
 public class GoogleDriveConfig {
 
     @Value("${google.drive.service-account-key-path}")
-    private String credentialsJson;
+    private String keyPath;
 
     @Bean
     public Drive driveService() throws Exception {
         var httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         var jsonFactory = JacksonFactory.getDefaultInstance();
 
-        if (credentialsJson == null || credentialsJson.isBlank()) {
-            throw new IllegalStateException("google.drive.credentials-json is empty");
+        if (keyPath == null || keyPath.isBlank()) {
+            throw new IllegalStateException("google.drive.service-account-key-path is empty");
         }
 
-        var credStream = new java.io.ByteArrayInputStream(
-                credentialsJson.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        try (var in = java.nio.file.Files.newInputStream(java.nio.file.Path.of(keyPath))) {
+            var creds = ServiceAccountCredentials.fromStream(in)
+                    .createScoped(java.util.List.of("https://www.googleapis.com/auth/drive"));
 
-        var creds = ServiceAccountCredentials.fromStream(credStream)
-                .createScoped(java.util.List.of("https://www.googleapis.com/auth/drive"));
-
-        return new Drive.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(creds))
-                .setApplicationName("Lawlex")
-                .build();
+            return new Drive.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(creds))
+                    .setApplicationName("Lawlex")
+                    .build();
+        }
     }
 }
