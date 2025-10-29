@@ -13,7 +13,7 @@ import com.soldesk.team_project.dto.ChatdataDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.service.ChatroomService;
-import com.soldesk.team_project.service.ChatDataService;
+import com.soldesk.team_project.service.ChatdataService;
 import com.soldesk.team_project.service.CalendarService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomController {
 
     private final ChatroomService chatroomService;
-    private final ChatDataService chatDataService;
+    private final ChatdataService chatDataService;
     private final CalendarService calendarService;
 
     /* ===================== 공통: 방 입장/읽음/비활성 ===================== */
@@ -98,8 +98,8 @@ public class ChatRoomController {
         }
         model.addAttribute("selectedDow", dow);
         model.addAttribute("duration",    duration);
-        model.addAttribute("lawyers",
-                calendarService.listLawyersOrderedByAvailability(dow, duration));
+        model.addAttribute("lawyers", calendarService.listLawyersForDayAsMap(dow));
+
         return "chat/member-main";
     }
 
