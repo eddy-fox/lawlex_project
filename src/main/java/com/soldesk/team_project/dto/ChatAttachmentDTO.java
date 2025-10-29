@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 public class ChatAttachmentDTO {
     
-    private Integer attatchmentId;
-    private Integer chatIdx;        // FK → chatdata.chat_idx
+    private Integer attachmentId;
 
     private String fileUrl;         // 파일 URL/S3 경로
     private String fileName;        // 원본/표시 이름
@@ -21,4 +20,6 @@ public class ChatAttachmentDTO {
     private Integer active;         // 1=표시, 0=숨김(소프트삭제)
 
     private LocalDateTime createdAt; // 업로드 시각
+
+    private Integer chatIdx; // FK → chatdata.chat_idx
 }

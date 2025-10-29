@@ -60,7 +60,7 @@ public class ChatdataEntity {
 
     @OneToMany(mappedBy = "chatData", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC, attachmentId ASC")
-    private List<ChatAttatchmentEntity> attachments = new ArrayList<>();
+    private List<ChatAttachmentEntity> attachments = new ArrayList<>();
 
 
 }
