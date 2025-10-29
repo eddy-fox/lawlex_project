@@ -4,11 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>관리자-문의글관리</title>
 <style>
-.page-QnAManagement, .page-QnAManagement *{ box-sizing:border-box; font-family:"Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif }
-.page-QnAManagement{ --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --panel:#f5f6f8; --navy:#0b1c78; color:var(--ink) }
-.page-QnAManagement .container{ width:min(1080px,94%); margin:28px auto 80px }
-
-h1{ font-size:22px; margin:4px 0 16px; letter-spacing:-.2px }
+<<<<<<< HEAD
+.llx-admin, .llx-admin *{ box-sizing:border-box; font-family:"Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif }
+.llx-admin{ --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --panel:#f5f6f8; --blue:#0b1c78; color:var(--ink); }
+.llx-admin .container{ width:min(1080px,94%); margin:28px auto 80px }
+.llx-card{ background:#fff; border:1px solid #e6e8ee; border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(0,0,0,.03) }
+h1{ font-size:22px; margin:4px 0 14px; letter-spacing:-.2px }
 .small{ font-size:12px; color:#6b7280 }
 
 /* Tabs */
@@ -85,67 +86,10 @@ tfoot td{ padding:10px; color:#9aa1ad; font-size:12px }
               <td class="center"><input type="checkbox" aria-label="답변 완료"></td>
             </tr>
           </tbody>
-
         </table>
       </div>
     </div>
   </div>
 </main>
-
-<script>
-(function(){
-  const tabs = document.querySelectorAll('.tabs a');
-  const table = document.getElementById('qnaTable').tBodies[0];
-  const searchBtn = document.getElementById('searchBtn');
-  const searchInput = document.getElementById('searchInput');
-  const searchField = document.getElementById('searchField');
-
-  function currentTab(){
-    return document.querySelector('.tabs a.active')?.dataset.tab || 'new';
-  }
-
-  function applyFilters(){
-    const q = searchInput.value.trim();
-    const field = searchField.value;
-    const tab = currentTab();
-    const rows = Array.from(table.rows);
-    rows.forEach(row => {
-      // answered from checkbox state (live), fallback to attribute
-      const answered = row.querySelector('input[type="checkbox"]')?.checked ?? (row.dataset.answered === 'true');
-      let visible = true;
-
-      // Tab filter
-      visible = visible && (tab === 'done' ? answered : !answered);
-
-      // Search filter
-      if(q){
-        const author = row.cells[1].textContent.trim();
-        const title  = row.cells[2].textContent.trim();
-        if(field === 'author') visible = visible && author.includes(q);
-        else if(field === 'title') visible = visible && title.includes(q);
-        else visible = visible && (author.includes(q) || title.includes(q));
-      }
-      row.style.display = visible ? '' : 'none';
-    });
-  }
-
-  tabs.forEach(t => t.addEventListener('click', e => {
-    e.preventDefault();
-    tabs.forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    applyFilters();
-  }));
-
-  searchBtn.addEventListener('click', applyFilters);
-  searchInput.addEventListener('keydown', e => { if(e.key === 'Enter') applyFilters(); });
-  // Checkbox changes should re-evaluate tab filter
-  document.getElementById('qnaTable').addEventListener('change', e => {
-    if(e.target.matches('input[type="checkbox"]')) applyFilters();
-  });
-
-  applyFilters();
-})();
-</script>
 </body>
 </html>
-<!-- admin > QnAManagement.html 수정함 -->

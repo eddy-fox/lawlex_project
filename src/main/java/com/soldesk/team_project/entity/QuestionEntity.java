@@ -29,6 +29,7 @@ public class QuestionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "q_idx")
     private Integer questionIdx;
 
@@ -59,6 +60,10 @@ public class QuestionEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lawyer_idx")
+    private LawyerEntity lawyer;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private List<AnswerEntity> answerList;
@@ -70,8 +75,5 @@ public class QuestionEntity {
 
     @ManyToMany
     Set<MemberEntity> voter;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer;
     
 }
