@@ -13,6 +13,5 @@ public class PointDTO {
     private String pointState;
     private LocalDate pointRegDate;
     private Integer memberIdx;
-    private Integer lawyerIdx;
 
 }
