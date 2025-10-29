@@ -1,0 +1,125 @@
+@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+
+:root{--navy:#000777;--navy-700:#001366;--ink:#0f172a;--muted:#667085;--paper:#ffffff;--line:#e2e6ff;--soft:#eef2ff;--shadow:0 2px 8px rgba(0,0,0,.04);--radius-card:12px;}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,"Apple SD Gothic Neo",sans-serif;color:var(--ink);line-height:1.6;background:var(--paper);}
+
+/* 로그인 상태 제어 */
+.guest-only{display:block;}
+.logged-only{display:none;}
+
+/* ===== 공통 레이아웃 ===== */
+.page-index .wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+.page-index section{padding:60px 0;background:transparent;}
+.page-index .bg-gray{background:#f8f9fa;}
+.page-index .section-ttl{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:32px;text-align:center;letter-spacing:-0.03em;line-height:1.3;}
+
+/* ===== 버튼 ===== */
+.page-index .btn{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;line-height:1.4;font-size:16px;font-weight:500;padding:14px 28px;transition:all .2s;border:0;box-sizing:border-box;}
+.page-index .btn-outline{background:#fff;color:var(--navy);border:2px solid var(--navy);}
+.page-index .btn-outline:hover{background:#f9fafb;border-color:var(--navy-700);color:var(--navy-700);}
+.page-index .btn-primary{background:var(--navy);color:#fff;border:0;}
+.page-index .btn-primary:hover{background:var(--navy-700);}
+
+/* ===== HERO ===== */
+.page-index .hero{background:linear-gradient(135deg,#e8eef7 0%,#d4e2f4 100%);padding:60px 0;position:relative;border-bottom:1px solid var(--line);}
+.page-index .inner{max-width:1200px;margin:0 auto;padding:0 20px;position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;}
+.page-index .content{flex:1;}
+.page-index .ttl-big{font-size:48px;font-weight:700;color:var(--ink);margin-bottom:20px;line-height:1.2;letter-spacing:-0.03em;}
+@media(min-width:1024px){.page-index .ttl-big{font-size:56px;}}
+.page-index .hl{color:var(--navy);font-weight:700;}
+.page-index .desc{font-size:20px;color:var(--muted);margin:-10px 0 32px;line-height:1.6;letter-spacing:-0.02em;max-width:600px;}
+.page-index .actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+
+/* hero nav buttons */
+.page-index .nav-btn{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:none;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;z-index:5;}
+.page-index .nav-prev{left:-20px;}
+.page-index .nav-next{right:-20px;}
+.page-index .nav-prev:hover{transform:translateY(-50%) translateX(-4px) scale(1.1);}
+.page-index .nav-next:hover{transform:translateY(-50%) translateX(4px) scale(1.1);}
+
+/* ===== 인기글 테이블 ===== */
+.page-index .list-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;box-shadow:var(--shadow);}
+.page-index .tbl{width:100%;border-collapse:collapse;table-layout:fixed;}
+.page-index .tbl thead{background:var(--soft);}
+.page-index .tbl th{padding:16px 12px;font-weight:700;color:var(--ink);font-size:14px;text-align:center;border-bottom:2px solid var(--line);}
+.page-index .tbl th:nth-child(1){width:56px;}
+.page-index .tbl th:nth-child(2){width:90px;}
+.page-index .tbl th:nth-child(4){width:72px;}
+.page-index .tbl td{padding:16px 12px;text-align:center;border-bottom:1px solid var(--line);font-size:14px;line-height:1.45;color:var(--ink);word-break:keep-all;}
+.page-index .tbl tbody tr:hover{background:#f8f9fa;}
+.page-index .tbl tbody tr:last-child td{border-bottom:none;}
+.page-index .cell-title{text-align:left;color:var(--ink);letter-spacing:-0.02em;}
+.page-index .badge{background:var(--navy);color:#fff;padding:4px 10px;border-radius:4px;font-size:12px;font-weight:500;line-height:1.3;display:inline-block;}
+
+/* ===== 변호사 카드 ===== */
+.page-index .lawyer-wrap{background:#f8f9fa;}
+.page-index .lawyer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;justify-content:center;}
+.page-index .lawyer-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);padding:32px 24px;text-align:center;transition:all .2s;box-shadow:var(--shadow);}
+.page-index .lawyer-card.featured{background:var(--navy);color:#fff;transform:scale(1.03);box-shadow:0 12px 32px rgba(0,7,119,.28);border:1px solid var(--navy);}
+.page-index .lawyer-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.08);}
+.page-index .lawyer-card.featured:hover{transform:scale(1.03) translateY(-4px);}
+.page-index .lawyer-head{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.03em;color:inherit;line-height:1.3;}
+.page-index .lawyer-name{font-size:16px;font-weight:400;margin-left:4px;color:inherit;}
+.page-index .lawyer-exp{font-size:14px;color:#6b7280;margin-bottom:20px;letter-spacing:-0.02em;line-height:1.4;}
+.page-index .lawyer-card.featured .lawyer-exp{color:rgba(255,255,255,.8);}
+.page-index .lawyer-stats{margin:20px auto;text-align:left;max-width:200px;}
+.page-index .lawyer-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;line-height:1.4;color:inherit;}
+.page-index .lawyer-ic{width:16px;height:16px;}
+.page-index .lawyer-btn{background:var(--navy);color:#fff;border:none;padding:10px 24px;border-radius:24px;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px;transition:all .2s;line-height:1.4;}
+.page-index .lawyer-card.featured .lawyer-btn{background:#fff;color:var(--navy);}
+.page-index .lawyer-btn:hover{opacity:.9;transform:scale(1.05);}
+
+/* ===== 법률 정보 카드 ===== */
+.page-index .legal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;justify-content:center;}
+.page-index .legal-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;transition:all .2s;box-shadow:var(--shadow);cursor:pointer;}
+.page-index .legal-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.08);}
+.page-index .legal-img{width:100%;height:200px;background:#f0f0f0;position:relative;}
+/* moved inline gradients */
+.page-index .bg-legal1{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
+.page-index .bg-legal2{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);}
+.page-index .bg-legal3{background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);}
+.page-index .legal-badge{position:absolute;top:12px;left:12px;background:#ff4444;color:#fff;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700;line-height:1.3;}
+.page-index .legal-badge.new{background:var(--navy);}
+.page-index .legal-body{padding:20px;}
+.page-index .legal-ttl{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.4;letter-spacing:-0.03em;}
+.page-index .legal-meta{display:flex;align-items:center;gap:6px;color:#999;font-size:12px;line-height:1.4;}
+.page-index .legal-ic{width:14px;height:14px;}
+
+/* ===== 뉴스 ===== */
+.page-index .news-wrap{background:#f8f9fa;}
+.page-index .news-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;}
+.page-index .news-left{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.page-index .news-tabs{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;font-size:22px;font-weight:700;color:var(--ink);line-height:1.3;letter-spacing:-0.03em;}
+.page-index .tab{cursor:pointer;font-size:18px;color:var(--muted);font-weight:500;line-height:1.3;transition:all .2s;}
+.page-index .tab.active{color:var(--navy);font-weight:700;font-size:22px;}
+.page-index .tab-sep{color:#9ca3af;font-weight:400;font-size:18px;line-height:1.3;}
+.page-index .news-list{background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);padding:24px 20px;box-shadow:var(--shadow);}
+.page-index .news-item{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:all .2s;line-height:1.45;letter-spacing:-0.02em;}
+.page-index .news-item:hover{background:#f8f9fa;padding-left:10px;}
+.page-index .news-item:last-child{border-bottom:none;}
+.page-index .rank{font-size:20px;font-weight:700;color:var(--navy);min-width:28px;line-height:1.2;}
+.page-index .text{flex:1;font-size:14px;color:var(--ink);word-break:keep-all;line-height:1.45;}
+/* moved initial hidden state from inline style */
+.page-index #news-latest{display:none;}
+
+/* ===== 반응형 ===== */
+@media(max-width:768px){
+  .page-index .ttl-big{font-size:32px;line-height:1.25;}
+  .page-index .desc{font-size:16px;}
+  .page-index .inner{flex-direction:column;align-items:flex-start;}
+  .page-index .nav-btn{display:none;}
+  .page-index section{padding:40px 0;}
+  .page-index .section-ttl{font-size:20px;}
+  .page-index .lawyer-grid,.page-index .legal-grid{grid-template-columns:1fr;}
+  .page-index .lawyer-card.featured{transform:scale(1);}
+  .page-index .lawyer-stats{text-align:left;margin-left:0;margin-right:0;}
+  .page-index .news-head{flex-direction:column;align-items:flex-start;}
+  .page-index .news-left{flex-direction:column;align-items:flex-start;gap:8px;}
+  .page-index .tab{font-size:16px;}
+  .page-index .tab.active{font-size:20px;}
+  .page-index .tab-sep{font-size:16px;}
+}

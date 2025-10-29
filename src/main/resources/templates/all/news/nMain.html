@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소식 메인</title>
+    <link rel="stylesheet" th:href="@{/all/nMain.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-nMain">
+    <div class="wrap">
+
+        <section class="section">
+        <form>
+            <div class="section-head">
+            <h1 class="title">NEWS</h1>
+            <div class="section-more">더보기 ▸</div>
+            </div>
+            <div class="section-line"></div>
+
+            <div class="grid">
+            <article class="item">
+                <div class="thumb">이미지</div>
+                <h1 class="title-sub">뉴스 제목 하나</h1>
+                <div class="desc">뉴스 요약문</div>
+            </article>
+
+            <article class="item">
+                <div class="thumb">이미지</div>
+                <h1 class="title-sub">뉴스 제목 둘</h1>
+                <div class="desc">뉴스 요약문</div>
+            </article>
+
+            <article class="item">
+                <div class="thumb">이미지</div>
+                <h1 class="title-sub">뉴스 제목 셋</h1>
+                <div class="desc">뉴스 요약문</div>
+            </article>
+            </div>
+        </form>
+        </section>
+
+        <section class="section">
+        <form>
+            <div class="section-head">
+            <h1 class="title">동영상</h1>
+            <div class="section-more">더보기 ▸</div>
+            </div>
+            <div class="section-line"></div>
+
+            <div class="grid">
+            <article class="item">
+                <div class="thumb video">영상 썸네일</div>
+                <h1 class="title-sub">동영상 제목 하나</h1>
+                <div class="desc">영상 설명 요약</div>
+            </article>
+
+            <article class="item">
+                <div class="thumb video">영상 썸네일</div>
+                <h1 class="title-sub">동영상 제목 둘</h1>
+                <div class="desc">영상 설명 요약</div>
+            </article>
+
+            <article class="item">
+                <div class="thumb video">영상 썸네일</div>
+                <h1 class="title-sub">동영상 제목 셋</h1>
+                <div class="desc">영상 설명 요약</div>
+            </article>
+            </div>
+        </form>
+        </section>
+
+        <section class="section">
+        <form>
+            <div class="section-head">
+            <h1 class="title">칼럼</h1>
+            <div class="section-more">더보기 ▸</div>
+            </div>
+            <div class="section-line"></div>
+
+            <div class="grid">
+            <article class="item">
+                <div class="thumb">이미지</div>
+                <h1 class="title-sub">칼럼 제목 하나</h1>
+                <div class="desc">칼럼 요약 내용</div>
+            </article>
+
+            <article class="item">
+                <div class="thumb">이미지</div>
+                <h1 class="title-sub">칼럼 제목 둘</h1>
+                <div class="desc">칼럼 요약 내용</div>
+            </article>
+
+            <article class="item">
+                <div class="thumb">이미지</div>
+                <h1 class="title-sub">칼럼 제목 셋</h1>
+                <div class="desc">칼럼 요약 내용</div>
+            </article>
+            </div>
+        </form>
+        </section>
+
+        <section class="section">
+        <form>
+            <div class="notice">
+            <div class="notice-head">
+                <div>공지사항</div>
+                <div class="section-more">더보기 ▸</div>
+            </div>
+
+            <table class="notice-table">
+                <thead>
+                <tr>
+                    <th class="col-num">번호</th>
+                    <th>제목</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>3</td>
+                    <td>공지사항 제목입니다</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>공지사항 제목입니다</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>공지사항 제목입니다</td>
+                </tr>
+                </tbody>
+            </table>
+            </div>
+        </form>
+        </section>
+
+    </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/all/nMain.js}"></script>
+</body>
+</html>
