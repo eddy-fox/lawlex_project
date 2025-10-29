@@ -59,6 +59,5 @@ public class QuestionEntity {
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
     
-
     
 }
