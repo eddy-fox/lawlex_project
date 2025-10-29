@@ -33,20 +33,11 @@ public class PurchaseService {
     private PointDTO convertPointDTO (PointEntity pointEntity) {
         PointDTO pointDTO = new PointDTO();
         pointDTO.setPointIdx(pointEntity.getPointIdx());
+        pointDTO.setPointDivision(pointEntity.getPointDivision());
         pointDTO.setPointState(pointEntity.getPointState());
+        pointDTO.setPointHistory(pointEntity.getPointHistory());
         pointDTO.setPointRegDate(pointEntity.getPointRegDate());
-
-        if (pointEntity.getMemberIdx() != null) {
-            pointDTO.setMemberIdx(pointEntity.getMemberIdx());
-        } else {
-            pointDTO.setMemberIdx(null);
-        }
-
-        if (pointEntity.getLawyerIdx() != null) {
-            pointDTO.setLawyerIdx(pointEntity.getLawyerIdx());
-        } else {
-            pointDTO.setLawyerIdx(null);
-        }
+        pointDTO.setMemberIdx(pointEntity.getMemberIdx());
 
         return pointDTO;
     }
@@ -70,18 +61,7 @@ public class PurchaseService {
         purchaseDTO.setPurchaseState(purchaseEntity.getPurchaseState());
         purchaseDTO.setPurchaseLegDate(purchaseEntity.getPurchaseLegDate());
         purchaseDTO.setProductIdx(purchaseEntity.getProductIdx());
-
-        if (purchaseEntity.getMemberIdx() != null) {
-            purchaseDTO.setMemberIdx(purchaseEntity.getMemberIdx());
-        } else {
-            purchaseDTO.setMemberIdx(null);
-        }
-
-        if (purchaseEntity.getLawyerIdx() != null) {
-            purchaseDTO.setLawyerIdx(purchaseEntity.getLawyerIdx());
-        } else {
-            purchaseDTO.setLawyerIdx(null);
-        }
+        purchaseDTO.setMemberIdx(purchaseEntity.getMemberIdx());
 
         return purchaseDTO;
     }
@@ -100,6 +80,15 @@ public class PurchaseService {
         return purchaseEntity;
     }
 
+    // 포인트 구매 상품만 가져오기
+    public List<ProductDTO> getBuyPointProduct() {
+        List<ProductEntity> productEntityList = productRepository.findByProductContentContainingAndProductActiveOrderByProductIdxAsc("포인트", 1);
+
+        return productEntityList.stream()
+            .map(productEntity -> convertProductDTO(productEntity)).collect(Collectors.toList());
+    }
+
+
     // 모든 포인트 내역 조회
     public List<PointDTO> getAllPoint(int memberIdx) { // 회원 정보 넣어야함
         List<PointEntity> pointEntityList = pointRepository.findByMemberIdxOrderByPointIdxDesc(memberIdx); // 회원정보 넣어야함
@@ -110,7 +99,7 @@ public class PurchaseService {
 
     // 모든 구매 내역 조회
     public List<PurchaseDTO> getAllPurchase(int memberIdx) { // 회원 정보 넣어야함
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findByMemberIdxOrderByPurchaseIdxDesc(memberIdx); // 회원정보 넣어야함
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findByMemberIdxAndPurchaseStateOrderByPurchaseIdxDesc(memberIdx, "success"); // 회원정보 넣어야함
 
         return purchaseEntityList.stream()
             .map(purchaseEntity -> convertPurchaseDTO(purchaseEntity)).collect(Collectors.toList());
@@ -178,8 +167,9 @@ public class PurchaseService {
 
         // 3. 포인트 변동사항
         PointEntity pointEntity = new PointEntity();
-        String pointChanges = content + "포인트 충전";
-        pointEntity.setPointState(pointChanges);
+        pointEntity.setPointDivision("충전");
+        pointEntity.setPointState(content);
+        pointEntity.setPointHistory(content + " 포인트 충전");
         pointEntity.setMemberIdx(memberIdx);
 
         // 4. 저장

@@ -10,8 +10,10 @@ import com.soldesk.team_project.entity.LawyerEntity;
 @Repository
 public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
 
+    // 모든 변호사 회원 조회
     List<LawyerEntity> findByLawyerActive(Integer lawyerActive);
 
+    // 검색타입 별 변호사 회원 검색
     List<LawyerEntity> findByLawyerIdxAndLawyerActive(Integer lawyerIdx, Integer lawyerActive);
     List<LawyerEntity> findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(String lawyerId, Integer lawyerActive);
     List<LawyerEntity> findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(String lawyerName, Integer lawyerActive);

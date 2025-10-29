@@ -72,9 +72,6 @@ public class LawyerEntity {
     @Column(name = "lawyer_answerCnt")
     private Integer lawyerAnswerCnt;
 
-    @Column(name = "lawyer_point")
-    private Integer lawyerPoint;
-
     @Column(name = "lawyer_active")
     private Integer lawyerActive;
     
@@ -84,10 +81,6 @@ public class LawyerEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
-    
-
-    @OneToMany(mappedBy = "lawyer")
-    private java.util.List<PointEntity> point;
 
     @OneToMany(mappedBy = "lawyer")
     private java.util.List<AdEntity> ad;

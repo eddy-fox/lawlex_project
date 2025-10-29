@@ -10,7 +10,9 @@ import lombok.Setter;
 public class PointDTO {
     
     private Integer pointIdx;
-    private String pointState;
+    private String pointDivision;
+    private Integer pointState;
+    private String pointHistory;
     private LocalDate pointRegDate;
     private Integer memberIdx;
 

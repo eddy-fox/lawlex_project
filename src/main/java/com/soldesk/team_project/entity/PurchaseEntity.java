@@ -33,10 +33,7 @@ public class PurchaseEntity {
 
     @Column(name = "member_idx", insertable = false, updatable = false)
     private Integer memberIdx;
-
-    @Column(name = "lawyer_idx", insertable = false, updatable = false)
-    private Integer lawyerIdx;
-
+    
     @Column(name = "purchase_id")
     private String purchaseId;
 
@@ -53,9 +50,5 @@ public class PurchaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer;
     
 }

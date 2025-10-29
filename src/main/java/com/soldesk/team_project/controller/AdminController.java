@@ -5,14 +5,17 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.QuestionService;
@@ -27,6 +30,7 @@ public class AdminController {
     private final MemberService memberService;
     private final LawyerService lawyerService;
     private final QuestionService questionService;
+    private final AdService adService;
 
     @GetMapping("/memberManagement")
     public String memberList(
@@ -94,16 +98,12 @@ public class AdminController {
         List<QuestionDTO> newQuestions;
         List<QuestionDTO> completedQuestions;
 
-        String qNew = "N";
-        String qCompleted = "Y";
-
-
         if (keyword == null || keyword.trim().isEmpty()) {
-            newQuestions = questionService.getNewQuestions(qNew);
-            completedQuestions = questionService.getCompletedQuestions(qCompleted);
+            newQuestions = questionService.getQuestions(0);
+            completedQuestions = questionService.getQuestions(1);
         } else {
-            newQuestions = questionService.searchNewQuestions(searchType, keyword, qNew);
-            completedQuestions = questionService.searchCompletedQuestions(searchType, keyword, qCompleted);
+            newQuestions = questionService.searchQuestions(searchType, keyword, 0);
+            completedQuestions = questionService.searchQuestions(searchType, keyword, 1);
         }
 
         model.addAttribute("newQuestions", newQuestions);
@@ -123,4 +123,57 @@ public class AdminController {
         return "redirect:/admin/QnAManagement";
     }
 
+    @GetMapping("/adManagement")
+    public String adList(Model model) {
+        
+        // 만료된 광고 비활성화
+        adService.refreshActiveAds();
+
+        // 활성 광고 조회
+        List<AdDTO> adList = adService.getAllAd();
+
+        model.addAttribute("adList", adList);
+        return "admin/adManagement";
+    }
+
+    @GetMapping("/adRegistration")
+    public String registAdForm(@ModelAttribute("adRegistration")AdDTO adRegistration) {
+        return "admin/adRegistration";
+    }
+    @PostMapping("/adRegistration")
+    public String registAdSubmit(@ModelAttribute("adRegistration")AdDTO adRegistration) {
+        adService.registProcess(adRegistration);
+
+        return "redirect:/admin/adManagement";
+    }
+
+    @GetMapping("/adInfo")
+    public String showAd(@RequestParam("adIdx") int adIdx, Model model) {
+        AdDTO ad = adService.getAd(adIdx);
+        model.addAttribute("ad", ad);
+
+        return "admin/adInfo";
+    }
+
+    @GetMapping("/adModify")
+    public String modifyForm(@RequestParam("adIdx") int adIdx, Model model) {
+        AdDTO modifyAd = adService.getAd(adIdx);
+        model.addAttribute("modifyAd", modifyAd);
+
+        return "admin/adInfo";
+    }
+    @PostMapping("/adModify")
+    public String modifySubmit(@ModelAttribute("modifyAd") AdDTO modifyAd, Model model) {
+        adService.modifyProcess(modifyAd);
+
+        return "redirect:/admin/adInfo?adIdx";
+    }
+
+    @GetMapping("/adDelete")
+    public String deleteAd(@RequestParam("adIdx") int adIdx) {
+        adService.deleteProcess(adIdx);
+
+        return "admin/adInfo";
+    }
+    
 }

@@ -28,8 +28,14 @@ public class PointEntity {
     @Column(name = "point_idx")
     private Integer pointIdx;
 
+    @Column(name = "point_division")
+    private String pointDivision;
+
     @Column(name = "point_state")
-    private String pointState;
+    private Integer pointState;
+
+    @Column(name = "point_history")
+    private String pointHistory;
 
     @Column(name = "point_regDate")
     private LocalDate pointRegDate;
@@ -37,15 +43,8 @@ public class PointEntity {
     @Column(name = "member_idx", insertable = false, updatable = false)
     private Integer memberIdx;
 
-    @Column(name = "lawyer_idx", insertable = false, updatable = false)
-    private Integer lawyerIdx;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer;
 
 }

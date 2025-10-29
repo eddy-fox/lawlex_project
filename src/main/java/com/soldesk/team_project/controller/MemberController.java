@@ -27,6 +27,12 @@ public class MemberController {
     public String pointMain(Model model) {
         
         int memberIdx = 1; // 회원정보 받아와서 넘겨야함
+        
+        // 포인트 구매 상품
+        List<ProductDTO> productList = purchaseService.getBuyPointProduct();
+        model.addAttribute("productList", productList);
+        
+        // 포인트 사용 내역 및 결제 내역
         List<PointDTO> pointList = purchaseService.getAllPoint(memberIdx);
         List<PurchaseDTO> purchaseList = purchaseService.getAllPurchase(memberIdx);
 
@@ -37,9 +43,6 @@ public class MemberController {
     }
     @PostMapping("/point")
     public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model) {
-
-        // ProductDTO product = purchaseService.getProduct(productNum);
-        // model.addAttribute("product", product);
 
         String purchaseId = "order-" + System.currentTimeMillis();
         PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId); // 회원정보도 같이 줘야함
