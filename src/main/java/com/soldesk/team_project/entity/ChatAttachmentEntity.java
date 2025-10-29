@@ -27,7 +27,7 @@ import jakarta.persistence.ManyToOne;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatAttatchmentEntity {
+public class ChatAttachmentEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
