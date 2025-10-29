@@ -85,11 +85,6 @@ public class LawyerEntity {
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
     
-    @OneToMany(mappedBy = "lawyer")
-    private java.util.List<QuestionEntity> question;
-
-    @OneToMany(mappedBy = "lawyer")
-    private java.util.List<PurchaseEntity> purchase;
 
     @OneToMany(mappedBy = "lawyer")
     private java.util.List<PointEntity> point;

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TossProperties {
-    
     @Value("${toss.secret-key}")
     private String secretKey;
 

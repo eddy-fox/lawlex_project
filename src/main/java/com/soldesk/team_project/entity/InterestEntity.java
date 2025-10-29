@@ -20,7 +20,6 @@ public class InterestEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "interest_idx")
     private Integer interestIdx;
 

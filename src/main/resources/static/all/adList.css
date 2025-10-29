@@ -30,7 +30,6 @@
   .container{ width:min(1080px,94%); margin:28px auto 80px }
   .container h1{ color:var(--navy); font-size:22px; margin:4px 0 14px; letter-spacing:-.2px }
 
-  /* 카드 리스트 */
   .ad-list{ display:flex; flex-direction:column; gap:18px }
   .ad-item{
     display:grid;

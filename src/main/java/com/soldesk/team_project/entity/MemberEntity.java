@@ -64,8 +64,6 @@ public class MemberEntity {
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
 
-    @OneToMany(mappedBy = "member")
-    private java.util.List<QuestionEntity> question;
 
     @OneToMany(mappedBy = "member")
     private java.util.List<PurchaseEntity> purchase;

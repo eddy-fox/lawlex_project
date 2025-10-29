@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>일반회원 마이페이지</title>
+  <style>
+  .llx-mypage{ --ink:#111827; --line:#e5e7eb; --muted:#6b7280; --card:#f0f0f0; --white:#fff; --black:#000; }
+  .llx-mypage, .llx-mypage *{ box-sizing:border-box }
+  .llx-mypage{ color:var(--ink); line-height:1.6; }
+  .llx-mypage .container{ width:min(1120px,92%); margin:0 auto; }
+  /* Title */
+  .llx-mypage .page-title{ font-size:34px; font-weight:800; margin:32px 0 8px; letter-spacing:-0.02em }
+  .llx-mypage .role{ font-size:14px; color:#222; margin-bottom:10px }
+  /* Profile header */
+  .llx-mypage .profile-bar{ display:flex; align-items:center; gap:16px; padding:16px 0 10px; border-bottom:1px solid var(--ink) }
+  .llx-mypage .avatar{ width:120px; height:140px; border:1px solid #bbb; background:#f7f7f7; display:flex; align-items:center; justify-content:center; font-size:12px; color:#444 }
+  .llx-mypage .username{ font-size:24px; font-weight:700 }
+  .llx-mypage .spacer{ flex:1 }
+  .llx-mypage .edit-btn{ background:#000; color:#fff; border:none; border-radius:6px; height:28px; padding:0 10px; font-size:12px; cursor:pointer }
+  /* Grid */
+  .llx-mypage .grid{ display:grid; gap:24px; margin:28px 0 }
+  .llx-mypage .grid.cols-2{ grid-template-columns: 1fr 1fr }
+  .llx-mypage .grid.cols-3{ grid-template-columns: repeat(3, 1fr) }
+  /* Card */
+  .llx-mypage .card{ background:#e5e5e5; border-radius:14px; padding:22px 24px; }
+  .llx-mypage .card h3{ font-size:14px; text-align:center; margin:0 0 16px; color:#333; font-weight:600 }
+  /* Lines with arrow */
+  .llx-mypage .linkline{ position:relative; display:block; padding:10px 28px 10px 0; margin:14px 0; border-bottom:3px solid #9f9f9f; color:#222; text-decoration:none }
+  .llx-mypage .linkline:after{ content:'›'; position:absolute; right:0; top:0; height:100%; display:flex; align-items:center; font-size:22px }
+  /* Payment big */
+  .llx-mypage .pay-big{ font-size:48px; font-weight:800; letter-spacing:0.02em; margin:6px 0 16px }
+  .llx-mypage .pill{ background:#fff; border:1px solid #cfcfcf; border-radius:12px; height:34px; padding:0 12px; font-size:13px; cursor:pointer }
+  .llx-mypage .pill.dark{ background:#000; color:#fff; border-color:#000 }
+  .llx-mypage .pill-row{ display:flex; gap:12px; flex-wrap:wrap }
+  /* Stat tiles */
+  .llx-mypage .stat{ background:#e5e5e5; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px }
+  .llx-mypage .stat .label{ font-size:12px; color:#333 }
+  .llx-mypage .stat .value{ font-size:44px; font-weight:800 }
+  /* Responsive */
+  @media (max-width:980px){
+    .llx-mypage .grid.cols-3{ grid-template-columns: 1fr }
+    .llx-mypage .grid.cols-2{ grid-template-columns: 1fr }
+  }
+</style>
+</head>
+<body>
+<main class="llx-mypage">
+  <div class="container">
+    <h1 class="page-title">마이 페이지</h1>
+    <div class="role">의뢰인</div>
+    <div class="profile-bar">
+      <div class="avatar">기본 이미지</div>
+      <div class="username">사용자 이름</div>
+      <div class="spacer"></div>
+      <button class="edit-btn">정보수정</button>
+    </div>
+
+    <!-- 1행: 내가 쓴 글 / 내 결제 -->
+    <div class="grid cols-2" style="margin-top:28px">
+      <section class="card">
+        <h3>내가 쓴 글</h3>
+        <a class="linkline" href="#">12345</a>
+        <a class="linkline" href="#"></a>
+      </section>
+
+      <section class="card">
+        <h3 style="text-align:left">내 결제</h3>
+        <div class="pay-big">15,000P</div>
+        <div class="pill-row">
+          <button class="pill dark">결제하기</button>
+          <button class="pill">결제내역</button>
+          <button class="pill">포인트 사용내역</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- 2행: 내가 쓴 댓글 -->
+    <div class="grid">
+      <section class="card" style="max-width:520px;">
+        <h3>내가 쓴 댓글</h3>
+        <a class="linkline" href="#">12345</a>
+        <a class="linkline" href="#"></a>
+      </section>
+    </div>
+  </div>
+</main>
+</body>
+</html>
+<!-- member > gInfo.html -->
