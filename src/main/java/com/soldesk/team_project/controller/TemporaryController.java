@@ -16,6 +16,16 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
+    /* 사이드 메뉴 확인 */
+    @GetMapping("/nMain")
+    public String nMainside(){
+        return "/nMain";
+    }
+    @GetMapping("/noticeList")
+    public String noticeListside(){
+        return "/noticeList";
+    }
+
     @GetMapping("/all/chat/lawyerMain")
     public String lawyerMain(){
         return "/all/chat/lawyerMain";
@@ -99,6 +109,10 @@ public class TemporaryController {
     @GetMapping("/all/newsBoard/nMain")
     public String nMain(){
         return "/all/newsBoard/nMain";
+    }
+    @GetMapping("/all/newsBoard/noticeList")
+    public String noticeList(){
+        return "/all/newsBoard/noticeList";
     }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();

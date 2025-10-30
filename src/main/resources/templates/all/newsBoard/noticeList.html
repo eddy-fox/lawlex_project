@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 리스트</title>
+    <link rel="stylesheet" th:href="@{/all/noticeList.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+  <main class="page-noticeList">
+    <section class="notice-frame">
+      <div class="table-head">
+        <div class="col-no">글번호</div>
+        <div class="col-title">제목</div>
+        <div class="col-date">등록일</div>
+      </div>
+
+      <a href="#" class="notice-link">
+        <div class="col-no">20</div>
+        <div class="col-title">[공지] 변호사 회원 기능 업그레이드 안내</div>
+        <div class="col-date">2025-10-29</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">19</div>
+        <div class="col-title">[안내] LawLex 모바일 앱 런칭 예정</div>
+        <div class="col-date">2025-10-25</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">18</div>
+        <div class="col-title">[공지] 정기 점검 안내 (10/31 00:00~03:00)</div>
+        <div class="col-date">2025-10-24</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">17</div>
+        <div class="col-title">[이벤트] 신규가입 시 1,000포인트 지급</div>
+        <div class="col-date">2025-10-20</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">16</div>
+        <div class="col-title">[업데이트] 상담글 검색 기능 개선 안내</div>
+        <div class="col-date">2025-10-18</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">15</div>
+        <div class="col-title">[공지] 서버 안정화 패치 완료 안내</div>
+        <div class="col-date">2025-10-15</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">14</div>
+        <div class="col-title">[안내] 개인정보 처리방침 개정 예정</div>
+        <div class="col-date">2025-10-10</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">13</div>
+        <div class="col-title">[공지] 주말 고객센터 운영시간 변경</div>
+        <div class="col-date">2025-10-08</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">12</div>
+        <div class="col-title">[공지] 접속 지연 관련 긴급 점검 안내</div>
+        <div class="col-date">2025-10-06</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">11</div>
+        <div class="col-title">[공지] 회원 탈퇴 절차 개선 안내</div>
+        <div class="col-date">2025-10-05</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">10</div>
+        <div class="col-title">[공지] 상담 예약 취소 정책 변경</div>
+        <div class="col-date">2025-09-29</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">9</div>
+        <div class="col-title">[업데이트] 변호사 프로필 페이지 개편 완료</div>
+        <div class="col-date">2025-09-26</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">8</div>
+        <div class="col-title">[공지] 법률 뉴스 알림 기능 추가 안내</div>
+        <div class="col-date">2025-09-20</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">7</div>
+        <div class="col-title">[이벤트] 9월 신규 가입자 포인트 이벤트</div>
+        <div class="col-date">2025-09-10</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">6</div>
+        <div class="col-title">[공지] 시스템 점검으로 인한 서비스 일시 중단</div>
+        <div class="col-date">2025-09-07</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">5</div>
+        <div class="col-title">[안내] LawLex 서버 교체 일정 안내</div>
+        <div class="col-date">2025-08-30</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">4</div>
+        <div class="col-title">[공지] 회원 비밀번호 보안 정책 강화</div>
+        <div class="col-date">2025-08-25</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">3</div>
+        <div class="col-title">[공지] AI 상담 기능 베타 오픈</div>
+        <div class="col-date">2025-08-20</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">2</div>
+        <div class="col-title">[안내] 법률 전문 뉴스 섹션 추가</div>
+        <div class="col-date">2025-08-15</div>
+      </a>
+      <a href="#" class="notice-link">
+        <div class="col-no">1</div>
+        <div class="col-title">[공지] LawLex 서비스 오픈 안내</div>
+        <div class="col-date">2025-08-01</div>
+      </a>
+    </section>
+
+    <nav class="pagination" id="pagination"></nav>
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/all/noticeList.js}"></script>
+</body>
+</html>
