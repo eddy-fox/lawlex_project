@@ -14,7 +14,7 @@ public class QuestionDTO {
     private String qContent;
     private LocalDate qRegDate;
     private String qSecret;
-    private String qAnswer;
+    private Integer qAnswer;
     private Integer qActive;
     private Integer memberIdx;
     private Integer lawyerIdx;
