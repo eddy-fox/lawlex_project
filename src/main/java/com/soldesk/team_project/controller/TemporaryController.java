@@ -16,16 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
-    /* 사이드 메뉴 확인 */
-    @GetMapping("/nMain")
-    public String nMainside(){
-        return "/nMain";
-    }
-    @GetMapping("/noticeList")
-    public String noticeListside(){
-        return "/noticeList";
-    }
-
     @GetMapping("/all/chat/lawyerMain")
     public String lawyerMain(){
         return "/all/chat/lawyerMain";
