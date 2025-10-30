@@ -105,6 +105,10 @@ public class TemporaryController {
     public String noticeList(){
         return "/all/newsBoard/noticeList";
     }
+    @GetMapping("/all/newsBoard/nList")
+    public String nList(){
+        return "/all/newsBoard/nList";
+    }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();
 
