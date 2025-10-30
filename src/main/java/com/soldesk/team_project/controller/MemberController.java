@@ -23,6 +23,7 @@ public class MemberController {
 
     private final PurchaseService purchaseService;
     
+    // 멤버 포인트
     @GetMapping("/point")
     public String pointMain(Model model) {
         
@@ -44,7 +45,9 @@ public class MemberController {
     @PostMapping("/point")
     public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model) {
 
+        // 구매 검증을 위한 ID 생성
         String purchaseId = "order-" + System.currentTimeMillis();
+        // 구매 요청 내역 생성
         PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId); // 회원정보도 같이 줘야함
         model.addAttribute("purchase", purchase);
         

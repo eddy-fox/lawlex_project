@@ -32,6 +32,7 @@ public class AdminController {
     private final QuestionService questionService;
     private final AdService adService;
 
+    // 일반 회원 관리
     @GetMapping("/memberManagement")
     public String memberList(
         @RequestParam(value = "keyword",required = false) String keyword, Model model, 
@@ -40,8 +41,10 @@ public class AdminController {
         List<MemberDTO> memberList;
 
         if (keyword == null || keyword.trim().isEmpty()) {
+            // 모든 회원 조회
             memberList = memberService.getAllMember();
         } else {
+            // 검색으로 회원 조회
             memberList = memberService.searchMembers(searchType, keyword);
         }
 
@@ -61,6 +64,7 @@ public class AdminController {
         return "redirect:/admin/memberManagement";
     }
 
+    // 변호사 회원 관리
     @GetMapping("/lawyerManagement")
     public String lawyerList(
         @RequestParam(value = "keyword",required = false) String keyword, Model model, 
@@ -69,8 +73,10 @@ public class AdminController {
         List<LawyerDTO> lawyerList;
 
         if (keyword == null || keyword.trim().isEmpty()) {
+            // 모든 회원 조회
             lawyerList = lawyerService.getAllLawyer();
         } else {
+            // 검색으로 회원 조회
             lawyerList = lawyerService.searchLawyers(searchType, keyword);
         }
 
@@ -90,6 +96,7 @@ public class AdminController {
         return "redirect:/admin/lawyerManagement";
     }
 
+    // 문의글 관리
     @GetMapping("/QnAManagement")
     public String questionList(
         @RequestParam(value = "keyword",required = false) String keyword, Model model, 
@@ -99,9 +106,11 @@ public class AdminController {
         List<QuestionDTO> completedQuestions;
 
         if (keyword == null || keyword.trim().isEmpty()) {
+            // 새로운, 답변한 문의글 조회
             newQuestions = questionService.getQuestions(0);
             completedQuestions = questionService.getQuestions(1);
         } else {
+            // 검색으로 새로운, 답변한 문의글 조회
             newQuestions = questionService.searchQuestions(searchType, keyword, 0);
             completedQuestions = questionService.searchQuestions(searchType, keyword, 1);
         }
@@ -123,6 +132,7 @@ public class AdminController {
         return "redirect:/admin/QnAManagement";
     }
 
+    // 광고 관리
     @GetMapping("/adManagement")
     public String adList(Model model) {
         
@@ -136,6 +146,7 @@ public class AdminController {
         return "admin/adManagement";
     }
 
+    // 광고 등록
     @GetMapping("/adRegistration")
     public String registAdForm(@ModelAttribute("adRegistration")AdDTO adRegistration) {
         return "admin/adRegistration";
@@ -147,6 +158,7 @@ public class AdminController {
         return "redirect:/admin/adManagement";
     }
 
+    // 광고 상세
     @GetMapping("/adInfo")
     public String showAd(@RequestParam("adIdx") int adIdx, Model model) {
         AdDTO ad = adService.getAd(adIdx);
@@ -155,6 +167,7 @@ public class AdminController {
         return "admin/adInfo";
     }
 
+    // 광고 수정
     @GetMapping("/adModify")
     public String modifyForm(@RequestParam("adIdx") int adIdx, Model model) {
         AdDTO modifyAd = adService.getAd(adIdx);
@@ -169,6 +182,7 @@ public class AdminController {
         return "redirect:/admin/adInfo?adIdx";
     }
 
+    // 광고 삭제
     @GetMapping("/adDelete")
     public String deleteAd(@RequestParam("adIdx") int adIdx) {
         adService.deleteProcess(adIdx);

@@ -82,7 +82,8 @@ public class PurchaseService {
 
     // 포인트 구매 상품만 가져오기
     public List<ProductDTO> getBuyPointProduct() {
-        List<ProductEntity> productEntityList = productRepository.findByProductContentContainingAndProductActiveOrderByProductIdxAsc("포인트", 1);
+        List<ProductEntity> productEntityList = productRepository
+            .findByProductContentContainingAndProductActiveOrderByProductIdxAsc("포인트", 1);
 
         return productEntityList.stream()
             .map(productEntity -> convertProductDTO(productEntity)).collect(Collectors.toList());
@@ -91,7 +92,8 @@ public class PurchaseService {
 
     // 모든 포인트 내역 조회
     public List<PointDTO> getAllPoint(int memberIdx) { // 회원 정보 넣어야함
-        List<PointEntity> pointEntityList = pointRepository.findByMemberIdxOrderByPointIdxDesc(memberIdx); // 회원정보 넣어야함
+        List<PointEntity> pointEntityList = pointRepository
+            .findByMemberIdxOrderByPointIdxDesc(memberIdx); // 회원정보 넣어야함
 
         return pointEntityList.stream()
             .map(pointEntity -> convertPointDTO(pointEntity)).collect(Collectors.toList());
@@ -99,7 +101,8 @@ public class PurchaseService {
 
     // 모든 구매 내역 조회
     public List<PurchaseDTO> getAllPurchase(int memberIdx) { // 회원 정보 넣어야함
-        List<PurchaseEntity> purchaseEntityList = purchaseRepository.findByMemberIdxAndPurchaseStateOrderByPurchaseIdxDesc(memberIdx, "success"); // 회원정보 넣어야함
+        List<PurchaseEntity> purchaseEntityList = purchaseRepository
+            .findByMemberIdxAndPurchaseStateOrderByPurchaseIdxDesc(memberIdx, "success"); // 회원정보 넣어야함
 
         return purchaseEntityList.stream()
             .map(purchaseEntity -> convertPurchaseDTO(purchaseEntity)).collect(Collectors.toList());
@@ -165,7 +168,7 @@ public class PurchaseService {
         int updatePoint = memberEntity.getMemberPoint() + content;
         memberEntity.setMemberPoint(updatePoint);
 
-        // 3. 포인트 변동사항
+        // 3. 포인트 변동사항 적용
         PointEntity pointEntity = new PointEntity();
         pointEntity.setPointDivision("충전");
         pointEntity.setPointState(content);

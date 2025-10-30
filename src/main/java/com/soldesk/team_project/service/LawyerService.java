@@ -83,7 +83,4 @@ public class LawyerService {
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
 
-    // 광고 게재
-    // public AdDTO 
-
 }
