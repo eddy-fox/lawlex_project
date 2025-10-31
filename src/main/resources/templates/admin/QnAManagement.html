@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <!-- <title>문의글 관리</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>문의글 관리</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/all/QnAManagement.css}"> -->
+    <link rel="stylesheet" th:href="@{/all/QnAManagement.css}">
 </head>
 <body>
     <!-- 헤더 -->
@@ -14,15 +14,15 @@
     <!-- 메인 -->
     <main class="page-QnAManagement">
       <div class="container">
-        <h1>관리자 문의글 관리</h1>
+        <!-- <h1>관리자 문의글 관리</h1> -->
 
         <!-- 사이드 바 -->
         <div>
-            <ul>
-                <li><a th:href="@{/admin/memberManagement}">회원 관리</a></li>
-                <li><a th:href="@{/admin/QnAManagement}">문의글 관리</a></li>
-                <li><a th:href="@{/admin/adManagement}">광고 관리</a></li>
-            </ul>
+          <ul>
+            <li><a th:href="@{/admin/memberManagement}">회원 관리</a></li>
+            <li><a th:href="@{/admin/QnAManagement}">문의글 관리</a></li>
+            <li><a th:href="@{/admin/adManagement}">광고 관리</a></li>
+          </ul>
         </div>
 
         <!-- 상단 바 -->
@@ -42,7 +42,7 @@
             </select>
 
             <input type="search" id="search" name="keyword" class="input" placeholder="검색">
-            <button type="submit" class="btn primary">🔍</button>
+            <button type="submit" class="btn primary">검색</button>
           </form>
         </div>
 
@@ -57,7 +57,6 @@
                     <th>제목</th>
                     <th style="width:10%" class="center">작성일</th>
                     <th style="width:8%" class="center">비밀글</th>
-                    <th style="width:12%" class="center"></th>
                 </tr>
               </thead>
               <tbody id="tbodyNew">
@@ -67,14 +66,6 @@
                     <td>하드코딩 된 더미 새로운 질문글</td>
                     <td class="center">20251017</td>
                     <td class="center">Y</td>
-                    <td class="center">
-                      <div class="actions">
-                        <button class="btn small primary answer-btn" type="button"
-                                onclick="event.stopPropagation(); location.href='/answer/form/'+'[[${nq.qIdx}]]';">
-                            답변하기
-                        </button>
-                      </div>
-                    </td>
                 </tr>
                 <tr onclick="location.href='#'" style="cursor: pointer;" th:each="nq : ${newQuestions}">
                     <td class="center"><span th:text="${nq.qIdx}"></span></td>
@@ -82,14 +73,6 @@
                     <td><span th:text="${nq.qTitle}"></span></td>
                     <td class="center"><span th:text="${nq.qRegDate}"></span></td>
                     <td class="center"><span th:text="${nq.qSecret}"></span></td>
-                    <td class="center">
-                      <div class="actions">
-                        <button class="btn small primary answer-btn" type="button"
-                                onclick="event.stopPropagation(); location.href='/answer/form/'+'[[${nq.qIdx}]]';">
-                            답변하기
-                        </button>
-                      </div>
-                    </td>
                 </tr>
               </tbody>
             </table>
@@ -132,6 +115,7 @@
     </main>
 
     <!-- 푸터 -->
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
 
 </body>
 
@@ -139,11 +123,15 @@
 <script>
     function newQnA() {
         document.getElementById('newQuestion').style.display = 'block';
+        document.getElementById('newQnA').classList.add('active');
         document.getElementById('completedQuestion').style.display = 'none';
+        document.getElementById('completedQnA').classList.remove('active');
     }
     function completedQnA() {
         document.getElementById('newQuestion').style.display = 'none';
+        document.getElementById('newQnA').classList.remove('active');
         document.getElementById('completedQuestion').style.display = 'block';
+        document.getElementById('completedQnA').classList.add('active');
     }
 </script>
 </html>

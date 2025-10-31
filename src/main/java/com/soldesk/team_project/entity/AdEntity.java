@@ -31,13 +31,13 @@ public class AdEntity {
     @Column(name = "ad_name")
     private String adName;
 
-    @Column(name = "ad_imgPath")
+    @Column(name = "`ad_imgPath`")
     private String adImgPath;
     
     @Column(name = "ad_link")
     private String adLink;
     
-    @Column(name = "ad_startDate")
+    @Column(name = "`ad_startDate`")
     private LocalDate adStartDate;
     
     @Column(name = "ad_duration")

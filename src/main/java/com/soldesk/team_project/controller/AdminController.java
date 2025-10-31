@@ -55,8 +55,8 @@ public class AdminController {
     }
     @PostMapping("/memberManagement")
     public String memberSearch(
-        @RequestParam String keyword, 
-        @RequestParam String searchType,
+        @RequestParam("keyword") String keyword,
+        @RequestParam("searchType") String searchType,
         RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addAttribute("keyword", keyword);
@@ -87,8 +87,8 @@ public class AdminController {
     }
     @PostMapping("/lawyerManagement")
     public String lawyerSearch(
-        @RequestParam String keyword, 
-        @RequestParam String searchType,
+        @RequestParam("keyword") String keyword,
+        @RequestParam("searchType") String searchType,
         RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addAttribute("keyword", keyword);
@@ -123,8 +123,8 @@ public class AdminController {
     }
     @PostMapping("/QnAManagement")
     public String questionSearch(
-        @RequestParam String keyword, 
-        @RequestParam String searchType,
+        @RequestParam("keyword") String keyword,
+        @RequestParam("searchType") String searchType,
         RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addAttribute("keyword", keyword);

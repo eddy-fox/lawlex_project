@@ -64,6 +64,7 @@ public class AdService {
 
         for (AdEntity ad : activeAds) {
             LocalDate startDate = ad.getAdStartDate();
+            if (startDate == null) continue;
             int duration = ad.getAdDuration();
             LocalDate endDate = startDate.plusDays(duration);
 
