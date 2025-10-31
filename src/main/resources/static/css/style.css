@@ -80,39 +80,6 @@ a {text-decoration: none;}
 .section-header h2{ font-size:40px; font-weight:700; color:var(--ink); margin-bottom:16px; }
 .section-header p{ font-size:20px; color:var(--muted-2); }
 
-/* ===================== Hero ===================== */
-.hero{
-  padding:96px var(--px);
-  background:linear-gradient(to bottom, var(--blue-50), var(--bg));
-}
-.hero-content{ display:grid; gap:48px; align-items:center; }
-.hero-badge{
-  display:inline-block; padding:8px 16px; margin-bottom:24px;
-  background:var(--blue-100); color:var(--brand); border-radius:9999px;
-  font-size:14px; font-weight:500;
-}
-.hero h1{ font-size:48px; font-weight:700; line-height:1.2; color:var(--ink); margin-bottom:24px; }
-.hero h1 .highlight{ color:var(--brand); }
-.hero p{ font-size:20px; color:var(--muted); margin-bottom:32px; line-height:1.6; }
-.hero-buttons{ display:flex; flex-wrap:wrap; gap:16px; }
-
-/* Hero 비주얼 카드 */
-.hero-visual{
-  display:none;
-  background:var(--bg);
-  border-radius:16px;
-  box-shadow:var(--shadow-lg);
-  padding:32px;
-  border:1px solid var(--line);
-}
-.hero-visual-inner{
-  aspect-ratio:1;
-  background:linear-gradient(to bottom right, var(--blue-100), #c7d2fe);
-  border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-}
-.hero-visual-inner svg{ width:120px; height:120px; stroke:var(--brand); opacity:.2; }
-
 /* ===================== 버튼 ===================== */
 .btn{
   display:inline-flex; align-items:center; gap:8px;

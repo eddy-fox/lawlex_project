@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>컬럼상세</title>
+        <link rel="stylesheet" th:href="@{/all/cInfo.css}">
+        <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-cInfo">
+    <div class="wrap">
+        <h1 class="title">제목</h1>
+        <p class="date">2025-10-31</p>
+
+        <div class="meta">
+        <div class="left">
+            <img class="poto" src="https://placehold.co/150x200?text=%EB%B3%80%ED%98%B8%EC%82%AC" alt="변호사 사진">
+            <p class="writer">홍길동(변호사)</p>
+        </div>
+        <p class="view">조회수 65</p>
+        </div>
+
+        <img class="hero"
+            src="https://placehold.co/1200x720?text=%EC%B9%BC%EB%9F%BC+%EB%8C%80%ED%91%9C+%EC%9D%B4%EB%AF%B8%EC%A7%80"
+            alt="대표이미지">
+
+        <article class="article">
+        <p class="para">
+            하워드 러트닉 미국 상무장관은 30일 “한국이 시장을 100% 완전히 개방하기로 합의했다”고 주장했다.
+            반도체 관세와 관련해서도 “이번 합의의 일부가 아니다”라고 주장해 논란이 일었다.
+            전날 우리 정부의 “농산물 추가 시장 개방은 철저히 방어했다”는 발표와는 다소 차이가 있는 내용이다.
+            러트닉 장관의 발언에 대해 정부는 “양측의 합의를 통해 발표한 것”이라며 일축했다.
+        </p>
+        </article>
+
+        <div class="actions">
+        <button class="btn" type="button">수정</button>
+        <button class="btn" type="button">삭제</button>
+        <button class="btn" type="button">목록</button>
+        </div>
+
+        <section class="cmt">
+        <div class="top">
+            <h3>댓글</h3>
+            <button class="submit" id="cToggle" type="button">댓글 적기</button>
+        </div>
+
+        <div class="write">
+            <div class="row">
+            <textarea class="textbox" id="cText" placeholder="내용 (Ctrl+Enter 등록)"></textarea>
+            <button class="submit" id="cBtn" type="button">등록</button>
+            </div>
+        </div>
+
+        <table class="list">
+            <thead>
+            <tr>
+                <th>닉네임</th>
+                <th>내용</th>
+                <th>날짜</th>
+            </tr>
+            </thead>
+            <tbody id="cBody"></tbody>
+        </table>
+        </section>
+    </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/all/cInfo.js}"></script>
+</body>
+</html>
