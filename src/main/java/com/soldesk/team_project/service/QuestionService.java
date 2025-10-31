@@ -32,7 +32,7 @@ public class QuestionService {
         questionDTO.setQTitle(questionEntity.getQuestionTitle());
         questionDTO.setQContent(questionEntity.getQuestionContent());
         questionDTO.setQRegDate(questionEntity.getQuestionRegDate());
-        questionDTO.setQSecret(questionEntity.getQuestionSecret());
+        questionDTO.setQSecret("Y".equalsIgnoreCase(questionEntity.getQuestionSecret()) ? "🔒" : "🔓");
         questionDTO.setQAnswer(questionEntity.getQuestionAnswer());
         questionDTO.setQActive(questionEntity.getQuestionActive());
         
