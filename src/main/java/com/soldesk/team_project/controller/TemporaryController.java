@@ -16,6 +16,14 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
+    @GetMapping("/all/chat/lChating")
+    public String lChating(){
+        return "/all/chat/lChating";
+    }
+    @GetMapping("/all/chat/gChating")
+    public String gChating(){
+        return "/all/chat/gChating";
+    }
     @GetMapping("/all/chat/lawyerMain")
     public String lawyerMain(){
         return "/all/chat/lawyerMain";
