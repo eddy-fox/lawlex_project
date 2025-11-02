@@ -5,6 +5,7 @@
       font-style: normal;
       font-display: swap;
     }
+
     @font-face {
       font-family: 'Gooorm Sans';
       src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
@@ -12,6 +13,7 @@
       font-style: normal;
       font-display: swap;
     }
+
     @font-face {
       font-family: 'Gooorm Sans';
       src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
@@ -35,15 +37,16 @@
     }
 
     .page-nList {
-      background: #fff;
-      color: var(--ink);
-      font-family: 'Gooorm Sans', 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
-      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .among{
+      width: min(950px, 94%);
+      margin: 150px 0px;
     }
 
     .page-nList .frame {
-      width: min(950px, 94%);
-      margin: 100px auto;
       border-top: 2px solid var(--navy);
       border-bottom: 2px solid var(--navy);
     }
@@ -100,6 +103,7 @@
       .page-nList .news-link {
         grid-template-columns: 1fr;
       }
+
       .page-nList .thumb {
         max-width: 520px;
       }

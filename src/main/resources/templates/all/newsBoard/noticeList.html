@@ -11,6 +11,7 @@
   <div class="include" th:replace="~{include/header :: header}"></div>
   <main class="page-noticeList">
     <div class="sideMenu" th:replace="~{include/nSide :: nSide}"></div>
+    <div class="among">
     <section class="notice-frame">
       <div class="table-head">
         <div class="col-no">글번호</div>
@@ -119,8 +120,9 @@
         <div class="col-date">2025-08-01</div>
       </a>
     </section>
-
     <nav class="pagination" id="pagination"></nav>
+    </div>
+
   </main>
   <div class="include" th:replace="~{include/footer :: footer}"></div>
   <script th:src="@{/js/js.js}"></script>

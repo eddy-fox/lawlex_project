@@ -49,8 +49,12 @@ body {
 }
 
 .page-nMain .wrap {
-  width: min(900px, 94%);
+  width: min(950px, 94%);
   margin: 100px 0px;
+}
+
+.section{
+  margin: 25px 0px;
 }
 
 .page-nMain .section-head {
@@ -118,17 +122,6 @@ body {
   min-width: 0;
 }
 
-.page-nMain .badge {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--navy);
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 4px 8px;
-  display: inline-block;
-  margin-bottom: 10px;
-}
 
 .page-nMain .desc {
   font-size: 15px;

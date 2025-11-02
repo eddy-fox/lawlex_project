@@ -41,13 +41,17 @@
 
   .page-noticeList {
     display: flex;
+    justify-content: center;
+  }
+
+  .among{
+    display: flex;
     flex-direction: column;
-    align-items: center;
+    width: min(950px, 94%);
+    margin: 150px 0px;
   }
 
   .page-noticeList .notice-frame {
-    width: min(950px, 94%);
-    margin: 150px 0px;
     border-top: 2px solid var(--navy);
     border-bottom: 2px solid var(--navy);
   }
@@ -108,11 +112,13 @@
   }
 
   .page-noticeList .pagination {
-    flex-basis: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 8px;
-    margin-top: 15px;
+    margin-top: 40px;
+    font-size: 15px;
+    flex-wrap: wrap;
   }
 
   .page-noticeList .pagination a {
