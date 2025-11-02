@@ -87,9 +87,6 @@ a {
 }
 
 /* ===================== 섹션 공통 ===================== */
-.section {
-  padding: 80px var(--px);
-}
 
 .section-header {
   text-align: center;

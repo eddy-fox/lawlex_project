@@ -1,56 +1,56 @@
   @font-face {
     font-family: 'Gooorm Sans';
     src:
-      url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2')
-      format('woff2');
+      url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
-    font-display: swap;  }
+    font-display: swap;
+  }
 
   @font-face {
     font-family: 'Gooorm Sans';
     src:
-      url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2')
-      format('woff2');
+      url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
-    font-display: swap;  }
+    font-display: swap;
+  }
 
   @font-face {
     font-family: 'Gooorm Sans';
     src:
-      url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2')
-      format('woff2');
+      url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
-    font-display: swap;  }
+    font-display: swap;
+  }
 
   :root {
     --ink: #000000;
     --muted: #6b7280;
     --line: #e2e6ff;
     --navy: #000777;
-    --hover: #fafcff;  }
+    --hover: #fafcff;
+  }
 
   * {
     box-sizing: border-box;
     margin: 0;
-    padding: 0;  }
-
-  body {
-    background: #fff;
-    color: var(--ink);
-    font-family: "Gooorm Sans", "Noto Sans KR", system-ui, -apple-system,
-      Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
-    line-height: 1.6;  }
+    padding: 0;
+  }
 
   .page-noticeList {
-    width: min(950px, 94%);
-    margin: 100px auto 100px;  }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
   .page-noticeList .notice-frame {
+    width: min(950px, 94%);
+    margin: 150px 0px;
     border-top: 2px solid var(--navy);
-    border-bottom: 2px solid var(--navy);  }
+    border-bottom: 2px solid var(--navy);
+  }
 
   .page-noticeList .table-head {
     display: flex;
@@ -60,7 +60,8 @@
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
     background: #f9faff;
-    color: var(--navy);  }
+    color: var(--navy);
+  }
 
   .page-noticeList .notice-link {
     display: flex;
@@ -71,8 +72,10 @@
     text-decoration: none;
     transition: background .2s;
   }
+
   .page-noticeList .notice-link:hover {
-    background: var(--hover);  }
+    background: var(--hover);
+  }
 
   .page-noticeList .col-no {
     width: 120px;
@@ -81,7 +84,8 @@
     font-weight: 500;
     flex-shrink: 0;
     text-align: left;
-    color: var(--muted);  }
+    color: var(--muted);
+  }
 
   .page-noticeList .col-title {
     flex: 1;
@@ -91,7 +95,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--ink);  }
+    color: var(--ink);
+  }
 
   .page-noticeList .col-date {
     width: 120px;
@@ -99,16 +104,16 @@
     font-size: 14px;
     text-align: right;
     color: var(--muted);
-    flex-shrink: 0;  }
+    flex-shrink: 0;
+  }
 
   .page-noticeList .pagination {
+    flex-basis: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 8px;
-    margin-top: 40px;
-    font-size: 15px;
-    flex-wrap: wrap;  }
+    margin-top: 15px;
+  }
 
   .page-noticeList .pagination a {
     display: inline-flex;
@@ -122,17 +127,21 @@
     background: none;
     transition: all .2s;
     cursor: pointer;
-    font-weight: 500;  }
+    font-weight: 500;
+  }
 
   .page-noticeList .pagination a:hover {
     color: var(--navy);
-    transform: scale(1.05);  }
+    transform: scale(1.05);
+  }
 
   .page-noticeList .pagination a.active {
     color: var(--navy);
     transform: scale(1.2);
-    font-weight: 700;  }
+    font-weight: 700;
+  }
 
   .page-noticeList .pagination .arrow {
     font-weight: 700;
-    color: var(--navy);  }
+    color: var(--navy);
+  }
