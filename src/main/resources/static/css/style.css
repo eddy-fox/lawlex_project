@@ -534,34 +534,29 @@ a {text-decoration: none;}
     }
 /* chatIcon 밑 */
 
-/* side 위 */
 @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
 @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap;}
 @font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap;}
 :root{ --navy:#000777; --ink:#555666; }
-/* container */
 .sideMenu{
-  position:relative; min-height:200px;
+  position:relative; min-height:300px;
   display:flex; flex-direction:column; align-items:flex-end; gap:10px;
-  padding:40px 15px 0 0;
+  padding:200px 15px 0 0;
   font-family:'Gooorm Sans','Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif;
 }
-/* items */
 .side, .side-choice{
   display:block; text-decoration:none; color:var(--ink);
-  font-size:40px; line-height:1.1; text-align:right;
+  font-size:30px; line-height:1.1; text-align:right;
   border-radius:6px; padding:4px 0; -webkit-tap-highlight-color:transparent;
   cursor:pointer; outline: none;
 }
 .side:hover{ color:var(--navy); }
 .side-choice{ color:var(--navy); font-weight:700; }
-/* focus visible for keyboard users */
 .side:focus-visible, .side-choice:focus-visible{
   outline: 2px solid var(--navy); outline-offset: 4px; border-radius:8px;
 }
-/* responsive */
 @media (max-width:980px){
-  .side, .side-choice{ font-size:35px; }
+  .side, .side-choice{ font-size:25px; }
   .sideMenu{ padding-right:10px; }
 }
 /* side 밑 */
