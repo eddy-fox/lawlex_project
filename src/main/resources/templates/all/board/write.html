@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>상세글 작성</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/all/write.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 <main class="page-write">
+  <div class="sideMenu" th:replace="~{include/bSide :: bSide}"></div>
   <div class="wrap">
     <div class="backdrop">
       <form class="card" id="writeForm">
@@ -32,6 +33,10 @@
               <label class="chip"><input type="checkbox" value="금전 · 계약 문제"> 금전 · 계약 문제</label>
               <label class="chip"><input type="checkbox" value="가족"> 가족</label>
               <label class="chip"><input type="checkbox" value="회사"> 회사</label>
+              <label class="chip"><input type="checkbox" value="성범죄"> 성범죄</label>
+              <label class="chip"><input type="checkbox" value="의료 · 세금 · 행정"> 의료 · 세금 · 행정</label>
+              <label class="chip"><input type="checkbox" value="지식재산 · 금융"> 지식재산 · 금융</label>
+
             </div>
           </div>
 
