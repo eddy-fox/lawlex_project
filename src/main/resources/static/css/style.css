@@ -193,63 +193,70 @@ a {text-decoration: none;}
   border-bottom: 1px solid var(--line);
 }
 
-/* 상단 바 (로고 + 로그인/로그아웃 영역) */
+/* 상단 바: 로고(좌) / inout(우) */
 .header .container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between;   /* 로고 좌, inout 우 */
   align-items: center;
-  height: 100px;            /* 이미 적용한 높이 유지 */
+  height: 100px;
   padding: 0 var(--px);
   max-width: var(--container);
   margin: 0 auto;
-  border-bottom: 1px solid var(--line);   /* ✅ 구분선 여기! */
+  border-bottom: 1px solid var(--line);
 }
 
-/* 로고 영역 */
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.logo-img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-.logo-text {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--brand);
-}
+/* 로고 */
+.logo-area { display: flex; align-items: center; gap: 10px; }
+.logo-img { width: 40px; height: 40px; object-fit: contain; }
+.logo-text { font-size: 22px; font-weight: 700; color: var(--brand); }
 
-/* 로그인/로그아웃/링크 영역 */
+/* inout (오른쪽 묶음) */
 .inout {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
-.inout > a {
-  font-size: 13px;
-  color: var(--muted);
-}
-.inout > a:hover {
-  color: var(--brand);
+.inout > a { font-size: 13px; color: var(--muted); }
+.inout > a:hover { color: var(--brand); }
+
+/* 로그인 상태/비로그인 상태 묶음 */
+.inout > div { display: flex; align-items: center; gap: 14px; }
+.inout > div a { font-size: 14px; color: var(--ink); transition: color .2s; }
+.inout > div a:hover { color: var(--brand); }
+
+/* ===== 채팅 아이콘 위치/정렬 (inout 내부 div 안에서 맨 앞) ===== */
+.inout > div .page-chatIcon{
+  order: -1;                              /* 같은 줄에서 아이콘을 맨 앞으로 */
+  margin-right: 12px;                     /* 아이콘 ↔ 링크 간격 */
+  width: var(--icon-size, 50px);
+  height: var(--icon-size, 50px);
+  display: inline-flex;
+  align-items: center;
 }
 
-/* 조건별 div 내부 링크 */
-.inout > div {
-  display: flex;
+/* 버튼 절대배치 해제 → 플로우 정렬 + 배지 기준점 */
+.header .page-chatIcon > .icon{
+  position: relative;                     /* (static도 가능, 배지 기준 위해 relative 권장) */
+  top: auto; right: auto;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* 패널을 버튼 바로 아래로 */
+.header .page-chatIcon .panel{
+  top: calc(100% + var(--gap, 10px));
+  right: 0;
+  z-index: 100;
+}
+
+/* (안전망) 아이콘이 .container 직계 자식일 때: 로그인 앞에 고정 */
+.header .container > .page-chatIcon{
+  margin-left: auto;                      /* 로고와 아이콘 사이 공간 흡수 → 우측 배치 */
+  margin-right: 12px;                     /* 아이콘 ↔ inout 간격 */
+  width: var(--icon-size, 50px);
+  height: var(--icon-size, 50px);
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-}
-.inout > div a {
-  font-size: 14px;
-  color: var(--ink);
-  transition: color 0.2s;
-}
-.inout > div a:hover {
-  color: var(--brand);
 }
 
 /* 메인 메뉴 */
@@ -267,9 +274,8 @@ a {text-decoration: none;}
   font-weight: 500;
   transition: color 0.2s;
 }
-.main-menu a:hover {
-  color: var(--brand);
-}
+.main-menu a:hover { color: var(--brand); }
+
 /* header.html 밑 */
 
 
@@ -296,3 +302,234 @@ a {text-decoration: none;}
   letter-spacing: 0.02em;
 }
 /* footer.html 밑 */
+
+/* chatIcon 위 */
+    .page-chatIcon {
+      position: relative;
+      display: flex;
+      --ink: #000;
+      --muted: #6b7280;
+      --line: #e2e6ff;
+      --panel: #f9faff;
+      --paper: #fff;
+      --navy: #000777;
+      --danger: #c1121f;
+      --ok: #19a672;
+      --wait: #f59e0b;
+      --end: #94a3b8;
+      --icon-size: 50px;
+      --gap: 10px;
+      --pico-size: 44px;
+      --tab-radius: 10px;
+      color: var(--ink);
+    }
+    .page-chatIcon * {
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
+    }
+    .page-chatIcon > .icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 90;
+      width: var(--icon-size);
+      height: var(--icon-size);
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color .15s ease, box-shadow .15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .page-chatIcon > .icon[aria-expanded="true"] {
+      color: var(--navy);
+    }
+    .page-chatIcon > .icon svg {
+      width: 35px;
+      height: 35px;
+      display: block;
+      fill: currentColor;
+    }
+    .page-chatIcon .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: #fff;
+      font: 700 12px/20px system-ui;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .page-chatIcon .panel {
+      position: absolute;
+      top: calc(var(--icon-size) + var(--gap));
+      right: 0;
+      width: 420px;
+      max-width: min(92vw, 420px);
+      height: 560px;
+      border: 1px solid var(--navy);
+      border-radius: 14px;
+      background: var(--paper);
+      overflow: hidden;
+      z-index: 80;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .06);
+    }
+    .page-chatIcon .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      align-items: center;
+    }
+    .page-chatIcon .tab {
+      padding: 7px 12px;
+      background: #eff1ff;
+      border: 1px solid var(--line);
+      border-radius: var(--tab-radius);
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      color: var(--navy);
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .page-chatIcon .tab:hover {
+      background: var(--panel);
+    }
+    .page-chatIcon .tab.is-active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+    .page-chatIcon .tabs .sp {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .page-chatIcon .list {
+      padding: 6px 12px;
+      background: var(--panel);
+      height: calc(100% - 50px);
+      overflow: auto;
+    }
+    .page-chatIcon .item {
+      display: flex;
+      gap: 10px;
+      padding: 12px 8px;
+      border-bottom: 1px solid #eef1f5;
+      background: var(--paper);
+      align-items: center;
+      border-radius: 10px;
+    }
+    .page-chatIcon .item:hover {
+      background: var(--paper);
+      box-shadow: inset 0 0 0 1px var(--navy), 0 2px 6px rgba(0, 0, 0, .04);
+    }
+    .page-chatIcon .item[data-unread="true"] .meta b {
+      font-weight: 800;
+    }
+    .page-chatIcon .pico {
+      width: var(--pico-size);
+      height: var(--pico-size);
+      border-radius: 50%;
+      border: 1px solid #d9dbe8;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f3f8;
+    }
+    .page-chatIcon .pico img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .page-chatIcon .meta {
+      text-decoration: none;
+      color: inherit;
+      flex: 1;
+      min-width: 0;
+      display: block;
+    }
+    .page-chatIcon .meta .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-chatIcon .meta b {
+      display: block;
+      color: var(--ink);
+    }
+    .page-chatIcon .meta .stamp {
+      margin-left: auto;
+      color: #64748b;
+      font-size: 12px;
+    }
+    .page-chatIcon .meta .preview {
+      color: #334155;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .page-chatIcon .label {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      display: none;
+    }
+    .page-chatIcon[data-view="all"] .label {
+      display: inline-block;
+    }
+    .page-chatIcon .label.live {
+      background: rgba(25, 166, 114, .08);
+      color: var(--ok);
+      border-color: rgba(25, 166, 114, .25);
+    }
+    .page-chatIcon .label.wait {
+      background: rgba(245, 158, 11, .08);
+      color: var(--wait);
+      border-color: rgba(245, 158, 11, .25);
+    }
+    .page-chatIcon .label.end {
+      background: rgba(148, 163, 184, .15);
+      color: var(--end);
+      border-color: rgba(148, 163, 184, .35);
+    }
+    .page-chatIcon .list::-webkit-scrollbar {
+      width: 10px;
+    }
+    .page-chatIcon .list::-webkit-scrollbar-thumb {
+      background: #d7dbf9;
+      border-radius: 8px;
+      border: 2px solid #f1f3ff;
+    }
+    .page-chatIcon .list::-webkit-scrollbar-track {
+      background: #f7f8ff;
+    }
+    .page-chatIcon .icon:focus-visible,
+    .page-chatIcon .tab:focus-visible {
+      outline: 2px solid var(--navy);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .page-chatIcon .tab,
+      .page-chatIcon > .icon {
+        transition: none;
+      }
+    }
+/* chatIcon 밑 */
