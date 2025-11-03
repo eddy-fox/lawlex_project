@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 사이드</title>
+    <link rel="stylesheet" href="side.css">
+</head>
+<body>
+    
+  <nav class="sideMenu" th:fragment="aSide" data-scope="admin" aria-label="관리자 사이드">
+    <a href="#" class="side-choice" aria-current="page">회원 관리</a>
+    <a href="#" class="side">문의글 관리</a>
+    <a href="#" class="side">광고 관리</a>
+    <a href="#" class="side">로그 관리</a>
+  </nav>
+
+    <script src="side.js"></script>
+</body>
+</html>

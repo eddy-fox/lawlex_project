@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>변호사회원정보수정</title>
+    <link rel="stylesheet" th:href="@{/all/lModify.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-lModify">
+    <section class="center-card">
+        <div class="head">
+        <h1 class="title">정보수정</h1>
+        <span class="role-badge">변호사</span>
+        </div>
+
+        <form class="form" action="#" method="post" enctype="multipart/form-data">
+
+        <div class="field">
+            <label class="label" for="id_l">아이디</label>
+            <div class="input-wrap">
+            <input class="input" id="id_l" name="id_l" type="text" value="lawyer123" readonly>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="pw_l">비밀번호</label>
+            <div class="input-wrap">
+            <input class="input" id="pw_l" name="pw_l" type="password" placeholder="비밀번호 입력">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="pw2_l">비밀번호 확인</label>
+            <div class="input-wrap">
+            <input class="input" id="pw2_l" name="pw2_l" type="password" placeholder="비밀번호 확인">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="nick_l">닉네임</label>
+            <div class="input-wrap">
+            <input class="input" id="nick_l" name="nick_l" type="text" placeholder="닉네임">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="email_l">이메일</label>
+            <div class="input-wrap">
+            <input class="input" id="email_l" name="email_l" type="email" placeholder="이메일 입력">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="addr_l">사무실 주소</label>
+            <div class="input-wrap">
+            <input class="input" id="addr_l" name="addr_l" type="text" placeholder="사무실 주소 입력">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="tel_l">전화번호</label>
+            <div class="input-wrap">
+            <div class="phone-flex">
+                <input class="input" id="tel_l" name="tel_l" type="text" placeholder="전화번호 입력">
+                <button type="button" class="verify-btn">인증 요청</button>
+            </div>
+
+            <div class="verify-row">
+                <input class="code-input" id="code_l" name="code_l" type="text" placeholder="인증번호 입력">
+                <button type="button" class="verify-btn confirm">확인</button>
+            </div>
+
+            <p class="verify-hint">전화번호 변경 시 본인 확인이 필요합니다.</p>
+            </div>
+        </div>
+
+        <div class="field">
+            <span class="label">관심분야</span>
+            <div class="input-wrap">
+            <div class="chips">
+                <label class="chip"><input type="checkbox" name="cate[]" value="성범죄"> 성범죄</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="재산범죄"> 재산범죄</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="교통사고 · 범죄"> 교통사고 · 범죄</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="폭행 · 협박"> 폭행 · 협박</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="명예훼손 · 모욕"> 명예훼손 · 모욕</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="부동산 · 임대차"> 부동산 · 임대차</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="금전 · 계약 문제"> 금전 · 계약 문제</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="가족"> 가족</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="회사"> 회사</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="의료 · 세금 · 행정"> 의료 · 세금 · 행정</label>
+                <label class="chip"><input type="checkbox" name="cate[]" value="지식재산 · 금융"> 지식재산 · 금융</label>
+            </div>
+            </div>
+        </div>
+
+        <section class="profile-block">
+            <div class="inline-top">
+
+            <div class="photo-area">
+                <div class="photo-box" id="photoPreview">
+                <span>사진</span>
+                </div>
+                <div class="photo-actions">
+                <label class="photo-upload-btn" for="photoInput">사진 변경</label>
+                <button class="photo-upload-btn sub" type="button" id="photoRemoveBtn">삭제</button>
+                </div>
+                <input type="file" id="photoInput" name="photo" accept="image/*">
+            </div>
+
+            <div class="profile-col">
+                <div>
+                <div class="sub-label mainline">한줄소개</div>
+                <input class="input" id="intro" name="intro" type="text" placeholder="한줄소개">
+                </div>
+
+                <div>
+                <div class="sub-label">상담 가능 요일 및 시간대</div>
+
+                <div class="days-row" id="dayCheckboxes">
+                    <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
+                    <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
+                    <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
+                    <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
+                    <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
+                    <input type="checkbox" id="sat" value="토"><label for="sat">토</label>
+                    <input type="checkbox" id="sun" value="일"><label for="sun">일</label>
+                </div>
+
+                <div class="time-block">
+                    <input id="timeStart" class="time-input" type="time">
+                    <span class="time-tilde">~</span>
+                    <input id="timeEnd" class="time-input" type="time">
+                    <button type="button" class="small-btn" id="addTime">추가</button>
+                </div>
+
+                <div id="selectedList" class="selected-list"></div>
+                </div>
+            </div>
+
+            </div>
+        </section>
+
+        <div class="actions">
+            <button class="btn-main btn-ghost" type="button">취소</button>
+            <button class="btn-main" id="saveBtn" type="submit">정보수정</button>
+        </div>
+
+        </form>
+    </section>
+    </main> 
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/all/lModify.js}"></script> 
+</body>
+</html>

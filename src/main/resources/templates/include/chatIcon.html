@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅아이콘</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page-chatIcon" th:fragment="page-chatIcon">
+    <button class="icon" aria-expanded="false" aria-label="채팅 목록 열기">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 16c0 1.1-.9 2-2 2H9l-5 4V6c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+        <path d="M8 8.5h8M8 11h8M8 13.5h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+      </svg>
+      <span class="badge">7</span>
+    </button>
+    <section class="panel" hidden>
+      <div class="tabs" role="tablist">
+        <div class="tab is-active" data-filter="all" aria-selected="true">전체 <span class="cnt-all">0</span></div>
+        <div class="tab" data-filter="live" aria-selected="false">상담중 <span class="cnt-live">0</span></div>
+        <div class="tab" data-filter="wait" aria-selected="false">대기중 <span class="cnt-wait">0</span></div>
+        <div class="tab" data-filter="end" aria-selected="false">종료 <span class="cnt-end">0</span></div>
+        <span class="sp total-label"></span>
+      </div>
+      <div class="list" role="list">
+        <div class="item" role="listitem" data-status="live" data-unread="true">
+          <div class="pico">
+            <img src="img/avatar-01.jpg" alt="김가람 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>김가람 변호사</b>
+              <span class="stamp">오늘 14:22</span>
+            </div>
+            <div class="preview">자료 확인했습니다. 사건번호 공유해 주세요.</div>
+          </a>
+          <span class="label live">상담중</span>
+        </div>
+        <div class="item" role="listitem" data-status="live" data-unread="true">
+          <div class="pico">
+            <img src="img/avatar-02.jpg" alt="박서준 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>박서준 변호사</b>
+              <span class="stamp">오늘 13:58</span>
+            </div>
+            <div class="preview">통화 가능 시간 남겨주시면 맞춰 연락드릴게요.</div>
+          </a>
+          <span class="label live">상담중</span>
+        </div>
+        <div class="item" role="listitem" data-status="live" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-03.jpg" alt="이다연 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>이다연 변호사</b>
+              <span class="stamp">오늘 12:40</span>
+            </div>
+            <div class="preview">합의서 초안 검토했고 수정 의견 드렸습니다.</div>
+          </a>
+          <span class="label live">상담중</span>
+        </div>
+        <div class="item" role="listitem" data-status="live" data-unread="true">
+          <div class="pico">
+            <img src="img/avatar-04.jpg" alt="최민호 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>최민호 변호사</b>
+              <span class="stamp">오늘 11:55</span>
+            </div>
+            <div class="preview">증빙 서류 3건 업로드 부탁드립니다.</div>
+          </a>
+          <span class="label live">상담중</span>
+        </div>
+        <div class="item" role="listitem" data-status="wait" data-unread="true">
+          <div class="pico">
+            <img src="img/avatar-05.jpg" alt="정유진 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>정유진 변호사</b>
+              <span class="stamp">오늘 10:41</span>
+            </div>
+            <div class="preview">시간 되실 때 채팅 재개 부탁드립니다.</div>
+          </a>
+          <span class="label wait">대기중</span>
+        </div>
+        <div class="item" role="listitem" data-status="wait" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-06.jpg" alt="한지호 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>한지호 변호사</b>
+              <span class="stamp">오늘 09:30</span>
+            </div>
+            <div class="preview">추가 질문 있으시면 남겨 주세요.</div>
+          </a>
+          <span class="label wait">대기중</span>
+        </div>
+        <div class="item" role="listitem" data-status="wait" data-unread="true">
+          <div class="pico">
+            <img src="img/avatar-07.jpg" alt="오세린 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>오세린 변호사</b>
+              <span class="stamp">어제 19:03</span>
+            </div>
+            <div class="preview">내일 오후 미팅 가능하십니다.</div>
+          </a>
+          <span class="label wait">대기중</span>
+        </div>
+        <div class="item" role="listitem" data-status="wait" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-08.jpg" alt="유도현 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>유도현 변호사</b>
+              <span class="stamp">어제 17:20</span>
+            </div>
+            <div class="preview">사건 개요를 간단히 정리해 주시면 좋겠습니다.</div>
+          </a>
+          <span class="label wait">대기중</span>
+        </div>
+        <div class="item" role="listitem" data-status="end" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-09.jpg" alt="장예린 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>장예린 변호사</b>
+              <span class="stamp">어제 16:20</span>
+            </div>
+            <div class="preview">확인 감사합니다. 접수 완료되었습니다.</div>
+          </a>
+          <span class="label end">종료</span>
+        </div>
+        <div class="item" role="listitem" data-status="end" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-10.jpg" alt="신도윤 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>신도윤 변호사</b>
+              <span class="stamp">어제 14:10</span>
+            </div>
+            <div class="preview">필요 문서 모두 수령했습니다.</div>
+          </a>
+          <span class="label end">종료</span>
+        </div>
+        <div class="item" role="listitem" data-status="end" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-11.jpg" alt="윤서아 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>윤서아 변호사</b>
+              <span class="stamp">어제 09:55</span>
+            </div>
+            <div class="preview">진행 마무리되었고 자료 보관 처리했습니다.</div>
+          </a>
+          <span class="label end">종료</span>
+        </div>
+        <div class="item" role="listitem" data-status="end" data-unread="false">
+          <div class="pico">
+            <img src="img/avatar-12.jpg" alt="배현우 변호사">
+          </div>
+          <a href="#" class="meta">
+            <div class="row">
+              <b>배현우 변호사</b>
+              <span class="stamp">2일 전 18:12</span>
+            </div>
+            <div class="preview">추가 문의 시 새 상담으로 남겨 주세요.</div>
+          </a>
+          <span class="label end">종료</span>
+        </div>
+      </div>
+    </section>
+  </div>
+    <script src="js.js"></script>
+</body>
+</html>

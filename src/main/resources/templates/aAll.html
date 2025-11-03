@@ -38,8 +38,8 @@
     <ul>chat
         <li><a th:href="@{/all/chat/gMain}">채팅메인_일반회원</a></li>
         <li><a th:href="@{/all/chat/lawyerMain}">채팅메인_변호사회원</a></li>
-        <li><a th:href="@{/all/chat/}"></a></li>
-        <li><a th:href="@{/all/chat/}"></a></li>
+        <li><a th:href="@{/all/chat/gChating}">일반회원챗</a></li>
+        <li><a th:href="@{/all/chat/lChating}">변호사회원챗</a></li>
     </ul>
     <ul>member
         <li><a th:href="@{/all/member/login}">로그인</a></li>
@@ -49,6 +49,15 @@
         <li><a th:href="@{/all/member/lJoin}">변호사회원가입</a></li>
         <li><a th:href="@{/all/member/gInfo}">일반마이페이지</a></li>
         <li><a th:href="@{/all/member/lInfo}">변호사마이페이지</a></li>
+        <li><a th:href="@{/all/member/gModify}">일반회원정보수정</a></li>
+        <li><a th:href="@{/all/member/lModify}">변호사회원정보수정</a></li>
+    </ul>
+    <ul>news
+        <li><a th:href="@{/all/newsBoard/nMain}">소식메인</a></li>
+        <li><a th:href="@{/all/newsBoard/noticeList}">공지사항</a></li>
+        <li><a th:href="@{/all/newsBoard/nList}">뉴스리스트</a></li>
+        <li><a th:href="@{/all/newsBoard/nInfo}">뉴스보기</a></li>
+        <li><a th:href="@{/all/newsBoard/cInfo}">컬럼보기</a></li>
     </ul>
 </body>
 </html>
