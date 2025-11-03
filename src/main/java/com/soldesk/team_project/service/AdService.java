@@ -1,6 +1,7 @@
 package com.soldesk.team_project.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class AdService {
         adDTO.setAdViews(adEntity.getAdViews());
         adDTO.setAdActive(adEntity.getAdActive());
         adDTO.setLawyerIdx(adEntity.getLawyerIdx());
+        adDTO.setLawyerName(adEntity.getLawyer().getLawyerName());
 
         return adDTO;
     }
@@ -49,6 +51,7 @@ public class AdService {
         adEntity.setAdDuration(adDTO.getAdDuration());
         adEntity.setAdViews(adDTO.getAdViews());
         adEntity.setAdActive(adDTO.getAdActive());
+        adEntity.setLawyerIdx(adDTO.getLawyerIdx());
 
         LawyerEntity lawyerEntity = lawyerRepository.findById(adDTO.getLawyerIdx()).orElse(null);
         adEntity.setLawyer(lawyerEntity);
@@ -78,6 +81,7 @@ public class AdService {
     // 활성 광고 조회
     public List<AdDTO> getAllAd() {
         List<AdEntity> adEntityList = adRepository.findByAdActiveOrderByAdIdxDesc(1);
+        if (adEntityList == null) adEntityList = new ArrayList<>();
         
         return adEntityList.stream()
             .map(adEntity -> convertAdDTO(adEntity)).collect(Collectors.toList());
