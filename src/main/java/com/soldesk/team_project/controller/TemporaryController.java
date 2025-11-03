@@ -16,6 +16,14 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class TemporaryController {
 
+    @GetMapping("/all/chat/lChating")
+    public String lChating(){
+        return "/all/chat/lChating";
+    }
+    @GetMapping("/all/chat/gChating")
+    public String gChating(){
+        return "/all/chat/gChating";
+    }
     @GetMapping("/all/chat/lawyerMain")
     public String lawyerMain(){
         return "/all/chat/lawyerMain";
@@ -87,6 +95,34 @@ public class TemporaryController {
     @GetMapping("/all/member/lInfo")
     public String lInfo(){
         return "/all/member/lInfo";
+    }
+    @GetMapping("/all/member/gModify")
+    public String gModify(){
+        return "/all/member/gModify";
+    }
+    @GetMapping("/all/member/lModify")
+    public String lModify(){
+        return "/all/member/lModify";
+    }
+    @GetMapping("/all/newsBoard/nMain")
+    public String nMain(){
+        return "/all/newsBoard/nMain";
+    }
+    @GetMapping("/all/newsBoard/noticeList")
+    public String noticeList(){
+        return "/all/newsBoard/noticeList";
+    }
+    @GetMapping("/all/newsBoard/nList")
+    public String nList(){
+        return "/all/newsBoard/nList";
+    }
+    @GetMapping("/all/newsBoard/nInfo")
+    public String nInfo(){
+        return "/all/newsBoard/nInfo";
+    }
+    @GetMapping("/all/newsBoard/cInfo")
+    public String cInfo(){
+        return "/all/newsBoard/cInfo";
     }
             // 간단 캐시: "aAll" -> "member/aAll" 처럼 저장
     private static final ConcurrentHashMap<String, String> VIEW_CACHE = new ConcurrentHashMap<>();

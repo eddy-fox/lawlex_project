@@ -1,0 +1,67 @@
+*{ box-sizing:border-box; font-family:"Pretendard Variable","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif; }
+:root{ --ink:#000000; --muted:#6b7280; --line:#e2e6ff; --paper:#ffffff; --panel:#f3f7ff; --navy:#000777; --danger:#c1121f; color:var(--ink); }
+.page-lChating{display: flex; justify-content: center; margin: 10px 0;}
+
+.page-lChating .container{ width:min(800px,94%);}
+.page-lChating .room{ background:#eaf1ff; border:1px solid #cfe0ff; height:800px; position:relative; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+.page-lChating .head{ display:flex; align-items:flex-start; gap:12px; background:#dfebff; border-bottom:1px solid #cfe0ff; padding:12px 16px; font-weight:800; }
+.page-lChating .pic{ width:100px; height:100px; border:1px solid #bbb; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:6px; font-weight:900; color:#333; }
+.page-lChating .info .name{ font-size:22px; font-weight:900; letter-spacing:-0.3px; }
+.page-lChating .info .timewin{ font-size:12px; color:#475569; margin-top:2px; }
+.page-lChating .head .badges{ margin-left:auto; display:flex; gap:8px; align-items:center; }
+.page-lChating .head .remain{ background:var(--danger); color:#fff; font-weight:800; font-size:12px; padding:6px 10px; border-radius:999px; }
+
+.page-lChating .msgs{ flex:1 1 auto; overflow:auto; padding:18px; background:var(--paper); }
+.page-lChating .daychip{ display:inline-block; padding:5px 10px; border-radius:999px; background:#cfd7eb; color:#fff; font-size:12px; font-weight:800; }
+.page-lChating .divider-wrap{ display:flex; align-items:center; gap:12px; color:#94a3b8; margin:18px 0; }
+.page-lChating .divider-wrap .rule{ flex:1; height:1px; background:#e5e7eb; }
+
+/* 말풍선 */
+.page-lChating .msg-row{ display:flex; gap:8px; margin:10px 0; align-items:flex-end; }
+.page-lChating .msg-row.lawyer{ justify-content:flex-start; }
+.page-lChating .msg-row.user{ justify-content:flex-end; }
+
+/* 받는 쪽(상대) */
+.page-lChating .lawyer .bubble{ background:#f3f6ff; border:1px solid #c7d2fe; color:var(--ink); }
+/* 내가 보내는 쪽(하양) */
+.page-lChating .user .bubble{ background:#ffffff; border:1px solid #e2e8f0; color:#0f172a; }
+
+.page-lChating .bubble{ max-width:min(70%,520px); padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.45; position:relative; }
+.page-lChating .meta{ font-size:11px; color:#64748b; margin:0 6px; white-space:nowrap; }
+.page-lChating .user .meta{ order:-1; }
+
+/* 이미지 전송: 버블 없이 타일 */
+.page-lChating .media{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-width:min(70%,520px); }
+.page-lChating .media img{ width:100%; height:180px; object-fit:cover; border-radius:12px; border:none; background:transparent; cursor:zoom-in; }
+
+/* 입력 영역 */
+.page-lChating .dock{ border-top:1px solid #cfe0ff; background:#eaf1ff; padding:8px 10px; }
+.page-lChating .previews{ display:flex; flex-wrap:wrap; gap:8px; padding:6px 2px 10px; }
+.page-lChating .chip{ position:relative; width:74px; height:74px; border-radius:10px; overflow:hidden; border:1px solid #c2d5f0; background:#fff; }
+.page-lChating .chip img{ width:100%; height:100%; object-fit:cover; display:block; }
+.page-lChating .chip button{ position:absolute; top:4px; right:4px; width:22px; height:22px; border:none; background:rgba(0,0,0,.55); color:#fff; border-radius:50%; cursor:pointer; font-weight:900; line-height:22px; font-size:12px; }
+.page-lChating .inputbar{ display:flex; gap:10px; align-items:flex-start; }
+.page-lChating .toolbar{ display:flex; gap:8px; align-items:center; padding-bottom:2px; }
+.page-lChating .icon-btn{ width:50px; height:50px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #c2d5f0; background:#fff; border-radius:8px; cursor:pointer; }
+.page-lChating .icon-btn:focus{ outline:3px solid rgba(0,7,119,.25); outline-offset:1px; }
+.page-lChating .few{ flex:1; height:100px; padding:10px; border:1px solid #c2d5f0; outline:none; background:#fff; border-radius:8px; font-size:15px; resize:none; }
+.page-lChating .send{ background:var(--navy); color:#fff; border:none; border-radius:8px; width:92px; font-weight:800; cursor:pointer; height:40px; }
+.page-lChating .send:disabled{ background:var(--navy); }
+
+/* 스크롤바 */
+.page-lChating .msgs::-webkit-scrollbar{ width:10px; }
+.page-lChating .msgs::-webkit-scrollbar-thumb{ background:#d7dbf9; border-radius:8px; border:2px solid #f1f3ff; }
+.page-lChating .msgs::-webkit-scrollbar-track{ background:#f7f8ff; }
+
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+/* 라이트박스 */
+.page-lChating .viewer{ position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; z-index:9999; }
+.page-lChating .viewer[aria-hidden="false"]{ display:block; }
+.page-lChating .viewer .stage{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:2vh; overflow:auto; }
+.page-lChating .viewer img{ max-width:96vw; max-height:96vh; border-radius:10px; }
+.page-lChating .viewer.fit-off img{ max-width:none; max-height:none; }
+.page-lChating .viewer .ctrl{ position:absolute; top:10px; right:12px; display:flex; gap:8px; }
+.page-lChating .viewer .ctrl button{ background:#111827; color:#fff; border:none; border-radius:8px; padding:8px 10px; cursor:pointer; font-weight:800; font-size:13px; }
+.page-lChating .viewer .arrow{ position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; cursor:pointer; font-size:34px; line-height:1; color:#fff; padding:6px 10px; }
+.page-lChating .viewer .prev{ left:10px; } .page-lChating .viewer .next{ right:10px; }
+.page-lChating .viewer .arrow:disabled{ opacity:.25; cursor:default; }

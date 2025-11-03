@@ -10,7 +10,8 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
     <main class="page-list">
-    <div class="wrap">
+      <div class="sideMenu" th:replace="~{include/bSide :: bSide}"></div>
+      <div class="wrap">
       <div class="backdrop">
         <div class="top">
           <a href="#" id="write" class="btn">글쓰기</a>
