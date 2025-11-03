@@ -36,12 +36,12 @@ dependencies {
 	// OpenAI API를 연동하지 않은 상태에서 spring boot가 spring-ai 관련 의존성을 감지해 에러 발생
 	// OpenAI API 연동 후 주석 해제 필요
 	implementation "com.google.api-client:google-api-client:2.6.0"
-    implementation "com.google.oauth-client:google-oauth-client-jetty:1.36.0"
-    implementation "com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0"
+   implementation "com.google.oauth-client:google-oauth-client-jetty:1.36.0"
+   implementation "com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0"
 	implementation "com.google.auth:google-auth-library-oauth2-http:1.24.0"
     // (옵션) Jackson 기반 JSON 파서가 필요하면 추가
-    implementation "com.google.http-client:google-http-client-jackson2:1.43.3"
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+   implementation "com.google.http-client:google-http-client-jackson2:1.43.3"
+	
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j' // Spring Boot에서 데이터베이스 연결 설정(DataSource)
@@ -52,6 +52,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'org.json:json:20230227'
+   implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 // dependencyManagement {
