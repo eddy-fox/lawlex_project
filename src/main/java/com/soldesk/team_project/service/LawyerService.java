@@ -1,5 +1,6 @@
 package com.soldesk.team_project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,8 +55,13 @@ public class LawyerService {
         List<LawyerEntity> lawyerEntityList;
 
         switch (searchType) {
-            case "idx": lawyerEntityList = lawyerRepository.
-                findByLawyerIdxAndLawyerActive(Integer.valueOf(keyword), 1); break;
+            case "idx":
+                try {
+                    int idx = Integer.parseInt(keyword);
+                    lawyerEntityList = lawyerRepository.findByLawyerIdxAndLawyerActive(idx, 1);
+                } catch (NumberFormatException e) {
+                    lawyerEntityList = new ArrayList<>();
+                } break;
             case "id": lawyerEntityList = lawyerRepository.
                 findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1); break;
             case "name": lawyerEntityList = lawyerRepository.
@@ -68,10 +74,18 @@ public class LawyerService {
                 findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerPhoneAsc(keyword, 1); break;
             case "nickname": lawyerEntityList = lawyerRepository.
                 findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerNicknameAsc(keyword, 1); break;
-            case "auth": lawyerEntityList = lawyerRepository.
-                findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(Integer.valueOf(keyword), 1); break;
-            case "address": lawyerEntityList = lawyerRepository.
-                findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(keyword, 1); break;
+            case "auth": 
+                try {
+                    int auth = Integer.parseInt(keyword);
+                    lawyerEntityList = lawyerRepository.
+                        findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(auth, 1);
+                } catch (NumberFormatException e) {
+                    lawyerEntityList = new ArrayList<>();
+                } break;
+            case "address": 
+                lawyerEntityList = lawyerRepository.
+                    findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(keyword, 1); 
+                    break;
             case "tel": lawyerEntityList = lawyerRepository.
                 findByLawyerTelContainingAndLawyerActiveOrderByLawyerTelAsc(keyword, 1); break;
             case "comment": lawyerEntityList = lawyerRepository.
@@ -82,8 +96,5 @@ public class LawyerService {
         return lawyerEntityList.stream()
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
-
-    // 광고 게재
-    // public AdDTO 
 
 }

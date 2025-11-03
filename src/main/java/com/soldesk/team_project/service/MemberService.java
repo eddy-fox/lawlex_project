@@ -1,5 +1,6 @@
 package com.soldesk.team_project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class MemberService {
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
         memberDTO.setMemberActive(memberEntity.getMemberActive());
         memberDTO.setInterestIdx(memberEntity.getInterestIdx());
+        memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
 
         return memberDTO;
     }
@@ -71,8 +73,13 @@ public class MemberService {
         List<MemberEntity> memberEntityList;
 
         switch (searchType) {
-            case "idx": memberEntityList = memberRepository
-                .findByMemberIdxAndMemberActive(Integer.valueOf(keyword), 1); break;
+            case "idx":
+                try {
+                    int idx = Integer.parseInt(keyword);
+                    memberEntityList = memberRepository.findByMemberIdxAndMemberActive(idx, 1);
+                } catch (NumberFormatException e) {
+                memberEntityList = new ArrayList<>();
+                } break;
             case "id": memberEntityList = memberRepository
                 .findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1); break;
             case "name": memberEntityList = memberRepository

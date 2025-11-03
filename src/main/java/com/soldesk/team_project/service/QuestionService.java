@@ -1,20 +1,12 @@
 package com.soldesk.team_project.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.QuestionDTO;
-import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.QuestionEntity;
 import com.soldesk.team_project.repository.QuestionRepository;
 
@@ -32,7 +24,7 @@ public class QuestionService {
         questionDTO.setQTitle(questionEntity.getQuestionTitle());
         questionDTO.setQContent(questionEntity.getQuestionContent());
         questionDTO.setQRegDate(questionEntity.getQuestionRegDate());
-        questionDTO.setQSecret(questionEntity.getQuestionSecret());
+        questionDTO.setQSecret("Y".equalsIgnoreCase(questionEntity.getQuestionSecret()) ? "🔒" : "🔓");
         questionDTO.setQAnswer(questionEntity.getQuestionAnswer());
         questionDTO.setQActive(questionEntity.getQuestionActive());
         
@@ -65,8 +57,14 @@ public class QuestionService {
         List<QuestionEntity> questionEntityList;
 
         switch (searchType) {
-            case "idx": questionEntityList = questionRepository.
-                findByQuestionIdxAndQuestionAnswerAndQuestionActive(Integer.valueOf(keyword), qAnswer, 1); break;
+            case "idx":
+                try {
+                    int idx = Integer.parseInt(keyword);
+                    questionEntityList = questionRepository.
+                        findByQuestionIdxAndQuestionAnswerAndQuestionActive(idx, qAnswer, 1);
+                } catch (NumberFormatException e) {
+                    questionEntityList = new ArrayList<>();
+                } break;
             case "title": questionEntityList = questionRepository.
                 findByQuestionTitleContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(keyword, qAnswer, 1); break;
             case "content": questionEntityList = questionRepository.

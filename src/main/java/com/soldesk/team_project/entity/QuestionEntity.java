@@ -44,7 +44,7 @@ public class QuestionEntity {
     private String questionSecret;
     
     @Column(name = "q_answer")
-    private String questionAnswer;
+    private Integer questionAnswer;
 
     @Column(name = "q_active")
     private Integer questionActive;

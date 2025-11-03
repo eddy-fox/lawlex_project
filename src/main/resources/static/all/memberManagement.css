@@ -40,3 +40,23 @@
   /* 링크 스타일(셀 내부 a 사용 시) */
   a.link{ color:var(--navy); text-decoration:none; font-weight:700 }
   a.link:hover{ text-decoration:underline }
+
+
+.scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: auto; /* 가로 스크롤 추가 */
+}
+
+table {
+  width: max-content; /* 콘텐츠 길이에 따라 가로 길이 확장 */
+  min-width: 100%;    /* 기본 테이블 너비 유지 */
+  border-collapse: collapse;
+  table-layout: auto; /* 자동 레이아웃으로 변경 (길이 제한 방지) */
+}
+
+thead th, tbody td {
+  white-space: nowrap; /* 줄바꿈 방지 */
+  overflow: hidden;    /* 넘치는 내용 숨기기 */
+  text-overflow: ellipsis; /* 너무 길면 … 표시 */
+}
