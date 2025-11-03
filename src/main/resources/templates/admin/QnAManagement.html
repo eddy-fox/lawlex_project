@@ -1,18 +1,15 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 문의글 관리</title>
-        <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/QnAManagement.css}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>문의글 관리</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/all/QnAManagement.css}">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
-  <main class="page-QnAManagement">
-    <div class="sideMenu" th:replace="~{include/aSide :: aSide}"></div>
-    <div class="container">
-      <h1>관리자 문의글 관리</h1>
+    <!-- 헤더 -->
+    <div class="include" th:replace="~{include/header :: header}"></div>
 
     <!-- 메인 -->
     <main class="page-QnAManagement">
@@ -22,102 +19,113 @@
       
       <div class="container">      
 
-        <form class="searchbar" onsubmit="return false;" style="display:flex;align-items:center;gap:8px">
-          <select class="select">
-            <option>글번호</option>
-            <option>제목</option>
-            <option>내용</option>
-            <option>작성자</option>
-          </select>
-          <input class="input" placeholder="검색">
-          <button class="btn primary" type="button">검색</button>
-        </form>
+        <!-- 상단 바 -->
+        <div class="topbar" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+          <div class="tabs">
+            <span id="newQnA" onclick="newQnA()" class="tab active">새로운 문의</span>
+            <span class="sep">|</span>
+            <span id="completedQnA" onclick="completedQnA()" class="tab">답변 완료</span>
+          </div>
+
+          <form th:action="@{/admin/QnAManagement}" method="post" class="searchbar" style="display:flex;align-items:center;gap:8px">
+            <select id="searchType" name="searchType" class="select">
+                <option value="idx" selected>글번호</option>
+                <option value="title">제목</option>
+                <option value="content">내용</option>
+                <option value="id">작성자</option>
+            </select>
+
+            <input type="search" id="search" name="keyword" class="input" placeholder="검색">
+            <button type="submit" class="btn primary">검색</button>
+          </form>
+        </div>
+
+        <!-- 새로운 문의글 리스트 -->
+        <section id="newQuestion" class="card" style="display:block">
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                    <th style="width:8%" class="center">글번호</th>
+                    <th style="width:12%" class="center">작성자</th>
+                    <th>제목</th>
+                    <th style="width:10%" class="center">작성일</th>
+                    <th style="width:8%" class="center">비밀글</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyNew">
+                <tr onclick="location.href='#'" style="cursor: pointer;">
+                    <td class="center">1</td>
+                    <td class="center">user01</td>
+                    <td>하드코딩 된 더미 새로운 질문글</td>
+                    <td class="center">20251017</td>
+                    <td class="center">Y</td>
+                </tr>
+                <tr onclick="location.href='#'" style="cursor: pointer;" th:each="nq : ${newQuestions}">
+                    <td class="center"><span th:text="${nq.qIdx}"></span></td>
+                    <td class="center"><span th:text="${nq.memberId}"></span></td>
+                    <td><span th:text="${nq.qTitle}"></span></td>
+                    <td class="center"><span th:text="${nq.qRegDate}"></span></td>
+                    <td class="center"><span th:text="${nq.qSecret}"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 답변 완료한 문의글 리스트 -->
+        <section id="completedQuestion" class="card" style="display:none;">
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                    <th style="width:8%" class="center">글번호</th>
+                    <th style="width:12%" class="center">작성자</th>
+                    <th>제목</th>
+                    <th style="width:10%" class="center">작성일</th>
+                    <th style="width:8%" class="center">비밀글</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyDone">
+                <tr onclick="location.href='#'" style="cursor: pointer;">
+                    <td class="center">1</td>
+                    <td class="center">user01</td>
+                    <td>하드코딩 된 더미 답변한 질문글</td>
+                    <td class="center">20251016</td>
+                    <td class="center">N</td>
+                </tr>
+                <tr onclick="location.href='#'" style="cursor: pointer;" th:each="cq : ${completedQuestions}">
+                    <td class="center"><span th:text="${cq.qIdx}"></span></td>
+                    <td class="center"><span th:text="${cq.memberId}"></span></td>
+                    <td><span th:text="${cq.qTitle}"></span></td>
+                    <td class="center"><span th:text="${cq.qRegDate}"></span></td>
+                    <td class="center"><span th:text="${cq.qSecret}"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
+    </main>
 
-      <!-- 새로운 문의 -->
-      <section id="newSection" class="card">
-        <div class="scroll">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:12%">글번호</th>
-                <th style="width:16%">작성자</th>
-                <th>제목</th>
-                <th style="width:16%" class="center">작성일</th>
-                <th style="width:10%" class="center">비밀글</th>
-                <th style="width:18%" class="center">상태/답변</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyNew">
-              <tr data-qid="2" data-title="환불 문의드립니다" data-member="user001" data-date="2025-10-18" data-secret="Y" tabindex="0" role="link">
-                <td>2</td>
-                <td>user001</td>
-                <td>환불 문의드립니다</td>
-                <td class="center">2025-10-18</td>
-                <td class="center">Y</td>
-                <td class="center">
-                  <div class="actions">
-                    <span class="badge todo">미답변</span>
-                    <button class="btn small primary answer-btn" type="button">답변</button>
-                  </div>
-                </td>
-              </tr>
-              <tr data-qid="1" data-title="회원 탈퇴는 어디서하나요" data-member="user002" data-date="2025-10-17" data-secret="N" tabindex="0" role="link">
-                <td>1</td>
-                <td>user002</td>
-                <td>회원 탈퇴는 어디서하나요</td>
-                <td class="center">2025-10-17</td>
-                <td class="center">N</td>
-                <td class="center">
-                  <div class="actions">
-                    <span class="badge todo">미답변</span>
-                    <button class="btn small primary answer-btn" type="button">답변</button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+    <!-- 푸터 -->
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
 
-      <!-- 완료 -->
-      <section id="doneSection" class="card" style="display:none">
-        <div class="scroll">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:12%">글번호</th>
-                <th style="width:16%">작성자</th>
-                <th>제목</th>
-                <th style="width:16%" class="center">작성일</th>
-                <th style="width:10%" class="center">비밀글</th>
-                <th style="width:18%" class="center">상태</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyDone">
-              <tr data-qid="9" data-title="환불 처리 완료 안내" data-member="user010" data-date="2025-10-10" data-secret="N" tabindex="0" role="link">
-                <td>9</td>
-                <td>user010</td>
-                <td>환불 처리 완료 안내</td>
-                <td class="center">2025-10-10</td>
-                <td class="center">N</td>
-                <td class="center"><span class="badge done">완료</span></td>
-              </tr>
-              <tr data-qid="8" data-title="배송 지연 문의 답변 완료" data-member="user021" data-date="2025-10-09" data-secret="N" tabindex="0" role="link">
-                <td>8</td>
-                <td>user021</td>
-                <td>배송 지연 문의 답변 완료</td>
-                <td class="center">2025-10-09</td>
-                <td class="center">N</td>
-                <td class="center"><span class="badge done">완료</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/QnAManagement.js}"></script>
 </body>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+<script>
+    function newQnA() {
+        document.getElementById('newQuestion').style.display = 'block';
+        document.getElementById('newQnA').classList.add('active');
+        document.getElementById('completedQuestion').style.display = 'none';
+        document.getElementById('completedQnA').classList.remove('active');
+    }
+    function completedQnA() {
+        document.getElementById('newQuestion').style.display = 'none';
+        document.getElementById('newQnA').classList.remove('active');
+        document.getElementById('completedQuestion').style.display = 'block';
+        document.getElementById('completedQnA').classList.add('active');
+    }
+</script>
 </html>
