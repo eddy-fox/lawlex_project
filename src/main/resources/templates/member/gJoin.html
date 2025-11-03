@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일반회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/gJoin.css}">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-gJoin">
+    <section class="center-card">
+    <div class="head">
+        <h1 class="title">회원가입</h1>
+    </div>
+    <form class="form" action="#" method="post">
+        <div class="field">
+        <div class="inline">
+            <input class="input" type="text" placeholder="아이디">
+            <button class="pill" type="button" id="dupBtn">중복확인</button>
+        </div>
+        </div>
+        <div class="field"><input class="input" type="password" placeholder="비밀번호"></div>
+        <div class="field"><input class="input" type="password" placeholder="비밀번호 확인"></div>
+        <div class="field"><input class="input" type="text" placeholder="닉네임"></div>
+        <div class="field"><input class="input" type="email" placeholder="이메일"></div>
+        <div class="field"><input class="input" type="tel" placeholder="전화번호"></div>
+        <div class="field"><input class="input" type="date" placeholder="생년월일"></div>
+        <div class="field">
+        <div class="agree-area">
+            <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
+            <button class="small-btn" type="button" id="verifyBtn">본인인증</button>
+        </div>
+        </div>
+        <div class="divider"></div>
+        <button class="primary-btn" type="submit">회원가입</button>
+    </form>
+    </section>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/gJoin.js}"></script>
+</body>
+</html>

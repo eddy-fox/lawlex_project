@@ -17,6 +17,8 @@ public class MemberDTO {
     private String memberPhone;
     private String memberAgree;
     private String memberNickname;
+    private Integer memberPoint;
+    private Integer memberActive;
     private Integer interestIdx;
 
     private String interestName;

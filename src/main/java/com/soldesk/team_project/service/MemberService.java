@@ -1,10 +1,14 @@
 package com.soldesk.team_project.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
@@ -19,6 +23,7 @@ public class MemberService {
     
     private final MemberRepository memberRepository;
     // private final InterestRepository interestRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private MemberDTO convertMemberDTO (MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
@@ -31,6 +36,8 @@ public class MemberService {
         memberDTO.setMemberPhone(memberEntity.getMemberPhone());
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
+        memberDTO.setMemberActive(memberEntity.getMemberActive());
+        memberDTO.setInterestIdx(memberEntity.getInterestIdx());
         memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
 
         return memberDTO;
@@ -55,7 +62,7 @@ public class MemberService {
 
     // 전체 회원 조회
     public List<MemberDTO> getAllMember() {
-        List<MemberEntity> memberEntityList = memberRepository.findAll();
+        List<MemberEntity> memberEntityList = memberRepository.findByMemberActive(1);
         
         return memberEntityList.stream()
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
@@ -66,17 +73,41 @@ public class MemberService {
         List<MemberEntity> memberEntityList;
 
         switch (searchType) {
-            case "idx": memberEntityList = memberRepository.findByMemberIdx(Integer.valueOf(keyword)); break;
-            case "id": memberEntityList = memberRepository.findByMemberIdContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
-            case "name": memberEntityList = memberRepository.findByMemberNameContainingIgnoreCaseOrderByMemberIdAsc(keyword); break;
-            case "idnum": memberEntityList = memberRepository.findByMemberIdnumContainingOrderByMemberIdnumAsc(keyword); break;
-            case "email": memberEntityList = memberRepository.findByMemberEmailContainingIgnoreCaseOrderByMemberEmailAsc(keyword); break;
-            case "phone": memberEntityList = memberRepository.findByMemberPhoneContainingOrderByMemberPhoneAsc(keyword); break;
-            case "nickname": memberEntityList = memberRepository.findByMemberNicknameContainingIgnoreCaseOrderByMemberNicknameAsc(keyword); break;
-            default: memberEntityList = memberRepository.findAll(); break;
+            case "idx":
+                try {
+                    int idx = Integer.parseInt(keyword);
+                    memberEntityList = memberRepository.findByMemberIdxAndMemberActive(idx, 1);
+                } catch (NumberFormatException e) {
+                memberEntityList = new ArrayList<>();
+                } break;
+            case "id": memberEntityList = memberRepository
+                .findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1); break;
+            case "name": memberEntityList = memberRepository
+                .findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1); break;
+            case "idnum": memberEntityList = memberRepository
+                .findByMemberIdnumContainingAndMemberActiveOrderByMemberIdnumAsc(keyword, 1); break;
+            case "email": memberEntityList = memberRepository
+                .findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberEmailAsc(keyword, 1); break;
+            case "phone": memberEntityList = memberRepository
+                .findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(keyword, 1); break;
+            case "nickname": memberEntityList = memberRepository
+                .findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(keyword, 1); break;
+            default: memberEntityList = memberRepository.findByMemberActive(1);
+         break;
         }
         return memberEntityList.stream()
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
 
+    //특정 회원 검색
+    public MemberEntity getMember(String memberName) {
+
+        Optional<MemberEntity> member = this.memberRepository.findByMemberName(memberName);
+        if(member.isPresent()) {
+            return member.get();
+        } else {
+            throw new DataNotFoundException("member not found");
+        }
+        
+    }
 }

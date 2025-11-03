@@ -1,37 +1,34 @@
-// package com.soldesk.team_project.config;
+package com.soldesk.team_project.config;
 
-// import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-// import com.google.api.client.json.jackson2.JacksonFactory;
-// import com.google.api.services.drive.Drive;
-// import com.google.auth.http.HttpCredentialsAdapter;
-// import com.google.auth.oauth2.ServiceAccountCredentials;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-// @Configuration
-// public class GoogleDriveConfig {
+import java.io.FileInputStream;
+import java.util.List;
 
-//     @Value("${google.drive.credentials-json:}")
-//     private String credentialsJson;
+@Configuration
+public class GoogleDriveConfig {
 
-//     @Bean
-//     public Drive driveService() throws Exception {
-//         var httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-//         var jsonFactory = JacksonFactory.getDefaultInstance();
+    @Value("${google.drive.service-account-key-path}")
+    private String keyPath;
 
-//         if (credentialsJson == null || credentialsJson.isBlank()) {
-//             throw new IllegalStateException("google.drive.credentials-json is empty");
-//         }
+    @Bean
+    public Drive driveService() throws Exception {
+        var httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        var jsonFactory = JacksonFactory.getDefaultInstance();
 
-//         var credStream = new java.io.ByteArrayInputStream(
-//                 credentialsJson.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        var credentials = ServiceAccountCredentials
+                .fromStream(new FileInputStream(keyPath))
+                .createScoped(List.of("https://www.googleapis.com/auth/drive"));
 
-//         var creds = ServiceAccountCredentials.fromStream(credStream)
-//                 .createScoped(java.util.List.of("https://www.googleapis.com/auth/drive"));
-
-//         return new Drive.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(creds))
-//                 .setApplicationName("MyBoardApp")
-//                 .build();
-//     }
-// }
+        return new Drive.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(credentials))
+                .setApplicationName("MyBoardApp")
+                .build();
+    }
+}

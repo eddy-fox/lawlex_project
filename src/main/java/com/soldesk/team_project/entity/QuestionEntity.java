@@ -1,7 +1,10 @@
 package com.soldesk.team_project.entity;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,7 +28,6 @@ public class QuestionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "q_idx")
     private Integer questionIdx;
 
@@ -41,13 +44,20 @@ public class QuestionEntity {
     private String questionSecret;
     
     @Column(name = "q_answer")
-    private String questionAnswer;
+    private Integer questionAnswer;
+
+    @Column(name = "q_active")
+    private Integer questionActive;
 
     @Column(name = "member_idx", insertable = false, updatable = false)
     private Integer memberIdx;
 
+    @Column(name = "lawyer_idx", insertable = false, updatable = false)
+    private Integer lawyerIdx;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
+    
     
 }
