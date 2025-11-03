@@ -1,15 +1,24 @@
-<!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>일반 회원 관리</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자-회원관리</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/all/memberManagement.css}">
+    <link rel="stylesheet" th:href="@{/css/memberManagement.css}">
 </head>
 <body>
-    <!-- 헤더 -->
-    <div class="include" th:replace="~{include/header :: header}"></div>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+  <main class="page-memberManagement">
+    <div class="sideMenu" th:replace="~{include/aSide :: aSide}"></div>
+  <div class="container">
+    <h1>회원 관리</h1>
+    <div class="toolbar">
+    <div class="tabs">
+      <span id="tab-user" class="tab active">일반 회원</span>
+      <span class="sep">|</span>
+      <span id="tab-lawyer" class="tab">변호사 회원</span>
+    </div>
 
     <!-- 메인 -->
     <main class="page-memberManagement">
@@ -88,20 +97,57 @@
           </div>
         </section>
 
+    <!-- 일반 회원 -->
+    <section id="sec-user" class="card">
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:16%">회원번호</th>
+              <th style="width:22%">ID</th>
+              <th style="width:22%">이름</th>
+              <th style="width:20%">닉네임</th>
+              <th style="width:20%">생년월</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-user">
+            <!-- a로 tr 감싸지 말고 data-id 부여 + 행 클릭 이동 -->
+            <tr data-id="user001" tabindex="0" role="link"><td>1</td><td>user001</td><td>이름01</td><td>닉네임01</td><td>9901</td></tr>
+            <tr data-id="user002" tabindex="0" role="link"><td>2</td><td>user002</td><td>이름02</td><td>닉네임02</td><td>9812</td></tr>
+            <tr data-id="user003" tabindex="0" role="link"><td>3</td><td>user003</td><td>이름03</td><td>닉네임03</td><td>9507</td></tr>
+            <tr data-id="user004" tabindex="0" role="link"><td>4</td><td>user004</td><td>이름04</td><td>닉네임04</td><td>0201</td></tr>
+            <tr data-id="user005" tabindex="0" role="link"><td>5</td><td>user005</td><td>이름05</td><td>닉네임05</td><td>0112</td></tr>
+          </tbody>
+        </table>
       </div>
-    </main>
+    </section>
 
-    <!-- 푸터 -->
-    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <!-- 변호사 회원 -->
+    <section id="sec-lawyer" class="card" style="display:none;margin-top:12px">
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:16%">회원번호</th>
+              <th style="width:22%">ID</th>
+              <th style="width:22%">이름</th>
+              <th style="width:20%">전문분야</th>
+              <th style="width:20%">생년월</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-lawyer">
+            <tr data-id="law001" tabindex="0" role="link"><td>101</td><td>law001</td><td>이름A</td><td>형사, 기업법</td><td>8804</td></tr>
+            <tr data-id="law002" tabindex="0" role="link"><td>102</td><td>law002</td><td>이름B</td><td>가사, 상속</td><td>8709</td></tr>
+            <tr data-id="law003" tabindex="0" role="link"><td>103</td><td>law003</td><td>이름C</td><td>민사, 손해배상</td><td>9002</td></tr>
+            <tr data-id="law004" tabindex="0" role="link"><td>104</td><td>law004</td><td>이름D</td><td>지식재산권</td><td>8512</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/memberManagement.js}"></script>
 
 </body>
-
-<script th:inline="javascript">
-    function memberUrl() {
-        window.location.href = /*[[@{/admin/memberManagement}]]*/ '/admin/memberManagement';
-    }
-    function lawyerUrl() {
-        window.location.href = /*[[@{/admin/lawyerManagement}]]*/ '/admin/lawyerManagement';
-    }
-</script>
 </html>

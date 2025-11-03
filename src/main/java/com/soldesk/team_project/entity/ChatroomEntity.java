@@ -25,7 +25,10 @@ import lombok.ToString;
     indexes = {
             @Index(name = "ix_room_member_active", columnList = "member_idx, chatroom_active"),
             @Index(name = "ix_room_lawyer_active", columnList = "lawyer_idx, chatroom_active"),
-            @Index(name = "ix_room_last_at", columnList = "last_message_at")
+            @Index(name = "ix_room_last_at", columnList = "last_message_at"),
+            @Index(name = "ix_room_member_state", columnList = "member_idx, state"),
+            @Index(name = "ix_room_lawyer_state", columnList = "lawyer_idx, state"),
+            @Index(name = "ix_room_expires",      columnList = "expires_at")
         }
     )
 @Getter 
@@ -64,6 +67,24 @@ public class ChatroomEntity {
 
     @Column(name="last_message", length = 200)
     private String lastMessage;
+
+    @Column(name = "state")
+    private String state;          // PENDING / ACTIVE / DECLINED / EXPIRED / CANCELLED
+
+    @Column(name = "requested_at")
+    private LocalDateTime requestedAt;         // 회원 신청 시각
+
+    @Column(name = "accepted_at")
+    private LocalDateTime acceptedAt;          // 변호사 수락 시각
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;           // accepted_at + duration_minutes
+
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes;  // 30 or 60
+
+    @Column(name = "point_cost")
+    private Integer pointCost;           // 수락 시 차감 포인트(로그용)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_idx")
