@@ -80,7 +80,7 @@ a {
 
 /* index.html 위 */
 /* 공통 컨테이너 */
-.container {
+.page-index .container {
   max-width: var(--container);
   margin: 0 auto;
   padding: 0 var(--px);
@@ -88,25 +88,25 @@ a {
 
 /* ===================== 섹션 공통 ===================== */
 
-.section-header {
+.page-index .section-header {
   text-align: center;
   margin-bottom: 64px;
 }
 
-.section-header h2 {
+.page-index .section-header h2 {
   font-size: 40px;
   font-weight: 700;
   color: var(--ink);
   margin-bottom: 16px;
 }
 
-.section-header p {
+.page-index .section-header p {
   font-size: 20px;
   color: var(--muted-2);
 }
 
 /* ===================== 버튼 ===================== */
-.btn {
+.page-index .btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -120,86 +120,86 @@ a {
   text-decoration: none;
 }
 
-.btn:hover {
+.page-index .btn:hover {
   transform: translateY(-1px);
 }
 
-.btn-primary {
+.page-index .btn-primary {
   background: var(--brand);
   color: var(--bg);
 }
 
-.btn-primary:hover {
+.page-index .btn-primary:hover {
   background: var(--brand-dark);
 }
 
-.btn-outline {
+.page-index .btn-outline {
   background: var(--bg);
   color: var(--brand);
   border: 2px solid var(--brand);
 }
 
-.btn-outline:hover {
+.page-index .btn-outline:hover {
   background: var(--bg-soft);
 }
 
-.btn-secondary {
+.page-index .btn-secondary {
   background: var(--bg);
   color: var(--brand);
 }
 
-.btn-secondary:hover {
+.page-index .btn-secondary:hover {
   background: var(--line);
 }
 
-.btn-outline-white {
+.page-index .btn-outline-white {
   background: transparent;
   color: var(--bg);
   border: 2px solid var(--bg);
 }
 
-.btn-outline-white:hover {
+.page-index .btn-outline-white:hover {
   background: var(--bg);
   color: var(--brand);
 }
 
 /* ===================== 통계(Stats) ===================== */
-.stats {
+.page-index .stats {
   padding: 64px var(--px);
   background: var(--brand);
   color: var(--bg);
 }
 
-.stats-grid {
+.page-index .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 32px;
   text-align: center;
 }
 
-.stat-number {
+.page-index .stat-number {
   font-size: 36px;
   font-weight: 700;
   margin-bottom: 8px;
 }
 
-.stat-label {
+.page-index .stat-label {
   color: var(--blue-200);
   font-size: 14px;
 }
 
 /* ===================== 서비스(카드) ===================== */
-.services {
+.page-index .services {
   padding: 80px var(--px);
   background: var(--bg);
 }
 
-.services-grid {
+.page-index .services-grid {
   display: grid;
   gap: 32px;
 }
 
-.service-card {
+.page-index .service-card {
   background: var(--bg);
   padding: 32px;
   border-radius: var(--radius-12);
@@ -207,12 +207,12 @@ a {
   transition: box-shadow .2s, transform .2s;
 }
 
-.service-card:hover {
+.page-index .service-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
-.service-icon {
+.page-index .service-icon {
   width: 56px;
   height: 56px;
   background: var(--blue-100);
@@ -223,29 +223,29 @@ a {
   margin-bottom: 24px;
 }
 
-.service-icon svg {
+.page-index .service-icon svg {
   width: 28px;
   height: 28px;
   stroke: var(--brand);
 }
 
-.service-card h3,
-.feature h3,
-.process-step h3 {
+.page-index .service-card h3,
+.page-index .feature h3,
+.page-index .process-step h3 {
   font-size: 20px;
   font-weight: 600;
   color: var(--ink);
   margin-bottom: 12px;
 }
 
-.service-card p,
-.feature p,
-.process-step p {
+.page-index .service-card p,
+.page-index .feature p,
+.page-index .process-step p {
   color: var(--muted-2);
   line-height: 1.6;
 }
 
-.service-link {
+.page-index .service-link {
   color: var(--brand);
   text-decoration: none;
   display: inline-flex;
@@ -255,26 +255,26 @@ a {
   transition: gap .2s;
 }
 
-.service-link:hover {
+.page-index .service-link:hover {
   gap: 12px;
 }
 
 /* ===================== 왜 우리(Features) ===================== */
-.why-choose {
+.page-index .why-choose {
   padding: 80px var(--px);
   background: var(--bg-soft);
 }
 
-.features-grid {
+.page-index .features-grid {
   display: grid;
   gap: 32px;
 }
 
-.feature {
+.page-index .feature {
   text-align: center;
 }
 
-.feature-icon {
+.page-index .feature-icon {
   width: 64px;
   height: 64px;
   background: var(--brand);
@@ -285,28 +285,28 @@ a {
   margin: 0 auto 24px;
 }
 
-.feature-icon svg {
+.page-index .feature-icon svg {
   width: 32px;
   height: 32px;
   stroke: var(--bg);
 }
 
 /* ===================== 프로세스 ===================== */
-.process {
+.page-index .process {
   padding: 80px var(--px);
   background: var(--bg);
 }
 
-.process-grid {
+.page-index .process-grid {
   display: grid;
   gap: 32px;
 }
 
-.process-step {
+.page-index .process-step {
   text-align: center;
 }
 
-.process-number {
+.page-index .process-number {
   width: 64px;
   height: 64px;
   background: var(--brand);
@@ -320,32 +320,32 @@ a {
   font-weight: 600;
 }
 
-.process-step p {
+.page-index .process-step p {
   font-size: 14px;
 }
 
 /* ===================== CTA ===================== */
-.cta {
+.page-index .cta {
   padding: 80px var(--px);
   background: var(--brand);
   color: var(--bg);
   text-align: center;
 }
 
-.cta h2 {
+.page-index .cta h2 {
   font-size: 40px;
   font-weight: 700;
   margin-bottom: 24px;
   line-height: 1.3;
 }
 
-.cta p {
+.page-index .cta p {
   font-size: 20px;
   color: var(--blue-200);
   margin-bottom: 32px;
 }
 
-.cta-buttons {
+.page-index .cta-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -353,7 +353,7 @@ a {
 }
 
 /* ===================== 아이콘 공통 ===================== */
-.icon {
+.page-index .icon {
   width: 20px;
   height: 20px;
   stroke-width: 2;
@@ -363,37 +363,37 @@ a {
 
 /* ===================== 반응형 ===================== */
 @media (min-width:768px) {
-  .stats-grid {
+  .page-index .stats-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .services-grid {
+  .page-index .services-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .features-grid {
+  .page-index .features-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .process-grid {
+  .page-index .process-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (min-width:1024px) {
-  .hero h1 {
+  .page-index .hero h1 {
     font-size: 56px;
   }
 
-  .hero-content {
+  .page-index .hero-content {
     grid-template-columns: 1fr 1fr;
   }
 
-  .services-grid {
+  .page-index .services-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .hero-visual {
+  .page-index .hero-visual {
     display: block !important;
   }
 }

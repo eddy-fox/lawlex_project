@@ -11,6 +11,8 @@ import com.soldesk.team_project.service.QuestionService;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @Controller
 @RequestMapping("/question")
@@ -19,6 +21,10 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-
+    @GetMapping("/faq")
+    public String faq() {
+        return "question/faq";
+    }
+    
 
 }
