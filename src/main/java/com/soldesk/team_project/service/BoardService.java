@@ -85,8 +85,7 @@ public class BoardService {
         this.boardRepository.save(q);
 
         // GPT 자동 답변 생성
-        String interest = q.getBoardInterest();
-        reboardService.gptAutoReboard(boardTitle, interest, boardContent);
+        reboardService.gptAutoReboard(q);
 
     }
 
