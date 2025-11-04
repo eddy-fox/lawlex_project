@@ -26,5 +26,7 @@ public class LawyerDTO {
     private Integer lawyerAnswerCnt;
     private Integer lawyerActive;
     private Integer interestIdx;
+
+    private String interestName;
     
 }
