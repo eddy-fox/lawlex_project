@@ -20,4 +20,6 @@ public class AdDTO {
     private Integer adActive;
     private Integer lawyerIdx;
 
+    private String lawyerName;
+
 }

@@ -38,6 +38,7 @@ public class LawyerService {
         lawyerDTO.setLawyerAnswerCnt(lawyerEntity.getLawyerAnswerCnt());
         lawyerDTO.setLawyerActive(lawyerEntity.getLawyerActive());
         lawyerDTO.setInterestIdx(lawyerEntity.getInterestIdx());
+        lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
 
         return lawyerDTO;
     }
