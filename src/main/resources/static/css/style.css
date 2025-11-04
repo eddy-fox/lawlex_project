@@ -24,7 +24,7 @@
 :root {
   --brand: #000777;
   --brand-dark: #000555;
-  --ink: #111827;
+  --ink: #000000;
   --muted: #4b5563;
   --muted-2: #6b7280;
 
@@ -829,6 +829,7 @@ a {
 
 /* chatIcon 밑 */
 
+/* side 위 */
 @font-face {
   font-family: 'Gooorm Sans';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
@@ -855,7 +856,6 @@ a {
 
 :root {
   --navy: #000777;
-  --ink: #555666;
 }
 
 .sideMenu {
@@ -872,7 +872,7 @@ a {
 .side {
   display: block;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--muted);
   font-size: 15px;
   line-height: 1.1;
   text-align: right;
@@ -886,7 +886,7 @@ a {
 .side-choice {
   display: block;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--muted);
   font-size: 25px;
   line-height: 1.1;
   text-align: right;

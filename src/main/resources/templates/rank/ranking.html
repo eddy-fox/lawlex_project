@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랭킹</title>
+    <link rel="stylesheet" th:href="@{/css/ranking.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-ranking">
+        <div class="container">
+
+            <div class="title-content"><span class="crown">👑</span>
+                <h1>랭킹 TOP 10</h1>
+            </div>
+
+            <div class="filter">
+                <button class="pickBtn on">좋아요순</button>
+                <button class="pickBtn">답변수순</button>
+            </div>
+
+            <section class="tops" id="topRankings">
+                <div class="top-1">
+                    <div class="left">
+                        <div class="num">1위</div>
+                        <div class="photo"><img src="#" alt=""></div>
+                    </div>
+                    <div class="among"><a class="name" href="#">김하나 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">3,451</span></div>
+                        <div class="pick">답변수 <span class="v">3,951</span></div>
+                    </div>
+                </div>
+
+                <div class="top-2">
+                    <div class="left">
+                        <div class="num">2위</div>
+                        <div class="photo"><img src="#" alt=""></div>
+                    </div>
+                    <div class="among"><a class="name" href="#">박도윤 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">3,047</span></div>
+                        <div class="pick">답변수 <span class="v">3,210</span></div>
+                    </div>
+                </div>
+
+                <div class="top-3">
+                    <div class="left">
+                        <div class="num">3위</div>
+                        <div class="photo"><img src="#" alt="">
+                        </div>
+                    </div>
+                    <div class="among"><a class="name" href="#">이서준 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">2,890</span></div>
+                        <div class="pick">답변수 <span class="v">3,001</span></div>
+                    </div>
+                </div>
+
+                <div class="top">
+                    <div class="left">
+                        <div class="num">4위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">최가연 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">2,105</span></div>
+                        <div class="pick">답변수 <span class="v">2,420</span></div>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="left">
+                        <div class="num">5위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">정하린 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">1,980</span></div>
+                        <div class="pick">답변수 <span class="v">2,335</span></div>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="left">
+                        <div class="num">6위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">윤시우 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">1,760</span></div>
+                        <div class="pick">답변수 <span class="v">2,204</span></div>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="left">
+                        <div class="num">7위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">오주원 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">1,695</span></div>
+                        <div class="pick">답변수 <span class="v">2,102</span></div>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="left">
+                        <div class="num">8위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">서민재 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">1,620</span></div>
+                        <div class="pick">답변수 <span class="v">2,050</span></div>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="left">
+                        <div class="num">9위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">장하늬 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">1,540</span></div>
+                        <div class="pick">답변수 <span class="v">1,988</span></div>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="left">
+                        <div class="num">10위</div>
+                    </div>
+                    <div class="among"><a class="name" href="#">백도형 변호사</a></div>
+                    <div class="right">
+                        <div class="pick-on">좋아요 <span class="v">1,480</span></div>
+                        <div class="pick">답변수 <span class="v">1,901</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section">
+                <div class="category">
+                    <h2>카테고리별</h2>
+                </div>
+                <div class="category-group">
+                    <h3 class="category-title">카테고리1</h3>
+                    <div class="grid">
+                        <div class="card">
+                            <div class="rank">1위</div>
+                            <div class="photo"><img src="#" alt=""></div>
+                            <div class="name">김민지 변호사</div>
+                            <div class="sub on">좋아요 1,200</div>
+                            <div class="sub">답변수 1,150</div>
+                        </div>
+                        <div class="card">
+                            <div class="rank">2위</div>
+                            <div class="photo"><img src="#" alt=""></div>
+                            <div class="name">이준호 변호사</div>
+                            <div class="sub on">좋아요 1,100</div>
+                            <div class="sub">답변수 1,050</div>
+                        </div>
+                        <div class="card">
+                            <div class="rank">3위</div>
+                            <div class="photo"><img src="#" alt=""></div>
+                            <div class="name">박서연 변호사</div>
+                            <div class="sub on">좋아요 1,000</div>
+                            <div class="sub">답변수 1,200</div>
+                        </div>
+                        <div class="card">
+                            <div class="rank">4위</div>
+                            <div class="photo"><img src="#" alt=""></div>
+                            <div class="name">정우진 변호사</div>
+                            <div class="sub on">좋아요 950</div>
+                            <div class="sub">답변수 980</div>
+                        </div>
+                        <div class="card">
+                            <div class="rank">5위</div>
+                            <div class="photo"><img src="#" alt=""></div>
+                            <div class="name">최예린 변호사</div>
+                            <div class="sub on">좋아요 900</div>
+                            <div class="sub">답변수 920</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/ranking.js}"></script>
+</body>
+
+</html>
