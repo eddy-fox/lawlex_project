@@ -1,35 +1,38 @@
-{
-  "properties": [
-    {
-      "name": "google.drive.service-account-key-path",
-      "type": "java.lang.String",
-      "description": "Absolute path to the Google Service Account key JSON file."
-    },
-    {
-      "name": "google.drive.make-public",
-      "type": "java.lang.Boolean",
-      "defaultValue": true,
-      "description": "Grant 'anyone with the link' read permission after upload."
-    },
-    {
-      "name": "google.drive.board-folder-id",
-      "type": "java.lang.String",
-      "description": "Drive folder ID for general board images (lawleximg/board_ID)."
-    },
-    {
-      "name": "google.drive.chatting-folder-id",
-      "type": "java.lang.String",
-      "description": "Drive folder ID for chatting images (lawleximg/chatting_ID)."
-    },
-    {
-      "name": "google.drive.lawyer-profile-folder-id",
-      "type": "java.lang.String",
-      "description": "Drive folder ID for member profile images (lawleximg/lawyer_profile_ID)."
-    },
-    {
-      "name": "google.drive.newsboard-folder-id",
-      "type": "java.lang.String",
-      "description": "Drive folder ID for news board images (lawleximg/newsboard_ID)."
-    }
-  ]
-}
+{"properties": [
+  {
+    "name": "google.drive.service-account-key-path",
+    "type": "java.lang.String",
+    "description": "Absolute path to the Google Service Account key JSON file."
+  },
+  {
+    "name": "google.drive.make-public",
+    "type": "java.lang.Boolean",
+    "defaultValue": true,
+    "description": "Grant 'anyone with the link' read permission after upload."
+  },
+  {
+    "name": "google.drive.board-folder-id",
+    "type": "java.lang.String",
+    "description": "Drive folder ID for general board images (lawleximg/board_ID)."
+  },
+  {
+    "name": "google.drive.chatting-folder-id",
+    "type": "java.lang.String",
+    "description": "Drive folder ID for chatting images (lawleximg/chatting_ID)."
+  },
+  {
+    "name": "google.drive.lawyer-profile-folder-id",
+    "type": "java.lang.String",
+    "description": "Drive folder ID for member profile images (lawleximg/lawyer_profile_ID)."
+  },
+  {
+    "name": "google.drive.newsboard-folder-id",
+    "type": "java.lang.String",
+    "description": "Drive folder ID for news board images (lawleximg/newsboard_ID)."
+  },
+  {
+    "name": "google.drive.ad-folder-id",
+    "type": "java.lang.String",
+    "description": "A description for 'google.drive.ad-folder-id'"
+  }
+]}
