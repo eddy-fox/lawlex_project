@@ -42,7 +42,7 @@ public class ChatdataEntity {
     @Column(name="chat_content")
     private String chatContent;
 
-    @Column(name="chat_regDate")
+    @Column(name="chat_regdate")
     private LocalDateTime chatRegDate;
 
     @Column(name="sender_type")
