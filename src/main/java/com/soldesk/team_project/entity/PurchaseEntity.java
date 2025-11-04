@@ -40,7 +40,7 @@ public class PurchaseEntity {
     @Column(name = "purchase_state")
     private String purchaseState;
 
-    @Column(name = "purchase_legDate")
+    @Column(name = "purchase_leg_date")
     private LocalDate purchaseLegDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

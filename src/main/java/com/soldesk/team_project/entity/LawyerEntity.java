@@ -60,7 +60,7 @@ public class LawyerEntity {
     @Column(name = "lawyer_tel")
     private String lawyerTel;
 
-    @Column(name = "lawyer_imgPath")
+    @Column(name = "lawyer_img_path")
     private String lawyerImgPath;
 
     @Column(name = "lawyer_comment")
@@ -69,7 +69,7 @@ public class LawyerEntity {
     @Column(name = "lawyer_like")
     private Integer lawyerLike;
     
-    @Column(name = "lawyer_answerCnt")
+    @Column(name = "lawyer_answer_cnt")
     private Integer lawyerAnswerCnt;
 
     @Column(name = "lawyer_active")
