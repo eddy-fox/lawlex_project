@@ -14,7 +14,7 @@
       <div class="wrap">
       <div class="backdrop">
         <div class="top">
-          <a href="#" id="write" class="btn">글쓰기</a>
+          <a th:href="@{/board/create}" id="write" class="btn">글쓰기</a>
         </div>
 
         <div class="card">
@@ -28,17 +28,13 @@
               </tr>
             </thead>
             <tbody id="tbody">
-              <tr><td>53212</td><td>정보통신망법 침입 및 명예훼손 대응방법</td><td>2025-09-29</td><td>1</td></tr>
-              <tr><td>53211</td><td>주거침입 관련 처벌 수위 문의</td><td>2025-09-27</td><td>3</td></tr>
-              <tr><td>53210</td><td>모욕죄 성립요건</td><td>2025-09-25</td><td>8</td></tr>
-              <tr><td>53209</td><td>폭행사건 합의 시 처리 절차</td><td>2025-09-24</td><td>12</td></tr>
-              <tr><td>53208</td><td>이혼 시 재산분할 기준</td><td>2025-09-23</td><td>7</td></tr>
-              <tr><td>53207</td><td>상속포기 절차 문의</td><td>2025-09-22</td><td>4</td></tr>
-              <tr><td>53206</td><td>교통사고 합의금 산정 방법</td><td>2025-09-21</td><td>15</td></tr>
-              <tr><td>53205</td><td>명예훼손 고소 진행 기간</td><td>2025-09-20</td><td>10</td></tr>
-              <tr><td>53204</td><td>채무불이행 관련 소송 절차</td><td>2025-09-19</td><td>5</td></tr>
-              <tr><td>53203</td><td>근로계약 위반 시 법적 대응</td><td>2025-09-18</td><td>9</td></tr>
-            </tbody>
+              <tr class="text-center" th:each="board, loop : ${paging}">
+                <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+                <td class="text-start">
+                  <a th:href="@{|/board/detail/${board.id}|}" th:text="${board.boardTitle}"></a>
+                </td>
+              </tr>
+            </tbody> 
           </table>
 
           <div class="below">

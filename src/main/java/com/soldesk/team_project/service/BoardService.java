@@ -45,10 +45,10 @@ public class BoardService {
                 Join<BoardEntity, MemberEntity> u1 = q.join("author", JoinType.LEFT);
                 Join<BoardEntity, ReBoardEntity> a = q.join("answerList", JoinType.LEFT);
                 Join<ReBoardEntity, MemberEntity> u2 = a.join("author", JoinType.LEFT);
-                return cb.or(cb.like(q.get("board_title"), "%" + kw + "%"),
-                        cb.like(q.get("board_content"), "%" + kw + "%"),
+                return cb.or(cb.like(q.get("boardTitle"), "%" + kw + "%"),
+                        cb.like(q.get("boardContent"), "%" + kw + "%"),
                         cb.like(u1.get("memberId"), "%" + kw + "%"),
-                        cb.like(a.get("board_content"), "%" + kw + "%"),
+                        cb.like(a.get("boardContent"), "%" + kw + "%"),
                         cb.like(u2.get("memberId"), "%" + kw + "%"));
             }
         };
@@ -57,7 +57,7 @@ public class BoardService {
     public Page<BoardEntity> getList(int page, String kw) {
 
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("board_regDate"));
+        sorts.add(Sort.Order.desc("boardRegDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.boardRepository.findAllByKeyword(kw, pageable);
         
