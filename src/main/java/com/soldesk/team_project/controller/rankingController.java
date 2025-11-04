@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequestMapping("/rank")
-public class rankingController {
+public class RankingController {
     
     @GetMapping("/ranking")
     public String ranking() {
