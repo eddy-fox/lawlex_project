@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class ReBoardService {
     
     private final ReBoardRepository reboardRepository;
-    private final pythonService pythonService;
+    private final PythonService pythonService;
 
     public ReBoardEntity create(BoardEntity board, String content, MemberEntity author) {
 

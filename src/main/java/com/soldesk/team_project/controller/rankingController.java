@@ -27,6 +27,7 @@ public class RankingController {
     public String ranking(Model model) {
         List<LawyerDTO> rankingList = rankingService.getRankingList();
         model.addAttribute("rankingList", rankingList);
+        System.out.println("\n 여기가 랭크사이즈"+ rankingList.size() +"\n 여기가 랭크사이즈");
         return "rank/ranking";
     }
     
