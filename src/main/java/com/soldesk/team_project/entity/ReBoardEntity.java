@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,16 +34,22 @@ public class ReBoardEntity {
     @Column(name = "reboard_content")
     private String reboardContent;
 
-    @Column(name = "reboard_regDate")
+    @Column(name = "reboard_regdate")
     private LocalDate reboardRegDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyerIdx;
+    private LawyerEntity lawyer;
+  
+    @Transient
+    private Integer lawyerIdx;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
     private BoardEntity board;
+
+    @Transient
+    private Integer boardIdx;
 
     @ManyToOne
     @JoinColumn(name = "member_idx")
