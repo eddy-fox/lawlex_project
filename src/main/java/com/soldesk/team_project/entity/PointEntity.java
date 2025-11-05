@@ -37,7 +37,7 @@ public class PointEntity {
     @Column(name = "point_history")
     private String pointHistory;
 
-    @Column(name = "point_regDate")
+    @Column(name = "point_reg_date")
     private LocalDate pointRegDate;
 
     @Column(name = "member_idx", insertable = false, updatable = false)

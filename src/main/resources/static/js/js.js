@@ -147,5 +147,4 @@
   // 동적 삽입했을 때 수동 초기화용
   window.initSideMenus = boot;
 })();
-})();
 //  side 밑

@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.6'
-	id 'io.spring.dependency-management' version '1.1.7'
+   id 'java'
+   id 'org.springframework.boot' version '3.5.6'
+   id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.soldesk'
@@ -9,59 +9,58 @@ version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+   toolchain {
+      languageVersion = JavaLanguageVersion.of(17)
+   }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+   compileOnly {
+      extendsFrom annotationProcessor
+   }
 }
 
 repositories {
-	mavenCentral()
+   mavenCentral()
 }
 
 ext {
-	set('springAiVersion', "1.0.3")
+   set('springAiVersion', "1.0.3")
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA 기능 사용 (repository, entity)
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	// implementation 'org.springframework.ai:spring-ai-starter-model-openai' 
-	// OpenAI API를 연동하지 않은 상태에서 spring boot가 spring-ai 관련 의존성을 감지해 에러 발생
-	// OpenAI API 연동 후 주석 해제 필요
-	implementation "com.google.api-client:google-api-client:2.6.0"
+   implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA 기능 사용 (repository, entity)
+   implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+   implementation 'org.springframework.boot:spring-boot-starter-web'
+   // implementation 'org.springframework.ai:spring-ai-starter-model-openai' 
+   // OpenAI API를 연동하지 않은 상태에서 spring boot가 spring-ai 관련 의존성을 감지해 에러 발생
+   // OpenAI API 연동 후 주석 해제 필요
+   implementation "com.google.api-client:google-api-client:2.6.0"
    implementation "com.google.oauth-client:google-oauth-client-jetty:1.36.0"
    implementation "com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0"
-	implementation "com.google.auth:google-auth-library-oauth2-http:1.24.0"
+   implementation "com.google.auth:google-auth-library-oauth2-http:1.24.0"
     // (옵션) Jackson 기반 JSON 파서가 필요하면 추가
    implementation "com.google.http-client:google-http-client-jackson2:1.43.3"
-	
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j' // Spring Boot에서 데이터베이스 연결 설정(DataSource)
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-	implementation 'org.json:json:20230227'
    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+   compileOnly 'org.projectlombok:lombok'
+   developmentOnly 'org.springframework.boot:spring-boot-devtools'
+   runtimeOnly 'com.mysql:mysql-connector-j' // Spring Boot에서 데이터베이스 연결 설정(DataSource)
+   annotationProcessor 'org.projectlombok:lombok'
+   testImplementation 'org.springframework.boot:spring-boot-starter-test'
+   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+   implementation 'org.springframework.boot:spring-boot-starter-security'
+   implementation 'org.springframework.boot:spring-boot-starter-validation'
+   implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+   implementation 'org.json:json:20230227'
 }
 
 // dependencyManagement {
-// 	imports {
-// 		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
-// 	}
+//    imports {
+//       mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+//    }
 // }
 // 위의 OpenAI API와 동일 사유로 주석 처리
 
 tasks.named('test') {
-	useJUnitPlatform()
+   useJUnitPlatform()
 }

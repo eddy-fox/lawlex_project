@@ -160,7 +160,7 @@ public class AdminController {
 
     // 광고 상세
     @GetMapping("/adInfo")
-    public String showAd(@RequestParam("adIdx") int adIdx, Model model) {
+    public String showAd(@RequestParam("adIdx") Integer adIdx, Model model) {
         AdDTO ad = adService.getAd(adIdx);
         model.addAttribute("ad", ad);
 
@@ -169,17 +169,17 @@ public class AdminController {
 
     // 광고 수정
     @GetMapping("/adModify")
-    public String modifyForm(@RequestParam("adIdx") int adIdx, Model model) {
+    public String modifyForm(@RequestParam("adIdx") Integer adIdx, Model model) {
         AdDTO modifyAd = adService.getAd(adIdx);
         model.addAttribute("modifyAd", modifyAd);
 
-        return "admin/adInfo";
+        return "admin/adModify";
     }
     @PostMapping("/adModify")
     public String modifySubmit(@ModelAttribute("modifyAd") AdDTO modifyAd, Model model) {
         adService.modifyProcess(modifyAd);
 
-        return "redirect:/admin/adInfo?adIdx";
+        return "redirect:/admin/adInfo?adIdx=" + modifyAd.getAdIdx();
     }
 
     // 광고 삭제
@@ -187,7 +187,7 @@ public class AdminController {
     public String deleteAd(@RequestParam("adIdx") int adIdx) {
         adService.deleteProcess(adIdx);
 
-        return "admin/adInfo";
+        return "redirect:/admin/adManagement";
     }
     
 }

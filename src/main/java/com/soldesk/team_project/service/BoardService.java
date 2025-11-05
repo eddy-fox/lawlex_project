@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final ReBoardService reboardService;
 
     private Specification<ReBoardEntity> search(String kw) {
 
@@ -82,6 +83,9 @@ public class BoardService {
         q.setBoardRegDate(LocalDate.now());
         q.setAuthor(member);
         this.boardRepository.save(q);
+
+        // GPT 자동 답변 생성
+        reboardService.gptAutoReboard(q);
 
     }
 
