@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
+
 @Controller
 @RequestMapping("/question")
 @RequiredArgsConstructor
@@ -24,6 +25,18 @@ public class QuestionController {
     @GetMapping("/faq")
     public String faq() {
         return "question/faq";
+    }
+    @GetMapping("/qnaList")
+    public String qnaList() {
+        return new String();
+    }
+    @GetMapping("/qnaWrite")
+    public String qnaWrite() {
+        return "question/qnaWrite";
+    }
+    @GetMapping("/qnaAnswer")
+    public String qnaAnswer() {
+        return "question/qnaAnswer";
     }
     
 
