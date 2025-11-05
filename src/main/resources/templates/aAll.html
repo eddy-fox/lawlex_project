@@ -7,12 +7,11 @@
 </head>
 <body>
     <a th:href="@{/}">index.html</a>
-    <li><a th:href="@{/html}">기본틀</a></li>
     <ul><p>nav</p> 필요한 분들 알아서 하시면 된니다  이건 마무리에 지울꺼에요
         <li><a href="#">실시간 상담</a></li>
         <li><a href="#">상담</a></li>
         <li><a href="#">News</a></li>
-        <li><a href="#">랭킹</a></li>
+        <li><a th:href="@{/rank/ranking}">랭킹</a></li>
         <li><a href="#">문의</a></li>
     </ul>
     <ul><p>inout</p>
@@ -58,6 +57,16 @@
         <li><a th:href="@{/newsBoard/nList}">뉴스리스트</a></li>
         <li><a th:href="@{/newsBoard/nInfo}">뉴스보기</a></li>
         <li><a th:href="@{/newsBoard/cInfo}">컬럼보기</a></li>
+    </ul>
+    <ul>question
+        <li><a th:href="@{/question/faq}">FAQ</a></li>
+        <li><a th:href="@{/question/}"></a></li>
+        <li><a th:href="@{/question/}"></a></li>
+        <li><a th:href="@{/question/}"></a></li>
+        <li><a th:href="@{/question/}"></a></li>
+    </ul>
+    <ul>ranking
+        <li><a th:href="@{/rank/ranking}">랭킹</a></li>
     </ul>
 </body>
 </html>
