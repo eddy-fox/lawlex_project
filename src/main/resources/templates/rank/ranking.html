@@ -11,7 +11,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
     <main class="page-ranking">
-        <div class="container">
+        <div class="container" th:each="rank : ${rankingList}">
 
             <div class="title-content"><span class="crown">👑</span>
                 <h1>랭킹 TOP 10</h1>
@@ -28,7 +28,7 @@
                         <div class="num">1위</div>
                         <div class="photo"><img src="#" alt=""></div>
                     </div>
-                    <div class="among"><a class="name" href="#">김하나 변호사</a></div>
+                    <a class="name" href="#" th:text="${rankingList.lawyerName}"><div class="among">김하나 변호사</div></a>
                     <div class="right">
                         <div class="pick-on">좋아요 <span class="v">3,451</span></div>
                         <div class="pick">답변수 <span class="v">3,951</span></div>
