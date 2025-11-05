@@ -34,10 +34,10 @@ public class NewsBoardEntity {
     @Column(name="news_content")
     private String newsContent;
 
-    @Column(name="news_regDate")
+    @Column(name="news_regdate")
     private LocalDate newsRegDate;
 
-    @Column(name="news_imgPath")
+    @Column(name="news_imgpath")
     private String newsImgPath;
 
     @Column(name="news_like")
@@ -46,10 +46,10 @@ public class NewsBoardEntity {
     @Column(name="news_views")
     private Integer newsViews;
 
-    @Column(name="fileName")
+    @Column(name="filename")
     private String storedFileName;
 
-    @Column(name="fileAttached")
+    @Column(name="fileattached")
     private int fileAttached;
 
     @Column(name="news_active")

@@ -74,13 +74,13 @@ public class ReBoardService {
             );
 
             // 답변 게시글 생성
-            ReBoardEntity reboardEntity = new ReboardEntity();
-            reboardEntity.setBoardIdx(boardEntity.getBoardIdx());
-            reboardEntity.setReboardTitle("GPT가 작성한 답변입니다.");
-            reboardEntity.setReboardContent(answer);
-            reboardEntity.setLawyerIdx(0);
+            // ReBoardEntity reboardEntity = new ReboardEntity();
+            // reboardEntity.setBoardIdx(boardEntity.getBoardIdx());
+            // reboardEntity.setReboardTitle("GPT가 작성한 답변입니다.");
+            // reboardEntity.setReboardContent(answer);
+            // reboardEntity.setLawyerIdx(0);
 
-            reboardRepository.save(reboardEntity);
+            // reboardRepository.save(reboardEntity);
 
         } catch (Exception e) {
             e.printStackTrace();

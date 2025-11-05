@@ -36,10 +36,10 @@ public class CalendarEntity {
     @Column(name = "calendar_weekname")
     private Integer calendarWeekname;
 
-    @Column(name = "calendar_startTime")
+    @Column(name = "calendar_starttime")
     private LocalTime calendarStartTime;
 
-    @Column(name = "calendar_endTime")
+    @Column(name = "calendar_endtime")
     private LocalTime calendarEndTime;
 
     @Column(name = "calendar_active")
