@@ -66,14 +66,14 @@ public class LawyerEntity {
     @Column(name = "lawyer_comment")
     private String lawyerComment;
     
-    @Column(name = "lawyer_like")
-    private Integer lawyerLike;
+    @Column(name = "lawyer_like", columnDefinition = "TINYINT(0) DEFAULT 0")
+    private Integer lawyerLike = 0;
     
-    @Column(name = "lawyer_answer_cnt")
-    private Integer lawyerAnswerCnt;
+    @Column(name = "lawyer_answer_cnt", columnDefinition = "TINYINT(0) DEFAULT 0")
+    private Integer lawyerAnswerCnt = 0;
 
-    @Column(name = "lawyer_active")
-    private Integer lawyerActive;
+    @Column(name = "lawyer_active", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer lawyerActive = 1;
     
     @Column(name = "interest_idx", insertable = false, updatable = false)
     private Integer interestIdx;
