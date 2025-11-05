@@ -215,7 +215,7 @@
 
 
     .pick .v,
-    .pick-on .v {
+    .pick.on .v {
       color: var(--navy);
       font-weight: 800;
     }
