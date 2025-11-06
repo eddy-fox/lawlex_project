@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR테스트</title>
+</head>
+<body>
+    <form th:action="@{/member/testOCR}" method="post" th:object="${lawyerAuth}" enctype="multipart/form-data">
+        <div>
+            <div>자격번호: </div>
+            <input type="text" th:field="*{lawyerAuth}" id="authNum"> <br>
+
+            <div>이미지 파일</div>
+            <input type="text" id="imgUrl" readonly placeholder="선택된 파일명"/>
+            <button type="button" id="findImgBtn">찾아보기</button> <br>
+            <div>이미지 미리보기</div> <br>
+            <input id="adImageFile" type="file" accept="image/*" style="display:none">
+            <img id="previewImg" alt="미리보기"> <br>
+
+            <button type="button" id="verifyBtn">인증</button>
+        </div>
+        <button type="submit" id="submitBtn">제출</button>
+    </form>
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("findImgBtn");
+        const fileInput = document.getElementById("adImageFile");
+        const imgUrlInput = document.getElementById("imgUrl"); 
+        const preview = document.getElementById("previewImg");
+
+        btn.addEventListener("click", () => fileInput.click());
+
+        fileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            imgUrlInput.value = file.name;
+
+            // 미리보기 표시 
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+            preview.src = ev.target.result;
+            preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+
+        });
+    });
+
+    document.getElementById("verifyBtn").addEventListener("click", async () => {
+        const number = document.getElementById("authNum").value;
+        const image = document.getElementById("adImageFile").files[0];
+
+        const formData = new FormData();
+        formData.append("licenseNumber", number);
+        formData.append("licenseImage", image);
+
+        const res = await fetch("/member/verify-license", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await res.json();
+
+        console.log("🔍 OCR 결과:", result.ocrTexts);
+
+        if (result.valid === true) {
+            alert((result.message || "자격 검증 성공") + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
+            document.getElementById("submitBtn").disabled = false;
+        } else {
+            alert((result.error || result.message || "자격 검증 실패. 다시 확인해주세요.") 
+                + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
+            document.getElementById("submitBtn").disabled = true;
+        }
+    });
+</script>
+</html>
