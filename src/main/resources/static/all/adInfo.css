@@ -89,6 +89,19 @@
     width: 100%
   }
 
+  .input.name {
+    width: 400px
+  }
+  .input.lawyer {
+    width: 150px
+  }
+  .input.date {
+    width: 220px
+  }
+  .input.img {
+    width: 500px
+  }
+
   .input:focus {
     border-color: var(--navy);
     box-shadow: 0 0 0 3px rgba(0, 7, 119, .10)
@@ -200,3 +213,5 @@
       grid-template-columns: 1fr
     }
   }
+
+

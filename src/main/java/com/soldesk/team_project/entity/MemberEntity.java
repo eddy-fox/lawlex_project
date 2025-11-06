@@ -54,8 +54,8 @@ public class MemberEntity {
     @Column(name = "member_point")
     private Integer memberPoint;
 
-    @Column(name = "member_active")
-    private Integer memberActive;
+    @Column(name = "member_active", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer memberActive = 1;
 
     @Column(name = "interest_idx", insertable = false, updatable = false)
     private Integer interestIdx;

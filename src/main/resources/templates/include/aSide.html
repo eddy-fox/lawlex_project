@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 사이드</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="side.css">
 </head>
 <body>
     
   <nav class="sideMenu" th:fragment="aSide" data-scope="admin" aria-label="관리자 사이드">
+    <!-- asd -->
     <a th:href="@{/admin/memberManagement}" class="side-choice" aria-current="page">회원 관리</a>
     <a th:href="@{/admin/QnAManagement}" class="side">문의글 관리</a>
     <a th:href="@{/admin/adManagement}" class="side">광고 관리</a>
     <a href="#" class="side">로그 관리</a>
   </nav>
 
-    <script src="js.js"></script>
 </body>
+
+<script>
+
+</script>
 </html>

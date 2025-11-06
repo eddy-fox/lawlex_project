@@ -33,36 +33,34 @@
             <div th:text="${modifyAd.lawyerName}"></div>
 
             <div class="small">게시일:</div>
-            <input class="input full" type="date" th:field="*{adStartDate}" id="adStartDate" />
+            <input class="input date" type="date" th:field="*{adStartDate}" id="adStartDate" />
 
             <div class="small">게시기간:</div>
-            <select class="input full" th:field="*{adDuration}" id="adDuration">
+            <select class="input date" th:field="*{adDuration}" id="adDuration">
                 <option th:value="7" th:text="'7일'"></option>
                 <option th:value="14" th:text="'14일'"></option>
                 <option th:value="21" th:text="'21일'"></option>
                 <option th:value="28" th:text="'28일'"></option>
             </select>
-            
-            <div class="small">조회수:</div>
-            <div th:text="${modifyAd.adViews} + ' 회'"></div>
 
             <div class="small">이미지</div>
-            <div class="form-thumb" id="thumbBox">
-                <img id="previewImg" th:if="${modifyAd.adImgPath != null}" th:src="${modifyAd.adImgPath}" th:alt="${modifyAd.adName}">
-                <img id="previewImgDefault" th:unless="${modifyAd.adImgPath != null}" th:src="@{/img/test.png}" alt="기본 이미지">
+            <div class="input-group">
+                <!-- 사용자에게 보여줄 원본 파일 -->
+              <input class="input img" type="text" id="imgUrl" readonly placeholder="이미지 업로드"/>
+              <button type="button" class="btn btn-find" id="findImgBtn">찾아보기</button>
             </div>
-
-            <div class="small" style="margin-top:6px">이미지 링크/업로드</div>
-            <div class="fileline">
-                <input class="input full" type="url" th:field="*{adImgPath}" id="imgUrl"
-                    th:value="${modifyAd.adImgPath}" />
-                <input id="adImageFile" type="file" accept="image/*" style="display:none">
-                <label class="btn" for="adImageFile">찾아보기</label>
+            <!-- 받아온 원본 파일 -->
+            <div class="small">이미지 미리보기</div>
+            <input id="adImageFile" type="file" accept="image/*" style="display:none">
+            <div class="form-thumb">
+              <img id="previewImg" th:src="${modifyAd.adImgPath}" alt="미리보기">
             </div>
+            <!-- 원본 파일 전달 -->
+            <input type="hidden" th:field="*{adImgPath}" id="adImgPath" />
 
             <div class="small">링크</div>
             <div class="fileline">
-                <input class="input full" id="linkInput" th:value="${modifyAd.adLink}" />
+                <input class="input full" id="linkInput" th:field="*{adLink}" />
             </div>
           </div>
 
@@ -72,31 +70,73 @@
       
         </form>
 
+      </div>
+    </main>
+
     <!-- 푸터 -->
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+
 
 </body>
 
+<!-- 사이드바 -->
+<script src="/js/admin.js"></script>
 <script>
-const imgInput = document.getElementById('adImageFile');
-const imgUrlInput = document.getElementById('imgUrl');
-const previewImg = document.getElementById('previewImg');
-const previewImgDefault = document.getElementById('previewImgDefault');
-const thumbBox = document.getElementById('thumbBox');
+    document.addEventListener("DOMContentLoaded", function() {
+        const findImgBtn = document.getElementById('findImgBtn');
+        const adImageFile = document.getElementById('adImageFile');
+        const previewImg = document.getElementById('previewImg');
+        const imgUrlInput = document.getElementById('imgUrl');
+        const adImgPath = document.getElementById('adImgPath');
 
-imgInput.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+        // 1. 기존 이미지 미리보기 (Thymeleaf에서 이미 src로 세팅됨)
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        // 이미지 미리보기
-        if (previewImg) previewImg.src = e.target.result;
-        if (previewImgDefault) previewImgDefault.style.display = 'none';
-        
-        // input 값에 반영 (서버 전송용)
-        imgUrlInput.value = e.target.result;
-    }
-    reader.readAsDataURL(file);
-});
+        // 2. 찾아보기 버튼 클릭 시 파일 선택창 열기
+        findImgBtn.addEventListener('click', () => adImageFile.click());
+
+        // 3. 파일 선택 시 처리
+        adImageFile.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 미리보기 표시
+            const reader = new FileReader();
+            reader.onload = function(e) {
+            previewImg.src = e.target.result; // 미리보기 이미지 변경
+            };
+            reader.readAsDataURL(file);
+
+            // 사용자가 올린 원래 파일명 표시
+            imgUrlInput.value = file.name;
+
+            // 새로운 저장 파일명(예: ad_현재시간.확장자)
+            const timestamp = Date.now();
+            const ext = file.name.split('.').pop();
+            const newFileName = `ad${timestamp}.${ext}`;
+
+            // 히든 필드에 저장
+            adImgPath.value = `/uploads/ad/${newFileName}`; 
+        });
+
+        // 폼 제출 시 유효성 검사
+        const form = document.getElementById('adModifyForm');
+
+        form.addEventListener('submit', function(e) {
+            const requiredFields = [
+                document.getElementById('adName'),
+                document.getElementById('adStartDate'),
+                document.getElementById('adDuration'),
+                document.getElementById('adImgPath'),
+                document.getElementById('linkInput')
+            ];
+
+            const isEmpty = requiredFields.some(input => !input.value || input.value.trim() === "");
+            if (isEmpty) {
+                e.preventDefault();
+                alert("모든 값을 입력해주세요.");
+                return false;
+            }
+        });
+    });
 </script>
 </html>

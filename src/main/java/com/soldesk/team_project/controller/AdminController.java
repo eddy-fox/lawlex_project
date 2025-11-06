@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.infra.DriveUploader;
 import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
@@ -31,6 +33,7 @@ public class AdminController {
     private final LawyerService lawyerService;
     private final QuestionService questionService;
     private final AdService adService;
+    private final DriveUploader driveUploader;
 
     // 일반 회원 관리
     @GetMapping("/memberManagement")
@@ -152,10 +155,32 @@ public class AdminController {
         return "admin/adRegistration";
     }
     @PostMapping("/adRegistration")
-    public String registAdSubmit(@ModelAttribute("adRegistration")AdDTO adRegistration) {
+    public String registAdSubmit(
+        @ModelAttribute("adRegistration")AdDTO adRegistration,
+        @RequestParam("imageFile") MultipartFile imageFile) {
+        
+        // 광고 이미지 업로드
+        String desiredName = adRegistration.getAdImgPath();
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String parentFolderId = "YOUR_DRIVE_FOLDER_ID";
+            // DriveUploader.UploadedFileInfo uploaded = driveUploader.upload(imageFile, parentFolderId, desiredName);
+        }
+
+        // 광고 등록 처리
         adService.registProcess(adRegistration);
 
         return "redirect:/admin/adManagement";
+    }
+
+    // 이름으로 변호사 검색 (광고 등록)
+    @GetMapping("/lawyerSearch")
+    public String searchLawyer(@RequestParam("lawyerName") String lawyerName, Model model) {
+
+        List<LawyerDTO> lawyerList = lawyerService.searchLawyers("name", lawyerName);
+
+        model.addAttribute("lawyerList", lawyerList);
+        return "admin/lawyerSearch";
     }
 
     // 광고 상세
