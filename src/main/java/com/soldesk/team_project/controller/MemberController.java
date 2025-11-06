@@ -36,6 +36,18 @@ public class MemberController {
     private final PurchaseService purchaseService;
     private final PythonService pythonService;
     
+    // 임시 로그인
+    @GetMapping("/loginTemp")
+    public String loginTemp() {
+
+        return "member/loginTemp";
+    }
+    @PostMapping("/loginTemp")
+    public String loginTempVerify() {
+
+        return "redirect:/";
+    }
+
     // 멤버 포인트
     @GetMapping("/point")
     public String pointMain(Model model) {
