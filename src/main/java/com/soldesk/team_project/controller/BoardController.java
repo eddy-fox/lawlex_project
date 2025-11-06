@@ -42,7 +42,7 @@ public class BoardController {
         Page<BoardEntity> paging = this.boardService.getList(page, kw);
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
-        return "question_list"; //html name
+        return "list";
 
     }
 
@@ -51,7 +51,7 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
-        return "board_detail"; //html name
+        return "detail";
 
     }
 
@@ -59,7 +59,7 @@ public class BoardController {
     @GetMapping("/create")
     public String boardCreate(BoardForm boardForm) {
 
-        return "board_form"; //html name
+        return "write";
 
     }
 
@@ -68,7 +68,7 @@ public class BoardController {
     public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult, Principal principal) {
 
         if(bindingResult.hasErrors()) {
-            return "board_form";
+            return "write";
         }
         MemberEntity memberEntity = this.memberService.getMember(principal.getName());
         this.boardService.create(boardForm.getBoard_title(), boardForm.getBoard_content(), memberEntity);
@@ -82,7 +82,7 @@ public class BoardController {
     Principal principal, @PathVariable("id") Integer id) {
         
         if(bindingResult.hasErrors()) {
-            return "question_form";
+            return "write";
         }
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         if(!boardEntity.getAuthor().getMemberId().equals(principal.getName())) {
