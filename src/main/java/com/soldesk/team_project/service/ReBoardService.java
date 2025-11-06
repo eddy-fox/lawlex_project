@@ -69,7 +69,7 @@ public class ReBoardService {
             String answer = pythonService.runPython(
                 "gpt-api.py",
                 boardEntity.getBoardTitle(),
-                boardEntity.getInterest().getInterestName(),
+                // boardEntity.getInterest().getInterestName(),
                 boardEntity.getBoardContent()
             );
 
