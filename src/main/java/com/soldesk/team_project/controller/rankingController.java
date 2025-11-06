@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.service.RankingService;
@@ -23,12 +24,10 @@ public class RankingController {
 
     // 랭킹 페이지
     @GetMapping("/ranking")
-    public String ranking(Model model) {
-        // String pick = "like";
-        // List<LawyerDTO> rankingList = rankingService.getRankingList(pick);
-        // model.addAttribute("rankingList", rankingList);
+    public String ranking(@RequestParam(defaultValue = "like") String pick,Model model) {
+        List<LawyerDTO> rankingList = rankingService.getRankingList(pick);
+        model.addAttribute("rankingList", rankingList);
+        model.addAttribute("pick", pick);
         return "rank/ranking";
     }
-    
-    
 }

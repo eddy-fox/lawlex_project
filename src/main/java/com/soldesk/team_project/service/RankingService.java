@@ -32,26 +32,22 @@ public class RankingService {
         LawyerEntity lawyerEntity = new LawyerEntity();
         lawyerEntity.setLawyerIdx(lawyerDTO.getLawyerIdx());
         lawyerEntity.setLawyerName(lawyerDTO.getLawyerName());
-        lawyerEntity.setLawyerImgPath(lawyerEntity.getLawyerImgPath());
+        lawyerEntity.setLawyerImgPath(lawyerDTO.getLawyerImgPath());
         lawyerEntity.setLawyerLike(lawyerDTO.getLawyerLike());
         lawyerEntity.setLawyerAnswerCnt(lawyerDTO.getLawyerAnswerCnt());
         return lawyerEntity;
     }
 
     public List<LawyerDTO> getRankingList(String pick) {
-        String picked = pick;
         Pageable pageable = PageRequest.of(0, 10);
-        List<LawyerEntity> rankingLikeList = rankingRepository.findAllByOrderByLawyerLikeDesc(pageable);
-        List<LawyerEntity> rankingAnswerCntList = rankingRepository.findAllByOrderByLawyerAnswerCntDesc(pageable);
-        // if (pick.equals("like")) {
-        //     return rankingLikeList.stream()
-        //                     .map(lawyerEntity -> convertLawyerDTO(lawyerEntity))
-        //                     .collect(Collectors.toList());
-        // }else if(pick.equals("answer")) {
-        //     return rankingAnswerCntList.stream()
-        //                     .map(lawyerEntity -> convertLawyerDTO(lawyerEntity))
-        //                     .collect(Collectors.toList());
-        // };
-        return null;
+        List<LawyerEntity> rankingList;
+        if("answer".equals(pick)){
+            rankingList = rankingRepository.findAllByOrderByLawyerAnswerCntDesc(pageable);
+        }else {
+            rankingList = rankingRepository.findAllByOrderByLawyerLikeDesc(pageable);
+        }
+        return rankingList.stream()
+                           .map(this :: convertLawyerDTO)
+                           .collect(Collectors.toList());
     }
 }

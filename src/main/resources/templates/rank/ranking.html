@@ -18,11 +18,11 @@
             </div>
 
             <div class="filter">
-                <button class="pickBtn on">좋아요순</button>
-                <button class="pickBtn">답변수순</button>
+                <a class="pickBtn" th:href="@{/rank/ranking(pick='like')}">좋아요순</a>
+                <a class="pickBtn" th:href="@{/rank/ranking(pick='answer')}">답변수순</a>
             </div>
-D
-            <section class="tops">
+
+            <section class="tops" th:each="rank : ${rankingList}">
                 <div class="top-1">
                     <div class="left">
                         <div class="num">1위</div>
@@ -30,7 +30,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">김하나 변호사</a></div> <!-- th:text="${rank.lawyerName}+'&nbsp;변호사'" -->
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">3,451</span></div>
+                        <div class="pick">좋아요 <span class="v">3,451</span></div>
                         <div class="pick">답변수 <span class="v">3,951</span></div>
                     </div>
                 </div>
@@ -42,7 +42,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">박도윤 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">3,047</span></div>
+                        <div class="pick">좋아요 <span class="v">3,047</span></div>
                         <div class="pick">답변수 <span class="v">3,210</span></div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">이서준 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">2,890</span></div>
+                        <div class="pick">좋아요 <span class="v">2,890</span></div>
                         <div class="pick">답변수 <span class="v">3,001</span></div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">최가연 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">2,105</span></div>
+                        <div class="pick">좋아요 <span class="v">2,105</span></div>
                         <div class="pick">답변수 <span class="v">2,420</span></div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">정하린 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">1,980</span></div>
+                        <div class="pick">좋아요 <span class="v">1,980</span></div>
                         <div class="pick">답변수 <span class="v">2,335</span></div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">윤시우 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">1,760</span></div>
+                        <div class="pick">좋아요 <span class="v">1,760</span></div>
                         <div class="pick">답변수 <span class="v">2,204</span></div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">오주원 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">1,695</span></div>
+                        <div class="pick">좋아요 <span class="v">1,695</span></div>
                         <div class="pick">답변수 <span class="v">2,102</span></div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">서민재 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">1,620</span></div>
+                        <div class="pick">좋아요 <span class="v">1,620</span></div>
                         <div class="pick">답변수 <span class="v">2,050</span></div>
                     </div>
                 </div>
@@ -116,7 +116,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">장하늬 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">1,540</span></div>
+                        <div class="pick">좋아요 <span class="v">1,540</span></div>
                         <div class="pick">답변수 <span class="v">1,988</span></div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@ D
                     </div>
                     <div class="among"><a class="name" href="#">백도형 변호사</a></div>
                     <div class="right">
-                        <div class="pick on">좋아요 <span class="v">1,480</span></div>
+                        <div class="pick">좋아요 <span class="v">1,480</span></div>
                         <div class="pick">답변수 <span class="v">1,901</span></div>
                     </div>
                 </div>
@@ -143,35 +143,35 @@ D
                             <div class="rank">1위</div>
                             <div class="photo"><img src="#" alt=""></div>
                             <div class="name">김민지 변호사</div>
-                            <div class="sub on">좋아요 1,200</div>
+                            <div class="sub">좋아요 1,200</div>
                             <div class="sub">답변수 1,150</div>
                         </div>
                         <div class="card">
                             <div class="rank">2위</div>
                             <div class="photo"><img src="#" alt=""></div>
                             <div class="name">이준호 변호사</div>
-                            <div class="sub on">좋아요 1,100</div>
+                            <div class="sub">좋아요 1,100</div>
                             <div class="sub">답변수 1,050</div>
                         </div>
                         <div class="card">
                             <div class="rank">3위</div>
                             <div class="photo"><img src="#" alt=""></div>
                             <div class="name">박서연 변호사</div>
-                            <div class="sub on">좋아요 1,000</div>
+                            <div class="sub">좋아요 1,000</div>
                             <div class="sub">답변수 1,200</div>
                         </div>
                         <div class="card">
                             <div class="rank">4위</div>
                             <div class="photo"><img src="#" alt=""></div>
                             <div class="name">정우진 변호사</div>
-                            <div class="sub on">좋아요 950</div>
+                            <div class="sub">좋아요 950</div>
                             <div class="sub">답변수 980</div>
                         </div>
                         <div class="card">
                             <div class="rank">5위</div>
                             <div class="photo"><img src="#" alt=""></div>
                             <div class="name">최예린 변호사</div>
-                            <div class="sub on">좋아요 900</div>
+                            <div class="sub">좋아요 900</div>
                             <div class="sub">답변수 920</div>
                         </div>
                     </div>
@@ -184,20 +184,6 @@ D
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/ranking.js}"></script>
     <script>
-    const pickBtn = document.getElementsByClassName('pickBtn');
-    for(let i=0; i<pickBtn.length; i++){
-        pickBtn[i].addEventListener('click', function(){
-            for(let j=0; j<pickBtn.length; j++){
-                pickBtn[j].classList.remove('on');
-                pickBtn[i].classList.add('on');
-            }
-        })
-    }
-
-    const pick = document.getElementsByClassName('pick');
-    like = '<div class="pick">좋아요 <span class="v" th:text="${rank.lawyerLike} >3,451</span></div>';
-
-
     </script>
 </body>
 
