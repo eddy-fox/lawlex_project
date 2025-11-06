@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,13 +34,13 @@ public class BoardEntity {
     @Column(name = "board_content")
     private String boardContent;
 
-    @Column(name = "board_regDate")
+    @Column(name = "board_regdate")
     private LocalDate boardRegDate;
 
-    @Column(name = "board_imgPath")
+    @Column(name = "board_imgpath")
     private String boardImgPath;
 
-    @Column(name = "board_caseDate")
+    @Column(name = "board_casedate")
     private LocalDate boardCaseDate;
 
     @Column(name = "board_views")
@@ -49,9 +50,8 @@ public class BoardEntity {
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
 
-    @ManyToOne
-    @JoinColumn(name = "interest_idx")
-    private InterestEntity interest;
+    @Column(name = "interest_idx")
+    private Integer interestIdx;
 
     //작성자
     @ManyToOne

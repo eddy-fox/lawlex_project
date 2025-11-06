@@ -1,0 +1,1 @@
+const ranking = document.getElementByClassName('page-ranking')
