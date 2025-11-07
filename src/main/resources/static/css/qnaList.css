@@ -1,0 +1,236 @@
+    .page-gnaList {
+      --ink: #000;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --navy: #000777;
+      --soft: #f5f6ff;
+    }
+
+    .page-gnaList,
+    .page-gnaList * {
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
+    }
+
+    .page-gnaList {
+      display: flex;
+      justify-content: center;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .page-gnaList .container {
+      width: min(1000px, 100%);
+    }
+
+    .page-gnaList .btn {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      height: 30px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .page-gnaList a.btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .page-gnaList .searchbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 50px 0px;
+    }
+
+    .page-gnaList .search {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .page-gnaList .search svg {
+      position: absolute;
+      left: 10px;
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+      color: var(--muted);
+    }
+
+    .page-gnaList .search svg * {
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .page-gnaList .search input {
+      min-width: 220px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-right: none;
+      border-radius: 8px 0 0 8px;
+      padding: 0 10px 0 34px;
+      outline: none;
+      background: #fff;
+    }
+
+    .page-gnaList .search .btn-search {
+      height: 34px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-left: none;
+      border-radius: 0 8px 8px 0;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      transition: background-color .15s, color .15s, border-color .15s;
+    }
+
+    .page-gnaList .search .btn-search:hover {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    .page-gnaList .search input:focus,
+    .page-gnaList .search input:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .page-gnaList .search .btn-search:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .page-gnaList .search .btn-search:focus-visible {
+      box-shadow: 0 0 0 2px rgba(0, 7, 119, .12);
+    }
+
+    .page-gnaList .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .page-gnaList table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .page-gnaList thead th {
+      text-align: left;
+      color: var(--ink);
+      padding: 10px 8px;
+      border-bottom: 2px solid var(--navy);
+      font-size: 16px;
+    }
+
+    .page-gnaList thead th.num {
+      width: 100px;
+      text-align: center;
+    }
+
+    .page-gnaList thead th.answer {
+      width: 120px;
+      text-align: center;
+    }
+
+    .page-gnaList thead th.date {
+      width: 160px;
+      text-align: center;
+    }
+
+    .page-gnaList tbody td {
+      padding: 12px 8px;
+      border-bottom: 1.5px solid var(--line);
+    }
+
+    .page-gnaList tbody td.num {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .page-gnaList tbody td.answer {
+      text-align: center;
+      color: var(--navy);
+    }
+
+    .page-gnaList tbody td.date {
+      text-align: center;
+    }
+
+    .page-gnaList td.title a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .page-gnaList tbody tr {
+      transition: background-color .16s ease;
+    }
+
+    .page-gnaList tbody tr:hover {
+      background: var(--soft);
+    }
+
+    .page-gnaList tbody tr:hover td.title {
+      color: var(--navy);
+    }
+
+    .page-gnaList .pager {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 30px 0 0;
+      color: var(--muted);
+    }
+
+    .page-gnaList .pager a {
+      text-decoration: none;
+      color: inherit;
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .page-gnaList .pager a.page {
+      padding: 2px 2px;
+    }
+
+    .page-gnaList .pager a.page:hover {
+      color: var(--navy);
+    }
+
+    .page-gnaList .pager a.current {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .page-gnaList .pager a.prev,
+    .page-gnaList .pager a.next {
+      padding: 0 4px;
+    }
+
+    .page-gnaList .row-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin: 30px 0px;
+    }

@@ -214,5 +214,13 @@ public class AdminController {
 
         return "redirect:/admin/adManagement";
     }
-    
+    @GetMapping("/qnaAnswer")
+    public String qnaAnswer(){
+        return "admin/qnaAnswer";
+    }
+    @PostMapping("/qnaAnswer")
+    public String qnaAnswerSubmit(){
+        
+        return "admin/qnaAnswer";
+    }
 }
