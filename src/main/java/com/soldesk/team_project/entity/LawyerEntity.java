@@ -10,27 +10,30 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.Builder;
+import lombok.Builder.Default;
 
+@Getter 
+@Setter 
+@Builder
 @Entity
 @Table(name = "lawyer")
 @Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class LawyerEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lawyer_idx")
     private Integer lawyerIdx;
 
-    @Column(name = "lawyer_id")
+    @Column(name = "lawyer_id", nullable = false, unique = true, length = 255)
     private String lawyerId;
 
-    @Column(name = "lawyer_pass")
+    @Column(name = "lawyer_pass", nullable = false, length = 255)
     private String lawyerPass;
 
     @Column(name = "lawyer_name")
@@ -65,19 +68,23 @@ public class LawyerEntity {
 
     @Column(name = "lawyer_comment")
     private String lawyerComment;
-    
+   
+    @Default
     @Column(name = "lawyer_like", columnDefinition = "TINYINT(0) DEFAULT 0")
     private Integer lawyerLike = 0;
-    
+    @Default
     @Column(name = "lawyer_answer_cnt", columnDefinition = "TINYINT(0) DEFAULT 0")
     private Integer lawyerAnswerCnt = 0;
-
+    @Default
     @Column(name = "lawyer_active", columnDefinition = "TINYINT(1) DEFAULT 1")
     private Integer lawyerActive = 1;
     
     @Column(name = "interest_idx", insertable = false, updatable = false)
     private Integer interestIdx;
     
+    @Column(name = "interest_idx1")
+    private Integer interestIdx1;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
