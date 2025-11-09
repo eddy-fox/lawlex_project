@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.QuestionEntity;
+import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final MemberRepository memberRepository;
+    private final LawyerRepository lawyerRepository;
 
     private QuestionDTO convertQuestionDTO (QuestionEntity questionEntity) {
         QuestionDTO questionDTO = new QuestionDTO();
@@ -42,6 +51,27 @@ public class QuestionService {
 
         return questionDTO;
     }
+
+    private QuestionEntity convertQuestionEntity(QuestionDTO questionDTO) {
+        QuestionEntity questionEntity = new QuestionEntity();
+        questionEntity.setQuestionIdx(questionDTO.getQIdx());
+        questionEntity.setQuestionTitle(questionDTO.getQTitle());
+        questionEntity.setQuestionContent(questionDTO.getQContent());
+        questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
+        questionEntity.setQuestionSecret(questionEntity.getQuestionSecret());
+        questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
+        questionEntity.setQuestionActive(questionEntity.getQuestionActive());
+
+        MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
+        LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
+
+        // questionEntity.setMemberIdx(memberEntity);
+        // questionEntity.setLawyerIdx(lawyerEntity);
+
+        
+        return questionEntity;
+    }
+
 
     // 전체 질문글 조회
     public List<QuestionDTO> getQuestions(int qAnswer) { 
@@ -78,5 +108,16 @@ public class QuestionService {
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
     }
     
+
+    public Page<QuestionDTO> getQnaPaging(int page){
+        int p = Math.max(page, 1) - 1;
+        Pageable pageable = PageRequest.of(p, 10);
+        return questionRepository.findAllByOrderByQuestionRegDateDesc(pageable)
+        .map(this::convertQuestionDTO);
+    }
+
+    public void qnaWriting(QuestionDTO qnaWrite){
+        QuestionEntity questionEntity = convert
+    }
 }
 

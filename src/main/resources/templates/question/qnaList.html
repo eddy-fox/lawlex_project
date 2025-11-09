@@ -11,19 +11,19 @@
 
 <body>
     <div class="include" th:replace="~{include/header :: header}"></div>
-    <main class="page-gnaList">
+    <main class="page-qnaList">
         <div class="container">
             <section>
                 <div class="searchbar">
-                    <div class="search">
+                    <form class="search">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="11" cy="11" r="7" stroke-width="2" />
                             <path d="M16 16l5 5" stroke-width="2" />
                         </svg>
-                        <input type="text" placeholder="검색" aria-label="문의 검색">
+                        <input type="text" name="search" placeholder="검색">
                         <button type="button" class="btn-search">검색</button>
-                    </div>
-                    <button class="btn" type="button">내가 작성한문의 보기</button>
+                    </form>
+                    <buttaon class="btn" type="button">내가 작성한문의 보기</button>
                 </div>
 
                 <table>
@@ -35,87 +35,55 @@
                             <th class="date" scope="col">작성날짜</th>
                         </tr>
                     </thead>
-                    <tbody>
+
+                    <tbody th:if="${#lists.isEmpty(qnaPaging.content)}">
                         <tr>
-                            <td class="num">1</td>
-                            <td class="title"><a href="#">비밀글 입니다</a></td>
-                            <td class="answer">✓</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
+                            <td class="not" colspan="4">
+                                등록된 문의가 없습니다
+                            </td>
                         </tr>
-                        <tr>
-                            <td class="num">2</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">✓</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
+                    </tbody>
+
+                    <tbody th:unless="${#lists.isEmpty(qnaPaging.content)}">
+
+                        <tr th:each="qList : ${qnaPaging.content}">
+                            <td class="num" th:text="${qList.qIdx}">1</td>
+                            <td class="title" th:if="${qList.qAnswer == 1}">
+                                <a href="#">비밀글 입니다</a>
+                            </td>
+                            <td class="title" th:unless="${qList.qAnswer == 1}">
+                                <a href="#" th:text="${qList.qTitle}"></a>
+                            </td>
+                            <td class="answer" th:if="${qList.qActive == 1}">✓</td>
+                            <td class="answer" th:unless="${qList.qActive == 1}">-</td>
+                            <td class="date"><time th:text="${qList.qRegDate}">2025-12-24</time></td>
                         </tr>
-                        <tr>
-                            <td class="num">3</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">✓</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">4</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">5</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">6</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">7</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">8</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">9</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
-                        <tr>
-                            <td class="num">10</td>
-                            <td class="title"><a href="#">문의 제목</a></td>
-                            <td class="answer">-</td>
-                            <td class="date"><time datetime="2025-12-24">2025-12-24</time></td>
-                        </tr>
+                    
                     </tbody>
                 </table>
 
-                <nav class="pager" aria-label="페이지네이션">
-                    <a class="prev" href="#">&lt;</a>
-                    <a class="page current" aria-current="page" href="#">1</a>
-                    <a class="page" href="#">2</a>
-                    <a class="page" href="#">3</a>
-                    <a class="page" href="#">4</a>
-                    <a class="page" href="#">5</a>
-                    <a class="page" href="#">6</a>
-                    <a class="page" href="#">7</a>
-                    <a class="page" href="#">8</a>
-                    <a class="page" href="#">9</a>
-                    <a class="page" href="#">10</a>
-                    <a class="next" href="#">&gt;</a>
+                <nav class="pager" 
+                     th:if="${qnaPaging.totalPages > 0}"
+                     th:with="current=${qnaPaging.number + 1},
+                              total=${qnaPaging.totalPages},
+                              block=${T(java.lang.Math).floorDiv(current - 1, 10)},
+                              start=${block*10 + 1},
+                              end=${T(java.lang.Math).min(total, start + 9)}">
+
+                    <a class="prev" th:href="@{/question/qnaList(page=${current - 1})}">&lt;</a>
+                    <a class="page"
+                        th:each="n : ${#numbers.sequence(start, end)}"
+                        th:text="${n}"
+                        th:href="@{/question/qnaList(page=${n})}"
+                        th:classappend="${n == current} ? ' current'">
+                    </a>
+                    <a class="next" th:href="@{/question/qnaList(page=${current + 1})}">&gt;</a>
                 </nav>
 
+
+
                 <div class="row-actions">
-                    <a class="btn" th:href="@{/question/qnaWrite}">문의 글쓰기</a>
+                    <a class="btn" th:href="@{/question/qnaWrite(memberIdx=${qnaList.memberIdx})}">문의 글쓰기</a>
                 </div>
             </section>
         </div>

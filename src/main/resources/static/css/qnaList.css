@@ -1,4 +1,4 @@
-    .page-gnaList {
+    .page-qnaList {
       --ink: #000;
       --muted: #6b7280;
       --line: #e5e7eb;
@@ -6,24 +6,24 @@
       --soft: #f5f6ff;
     }
 
-    .page-gnaList,
-    .page-gnaList * {
+    .page-qnaList,
+    .page-qnaList * {
       box-sizing: border-box;
       font-family: "Pretendard Variable", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
     }
 
-    .page-gnaList {
+    .page-qnaList {
       display: flex;
       justify-content: center;
       color: var(--ink);
       line-height: 1.6;
     }
 
-    .page-gnaList .container {
+    .page-qnaList .container {
       width: min(1000px, 100%);
     }
 
-    .page-gnaList .btn {
+    .page-qnaList .btn {
       background: var(--navy);
       color: #fff;
       border: none;
@@ -34,14 +34,14 @@
       cursor: pointer;
     }
 
-    .page-gnaList a.btn {
+    .page-qnaList a.btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       text-decoration: none;
     }
 
-    .page-gnaList .searchbar {
+    .page-qnaList .searchbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -49,14 +49,14 @@
       margin: 50px 0px;
     }
 
-    .page-gnaList .search {
+    .page-qnaList .search {
       position: relative;
       display: flex;
       align-items: center;
       gap: 0;
     }
 
-    .page-gnaList .search svg {
+    .page-qnaList .search svg {
       position: absolute;
       left: 10px;
       width: 16px;
@@ -65,12 +65,12 @@
       color: var(--muted);
     }
 
-    .page-gnaList .search svg * {
+    .page-qnaList .search svg * {
       stroke: currentColor;
       fill: none;
     }
 
-    .page-gnaList .search input {
+    .page-qnaList .search input {
       min-width: 220px;
       height: 34px;
       border: 1px solid var(--line);
@@ -81,7 +81,7 @@
       background: #fff;
     }
 
-    .page-gnaList .search .btn-search {
+    .page-qnaList .search .btn-search {
       height: 34px;
       padding: 0 14px;
       border: 1px solid var(--line);
@@ -97,28 +97,28 @@
       transition: background-color .15s, color .15s, border-color .15s;
     }
 
-    .page-gnaList .search .btn-search:hover {
+    .page-qnaList .search .btn-search:hover {
       background: var(--navy);
       color: #fff;
       border-color: var(--navy);
     }
 
-    .page-gnaList .search input:focus,
-    .page-gnaList .search input:focus-visible {
+    .page-qnaList .search input:focus,
+    .page-qnaList .search input:focus-visible {
       outline: none !important;
       box-shadow: none !important;
     }
 
-    .page-gnaList .search .btn-search:focus {
+    .page-qnaList .search .btn-search:focus {
       outline: none;
       box-shadow: none;
     }
 
-    .page-gnaList .search .btn-search:focus-visible {
+    .page-qnaList .search .btn-search:focus-visible {
       box-shadow: 0 0 0 2px rgba(0, 7, 119, .12);
     }
 
-    .page-gnaList .sr-only {
+    .page-qnaList .sr-only {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -130,12 +130,12 @@
       border: 0;
     }
 
-    .page-gnaList table {
+    .page-qnaList table {
       width: 100%;
       border-collapse: collapse;
     }
 
-    .page-gnaList thead th {
+    .page-qnaList thead th {
       text-align: left;
       color: var(--ink);
       padding: 10px 8px;
@@ -143,59 +143,61 @@
       font-size: 16px;
     }
 
-    .page-gnaList thead th.num {
+    .page-qnaList thead th.num {
       width: 100px;
       text-align: center;
     }
 
-    .page-gnaList thead th.answer {
+    .page-qnaList thead th.answer {
       width: 120px;
       text-align: center;
     }
 
-    .page-gnaList thead th.date {
+    .page-qnaList thead th.date {
       width: 160px;
       text-align: center;
     }
 
-    .page-gnaList tbody td {
+    .page-qnaList tbody td {
       padding: 12px 8px;
       border-bottom: 1.5px solid var(--line);
     }
 
-    .page-gnaList tbody td.num {
+    .page-qnaList tbody td.not { text-align: center; }
+
+    .page-qnaList tbody td.num {
       color: var(--muted);
       font-size: 12px;
       text-align: center;
     }
 
-    .page-gnaList tbody td.answer {
+    .page-qnaList tbody td.answer {
       text-align: center;
       color: var(--navy);
     }
 
-    .page-gnaList tbody td.date {
+    .page-qnaList tbody td.date {
       text-align: center;
     }
 
-    .page-gnaList td.title a {
+    .page-qnaList td.title a {
       text-decoration: none;
       color: inherit;
     }
 
-    .page-gnaList tbody tr {
+    .page-qnaList tbody tr {
       transition: background-color .16s ease;
     }
 
-    .page-gnaList tbody tr:hover {
+    .page-qnaList tbody tr:hover {
       background: var(--soft);
     }
 
-    .page-gnaList tbody tr:hover td.title {
+    .page-qnaList tbody tr:hover td.title {
       color: var(--navy);
     }
 
-    .page-gnaList .pager {
+    .page-qnaList .pager {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -204,32 +206,32 @@
       color: var(--muted);
     }
 
-    .page-gnaList .pager a {
+    .page-qnaList .pager a {
       text-decoration: none;
       color: inherit;
       display: inline-block;
       line-height: 1;
     }
 
-    .page-gnaList .pager a.page {
+    .page-qnaList .pager a.page {
       padding: 2px 2px;
     }
 
-    .page-gnaList .pager a.page:hover {
+    .page-qnaList .pager a.page:hover {
       color: var(--navy);
     }
 
-    .page-gnaList .pager a.current {
+    .page-qnaList .pager a.current {
       color: var(--navy);
       font-weight: 700;
     }
 
-    .page-gnaList .pager a.prev,
-    .page-gnaList .pager a.next {
+    .page-qnaList .pager a.prev,
+    .page-qnaList .pager a.next {
       padding: 0 4px;
     }
 
-    .page-gnaList .row-actions {
+    .page-qnaList .row-actions {
       display: flex;
       justify-content: flex-end;
       margin: 30px 0px;
