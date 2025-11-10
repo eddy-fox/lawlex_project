@@ -1,5 +1,9 @@
 package com.soldesk.team_project.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -80,15 +84,14 @@ public class MemberEntity {
     public void changeNickname(String s){ this.memberNickname = s; }
     public void deactivate(){ this.memberActive = 0; }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_idx")
-    private InterestEntity interest;
-
 
     @OneToMany(mappedBy = "member")
     private java.util.List<PurchaseEntity> purchase;
 
     @OneToMany(mappedBy = "member")
     private java.util.List<PointEntity> point;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberInterestEntity> memberInterests = new ArrayList<>();
 
 }
