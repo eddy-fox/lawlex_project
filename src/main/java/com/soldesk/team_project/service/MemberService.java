@@ -2,6 +2,7 @@ package com.soldesk.team_project.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
+import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.entity.InterestEntity;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
@@ -210,5 +212,20 @@ public class MemberService {
 
     member.getMemberInterests().add(mi);
 }
+
+    public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
+    MemberEntity memberEntity = MemberEntity.builder()
+        .memberId(tempUser.getEmail())
+        .memberPass("{noop}oauth2")
+        .memberName(tempUser.getName())
+        .memberEmail(tempUser.getEmail())
+        .memberPhone(memberDTO.getMemberPhone())
+        .memberIdnum(memberDTO.getMemberIdnum())
+        .interestIdx1(memberDTO.getInterestIdx())
+        .memberActive(1)
+        .provider(tempUser.getProvider())
+        .build();
+        return memberRepository.save(memberEntity);
+    }
 
 }

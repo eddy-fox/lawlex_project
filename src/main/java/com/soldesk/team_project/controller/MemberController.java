@@ -22,16 +22,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
+import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.PointDTO;
 import com.soldesk.team_project.dto.ProductDTO;
 import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -41,6 +46,7 @@ public class MemberController {
 
     private final PurchaseService purchaseService;
     private final PythonService pythonService;
+    private final JwtProvider jwtProvider;
     
     // 임시 로그인
     @GetMapping("/loginTemp")
@@ -283,6 +289,43 @@ public class MemberController {
 
         boolean ok = memberService.deactivate(memberIdx, phone, idnum);
         return ok ? "redirect:/member/login?deactivated" : "redirect:/member/mypage";
+    }
+
+    @GetMapping("/oauth2/additional-info")
+    public String showAdditionalInfoForm() {
+        return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
+    }
+    @PostMapping("/oauth2/complete")
+    public String saveAdditionalInfo(@ModelAttribute("member123")MemberDTO memberDTO,
+                                    HttpSession session, HttpServletResponse response) {
+
+        TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
+        if (tempUser == null) {
+            return "redirect:/member/login";
+        }
+        MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
+        session.removeAttribute("oauth2TempUser");
+        String token = jwtProvider.createToken(savedUser);
+        Map<String, Object> loginResponse = new HashMap<>();
+        loginResponse.put("status", HttpServletResponse.SC_OK);
+        loginResponse.put("message", "Login successful");
+
+        Map<String, String> data = new HashMap<>();
+        data.put("email", savedUser.getMemberEmail());
+        data.put("name", savedUser.getMemberName());
+        data.put("token", token);
+
+        loginResponse.put("data", data);
+
+        // JSON으로 변환 후 응답
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(loginResponse);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonResponse);
+
+        return "redirect:/";
     }
 
 }

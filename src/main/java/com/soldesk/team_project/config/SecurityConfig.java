@@ -14,11 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.MemberRepository;
-//import com.soldesk.team_project.service.OAuth2MemberService;
+import com.soldesk.team_project.security.OAuth2LoginSuccessHandler;
+import com.soldesk.team_project.security.PrincipalOauth2UserService;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     //private final OAuth2MemberService oAuth2MemberService;
 
@@ -49,19 +53,13 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().permitAll()
             )
-            .formLogin(form -> form
-                .loginPage("/member/login")
-                .loginProcessingUrl("/member/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/member/main", true)
-                .failureUrl("/member/login?error")
+            // OAuth2 로그인 설정
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/member/login") // OAuth2 버튼 있는 페이지
+                .userInfoEndpoint(u -> u.userService(principalOauth2UserService))
+                .defaultSuccessUrl("/", true)
             )
-            // .oauth2Login(oauth -> oauth
-            //     .loginPage("/member/login")
-            //     .userInfoEndpoint(u -> u.userService(oAuth2MemberService))
-            //     .defaultSuccessUrl("/member/main", true)
-            // )
+            
             .logout(l -> l.logoutUrl("/member/logout").logoutSuccessUrl("/member/login"))
             .httpBasic(Customizer.withDefaults());
 
