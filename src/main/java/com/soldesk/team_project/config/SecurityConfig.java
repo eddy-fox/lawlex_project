@@ -14,13 +14,13 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.MemberRepository;
-// import com.soldesk.team_project.service.OAuth2MemberService;
+//import com.soldesk.team_project.service.OAuth2MemberService;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // private final OAuth2MemberService oAuth2MemberService;
+    //private final OAuth2MemberService oAuth2MemberService;
 
     @Bean
     public UserDetailsService userDetailsService(MemberRepository repo) {

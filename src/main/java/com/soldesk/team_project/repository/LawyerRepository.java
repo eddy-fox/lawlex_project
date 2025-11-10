@@ -33,6 +33,6 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     
     Optional<LawyerEntity> findByLawyerId(String lawyerId);
 
-    List<InterestEntity> findAllByOrderByInterestNameAsc();
+
 } 
 
