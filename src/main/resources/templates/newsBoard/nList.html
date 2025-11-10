@@ -3,132 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뉴스리스트</title>
+    <title th:text="${categoryIdx == 2} ? 'NEWS'
+                 : (${categoryIdx == 3} ? '동영상' : '칼럼')">
+        소식 리스트
+    </title>
     <link rel="stylesheet" th:href="@{/css/nList.css}">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
-  <main class="page-nList">
+<div class="include" th:replace="~{include/header :: header}"></div>
+
+<main class="page-nList">
     <div class="sideMenu" th:replace="~{include/nSide :: nSide}"></div>
+
     <div class="among">
-    <section class="frame">
-
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">사법 개혁안 공청회 개최</h3>
-          <p class="summary">전자소송 확대, 민사소송 절차 단축에 대한 공개 토론.</p>
-          <div class="date">2025-10-30</div>
+        <!-- 1(공지)는 여기서 안 쓴다 -->
+        <div th:if="${categoryIdx == 1}">
+            이 페이지는 공지사항용이 아닙니다.
         </div>
-        <div class="thumb" aria-hidden="true"></div>
-      </a>
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">중소상공인 분쟁조정 지원 강화</h3>
-          <p class="summary">지원 대상 확대 및 수수료 인하, 피해 예방 교육 정례화.</p>
-          <div class="date">2025-10-28</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+        <section class="frame" th:if="${categoryIdx != 1}">
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">대법, 온라인 명예훼손 기준 제시</h3>
-          <p class="summary">위법성 조각 요건을 구체화한 전원합의체 판결.</p>
-          <div class="date">2025-10-27</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+            <p th:if="${#lists.isEmpty(boards)}">등록된 글이 없습니다.</p>
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">핀테크 규제 샌드박스 연장</h3>
-          <p class="summary">전자서명·간편결제 시범 서비스 연장.</p>
-          <div class="date">2025-10-26</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+            <!-- 리스트 -->
+            <a th:each="board : ${boards}"
+               th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}"
+               class="news-link item">
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">변호사 수임료 표준 약관 공개</h3>
-          <p class="summary">공정위·대한변협 공동 초안 공개 및 의견 수렴.</p>
-          <div class="date">2025-10-25</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+                <!-- 왼쪽 텍스트 -->
+                <div class="news-text">
+                    <h3 class="subject" th:text="${board.newsTitle}">제목</h3>
+                    <p class="summary"
+                       th:text="${#strings.abbreviate(board.newsContent, 80)}">요약</p>
+                    <div class="date" th:text="${board.newsRegDate}">2025-10-30</div>
+                </div>
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">개인정보 손해배상 책임 범위 확대</h3>
-          <p class="summary">집단 손해 발생 시 사업자 관리 책임 폭넓게 인정.</p>
-          <div class="date">2025-10-24</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+                <!-- 2,3일 때만 썸네일 -->
+                <!-- 2,3일 때만 썸네일 -->
+<div th:if="${categoryIdx == 2 or categoryIdx == 3}"
+     class="thumb" aria-hidden="true">
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">플랫폼 자율규제안 공개</h3>
-          <p class="summary">허위 정보·과도한 광고 방지 장치.</p>
-          <div class="date">2025-10-23</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+    <!-- NEWS 이미지 -->
+    <img th:if="${categoryIdx == 2 and board.driveFileId != null}"
+     th:src="@{'https://drive.google.com/thumbnail?id=' + ${board.driveFileId} + '&sz=220'}"
+     alt="thumbnail"
+     style="width:100%;height:100%;object-fit:cover;display:block;">
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">AI 법률문서 초안 서비스 확산</h3>
-          <p class="summary">로펌·법무팀 중심으로 도입 확대.</p>
-          <div class="date">2025-10-22</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+    <!-- 동영상 유튜브 썸네일 -->
+    <img th:if="${categoryIdx == 3 and board.videoId != null}"
+         th:src="'https://img.youtube.com/vi/' + ${board.videoId} + '/hqdefault.jpg'"
+         alt="video thumbnail"
+         style="width:100%;height:100%;object-fit:cover;display:block;">
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">소송비용 패소자 부담 원칙 재검토</h3>
-          <p class="summary">사회적 약자 보호 장치 강화 방안.</p>
-          <div class="date">2025-10-21</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+    <!-- 아무것도 없으면 플레이스홀더 -->
+    <div th:if="${
+            (categoryIdx == 2 and board.newsImgPath == null)
+         or (categoryIdx == 3 and board.videoId == null)
+        }"
+         class="thumb-placeholder">이미지</div>
+</div>
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">집단소송 요건 새 판단</h3>
-          <p class="summary">소비자 분쟁 해결에 속도 전망.</p>
-          <div class="date">2025-10-20</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">전자소송 사용자 환경 개선</h3>
-          <p class="summary">화면 읽기·자동 저장 등 접근성 강화를 반영.</p>
-          <div class="date">2025-10-19</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+                <!-- 4(칼럼)는 썸네일 아예 없음 -->
+            </a>
 
-      <a href="#" class="news-link item">
-        <div class="news-text">
-          <h3 class="subject">전자계약 법적 효력 가이드 배포</h3>
-          <p class="summary">전자서명법 개정에 따른 확인 가이드.</p>
-          <div class="date">2025-10-18</div>
-        </div>
-        <div class="thumb"></div>
-      </a>
+        </section>
 
-    </section>
+        <!-- 페이지네이션 -->
+        <nav class="pagination"
+             aria-label="페이지네이션"
+             th:if="${categoryIdx != 1} and ${page.totalPages} > 1">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/newsBoard/list(category=${categoryIdx}, page=${currentPage - 1})}"
+               class="page-link prev">이전</a>
 
-    <nav class="pagination" id="pagination" aria-label="페이지네이션"></nav>
+            <a th:each="p : ${#numbers.sequence(startPage, endPage)}"
+               th:href="@{/newsBoard/list(category=${categoryIdx}, page=${p})}"
+               th:text="${p}"
+               th:classappend="${p} == ${currentPage} ? 'active'">
+            </a>
+
+            <a th:if="${currentPage < page.totalPages}"
+               th:href="@{/newsBoard/list(category=${categoryIdx}, page=${currentPage + 1})}"
+               class="page-link next">다음</a>
+        </nav>
     </div>
-  </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/nList.js}"></script>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+<script th:src="@{/js/js.js}"></script>
+<script th:src="@{/js/nList.js}"></script>
 </body>
 </html>

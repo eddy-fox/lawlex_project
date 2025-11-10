@@ -29,6 +29,7 @@ public class NewsBoardDTO {
 
     // 동영상 전용
     private String videoUrl;
+    private String videoId;
 
     // 파일 업로드
     private MultipartFile newsBoardFile;
@@ -36,4 +37,5 @@ public class NewsBoardDTO {
     private String storedFileName;
     private int fileAttached;
     private String driveFileId;
+
 }
