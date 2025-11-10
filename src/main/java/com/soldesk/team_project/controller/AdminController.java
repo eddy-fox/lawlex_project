@@ -18,22 +18,22 @@ public class AdminController {
 
     private final LawyerService lawyerService;
 
-    @GetMapping("/lawyer/pending")
-    public String pendingLawyers(Model model) {
-        List<LawyerEntity> list = lawyerService.getPending();
-        model.addAttribute("list", list);
-        return "admin/lawyer-pending";
-    }
+    // @GetMapping("/lawyer/pending")
+    // public String pendingLawyers(Model model) {
+    //     List<LawyerEntity> list = lawyerService.getPending();
+    //     model.addAttribute("list", list);
+    //     return "admin/lawyer-pending";
+    // }
 
-    @PostMapping("/lawyer/{idx}/approve")
-    public String approveLawyer(@PathVariable Integer idx) {
-        lawyerService.approve(idx);
-        return "redirect:/admin/lawyer/pending";
-    }
+    // @PostMapping("/lawyer/{idx}/approve")
+    // public String approveLawyer(@PathVariable Integer idx) {
+    //     lawyerService.approve(idx);
+    //     return "redirect:/admin/lawyer/pending";
+    // }
 
-    @PostMapping("/lawyer/{idx}/reject")
-    public String rejectLawyer(@PathVariable Integer idx) {
-        lawyerService.reject(idx);
-        return "redirect:/admin/lawyer/pending";
-    }
+    // @PostMapping("/lawyer/{idx}/reject")
+    // public String rejectLawyer(@PathVariable Integer idx) {
+    //     lawyerService.reject(idx);
+    //     return "redirect:/admin/lawyer/pending";
+    // }
 }
