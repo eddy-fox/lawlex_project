@@ -31,4 +31,7 @@ public class LawyerInterestEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx", insertable = false, updatable = false)
     private InterestEntity interest;
+
+    // ...
 }
+
