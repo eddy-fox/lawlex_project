@@ -8,139 +8,122 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
-    <main class="page-nMain">
-        <div class="sideMenu" th:replace="~{include/nSide :: nSide}"></div>
+<div class="include" th:replace="~{include/header :: header}"></div>
+
+<main class="page-nMain">
+    <div class="sideMenu" th:replace="~{include/nSide :: nSide}"></div>
+
     <div class="wrap">
 
+        <!-- NEWS 영역 (category=2) -->
         <section class="section">
-        <form>
             <div class="section-head">
-            <h1 class="title">NEWS</h1>
-            <div class="section-more">더보기 ▸</div>
+                <h1 class="title">NEWS</h1>
+                <a class="section-more" th:href="@{/newsBoard/list(category=2)}">더보기 ▸</a>
             </div>
             <div class="section-line"></div>
 
             <div class="grid">
-            <article class="item">
-                <div class="thumb">이미지</div>
-                <h1 class="title-sub">뉴스 제목 하나</h1>
-                <div class="desc">뉴스 요약문</div>
-            </article>
+                <!-- 컨트롤러에서 3개만 잘라서 보냈으니까 그대로 반복 -->
+                <article class="item" th:each="board : ${newsList}">
+                    <div class="thumb">
+    <img th:if="${board.newsImgPath != null}"
+     th:src="${board.newsImgPath}"
+     referrerpolicy="no-referrer"
+     alt="news image"
+     style="width:100%; height:100%; object-fit:cover; display:block;">
 
-            <article class="item">
-                <div class="thumb">이미지</div>
-                <h1 class="title-sub">뉴스 제목 둘</h1>
-                <div class="desc">뉴스 요약문</div>
-            </article>
-
-            <article class="item">
-                <div class="thumb">이미지</div>
-                <h1 class="title-sub">뉴스 제목 셋</h1>
-                <div class="desc">뉴스 요약문</div>
-            </article>
+    <div th:if="${board.newsImgPath == null}" class="thumb-placeholder">이미지</div>
+</div>
+                    <a th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}">
+                        <h1 class="title-sub" th:text="${board.newsTitle}">뉴스 제목</h1>
+                    </a>
+                    <div class="desc" th:text="${#strings.abbreviate(board.newsContent, 60)}">뉴스 요약문</div>
+                    <p th:text="${board.newsImgPath}">imgpath</p>
+                </article>
             </div>
-        </form>
+            
         </section>
 
+        <!-- 동영상 영역 (category=3) -->
         <section class="section">
-        <form>
             <div class="section-head">
-            <h1 class="title">동영상</h1>
-            <div class="section-more">더보기 ▸</div>
+                <h1 class="title">동영상</h1>
+                <a class="section-more" th:href="@{/newsBoard/list(category=3)}">더보기 ▸</a>
             </div>
             <div class="section-line"></div>
 
             <div class="grid">
-            <article class="item">
-                <div class="thumb video">영상 썸네일</div>
-                <h1 class="title-sub">동영상 제목 하나</h1>
-                <div class="desc">영상 설명 요약</div>
-            </article>
-
-            <article class="item">
-                <div class="thumb video">영상 썸네일</div>
-                <h1 class="title-sub">동영상 제목 둘</h1>
-                <div class="desc">영상 설명 요약</div>
-            </article>
-
-            <article class="item">
-                <div class="thumb video">영상 썸네일</div>
-                <h1 class="title-sub">동영상 제목 셋</h1>
-                <div class="desc">영상 설명 요약</div>
-            </article>
+                <article class="item" th:each="board : ${videoList}">
+                    <div class="thumb video">
+                        <img th:if="${board.newsImgPath}" th:src="${board.newsImgPath}" alt="video thumb">
+                        <div th:if="${board.newsImgPath == null}" class="thumb-placeholder">영상 썸네일</div>
+                    </div>
+                    <a th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}">
+                        <h1 class="title-sub" th:text="${board.newsTitle}">동영상 제목</h1>
+                    </a>
+                    <div class="desc" th:text="${#strings.abbreviate(board.newsContent, 60)}">영상 설명 요약</div>
+                </article>
             </div>
-        </form>
         </section>
 
+        <!-- 칼럼 영역 (category=4) -->
         <section class="section">
-        <form>
             <div class="section-head">
-            <h1 class="title">칼럼</h1>
-            <div class="section-more">더보기 ▸</div>
+                <h1 class="title">칼럼</h1>
+                <a class="section-more" th:href="@{/newsBoard/list(category=4)}">더보기 ▸</a>
             </div>
             <div class="section-line"></div>
 
             <div class="grid">
-            <article class="item">
-                <div class="thumb">이미지</div>
-                <h1 class="title-sub">칼럼 제목 하나</h1>
-                <div class="desc">칼럼 요약 내용</div>
-            </article>
-
-            <article class="item">
-                <div class="thumb">이미지</div>
-                <h1 class="title-sub">칼럼 제목 둘</h1>
-                <div class="desc">칼럼 요약 내용</div>
-            </article>
-
-            <article class="item">
-                <div class="thumb">이미지</div>
-                <h1 class="title-sub">칼럼 제목 셋</h1>
-                <div class="desc">칼럼 요약 내용</div>
-            </article>
+                <article class="item" th:each="board : ${columnList}">
+                    <div class="thumb">
+                        <img th:if="${board.newsImgPath}" th:src="${board.newsImgPath}" alt="column image">
+                        <div th:if="${board.newsImgPath == null}" class="thumb-placeholder">이미지</div>
+                    </div>
+                    <a th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}">
+                        <h1 class="title-sub" th:text="${board.newsTitle}">칼럼 제목</h1>
+                    </a>
+                    <div class="desc" th:text="${#strings.abbreviate(board.newsContent, 60)}">칼럼 요약 내용</div>
+                </article>
             </div>
-        </form>
         </section>
 
+        <!-- 공지 영역 (category=1) -->
         <section class="section">
-        <form>
             <div class="notice">
-            <div class="notice-head">
-                <div>공지사항</div>
-                <div class="section-more">더보기 ▸</div>
-            </div>
+                <div class="notice-head">
+                    <div>공지사항</div>
+                    <a class="section-more" th:href="@{/newsBoard/list(category=1)}">더보기 ▸</a>
+                </div>
 
-            <table class="notice-table">
-                <thead>
-                <tr>
-                    <th class="col-num">번호</th>
-                    <th>제목</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>3</td>
-                    <td>공지사항 제목입니다</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>공지사항 제목입니다</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>공지사항 제목입니다</td>
-                </tr>
-                </tbody>
-            </table>
+                <table class="notice-table">
+                    <thead>
+                    <tr>
+                        <th class="col-num">번호</th>
+                        <th>제목</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="board : ${noticeList}">
+                        <td th:text="${board.newsIdx}">1</td>
+                        <td>
+                            <a th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}"
+                               th:text="${board.newsTitle}">
+                                공지사항 제목입니다
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-        </form>
         </section>
 
     </div>
-    </main>
-    <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/nMain.js}"></script>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+<script th:src="@{/js/js.js}"></script>
+<script th:src="@{/js/nMain.js}"></script>
 </body>
 </html>

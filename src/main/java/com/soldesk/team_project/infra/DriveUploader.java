@@ -29,12 +29,10 @@ public class DriveUploader {
         if (dot != -1 && dot < originalFileName.length() - 1) {
             ext = originalFileName.substring(dot);
         }
-        // ".png"
-        // original = original.substring(0, dot); // 확장자 제외한 이름
 
         String base = originalFileName
-                .replaceAll("[\\\\/:*?\"<>|]", "_") // Windows 금지 문자 치환
-                .replaceAll("\\s+", "_")           // 공백 -> _
+                .replaceAll("[\\\\/:*?\"<>|]", "_")
+                .replaceAll("\\s+", "_")
                 .trim();
         if (base.isEmpty()) base = "upload";
 
@@ -42,14 +40,11 @@ public class DriveUploader {
         return storedFileName + ext;
     }
 
-    // 폴더 지정 업로드
     public UploadedFileInfo upload(MultipartFile multipart, String parentFolderId) throws Exception {
-        // 메타데이터
         File metadata = new File();
         metadata.setName(convertFileName(multipart));
         metadata.setParents(java.util.List.of(parentFolderId));
 
-        // 파일 본문
         ByteArrayContent content = new ByteArrayContent(
                 multipart.getContentType(), multipart.getBytes());
 
@@ -58,7 +53,6 @@ public class DriveUploader {
                 .setFields("id, name, mimeType, size, webViewLink, webContentLink, thumbnailLink")
                 .execute();
 
-        // 공개 접근(링크만 알면 읽기) 원하면 설정
         if (makePublic) {
             Permission p = new Permission()
                     .setType("anyone")
@@ -66,17 +60,19 @@ public class DriveUploader {
             drive.permissions().create(uploaded.getId(), p).execute();
         }
 
-        // 직링크(간단): https://drive.google.com/uc?id=FILE_ID
-        String directUrl = "https://drive.google.com/uc?id=" + uploaded.getId();
+        String fileId = uploaded.getId();
+
+        // 우리가 지금 화면에서 쓰는 패턴
+        String thumbnailUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000";
 
         return new UploadedFileInfo(
-                uploaded.getId(),
+                fileId,
                 uploaded.getName(),
                 uploaded.getMimeType(),
                 uploaded.getSize() == null ? 0L : uploaded.getSize(),
                 uploaded.getWebViewLink(),
                 uploaded.getWebContentLink(),
-                directUrl,
+                thumbnailUrl,          // ← 여기
                 uploaded.getThumbnailLink()
         );
     }
@@ -92,7 +88,9 @@ public class DriveUploader {
             long size,
             String webViewLink,
             String webContentLink,
-            String directUrl,
-            String thumbnailLink
+            String thumbnailUrl,   // 우리가 만든 썸네일 주소
+            String googleThumbUrl  // 구글이 원래 주는 thumbnailLink (작을 수 있음)
     ) {}
+
+    
 }

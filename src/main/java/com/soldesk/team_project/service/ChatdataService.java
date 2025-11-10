@@ -134,7 +134,7 @@ private ChatdataDTO toDto(ChatdataEntity e) {
 
                 ChatAttachmentEntity att = new ChatAttachmentEntity();
                 att.setChatData(msg);
-                att.setFileUrl(info.directUrl());
+                att.setFileUrl(info.thumbnailUrl()); 
                 att.setFileName(info.name());
                 att.setContentType(f.getContentType());
                 att.setFileSize((int) f.getSize()); // Entity가 Integer라 캐스팅
