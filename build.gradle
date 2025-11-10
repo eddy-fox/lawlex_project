@@ -38,7 +38,7 @@ dependencies {
    implementation "com.google.api-client:google-api-client:2.6.0"
    implementation "com.google.oauth-client:google-oauth-client-jetty:1.36.0"
    implementation "com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0"
-   implementation "com.google.auth:google-auth-library-oauth2-http:1.24.0"
+   // implementation "com.google.auth:google-auth-library-oauth2-http:1.24.0"
     // (옵션) Jackson 기반 JSON 파서가 필요하면 추가
    implementation "com.google.http-client:google-http-client-jackson2:1.43.3"
    implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -52,6 +52,9 @@ dependencies {
    implementation 'org.springframework.boot:spring-boot-starter-validation'
    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
    implementation 'org.json:json:20230227'
+   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' 
+   implementation 'org.springframework.security:spring-security-oauth2-jose'
+    
 }
 
 // dependencyManagement {

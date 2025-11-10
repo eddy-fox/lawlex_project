@@ -23,7 +23,7 @@ public class InterestEntity {
     @Column(name = "interest_idx")
     private Integer interestIdx;
 
-    @Column(name = "interest_name")
+    @Column(name = "interest_name",nullable=false) 
     private String interestName;
     
     @OneToMany(mappedBy = "interest")
@@ -31,5 +31,6 @@ public class InterestEntity {
 
     @OneToMany(mappedBy = "interest")
     private java.util.List<LawyerEntity> lawyers;
+     
     
 }
