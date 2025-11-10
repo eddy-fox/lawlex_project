@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의답변하기</title>
+    <link rel="stylesheet" th:href="@{/css/qnaAnswer.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-qnaAnswer">
+        <div class="inner">
+            <div class="qnalook">
+                <form action="@{/admin/qnaAnswer}" method="post">
+                    <div class="qna-info">
+                        <div class="author">
+                            <div class="author-info">글쓴이</div>
+                            <div class="idx">유저 고유 번호 : 1</div>
+                            <div class="qna-idx">질문 고유 번호 : 1</div>
+                            <div class="nick">닉네임 : 아름다름</div>
+                            <div class="name">이름 : 김수한무</div>
+                        </div>
+                    </div>
+                    <div class="date">작성시간 2025-11-03</div>
+
+                    <div class="block title is-public">
+                        <div class="title-div">
+                            <span class="badge badge-secret">비밀글</span>
+                            <span class="badge badge-public">공개글</span>
+                            <span class="title-label">실제 문의사항 제목</span>
+                        </div>
+                    </div>
+
+                    <div class="block content-section">
+                        <h2 class="section-title sr-only">문의 내용</h2>
+                        <article class="content-box">
+                            회원가입 시 인증메일이 오지 않습니다. 확인 부탁드립니다.
+                        </article>
+                    </div>
+
+                    <div class="block answer-section">
+                        <h2 class="section-title">답변 달기</h2>
+                        <label class="sr-only">답변 내용</label>
+                        <textarea class="answer-textarea" name="answer"></textarea>
+                        <div class="action-buttons">
+                            <button class="btn btn-delete" type="button">삭제하기</button>
+                            <button class="btn btn-submit" type="submit">답변하기</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/qnaAnswer.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+    @font-face {
+      font-family: 'Gooorm Sans';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Gooorm Sans';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Gooorm Sans';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .page-qnaAnswer {
+      --ink: #000000;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --navy: #000777;
+      --paper: #ffffff;
+      margin: 100px 0;
+      color: var(--ink);
+      line-height: 1.6;
+      font-family: 'Gooorm Sans', 'Pretendard Variable', 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .page-qnaAnswer * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .page-qnaAnswer .inner {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .page-qnaAnswer .qnalook {
+      width: 1000px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      row-gap: 15px;
+      align-items: center;
+      font-size: 15px;
+      padding: 50px 10px;
+      border-top: 1px solid var(--navy);
+      border-bottom: 1px solid var(--navy);
+    }
+
+    .page-qnaAnswer .qna-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .page-qnaAnswer .author {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .page-qnaAnswer .author-info {
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .page-qnaAnswer .idx {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .page-qnaAnswer .qna-idx {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .page-qnaAnswer .nick {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .page-qnaAnswer .name {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .page-qnaAnswer .date {
+      color: #000000;
+      justify-self: end;
+    }
+
+    .page-qnaAnswer .block {
+      grid-column: 1 / -1;
+    }
+
+    .page-qnaAnswer .title {
+      padding: 20px 0;
+      border-bottom: none;
+      margin-bottom: 10px;
+    }
+
+    .page-qnaAnswer .title-div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-qnaAnswer .title-label {
+      font-size: 18px;
+      color: #000000;
+      font-weight: 600;
+    }
+
+    .page-qnaAnswer .badge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .page-qnaAnswer .badge-secret {
+      background: #f5f6ff;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .page-qnaAnswer .badge-public {
+      background: #e8f4ff;
+      color: var(--navy);
+      border: 1px solid #cfe4ff;
+    }
+
+    .page-qnaAnswer .title.is-secret .badge-secret {
+      display: inline-flex;
+    }
+
+    .page-qnaAnswer .title.is-public .badge-public {
+      display: inline-flex;
+    }
+
+    .page-qnaAnswer .section-title {
+      font-size: 14px;
+      color: #000000;
+      margin-bottom: 10px;
+      padding-bottom: 0;
+      border-bottom: none;
+      font-weight: 400;
+    }
+
+    .page-qnaAnswer .content-box {
+      min-height: 200px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 15px;
+      color: #000000;
+      line-height: 1.8;
+      width: 100%;
+      display: block;
+    }
+
+    .page-qnaAnswer .answer-section {
+      margin: 20px 0 30px;
+    }
+
+    .page-qnaAnswer .answer-textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .page-qnaAnswer .answer-textarea:focus {
+      border-color: var(--navy);
+    }
+
+    .page-qnaAnswer .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .page-qnaAnswer .btn {
+      padding: 10px 30px;
+      border: none;
+      border-radius: 20px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .page-qnaAnswer .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .page-qnaAnswer .btn-delete {
+      background: #dc3545;
+      color: #fff;
+    }
+
+    .page-qnaAnswer .btn-delete:hover {
+      background: #c82333;
+    }
+
+    .page-qnaAnswer .btn-submit {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .page-qnaAnswer .btn-submit:hover {
+      background: #000555;
+    }
+
+    .page-qnaAnswer .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width:768px) {
+      .page-qnaAnswer .title-label {
+        font-size: 16px;
+      }
+
+      .page-qnaAnswer .content-box {
+        min-height: 150px;
+        padding: 16px;
+      }
+
+      .page-qnaAnswer .answer-textarea {
+        min-height: 120px;
+      }
+
+      .page-qnaAnswer .action-buttons {
+        flex-direction: column;
+      }
+
+      .page-qnaAnswer .btn {
+        width: 100%;
+      }
+    }

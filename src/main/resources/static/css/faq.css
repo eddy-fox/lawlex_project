@@ -32,10 +32,10 @@
       font-weight: 700;
     }
 
-    .page-faq a .qnaBtn {
+    .page-faq .qnaBtn {
       padding: 5px 15px;
-      background: var(--line);
-      color: var(--ink);
+      background: var(--navy);
+      color: var(--paper);
       border: none;
       border-radius: 8px;
       font-weight: 700;
@@ -44,9 +44,7 @@
       text-decoration: none;
     }
 
-    .page-faq a .qnaBtn:hover {
-      background-color: var(--navy);
-      color: var(--paper);
+    .page-faq .qnaBtn:hover {
       box-shadow: 0 4px 12px rgba(0, 7, 119, 0.3);
       transform: translateY(-2px);
     }

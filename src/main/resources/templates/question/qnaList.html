@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의글목록</title>
+    <link rel="stylesheet" th:href="@{/css/qnaList.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-qnaList">
+        <div class="container">
+            <section>
+                <div class="searchbar">
+                    <form class="search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7" stroke-width="2" />
+                            <path d="M16 16l5 5" stroke-width="2" />
+                        </svg>
+                        <input type="text" name="search" placeholder="검색">
+                        <button type="button" class="btn-search">검색</button>
+                    </form>
+                    <buttaon class="btn" type="button">내가 작성한문의 보기</button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="num" scope="col">번호</th>
+                            <th class="title" scope="col">문의 제목</th>
+                            <th class="answer" scope="col">답변상태</th>
+                            <th class="date" scope="col">작성날짜</th>
+                        </tr>
+                    </thead>
+
+                    <tbody th:if="${#lists.isEmpty(qnaPaging.content)}">
+                        <tr>
+                            <td class="not" colspan="4">
+                                등록된 문의가 없습니다
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tbody th:unless="${#lists.isEmpty(qnaPaging.content)}">
+
+                        <tr th:each="qList : ${qnaPaging.content}">
+                            <td class="num" th:text="${qList.qIdx}">1</td>
+                            <td class="title" th:if="${qList.qAnswer == 1}">
+                                <a href="#">비밀글 입니다</a>
+                            </td>
+                            <td class="title" th:unless="${qList.qAnswer == 1}">
+                                <a href="#" th:text="${qList.qTitle}"></a>
+                            </td>
+                            <td class="answer" th:if="${qList.qActive == 1}">✓</td>
+                            <td class="answer" th:unless="${qList.qActive == 1}">-</td>
+                            <td class="date"><time th:text="${qList.qRegDate}">2025-12-24</time></td>
+                        </tr>
+                    
+                    </tbody>
+                </table>
+
+                <nav class="pager" 
+                     th:if="${qnaPaging.totalPages > 0}"
+                     th:with="current=${qnaPaging.number + 1},
+                              total=${qnaPaging.totalPages},
+                              block=${T(java.lang.Math).floorDiv(current - 1, 10)},
+                              start=${block*10 + 1},
+                              end=${T(java.lang.Math).min(total, start + 9)}">
+
+                    <a class="prev" th:href="@{/question/qnaList(page=${current - 1})}">&lt;</a>
+                    <a class="page"
+                        th:each="n : ${#numbers.sequence(start, end)}"
+                        th:text="${n}"
+                        th:href="@{/question/qnaList(page=${n})}"
+                        th:classappend="${n == current} ? ' current'">
+                    </a>
+                    <a class="next" th:href="@{/question/qnaList(page=${current + 1})}">&gt;</a>
+                </nav>
+
+
+
+                <div class="row-actions">
+                    <a class="btn" th:href="@{/question/qnaWrite(memberIdx=${qnaList.memberIdx})}">문의 글쓰기</a>
+                </div>
+            </section>
+        </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/qnaList.js}"></script>
+</body>
+
+</html>
