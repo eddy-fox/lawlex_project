@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>문의글목록</title>
-    <link rel="stylesheet" th:href="@{/css/qnaList.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/qnaList.css}">
 </head>
 
 <body>
@@ -23,7 +23,7 @@
                         <input type="text" name="search" placeholder="검색">
                         <button type="button" class="btn-search">검색</button>
                     </form>
-                    <buttaon class="btn" type="button">내가 작성한문의 보기</button>
+                    <a class="btn" >내가 작성한 문의 보기</a>
                 </div>
 
                 <table>
@@ -83,7 +83,7 @@
 
 
                 <div class="row-actions">
-                    <a class="btn" th:href="@{/question/qnaWrite(memberIdx=${qnaList.memberIdx})}">문의 글쓰기</a>
+                    <a class="write" th:href="@{/question/qnaWrite}">문의 글쓰기</a>
                 </div>
             </section>
         </div>
