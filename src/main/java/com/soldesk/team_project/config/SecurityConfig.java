@@ -49,21 +49,15 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().permitAll()
             )
-            .formLogin(form -> form
-                .loginPage("/member/login")
-                .loginProcessingUrl("/member/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/member/main", true)
-                .failureUrl("/member/login?error")
-            )
+            .formLogin(form -> form.disable())
+
+            .logout(logout -> logout.disable())
+            ;
             // .oauth2Login(oauth -> oauth
             //     .loginPage("/member/login")
             //     .userInfoEndpoint(u -> u.userService(oAuth2MemberService))
             //     .defaultSuccessUrl("/member/main", true)
             // )
-            .logout(l -> l.logoutUrl("/member/logout").logoutSuccessUrl("/member/login"))
-            .httpBasic(Customizer.withDefaults());
 
         return http.build();
         

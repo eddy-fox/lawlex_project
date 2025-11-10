@@ -9,9 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
-import lombok.Builder;
 import lombok.Builder.Default;
 
 @Getter 
@@ -19,7 +19,6 @@ import lombok.Builder.Default;
 @Builder
 @Entity
 @Table(name = "lawyer")
-@Data
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -81,9 +80,7 @@ public class LawyerEntity {
     
     @Column(name = "interest_idx", insertable = false, updatable = false)
     private Integer interestIdx;
-    
-    @Column(name = "interest_idx1")
-    private Integer interestIdx1;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx")
