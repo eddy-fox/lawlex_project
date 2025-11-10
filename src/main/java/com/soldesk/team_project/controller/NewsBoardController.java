@@ -37,13 +37,12 @@ public class NewsBoardController {
     @Value("${google.drive.newsboard-folder-id}")
     private String newsFolderId;
 
-    // 카테고리 번호 고정
-    private static final int CATEGORY_NOTICE = 1;   // 공지
-    private static final int CATEGORY_NEWS = 2;     // 뉴스
-    private static final int CATEGORY_VIDEO = 3;    // 동영상
-    private static final int CATEGORY_COLUMN = 4;   // 칼럼
+    private static final int CATEGORY_NOTICE = 1;
+    private static final int CATEGORY_NEWS   = 2;
+    private static final int CATEGORY_VIDEO  = 3;
+    private static final int CATEGORY_COLUMN = 4;
 
-    // 메인: /newsBoard/main
+    /* ================= 메인 ================= */
     @GetMapping("/main")
     public String newsMain(Model model) {
 
@@ -71,7 +70,7 @@ public class NewsBoardController {
         return "newsBoard/nMain";
     }
 
-    // 리스트: /newsBoard/list?category=...
+    /* ================= 리스트 ================= */
     @GetMapping("/list")
     public String list(@RequestParam(name = "category", defaultValue = "1") Integer categoryIdx,
                        @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -99,6 +98,7 @@ public class NewsBoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("categoryIdx", categoryIdx);
 
+        // 공지는 따로
         if (categoryIdx == CATEGORY_NOTICE) {
             return "newsBoard/noticeList";
         } else {
@@ -106,7 +106,7 @@ public class NewsBoardController {
         }
     }
 
-    // 상세보기
+    /* ================= 상세 ================= */
     @GetMapping("/detail")
     public String detail(@RequestParam("newsIdx") Integer newsIdx,
                          Model model) {
@@ -116,7 +116,6 @@ public class NewsBoardController {
             return "redirect:/newsBoard/list";
         }
 
-        // 조회수 증가
         board.setNewsViews(board.getNewsViews() == null ? 1 : board.getNewsViews() + 1);
         newsBoardRepository.save(board);
 
@@ -130,7 +129,7 @@ public class NewsBoardController {
         }
     }
 
-    // 글쓰기 폼
+    /* ================= 글쓰기 폼 ================= */
     @GetMapping("/write")
     public String writeForm(@RequestParam("category") Integer categoryIdx,
                             HttpSession session,
@@ -147,7 +146,7 @@ public class NewsBoardController {
         return "newsBoard/write";
     }
 
-    // 글쓰기 처리
+    /* ================= 글쓰기 처리 ================= */
     @PostMapping("/write")
     public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
                               HttpSession session,
@@ -166,17 +165,16 @@ public class NewsBoardController {
         entity.setNewsViews(0);
         entity.setNewsActive(1);
 
-        // 파일 업로드
-        org.springframework.web.multipart.MultipartFile file = dto.getNewsBoardFile();
+        // 파일 업로드 -> id만 저장
+        var file = dto.getNewsBoardFile();
         if (file != null && !file.isEmpty()) {
             try {
-                DriveUploader.UploadedFileInfo info = driveUploader.upload(file, newsFolderId);
+                var info = driveUploader.upload(file, newsFolderId);
 
                 entity.setFileAttached(1);
                 entity.setStoredFileName(info.name());
-                // 여기서부터 중요한 부분: 드라이브 썸네일 URL로 저장
-                entity.setNewsImgPath("https://drive.google.com/thumbnail?id=" + info.fileId() + "&sz=w1000");
-                entity.setDriveFileId(info.fileId());
+                entity.setDriveFileId(info.fileId());     // ← 이것만 저장
+                entity.setNewsImgPath(null);              // 화면에서 조립할 거니까 비워둠
 
             } catch (Exception e) {
                 entity.setFileAttached(0);
@@ -197,15 +195,17 @@ public class NewsBoardController {
             entity.setAdmin(loginAdmin);
         }
 
+        // 동영상이면 url + videoId 저장
         if (categoryIdx == CATEGORY_VIDEO) {
             entity.setVideoUrl(dto.getVideoUrl());
+            entity.setVideoId(dto.getVideoId());
         }
 
         newsBoardRepository.save(entity);
         return "redirect:/newsBoard/list?category=" + categoryIdx;
     }
 
-    // 수정 폼
+    /* ================= 수정 폼 ================= */
     @GetMapping("/modify")
     public String modifyForm(@RequestParam("newsIdx") Integer newsIdx,
                              HttpSession session,
@@ -223,7 +223,7 @@ public class NewsBoardController {
         return "newsBoard/modify";
     }
 
-    // 수정 처리
+    /* ================= 수정 처리 ================= */
     @PostMapping("/modify")
     public String modifySubmit(@RequestParam("newsIdx") Integer newsIdx,
                                @ModelAttribute NewsBoardDTO dto,
@@ -240,16 +240,15 @@ public class NewsBoardController {
         board.setNewsTitle(dto.getNewsTitle());
         board.setNewsContent(dto.getNewsContent());
 
-        // 새 이미지가 올라왔을 때만 교체
-        org.springframework.web.multipart.MultipartFile file = dto.getNewsBoardFile();
+        var file = dto.getNewsBoardFile();
         if (file != null && !file.isEmpty()) {
             try {
-                DriveUploader.UploadedFileInfo info = driveUploader.upload(file, newsFolderId);
+                var info = driveUploader.upload(file, newsFolderId);
 
                 board.setFileAttached(1);
                 board.setStoredFileName(info.name());
-                board.setNewsImgPath("https://drive.google.com/thumbnail?id=" + info.fileId() + "&sz=w1000");
-                board.setDriveFileId(info.fileId());
+                board.setDriveFileId(info.fileId());    // ← 새 id 저장
+                board.setNewsImgPath(null);             // 화면에서 조립
 
             } catch (Exception e) {
                 // 실패 시 기존 이미지 유지
@@ -258,13 +257,14 @@ public class NewsBoardController {
 
         if (board.getCategory().getCategoryIdx() == CATEGORY_VIDEO) {
             board.setVideoUrl(dto.getVideoUrl());
+            board.setVideoId(dto.getVideoId());
         }
 
         newsBoardRepository.save(board);
         return "redirect:/newsBoard/detail?newsIdx=" + newsIdx;
     }
 
-    // 삭제 (soft delete)
+    /* ================= 삭제 ================= */
     @PostMapping("/delete")
     public String delete(@RequestParam("newsIdx") Integer newsIdx,
                          HttpSession session) {
@@ -285,6 +285,7 @@ public class NewsBoardController {
         return "redirect:/newsBoard/list?category=" + cat;
     }
 
+    /* ================= 좋아요 ================= */
     @PostMapping("/like")
     @ResponseBody
     public String like(@RequestParam("newsIdx") Integer newsIdx) {
@@ -298,7 +299,7 @@ public class NewsBoardController {
         return "OK";
     }
 
-    // 글쓰기 권한
+    /* ================= 권한 체크 ================= */
     private boolean canWrite(Integer categoryIdx, HttpSession session) {
         AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
         LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
@@ -313,7 +314,6 @@ public class NewsBoardController {
         return false;
     }
 
-    // 수정/삭제 권한 (본인만)
     private boolean isOwner(NewsBoardEntity board, HttpSession session) {
         AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
         LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
