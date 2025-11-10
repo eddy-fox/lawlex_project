@@ -38,16 +38,16 @@ public class QuestionController {
     }
     
     @GetMapping("/qnaWrite")
-    public String qnaWrite(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite,
-                           @SessionAttribute("loginMember")MemberDTO loginMember,
-                           @SessionAttribute("loginLawyer")LawyerDTO loginLawyer) {
-        qnaWrite.setMemberIdx(loginMember.getMemberIdx());
-        qnaWrite.setLawyerIdx(loginLawyer.getLawyerIdx());
+    public String qnaWrite(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite){
         return "question/qnaWrite";
     }
+    // @SessionAttribute("loginMember")MemberDTO loginMember,
+    // @SessionAttribute("loginLawyer")LawyerDTO loginLawyer) {
+    // qnaWrite.setMemberIdx(loginMember.getMemberIdx());
+    // qnaWrite.setLawyerIdx(loginLawyer.getLawyerIdx());
 
     @PostMapping("/qnaWrite")
-    public String qnaWriteSubmit(@ModelAttribute("qnaWite") QuestionDTO qnaWrite) {
+    public String qnaWriteSubmit(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite) {
         questionService.qnaWriting(qnaWrite);
         return "question/qnaWrite";
     }

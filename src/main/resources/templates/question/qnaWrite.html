@@ -12,16 +12,17 @@
     <main class="page-qnaWrite">
         <div class="inner">
             <section class="frame">
-                <form id="qnaForm" method="post">
+                <form th:action="@{/question/qnaWrite}" th:object="${qnaWrite}" id="qnaForm" method="post">
                     <div class="form-group">
                         <div class="header-line">
+                            <input type="hidden" th:field="*{memberIdx}">
                             <label for="titleInput" class="form-label">제목</label>
                             <div class="checkbox-group in-header">
-                                <input type="checkbox" id="secretCheck" class="checkbox-input" />
+                                <input type="checkbox" id="secretCheck" class="checkbox-input" th:field="*{qSecret}" />
                                 <label for="secretCheck" class="checkbox-label">비밀글로 작성</label>
                             </div>
                         </div>
-                        <input id="titleInput" type="text" class="form-input" placeholder="제목을 입력하세요" />
+                        <input id="titleInput" type="text" class="form-input" placeholder="제목을 입력하세요" th:field="*{qTitle}"/>
                     </div>
 
                     <div class="form-group">

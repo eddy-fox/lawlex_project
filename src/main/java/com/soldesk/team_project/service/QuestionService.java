@@ -65,9 +65,8 @@ public class QuestionService {
         MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
         LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
 
-        // questionEntity.setMemberIdx(memberEntity);
-        // questionEntity.setLawyerIdx(lawyerEntity);
-
+        questionEntity.setMemberIdx(memberEntity.getMemberIdx());
+        questionEntity.setLawyerIdx(lawyerEntity.getLawyerIdx());
         
         return questionEntity;
     }
@@ -117,7 +116,8 @@ public class QuestionService {
     }
 
     public void qnaWriting(QuestionDTO qnaWrite){
-        QuestionEntity questionEntity = convert
+        QuestionEntity questionEntity = convertQuestionEntity(qnaWrite);
+        questionRepository.save(questionEntity);
     }
 }
 
