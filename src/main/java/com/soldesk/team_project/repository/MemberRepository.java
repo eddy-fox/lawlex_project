@@ -23,6 +23,12 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer>{
     List<MemberEntity> findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(String memberPhone, Integer memberActive);
     List<MemberEntity> findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(String memberNickname, Integer memberActive);
 
+    //
+    Optional<MemberEntity> findByMemberId(String memberId);
+    Optional<MemberEntity> findByMemberPhoneAndMemberIdnum(String memberPhone,String memberIdnum);
+    Optional<MemberEntity> findByMemberIdAndMemberPhoneAndMemberIdnum(String memberId,String memberPhone,String memberIdnum);
+    Optional<MemberEntity> findByMemberIdxAndMemberPhoneAndMemberIdnum(Integer memberIdx,String memberPhone,String memberIdnum);
+    boolean existsByMemberId(String memberId);
     Optional<MemberEntity> findByMemberName(String memberName);
 
 }
