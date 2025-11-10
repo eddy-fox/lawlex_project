@@ -3,10 +3,13 @@
 // import jakarta.servlet.http.HttpSession;
 // import lombok.RequiredArgsConstructor;
 // import org.springframework.security.core.authority.SimpleGrantedAuthority;
+<<<<<<< HEAD
 // import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 // import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 // import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 // import org.springframework.security.oauth2.core.user.OAuth2User;
+=======
+>>>>>>> main
 // import org.springframework.stereotype.Service;
 // import org.springframework.transaction.annotation.Transactional;
 
@@ -18,14 +21,22 @@
 
 // @Service
 // @RequiredArgsConstructor
+<<<<<<< HEAD
 // public class OAuth2MemberService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+=======
+// public class OAuth2MemberService implements OAuth2UserService<OAuth2UserRequest, oAuth2User> {
+>>>>>>> main
 
 //     private final MemberRepository memberRepository;
 //     private final HttpSession session;
 
 //     @Override
 //     @Transactional
+<<<<<<< HEAD
 //     public OAuth2User loadUser(OAuth2UserRequest req) throws OAuth2AuthenticationException {
+=======
+//     public oauth2 loadUser(OAuth2UserRequest req) throws OAuth2AuthenticationException {
+>>>>>>> main
 //         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 //         OAuth2User oAuth2User = delegate.loadUser(req);
 

@@ -31,7 +31,7 @@ public class BoardEntity {
     @Column(name = "board_title")
     private String boardTitle;
 
-    @Column(name = "board_content")
+    @Column(name = "board_content", columnDefinition = "TEXT")
     private String boardContent;
 
     @Column(name = "board_regdate")

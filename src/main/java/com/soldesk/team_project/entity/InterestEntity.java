@@ -35,7 +35,7 @@ public class InterestEntity {
     @OneToMany(mappedBy = "interest")
     private List<MemberInterestEntity> memberInterests = new ArrayList<>();
 
-    List<InterestEntity> findAllByOrderByInterestNameAsc();
+    
 
     
 }

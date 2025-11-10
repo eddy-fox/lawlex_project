@@ -12,15 +12,25 @@
 // import org.springframework.security.crypto.password.PasswordEncoder;
 // import org.springframework.security.web.SecurityFilterChain;
 
+<<<<<<< HEAD
 // import com.soldesk.team_project.entity.MemberEntity;
 // import com.soldesk.team_project.repository.MemberRepository;
 // import com.soldesk.team_project.service.OAuth2MemberService;
+=======
+import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.repository.MemberRepository;
+//import com.soldesk.team_project.service.OAuth2MemberService;
+>>>>>>> main
 
 // @Configuration
 // @RequiredArgsConstructor
 // public class SecurityConfig {
 
+<<<<<<< HEAD
 //     private final OAuth2MemberService oAuth2MemberService;
+=======
+    //private final OAuth2MemberService oAuth2MemberService;
+>>>>>>> main
 
 //     @Bean
 //     public UserDetailsService userDetailsService(MemberRepository repo) {
