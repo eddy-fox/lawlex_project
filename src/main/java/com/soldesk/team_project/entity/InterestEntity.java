@@ -1,5 +1,8 @@
 package com.soldesk.team_project.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,12 +28,14 @@ public class InterestEntity {
 
     @Column(name = "interest_name",nullable=false) 
     private String interestName;
-    
-    @OneToMany(mappedBy = "interest")
-    private java.util.List<MemberEntity> members;
 
     @OneToMany(mappedBy = "interest")
     private java.util.List<LawyerEntity> lawyers;
      
+    @OneToMany(mappedBy = "interest")
+    private List<MemberInterestEntity> memberInterests = new ArrayList<>();
+
+    List<InterestEntity> findAllByOrderByInterestNameAsc();
+
     
 }

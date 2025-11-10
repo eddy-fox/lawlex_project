@@ -11,9 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
+import com.soldesk.team_project.entity.InterestEntity;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
-// import com.soldesk.team_project.repository.InterestRepository;
+import com.soldesk.team_project.entity.MemberInterestEntity;
+import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
@@ -25,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
     
     private final MemberRepository memberRepository;
-    // private final InterestRepository interestRepository;
+    private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordEncoder encoder;
 
@@ -42,8 +44,7 @@ public class MemberService {
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
         memberDTO.setMemberActive(memberEntity.getMemberActive());
         memberDTO.setInterestIdx1(memberEntity.getInterestIdx());
-        memberDTO.setInterestName(memberEntity.getInterest().getInterestName());
-
+        
         return memberDTO;
     }
 
@@ -165,14 +166,18 @@ public class MemberService {
             m.changeNickname(dto.getMemberNickname().trim());
         }
 
-        // 관심분야 저장 (null 허용)
-        Integer i1 = dto.getInterestIdx1();
-        Integer i2 = dto.getInterestIdx2();
-        Integer i3 = dto.getInterestIdx3();
+        // 관심분야 저장 (null 허용) - DTO에서 1~3번 가져오기
+    Integer i1 = dto.getInterestIdx1();
+    Integer i2 = dto.getInterestIdx2();
+    Integer i3 = dto.getInterestIdx3();
 
-        if (i1 != null) m.setInterestIdx1(i1);
-        if (i2 != null) m.setInterestIdx2(i2);
-        if (i3 != null) m.setInterestIdx3(i3);
+    // 1) 일단 이 회원의 기존 관심사 관계를 다 비운다
+    m.getMemberInterests().clear();
+
+    // 2) 새로 들어온 값들로 다시 채운다
+    addInterest(m, i1);
+    addInterest(m, i2);
+    addInterest(m, i3);
 
         // 레거시 컬럼 동기화: 첫 번째 선택값이 있으면 그 값으로
         if (i1 != null) {
@@ -193,4 +198,17 @@ public class MemberService {
         m.deactivate(); // member_active = 0
         return true;
     }
+
+    private void addInterest(MemberEntity member, Integer interestIdx) {
+    if (interestIdx == null) return;
+    InterestEntity interest = interestRepository.findById(interestIdx)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관심사입니다: " + interestIdx));
+
+    MemberInterestEntity mi = new MemberInterestEntity();
+    mi.setMember(member);
+    mi.setInterest(interest);
+
+    member.getMemberInterests().add(mi);
+}
+
 }
