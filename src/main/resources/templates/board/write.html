@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상세글 작성</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/write.css}">
+    <link rel="stylesheet" th:href="@{/all/write.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
@@ -13,13 +13,13 @@
   <div class="sideMenu" th:replace="~{include/bSide :: bSide}"></div>
   <div class="wrap">
     <div class="backdrop">
-      <form class="card" id="writeForm">
+      <form class="card" th:object="${boardForm}" id="writeForm" method="post">
         <div class="inner">
           <h1 class="title">상담글 작성</h1>
 
           <div class="row">
             <label for="title" class="label">제목</label>
-            <input id="title" class="input" type="text" placeholder="예) 음주운전으로 사고를 냈..." minlength="2" required>
+            <input id="title" th:field="*{boardTitle}" class="input" type="text" placeholder="예) 음주운전으로 사고를 냈..." minlength="2" required>
           </div>
 
           <div class="row">
@@ -42,7 +42,7 @@
 
           <div class="row" style="align-items:start">
             <label for="content" class="label">내용</label>
-            <textarea id="content" class="textarea" placeholder="00월 00일 운전하다가 어쩌구 저쩌구..." minlength="20" required></textarea>
+            <textarea id="content" th:field="*{boardContent}" class="textarea" placeholder="00월 00일 운전하다가 어쩌구 저쩌구..." minlength="20" required></textarea>
           </div>
 
           <div class="row" style="align-items:start">
@@ -63,13 +63,13 @@
 
         <div class="actions">
           <button type="button" class="btn ghost" id="cancelBtn">취소</button>
-          <button type="submit" class="btn" id="submitBtn" disabled>작성완료</button>
+          <button type="submit" class="btn" id="submitBtn">작성완료</button>
         </div>
       </form>
     </div>
   </div>
 </main>  
   <div class="include" th:replace="~{include/footer :: footer}"></div>
-<script th:src="@{/js/write.js}"></script>  
+<script th:src="@{/all/write.js}"></script>  
 </body>
 </html>

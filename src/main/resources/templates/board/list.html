@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상담게시판_리스트</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/list.css}">
+    <link rel="stylesheet" th:href="@{/all/list.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
@@ -28,6 +28,15 @@
               </tr>
             </thead>
             <tbody id="tbody">
+<<<<<<< HEAD
+              <tr class="text-center" th:each="board, loop : ${paging}">
+                <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+                <td class="text-start">
+                  <a th:href="@{|/board/detail/${board.id}|}" th:text="${board.boardTitle}"></a>
+                </td>
+              </tr>
+            </tbody> 
+=======
               <tr class="text-center" th:each="boardEntity, loop : ${paging}">
                 <td th:text="${boardEntity.boardIdx}"></td>
                 <td class="text-start">
@@ -40,6 +49,7 @@
                 <td th:text="${boardEntity.boardViews}"></td>
               </tr>
             </tbody>
+>>>>>>> main
           </table>
 
           <div class="below">
@@ -67,6 +77,6 @@
     </div>
     </main>
     <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/list.js}"></script>
+    <script th:src="@{/all/list.js}"></script>
 </body>
 </html>

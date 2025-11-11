@@ -36,7 +36,7 @@ public class BoardEntity {
     @Column(name = "board_reg_date")
     private LocalDate boardRegDate;
 
-    @Column(name = "board_imgpath")
+    @Column(name = "board_img_path")
     private String boardImgPath;
 
     @Column(name = "board_case_date")
@@ -45,19 +45,13 @@ public class BoardEntity {
     @Column(name = "board_views")
     private Integer boardViews;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
 
-    @Column(name = "interest_idx")
-    private Integer interestIdx;
-
-    //작성자
-    @ManyToOne
-    private MemberEntity author;
-
-    //수정시간
-    private LocalDate modifyDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "interest_idx")
+    private InterestEntity interest;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
     private List<ReBoardEntity> reboardList;
