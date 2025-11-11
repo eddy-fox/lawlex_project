@@ -53,15 +53,15 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().permitAll()
             )
-            // OAuth2 로그인 설정
-            .oauth2Login(oauth2 -> oauth2
-                .loginPage("/member/login") // OAuth2 버튼 있는 페이지
-                .userInfoEndpoint(u -> u.userService(principalOauth2UserService))
-                .successHandler(oAuth2LoginSuccessHandler)
-            )
-            
-            .logout(l -> l.logoutUrl("/member/logout").logoutSuccessUrl("/member/login"))
-            .httpBasic(Customizer.withDefaults());
+            .formLogin(form -> form.disable())
+
+            .logout(logout -> logout.disable())
+            ;
+            // .oauth2Login(oauth -> oauth
+            //     .loginPage("/member/login")
+            //     .userInfoEndpoint(u -> u.userService(oAuth2MemberService))
+            //     .defaultSuccessUrl("/member/main", true)
+            // )
 
         return http.build();
         

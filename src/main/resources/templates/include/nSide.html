@@ -1,20 +1,50 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>뉴스 사이드</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     
-  <nav class="sideMenu" th:fragment="nSide" data-scope="news" aria-label="소식 사이드">
-    <a href="#" class="side-choice" aria-current="page">공지사항</a>
-    <a href="#" class="side">NEWS</a>
-    <a href="#" class="side">동영상</a>
-    <a href="#" class="side">칼럼</a>
-  </nav>
+  <!-- 소식 사이드바 -->
+  <nav class="sideMenu"
+     th:fragment="nSide"
+     data-scope="news"
+     aria-label="소식 사이드"
+     th:with="cat=${param.category}">
 
-    <script src="js.js"></script>
+    <!-- 공지사항 -->
+    <a th:href="@{/newsBoard/list(category=1)}"
+       class="side-choice"
+       th:classappend="${cat != null and cat == 1} ? ' is-active'">
+       공지사항
+    </a>
+
+    <!-- NEWS -->
+    <a th:href="@{/newsBoard/list(category=2)}"
+       class="side"
+       th:classappend="${cat != null and cat == 2} ? ' is-active'">
+       NEWS
+    </a>
+
+    <!-- 동영상 -->
+    <a th:href="@{/newsBoard/list(category=3)}"
+       class="side"
+       th:classappend="${cat != null and cat == 3} ? ' is-active'">
+       동영상
+    </a>
+
+    <!-- 칼럼 -->
+    <a th:href="@{/newsBoard/list(category=4)}"
+       class="side"
+       th:classappend="${cat != null and cat == 4} ? ' is-active'">
+       칼럼
+    </a>
+</nav>
+
+
+  <script th:src="@{/js/js.js}"></script>
 </body>
 </html>

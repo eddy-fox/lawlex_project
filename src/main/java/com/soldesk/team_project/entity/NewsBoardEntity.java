@@ -54,6 +54,15 @@ public class NewsBoardEntity {
 
     @Column(name="news_active")
     private int newsActive;
+
+    @Column(name="video_url")
+    private String videoUrl;
+
+    @Column(name="video_id")
+    private String videoId;
+
+    @Column(name="drive_file_id")
+    private String driveFileId;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="admin_idx")
