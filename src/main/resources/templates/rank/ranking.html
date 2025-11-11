@@ -41,7 +41,7 @@
                 <div class="category">
                     <h2>카테고리별</h2>
                 </div>
-                <div class="category-group" >
+                <div class="category-group" th:each="rank : ${}">
                     <h3 class="category-title">카테고리1</h3>
                     <div class="grid">
                         <div class="card">
@@ -50,34 +50,6 @@
                             <div class="name">김민지 변호사</div>
                             <div class="sub">좋아요 1,200</div>
                             <div class="sub">답변수 1,150</div>
-                        </div>
-                        <div class="card">
-                            <div class="rank">2위</div>
-                            <div class="photo"><img src="#" alt=""></div>
-                            <div class="name">이준호 변호사</div>
-                            <div class="sub">좋아요 1,100</div>
-                            <div class="sub">답변수 1,050</div>
-                        </div>
-                        <div class="card">
-                            <div class="rank">3위</div>
-                            <div class="photo"><img src="#" alt=""></div>
-                            <div class="name">박서연 변호사</div>
-                            <div class="sub">좋아요 1,000</div>
-                            <div class="sub">답변수 1,200</div>
-                        </div>
-                        <div class="card">
-                            <div class="rank">4위</div>
-                            <div class="photo"><img src="#" alt=""></div>
-                            <div class="name">정우진 변호사</div>
-                            <div class="sub">좋아요 950</div>
-                            <div class="sub">답변수 980</div>
-                        </div>
-                        <div class="card">
-                            <div class="rank">5위</div>
-                            <div class="photo"><img src="#" alt=""></div>
-                            <div class="name">최예린 변호사</div>
-                            <div class="sub">좋아요 900</div>
-                            <div class="sub">답변수 920</div>
                         </div>
                     </div>
                 </div>
