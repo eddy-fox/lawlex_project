@@ -23,6 +23,40 @@
         </div>
 
         <section class="frame" th:if="${categoryIdx != 1}">
+               <div class="list-top">
+        <h1 class="list-title"
+            th:text="${categoryIdx == 2} ? '뉴스'
+                     : (${categoryIdx == 3} ? '동영상'
+                     : (${categoryIdx == 4} ? '칼럼' : '목록'))">
+            목록
+        </h1>
+
+        <!-- 뉴스(2) : reporter -->
+        <a th:if="${categoryIdx == 2
+                   and session.loginAdmin != null
+                   and session.loginAdmin.adminRole == 'reporter'}"
+           th:href="@{/newsBoard/write(category=2)}"
+           class="btn-write">
+            글쓰기
+        </a>
+
+        <!-- 동영상(3) : admin -->
+        <a th:if="${categoryIdx == 3
+                   and session.loginAdmin != null
+                   and session.loginAdmin.adminRole == 'admin'}"
+           th:href="@{/newsBoard/write(category=3)}"
+           class="btn-write">
+            글쓰기
+        </a>
+
+        <!-- 칼럼(4) : lawyer -->
+        <a th:if="${categoryIdx == 4
+                   and session.loginLawyer != null}"
+           th:href="@{/newsBoard/write(category=4)}"
+           class="btn-write">
+            글쓰기
+        </a>
+    </div>
 
             <p th:if="${#lists.isEmpty(boards)}">등록된 글이 없습니다.</p>
 

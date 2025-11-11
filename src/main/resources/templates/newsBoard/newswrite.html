@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소식 작성</title>
+    <link rel="stylesheet" th:href="@{/css/qnaWrite.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="include" th:replace="~{include/header :: header}"></div>
+
+<main class="page-qnaWrite">
+    <div class="inner">
+        <section class="frame">
+            <!-- /newsBoard/write 로 보냄 -->
+            <form th:action="@{/newsBoard/write}"
+            th:object="${news}"
+            method="post"
+            enctype="multipart/form-data">
+
+                <!-- 어떤 게시판인지 넘기기 (1=공지, 2=뉴스, 3=동영상, 4=칼럼) -->
+                <input type="hidden" th:field="*{categoryIdx}"/>
+
+                <!-- 제목 -->
+                <div class="form-group">
+                    <div class="header-line">
+                        <label for="titleInput" class="form-label">제목</label>
+
+                        <!-- 카테고리 표시만 해줄래 -->
+                        <span class="badge"
+                              th:switch="*{categoryIdx}">
+                            <span th:case="1">공지</span>
+                            <span th:case="2">뉴스</span>
+                            <span th:case="3">동영상</span>
+                            <span th:case="4">칼럼</span>
+                            <span th:case="*">소식</span>
+                        </span>
+                    </div>
+                    <input id="titleInput"
+                           type="text"
+                           class="form-input"
+                           placeholder="제목을 입력하세요"
+                           th:field="*{newsTitle}" required/>
+                </div>
+
+                <!-- 내용 -->
+                <div class="form-group">
+                    <label for="contentTextarea" class="form-label">내용</label>
+                    <textarea id="contentTextarea"
+                              class="form-textarea"
+                              placeholder="내용을 입력하세요."
+                              th:field="*{newsContent}" rows="10" required></textarea>
+                </div>
+
+                <!-- 이미지가 드라이브에 올라가서 id만 DB에 저장하는 구조 -->
+                 <div class="form-group">
+        <label for="imgFile" class="form-label">대표 이미지</label>
+        <input id="imgFile"
+               name="imgFile"
+               type="file"
+               class="form-input"
+               accept="image/*">
+        <p class="help">이미지를 선택하면 서버에서 구글드라이브로 업로드합니다.</p>
+    </div>
+
+                <!-- 동영상 카테고리일 때만 노출 -->
+                 <div class="form-group" th:if="${news.categoryIdx == 3}">
+        <label for="videoUrl" class="form-label">동영상 URL</label>
+        <input id="videoUrl" type="text" class="form-input" th:field="*{videoUrl}" placeholder="https://...">
+    </div>
+
+                <div class="form-actions">
+                    <!-- 취소는 목록로 -->
+                    <a th:href="@{|/newsBoard/list?category=${news.categoryIdx}|}"
+                       class="btn btn-cancel">취소</a>
+                    <button type="submit" class="btn btn-submit">등록</button>
+                </div>
+            </form>
+
+            <!-- 권한 체크는 컨트롤러에서 이미 하고 있어서 여기서는 별 거 안해도 돼! -->
+        </section>
+    </div>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+<script th:src="@{/js/js.js}"></script>
+</body>
+</html>
