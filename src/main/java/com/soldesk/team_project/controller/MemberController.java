@@ -296,36 +296,36 @@ public class MemberController {
         return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
     }
     @PostMapping("/oauth2/complete")
-    public String saveAdditionalInfo(@ModelAttribute("member123")MemberDTO memberDTO,
-                                    HttpSession session, HttpServletResponse response) {
+    public void saveAdditionalInfo(@ModelAttribute("member123")MemberDTO memberDTO,
+                                    HttpSession session, HttpServletResponse response) throws IOException{
 
         TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
         if (tempUser == null) {
-            return "redirect:/member/login";
+            response.sendRedirect("/member/login");
+            return;
         }
         MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
         session.removeAttribute("oauth2TempUser");
         String token = jwtProvider.createToken(savedUser);
-        Map<String, Object> loginResponse = new HashMap<>();
-        loginResponse.put("status", HttpServletResponse.SC_OK);
-        loginResponse.put("message", "Login successful");
+        
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("status", HttpServletResponse.SC_OK);
+        responseMap.put("message", "Login successful");
 
-        Map<String, String> data = new HashMap<>();
-        data.put("email", savedUser.getMemberEmail());
-        data.put("name", savedUser.getMemberName());
-        data.put("token", token);
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("email", savedUser.getMemberEmail());
+        dataMap.put("name", savedUser.getMemberName());
+        dataMap.put("token", token);
 
-        loginResponse.put("data", data);
+        responseMap.put("data", dataMap);
 
-        // JSON으로 변환 후 응답
+        // JSON으로 직렬화 후 응답
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(loginResponse);
+        String jsonResponse = objectMapper.writeValueAsString(responseMap);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(jsonResponse);
-
-        return "redirect:/";
     }
 
 }

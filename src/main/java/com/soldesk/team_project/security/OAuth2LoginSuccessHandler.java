@@ -1,6 +1,8 @@
 package com.soldesk.team_project.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -28,29 +30,24 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // MemberEntity 기반 JWT 생성
         String token = jwtProvider.createToken(principal.getMember());
 
-        // JSON 응답 생성 (ResponseDTO 없이 간단하게 JWT만 전달)
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(
-            new JwtResponse(token, principal.getMember().getMemberEmail(), principal.getMember().getMemberName())
-        );
+        String email = principal.getEmail();
+        String name = principal.getUsername();
 
-        // 응답 헤더 및 바디 설정
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
-        System.out.println(token);
+        // session에 저장
+        
+        getRedirectStrategy().sendRedirect(request, response, "/");
     }
 
     // JWT 응답용 간단 DTO
-    private static class JwtResponse {
-        public String token;
-        public String email;
-        public String username;
+    // private static class JwtResponse {
+    //     public String token;
+    //     public String email;
+    //     public String username;
 
-        public JwtResponse(String token, String email, String username) {
-            this.token = token;
-            this.email = email;
-            this.username = username;
-        }
-    }
+    //     public JwtResponse(String token, String email, String username) {
+    //         this.token = token;
+    //         this.email = email;
+    //         this.username = username;
+    //     }
+    // }
 }

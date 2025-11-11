@@ -3,6 +3,7 @@ package com.soldesk.team_project.security;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -42,18 +43,18 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         Optional<MemberEntity> user = memberRepository.findByMemberEmailAndMemberActive(email, 1);
 
-        if (user.isPresent()) {
-            // 이미 가입된 유저는 바로 PrincipalDetails 반환
-            return new PrincipalDetails(user.get(), oAuth2User.getAttributes());
-        } else {
-            // 신규 유저는 세션에 임시 정보 저장 후 추가 정보 입력 필요
-            HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                                    .getRequest().getSession();
-            TemporaryOauthDTO tempUser = new TemporaryOauthDTO(email, name, provider, providerId);
-            session.setAttribute("oauth2TempUser", tempUser);
+         if (user.isEmpty()) {
+            MemberEntity member = new MemberEntity();
+            member.setMemberId(email);
+            member.setMemberEmail(email);
+            member.setMemberName(name);
+            member.setMemberPass("LawLexOAuth2");
+            member.setInterestIdx(1);
+            memberRepository.save(member);
 
-        throw new OAuth2AuthenticationException("NEED_ADDITIONAL_INFO");
+            return new PrincipalDetails(member, oAuth2User.getAttributes());
+        } else {
+            return new PrincipalDetails(user.get(), oAuth2User.getAttributes());
         }
     }
-    
 }

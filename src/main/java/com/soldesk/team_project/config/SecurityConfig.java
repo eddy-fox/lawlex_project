@@ -57,7 +57,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/member/login") // OAuth2 버튼 있는 페이지
                 .userInfoEndpoint(u -> u.userService(principalOauth2UserService))
-                .defaultSuccessUrl("/", true)
+                .successHandler(oAuth2LoginSuccessHandler)
             )
             
             .logout(l -> l.logoutUrl("/member/logout").logoutSuccessUrl("/member/login"))
