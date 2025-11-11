@@ -91,18 +91,18 @@ public class PurchaseService {
 
 
     // 모든 포인트 내역 조회
-    public List<PointDTO> getAllPoint(int memberIdx) { // 회원 정보 넣어야함
+    public List<PointDTO> getAllPoint(int memberIdx) {
         List<PointEntity> pointEntityList = pointRepository
-            .findByMemberIdxOrderByPointIdxDesc(memberIdx); // 회원정보 넣어야함
+            .findByMemberIdxOrderByPointIdxDesc(memberIdx);
 
         return pointEntityList.stream()
             .map(pointEntity -> convertPointDTO(pointEntity)).collect(Collectors.toList());
     }
 
     // 모든 구매 내역 조회
-    public List<PurchaseDTO> getAllPurchase(int memberIdx) { // 회원 정보 넣어야함
+    public List<PurchaseDTO> getAllPurchase(int memberIdx) {
         List<PurchaseEntity> purchaseEntityList = purchaseRepository
-            .findByMemberIdxAndPurchaseStateOrderByPurchaseIdxDesc(memberIdx, "success"); // 회원정보 넣어야함
+            .findByMemberIdxAndPurchaseStateOrderByPurchaseIdxDesc(memberIdx, "success");
 
         return purchaseEntityList.stream()
             .map(purchaseEntity -> convertPurchaseDTO(purchaseEntity)).collect(Collectors.toList());
@@ -117,10 +117,10 @@ public class PurchaseService {
     }
 
     // 주문 정보 생성
-    public PurchaseDTO createPendingPurchase(int productIdx, String purchaseId) { // 회원정보 추가해야함
+    public PurchaseDTO createPendingPurchase(int productIdx, String purchaseId, int memberIdx) {
         PurchaseDTO purchaseDTO = new PurchaseDTO();
         purchaseDTO.setProductIdx(productIdx);
-        // purchaseDTO.setMemberIdx(memberIdx);
+        purchaseDTO.setMemberIdx(memberIdx);
         purchaseDTO.setPurchaseId(purchaseId);
 
         PurchaseEntity purchaseEntity = convertPurchaseEntity(purchaseDTO);

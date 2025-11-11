@@ -15,13 +15,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
+import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.PointDTO;
 import com.soldesk.team_project.dto.ProductDTO;
 import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.dto.TemporaryOauthDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.service.LawyerService;
+import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.entity.*;
@@ -34,10 +40,6 @@ import com.soldesk.team_project.entity.AdminEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.UserMasterEntity;
-import com.soldesk.team_project.repository.AdminRepository;
-import com.soldesk.team_project.repository.LawyerRepository;
-import com.soldesk.team_project.repository.MemberRepository;
-import com.soldesk.team_project.repository.UserMasterRepository;
 
 
 
@@ -59,25 +61,14 @@ public class MemberController {
     private final InterestRepository interestRepository; // 로이어 관심 1개를 조인으로 세팅할 때 사용
     private final PasswordEncoder passwordEncoder;
 
-
-    // 임시 로그인
-    @GetMapping("/loginTemp")
-    public String loginTemp() {
-
-        return "member/loginTemp";
-    }
-    @PostMapping("/loginTemp")
-    public String loginTempVerify() {
-
-        return "redirect:/";
-    }
+    private final JwtProvider jwtProvider;
 
     // 멤버 포인트
     @GetMapping("/point")
-    public String pointMain(Model model) {
+    public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
         
-        int memberIdx = 1; // 회원정보 받아와서 넘겨야함
-        
+        Integer memberIdx = loginUser.getMemberIdx();
+                
         // 포인트 구매 상품
         List<ProductDTO> productList = purchaseService.getBuyPointProduct();
         model.addAttribute("productList", productList);
@@ -92,15 +83,22 @@ public class MemberController {
         return "member/point";
     }
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model) {
+    public String productPurchase(
+        @RequestParam("selectedProduct") int productNum, Model model,
+        @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+
+        Integer memberIdx = loginUser.getMemberIdx();
+        String memberIdxStr = String.valueOf(memberIdx);
+        List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
+        model.addAttribute("member", member);
 
         // 구매 검증을 위한 ID 생성
         String purchaseId = "order-" + System.currentTimeMillis();
         // 구매 요청 내역 생성
-        PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId); // 회원정보도 같이 줘야함
+        PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId, memberIdx);
         model.addAttribute("purchase", purchase);
         
-        return "payment/checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
+        return "payment/checkout";
     }
 
     @GetMapping("/testOCR") 
@@ -439,5 +437,42 @@ public class MemberController {
             this.adminIdx = adminIdx; this.adminId = adminId; this.adminName = adminName;
             this.adminEmail = adminEmail; this.adminPhone = adminPhone;
         }
+    }
+
+    @GetMapping("/oauth2/additional-info")
+    public String showAdditionalInfoForm() {
+        return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
+    }
+    @PostMapping("/oauth2/complete")
+    public void saveAdditionalInfo(@ModelAttribute("member123")MemberDTO memberDTO,
+                                    HttpSession session, HttpServletResponse response) throws IOException{
+
+        TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
+        if (tempUser == null) {
+            response.sendRedirect("/member/login");
+            return;
+        }
+        MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
+        session.removeAttribute("oauth2TempUser");
+        String token = jwtProvider.createToken(savedUser);
+        
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("status", HttpServletResponse.SC_OK);
+        responseMap.put("message", "Login successful");
+
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("email", savedUser.getMemberEmail());
+        dataMap.put("name", savedUser.getMemberName());
+        dataMap.put("token", token);
+
+        responseMap.put("data", dataMap);
+
+        // JSON으로 직렬화 후 응답
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(responseMap);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonResponse);
     }
 }

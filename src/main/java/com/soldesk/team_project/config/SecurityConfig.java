@@ -14,11 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.MemberRepository;
-//import com.soldesk.team_project.service.OAuth2MemberService;
+import com.soldesk.team_project.security.OAuth2LoginSuccessHandler;
+import com.soldesk.team_project.security.PrincipalOauth2UserService;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     //private final OAuth2MemberService oAuth2MemberService;
 
@@ -50,14 +54,13 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form.disable())
-
-            .logout(logout -> logout.disable())
-            ;
-            // .oauth2Login(oauth -> oauth
-            //     .loginPage("/member/login")
-            //     .userInfoEndpoint(u -> u.userService(oAuth2MemberService))
-            //     .defaultSuccessUrl("/member/main", true)
-            // )
+            // oAuth2 로그인
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/member/login")
+                .userInfoEndpoint(u -> u.userService(principalOauth2UserService))
+                .successHandler(oAuth2LoginSuccessHandler)
+            )
+            .logout(logout -> logout.disable());
 
         return http.build();
         
