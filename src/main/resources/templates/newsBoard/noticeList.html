@@ -8,124 +8,73 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
-  <main class="page-noticeList">
+<div class="include" th:replace="~{include/header :: header}"></div>
+
+<main class="page-noticeList">
+    <!-- 왼쪽 사이드 -->
     <div class="sideMenu" th:replace="~{include/nSide :: nSide}"></div>
+
     <div class="among">
-    <section class="notice-frame">
-      <div class="table-head">
-        <div class="col-no">글번호</div>
-        <div class="col-title">제목</div>
-        <div class="col-date">등록일</div>
-      </div>
+        <section class="notice-frame">
+             <div class="list-top">
 
-      <a href="#" class="notice-link">
-        <div class="col-no">20</div>
-        <div class="col-title">[공지] 변호사 회원 기능 업그레이드 안내</div>
-        <div class="col-date">2025-10-29</div>
+      <a th:if="${session.loginAdmin != null and session.loginAdmin.adminRole == 'admin'}"
+         th:href="@{/newsBoard/write(category=1)}"
+         class="btn-write">
+        글쓰기
       </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">19</div>
-        <div class="col-title">[안내] LawLex 모바일 앱 런칭 예정</div>
-        <div class="col-date">2025-10-25</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">18</div>
-        <div class="col-title">[공지] 정기 점검 안내 (10/31 00:00~03:00)</div>
-        <div class="col-date">2025-10-24</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">17</div>
-        <div class="col-title">[이벤트] 신규가입 시 1,000포인트 지급</div>
-        <div class="col-date">2025-10-20</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">16</div>
-        <div class="col-title">[업데이트] 상담글 검색 기능 개선 안내</div>
-        <div class="col-date">2025-10-18</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">15</div>
-        <div class="col-title">[공지] 서버 안정화 패치 완료 안내</div>
-        <div class="col-date">2025-10-15</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">14</div>
-        <div class="col-title">[안내] 개인정보 처리방침 개정 예정</div>
-        <div class="col-date">2025-10-10</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">13</div>
-        <div class="col-title">[공지] 주말 고객센터 운영시간 변경</div>
-        <div class="col-date">2025-10-08</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">12</div>
-        <div class="col-title">[공지] 접속 지연 관련 긴급 점검 안내</div>
-        <div class="col-date">2025-10-06</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">11</div>
-        <div class="col-title">[공지] 회원 탈퇴 절차 개선 안내</div>
-        <div class="col-date">2025-10-05</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">10</div>
-        <div class="col-title">[공지] 상담 예약 취소 정책 변경</div>
-        <div class="col-date">2025-09-29</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">9</div>
-        <div class="col-title">[업데이트] 변호사 프로필 페이지 개편 완료</div>
-        <div class="col-date">2025-09-26</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">8</div>
-        <div class="col-title">[공지] 법률 뉴스 알림 기능 추가 안내</div>
-        <div class="col-date">2025-09-20</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">7</div>
-        <div class="col-title">[이벤트] 9월 신규 가입자 포인트 이벤트</div>
-        <div class="col-date">2025-09-10</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">6</div>
-        <div class="col-title">[공지] 시스템 점검으로 인한 서비스 일시 중단</div>
-        <div class="col-date">2025-09-07</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">5</div>
-        <div class="col-title">[안내] LawLex 서버 교체 일정 안내</div>
-        <div class="col-date">2025-08-30</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">4</div>
-        <div class="col-title">[공지] 회원 비밀번호 보안 정책 강화</div>
-        <div class="col-date">2025-08-25</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">3</div>
-        <div class="col-title">[공지] AI 상담 기능 베타 오픈</div>
-        <div class="col-date">2025-08-20</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">2</div>
-        <div class="col-title">[안내] 법률 전문 뉴스 섹션 추가</div>
-        <div class="col-date">2025-08-15</div>
-      </a>
-      <a href="#" class="notice-link">
-        <div class="col-no">1</div>
-        <div class="col-title">[공지] LawLex 서비스 오픈 안내</div>
-        <div class="col-date">2025-08-01</div>
-      </a>
-    </section>
-    <nav class="pagination" id="pagination"></nav>
     </div>
+            <div class="table-head">
+                <div class="col-no">글번호</div>
+                <div class="col-title">제목</div>
+                <div class="col-date">등록일</div>
+            </div>
 
-  </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/noticeList.js}"></script>
+            <!-- 목록이 있을 때 -->
+            <a class="notice-link"
+               th:each="n, stat : ${boards}"
+               th:href="@{/newsBoard/detail(newsIdx=${n.newsIdx})}">
+                <!-- 번호: 전체건수 - (현재페이지-1)*페이지사이즈 - index -->
+                <div class="col-no"
+                     th:text="${page.totalElements - ((currentPage - 1) * page.size) - stat.index}">
+                    1
+                </div>
+                <div class="col-title" th:text="${n.newsTitle}">[공지] 제목</div>
+                <div class="col-date"
+                     th:text="${#temporals.format(n.newsRegDate, 'yyyy-MM-dd')}">
+                    2025-10-29
+                </div>
+            </a>
+
+            <!-- 목록이 비었을 때 -->
+            <div class="notice-empty" th:if="${#lists.isEmpty(boards)}">
+                등록된 공지사항이 없습니다.
+            </div>
+        </section>
+
+        <!-- 페이지 네비게이션 -->
+        <nav class="pagination">
+            <!-- 이전 블럭 -->
+            <a th:if="${startPage > 1}"
+               th:href="@{/newsBoard/list(category=${categoryIdx}, page=${startPage - 1})}">이전</a>
+
+            <!-- 번호들 -->
+            <a th:each="p : ${#numbers.sequence(startPage, endPage)}"
+               th:href="@{/newsBoard/list(category=${categoryIdx}, page=${p})}"
+               th:text="${p}"
+               th:classappend="${p == currentPage} ? ' active'">
+            </a>
+
+            <!-- 다음 블럭 -->
+            <a th:if="${endPage < page.totalPages}"
+               th:href="@{/newsBoard/list(category=${categoryIdx}, page=${endPage + 1})}">다음</a>
+        </nav>
+    </div>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+
+<script th:src="@{/js/js.js}"></script>
+<script th:src="@{/js/noticeList.js}"></script>
 </body>
 </html>
