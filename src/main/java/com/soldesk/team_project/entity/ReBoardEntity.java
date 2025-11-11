@@ -28,7 +28,7 @@ public class ReBoardEntity {
     @Column(name = "reboard_title")
     private String reboardTitle;
 
-    @Column(name = "reboard_content")
+    @Column(name = "reboard_content", columnDefinition = "TEXT")
     private String reboardContent;
 
     @Column(name = "reboard_reg_date")

@@ -1,12 +1,15 @@
 package com.soldesk.team_project.dto;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+import lombok.*;
+@Getter 
+@Setter 
+@Data 
+@NoArgsConstructor 
+@AllArgsConstructor 
+@Builder 
+
 public class MemberDTO {
-
     private Integer memberIdx;
     private String memberId;
     private String memberPass;
@@ -19,8 +22,10 @@ public class MemberDTO {
     private String memberNickname;
     private Integer memberPoint;
     private Integer memberActive;
-    private Integer interestIdx;
-
     private String interestName;
-
+    private Integer interestIdx;
+    public Integer interestIdx1; 
+    public Integer interestIdx2; 
+    public Integer interestIdx3;
+ 
 }

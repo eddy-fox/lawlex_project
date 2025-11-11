@@ -46,11 +46,11 @@ public class AdEntity {
     // @Column(name = "ad_cost")
     // private Integer adCost;
 
-    @Column(name = "ad_views")
-    private Integer adViews;
+    @Column(name = "ad_views", columnDefinition = "TINYINT(0) DEFAULT 0")
+    private Integer adViews = 0;
 
-    @Column(name = "ad_active")
-    private Integer adActive;
+    @Column(name = "ad_active", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer adActive = 1;
 
     @Column(name = "lawyer_idx", insertable = false, updatable = false)
     private Integer lawyerIdx;

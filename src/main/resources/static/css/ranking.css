@@ -214,8 +214,7 @@
     }
 
 
-    .pick .v,
-    .pick-on .v {
+    .pick .v {
       color: var(--navy);
       font-weight: 800;
     }
@@ -293,8 +292,7 @@
       font-weight: 700;
     }
 
-    .page-ranking .card .sub,
-    .page-ranking .card .sub.on {
+    .page-ranking .card .sub {
       color: #666;
       font-size: 12px;
       margin-top: 6px;

@@ -62,23 +62,23 @@ public class ReBoardService {
     // @Transactional
     // public void gptAutoReboard(BoardEntity boardEntity) {
 
-    //     try {
-    //         // GPT API 실행
-    //         String answer = pythonService.runPython(
-    //             "gpt-api.py",
-    //             boardEntity.getBoardTitle(),
-    //             boardEntity.getInterest().getInterestName(),
-    //             boardEntity.getBoardContent()
-    //         );
+        try {
+            // GPT API 실행
+            String answer = pythonService.runPython(
+                "gpt-api.py",
+                boardEntity.getBoardTitle(),
+                // boardEntity.getInterest().getInterestName(),
+                boardEntity.getBoardContent()
+            );
 
-    //         // 답변 게시글 생성
-    //         // ReBoardEntity reboardEntity = new ReboardEntity();
-    //         // reboardEntity.setBoardIdx(boardEntity.getBoardIdx());
-    //         // reboardEntity.setReboardTitle("GPT가 작성한 답변입니다.");
-    //         // reboardEntity.setReboardContent(answer);
-    //         // reboardEntity.setLawyerIdx(0);
+            // 답변 게시글 생성            
+            ReBoardEntity reboardEntity = new ReBoardEntity();
+            reboardEntity.setBoardIdx(boardEntity.getBoardIdx());
+            reboardEntity.setReboardTitle("GPT가 작성한 답변입니다.");
+            reboardEntity.setReboardContent(answer);
+            reboardEntity.setLawyerIdx(0);
 
-    //         // reboardRepository.save(reboardEntity);
+            reboardRepository.save(reboardEntity);
 
     //     } catch (Exception e) {
     //         e.printStackTrace();

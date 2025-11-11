@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.soldesk.team_project.dto.NewsBoardDTO;
 import com.soldesk.team_project.entity.AdminEntity;
@@ -147,63 +148,56 @@ public class NewsBoardController {
     }
 
     /* ================= 글쓰기 처리 ================= */
-    @PostMapping("/write")
-    public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
-                              HttpSession session,
-                              Model model) {
+     @PostMapping("/write")
+public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
+                          @RequestParam(value = "imgFile", required = false) MultipartFile imgFile,
+                          HttpSession session) throws Exception {
 
-        Integer categoryIdx = dto.getCategoryIdx();
-        if (!canWrite(categoryIdx, session)) {
-            return "redirect:/newsBoard/list?category=" + categoryIdx;
-        }
-
-        NewsBoardEntity entity = new NewsBoardEntity();
-        entity.setNewsTitle(dto.getNewsTitle());
-        entity.setNewsContent(dto.getNewsContent());
-        entity.setNewsRegDate(LocalDate.now());
-        entity.setNewsLike(0);
-        entity.setNewsViews(0);
-        entity.setNewsActive(1);
-
-        // 파일 업로드 -> id만 저장
-        var file = dto.getNewsBoardFile();
-        if (file != null && !file.isEmpty()) {
-            try {
-                var info = driveUploader.upload(file, newsFolderId);
-
-                entity.setFileAttached(1);
-                entity.setStoredFileName(info.name());
-                entity.setDriveFileId(info.fileId());     // ← 이것만 저장
-                entity.setNewsImgPath(null);              // 화면에서 조립할 거니까 비워둠
-
-            } catch (Exception e) {
-                entity.setFileAttached(0);
-            }
-        } else {
-            entity.setFileAttached(0);
-        }
-
-        NewsCategoryEntity category = newsCategoryRepository.findById(categoryIdx).orElse(null);
-        entity.setCategory(category);
-
-        AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
-        LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
-
-        if (categoryIdx == CATEGORY_COLUMN) {
-            entity.setLawyer(loginLawyer);
-        } else {
-            entity.setAdmin(loginAdmin);
-        }
-
-        // 동영상이면 url + videoId 저장
-        if (categoryIdx == CATEGORY_VIDEO) {
-            entity.setVideoUrl(dto.getVideoUrl());
-            entity.setVideoId(dto.getVideoId());
-        }
-
-        newsBoardRepository.save(entity);
+    Integer categoryIdx = dto.getCategoryIdx();
+    if (!canWrite(categoryIdx, session)) {
         return "redirect:/newsBoard/list?category=" + categoryIdx;
     }
+
+    NewsBoardEntity entity = new NewsBoardEntity();
+    entity.setNewsTitle(dto.getNewsTitle());
+    entity.setNewsContent(dto.getNewsContent());
+    entity.setNewsRegDate(LocalDate.now());
+    entity.setNewsLike(0);
+    entity.setNewsViews(0);
+    entity.setNewsActive(1);
+
+    // 카테고리
+    NewsCategoryEntity category = newsCategoryRepository.findById(categoryIdx).orElse(null);
+    entity.setCategory(category);
+
+    // 작성자
+    AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
+    LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
+    if (categoryIdx == CATEGORY_COLUMN) {
+        entity.setLawyer(loginLawyer);
+    } else {
+        entity.setAdmin(loginAdmin);
+    }
+
+    // 동영상이면 url
+    if (categoryIdx == CATEGORY_VIDEO) {
+        entity.setVideoUrl(dto.getVideoUrl());
+    }
+
+    // ✅ 파일 있으면 드라이브에 업로드하고 id만 저장
+    if (imgFile != null && !imgFile.isEmpty()) {
+        // modify랑 똑같이
+        var info = driveUploader.upload(imgFile, newsFolderId);
+        // 업로드 성공했으면 엔티티에 세팅
+        entity.setFileAttached(1);
+        entity.setStoredFileName(info.name());
+        entity.setDriveFileId(info.fileId());
+        // entity.setNewsImgPath(null); // 드라이브만 쓸 거면 굳이 안 써도 됨
+    }
+
+    newsBoardRepository.save(entity);
+    return "redirect:/newsBoard/list?category=" + categoryIdx;
+}
 
     /* ================= 수정 폼 ================= */
     @GetMapping("/modify")
