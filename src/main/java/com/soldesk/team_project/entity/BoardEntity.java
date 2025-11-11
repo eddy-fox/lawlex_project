@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,16 +30,16 @@ public class BoardEntity {
     @Column(name = "board_title")
     private String boardTitle;
 
-    @Column(name = "board_content", columnDefinition = "TEXT")
+    @Column(name = "board_content")
     private String boardContent;
 
-    @Column(name = "board_regdate")
+    @Column(name = "board_reg_date")
     private LocalDate boardRegDate;
 
     @Column(name = "board_imgpath")
     private String boardImgPath;
 
-    @Column(name = "board_casedate")
+    @Column(name = "board_case_date")
     private LocalDate boardCaseDate;
 
     @Column(name = "board_views")

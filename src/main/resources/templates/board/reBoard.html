@@ -15,14 +15,15 @@
       <div class="backdrop">
         <form class="card">
           <div class="inner">
-            <h1 class="post-title">정보통신망법 침입 및 명예훼손 대응방법</h1>
-            <div class="post-meta">2025-09-29 20:45</div>
-            <div class="post-body">애인의 바람으로 인해 순간적인 감정으로 인해 애인이 전에 사용하던 네이버 로그인 정보를 이용하여 접속 및 회사 앱에 무단 접속한 상황...</div>
+            <h1 class="post-title" th:text="${boardEntity.boardTitle}"></h1>
+            <div class="post-meta" th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></div>
+            <div class="card-text" th:text="${boardEntity.boardContent}"></div>
 
             <div class="note" id="replyBox">
               <div class="note-header">
-                <span class="badge" id="statusText">김현민 변호사님의 답변을 기다리고 있어요.</span>
-                <button id="open" class="btn">답변하기</button>
+                <span class="badge" id="statusText" th:if="${ReBoardE}">변호사님의 답변을 기다리고 있어요.
+                  <button id="open" class="btn">답변하기</button>
+                </span>
               </div>
               <div id="replyArea" class="hidden">
                 <textarea id="ta" class="textarea" placeholder="1. ~&#10;2. ~&#10;3. ~ 처럼 줄바꿈으로 항목을 쓰면 목록으로 들어갑니다." minlength="10"></textarea>
