@@ -54,14 +54,13 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form.disable())
-
-            .logout(logout -> logout.disable())
-            ;
-            // .oauth2Login(oauth -> oauth
-            //     .loginPage("/member/login")
-            //     .userInfoEndpoint(u -> u.userService(oAuth2MemberService))
-            //     .defaultSuccessUrl("/member/main", true)
-            // )
+            // oAuth2 로그인
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/member/login")
+                .userInfoEndpoint(u -> u.userService(principalOauth2UserService))
+                .successHandler(oAuth2LoginSuccessHandler)
+            )
+            .logout(logout -> logout.disable());
 
         return http.build();
         
