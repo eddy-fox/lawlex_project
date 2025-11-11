@@ -1,20 +1,45 @@
 package com.soldesk.team_project.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soldesk.team_project.dto.AdDTO;
+import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.PointDTO;
 import com.soldesk.team_project.dto.ProductDTO;
 import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.service.LawyerService;
+import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
-
+import com.soldesk.team_project.service.PythonService;
 import lombok.RequiredArgsConstructor;
+import com.soldesk.team_project.dto.MemberDTO;
+import com.soldesk.team_project.entity.*;
+import com.soldesk.team_project.repository.*;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.UserMasterEntity;
+import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.repository.UserMasterRepository;
+
+
 
 @Controller
 @RequestMapping("member")
@@ -22,7 +47,31 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
     private final PurchaseService purchaseService;
-    
+    private final PythonService pythonService;
+
+    private final MemberService memberService;
+    private final LawyerService lawyerService;
+
+    private final UserMasterRepository userMasterRepository;
+    private final MemberRepository memberRepository;
+    private final LawyerRepository lawyerRepository;
+    private final AdminRepository adminRepository;
+    private final InterestRepository interestRepository; // 로이어 관심 1개를 조인으로 세팅할 때 사용
+    private final PasswordEncoder passwordEncoder;
+
+
+    // 임시 로그인
+    @GetMapping("/loginTemp")
+    public String loginTemp() {
+
+        return "member/loginTemp";
+    }
+    @PostMapping("/loginTemp")
+    public String loginTempVerify() {
+
+        return "redirect:/";
+    }
+
     // 멤버 포인트
     @GetMapping("/point")
     public String pointMain(Model model) {
@@ -54,4 +103,341 @@ public class MemberController {
         return "payment/checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
     }
 
+    @GetMapping("/testOCR") 
+    public String testOCR(Model model) {
+
+        LawyerDTO lawyerDTO = new LawyerDTO();
+        lawyerDTO.setLawyerAuth(0);
+        model.addAttribute("lawyerAuth", new LawyerDTO());
+
+        return "member/testOCR";
+    }
+    @PostMapping("/verify-license")
+    @ResponseBody
+    public Map<String, Object> verifyLicense(
+        @RequestParam("licenseNumber") String licenseNumber,
+        @RequestParam("licenseImage") MultipartFile licenseImage) {
+
+        Map<String, Object> result = new HashMap<>();     
+
+        try {
+            // 1. 업로드된 파일을 임시 경로에 저장
+            File tempFile = File.createTempFile("license_", ".jpg");
+            licenseImage.transferTo(tempFile);
+
+            // 2. OCR 스크립트 실행
+            Map<String, Object> ocrResult = pythonService.runPythonOCR("ocr.py", tempFile.toString());
+            if (!(boolean) ocrResult.getOrDefault("valid", false)) {
+                result.put("valid", false);
+                result.put("error", ocrResult.get("error"));
+                return result;
+            }
+
+            // 3. 출력값과 일치하는지 확인
+            List<String> ocrTexts = (List<String>) ocrResult.get("texts");
+            boolean matched = ocrTexts.stream().anyMatch(text -> text.contains(licenseNumber));
+
+            // 4. 결과 전달, 임시파일 삭제
+            result.put("valid", matched);
+            result.put("message", matched ? "자격번호 일치!" : "자격번호 불일치!");
+            result.put("ocrTexts", ocrTexts); // 테스트할때만 출력
+            tempFile.delete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("valid", false);
+            result.put("error", "검증 과정 중 오류 발생: " + e.getMessage());
+        }
+
+        return result;
+    }
+    
+    // 로그인 / 로그아웃
+    @GetMapping("/login")
+    public String loginForm() { return "member/login"; }
+
+    @PostMapping("/login")
+    public String loginSubmit(@ModelAttribute("loginConfirmMember") MemberDTO loginConfirmMember,
+                              HttpSession session) {
+        String userId = loginConfirmMember.getMemberId();
+        String rawPw  = loginConfirmMember.getMemberPass();
+
+        UserMasterEntity u = userMasterRepository.findByUserId(userId)
+                .filter(x -> passwordEncoder.matches(rawPw, x.getPassword()))
+                .orElse(null);
+        if (u == null) return "redirect:/member/login?error";
+
+        // 공통 세션
+        String role = roleUpper(u.getRole());
+        SessionUser su = new SessionUser(u.getUserIdx(), safe(u.getUserId()), role,
+                u.getMemberIdx(), u.getLawyerIdx(), u.getAdminIdx());
+        session.setAttribute("loginUser", su);
+
+        // 프로필 세션
+        switch (role) {
+            case "MEMBER" -> {
+                if (su.memberIdx != null) {
+                    memberRepository.findById(su.memberIdx).ifPresent(me -> {
+                        MemberSession ms = new MemberSession(
+                                me.getMemberIdx(), me.getMemberId(), me.getMemberName(),
+                                me.getMemberEmail(), me.getMemberPhone(), me.getMemberNickname(),
+                                me.getInterestIdx1(), me.getInterestIdx2(), me.getInterestIdx3()
+                        );
+                        session.setAttribute("loginMember", ms);
+                    });
+                }
+            }
+            case "LAWYER" -> {
+                if (su.lawyerIdx != null) {
+                    lawyerRepository.findById(su.lawyerIdx).ifPresent(le -> {
+                        LawyerSession ls = new LawyerSession(
+                                le.getLawyerIdx(), le.getLawyerId(), le.getLawyerName(),
+                                le.getLawyerEmail(), le.getLawyerPhone(), le.getInterestIdx()
+                        );
+                        session.setAttribute("loginLawyer", ls);
+                    });
+                }
+            }
+            case "ADMIN" -> {
+                if (su.adminIdx != null) {
+                    adminRepository.findById(su.adminIdx).ifPresent(ad -> {
+                        AdminSession as = new AdminSession(
+                                ad.getAdminIdx(), ad.getAdminId(), ad.getAdminName(),
+                                ad.getAdminEmail(), ad.getAdminPhone()
+                        );
+                        session.setAttribute("loginAdmin", as);
+                    });
+                }
+            }
+        }
+        session.setMaxInactiveInterval(60 * 60); // 1시간
+        return "redirect:/";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/member/login";
+    }
+
+    // 회원가입 페이지 + 마이페이지
+    @GetMapping("/join/type")
+    public String joinType() { return "member/joinType"; }
+
+    @GetMapping({"/join/normal", "/joinNormal"})
+    public String joinNormalForm() { return "member/joinNormal"; }
+
+    @GetMapping({"/join/lawyer", "/lawyer/join"})
+    public String joinLawyerForm() { return "lawyer/join"; }
+
+    @GetMapping("/mypage")
+    public String mypage(@SessionAttribute(value = "loginUser", required = false) SessionUser loginUser,
+                         Model model) {
+        if (loginUser == null) return "redirect:/member/login";
+        model.addAttribute("loginUser", loginUser);
+        return switch (loginUser.role) {
+            case "MEMBER" -> "member/mypage";
+            case "LAWYER" -> "lawyer/mypage";
+            case "ADMIN"  -> "admin/mypage";
+            default -> "redirect:/member/login";
+        };
+    }
+
+    // ===== 공통 API =====
+    @GetMapping("/api/checkId")
+    @ResponseBody
+    public String checkId(@RequestParam String memberId) {
+        return memberService.isUserIdDuplicate(memberId) ? "DUP" : "OK";
+    }
+
+    // 일반 회원가입 → MemberService
+    @PostMapping("/api/join/normal")
+    @Transactional
+    public String joinNormal(@ModelAttribute MemberDTO dto, RedirectAttributes ra) {
+        try {
+            memberService.joinNormal(dto);
+            return "redirect:/member/login?joined";
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/member/join/normal";
+        }
+    }
+
+    // 변호사 회원가입 → LawyerService
+    @PostMapping("/api/join/lawyer")
+    @Transactional
+    public String joinLawyer(@ModelAttribute LawyerDTO dto, RedirectAttributes ra) {
+        try {
+            lawyerService.joinFromPortal(dto);
+            return "redirect:/member/login?joined";
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/member/join/lawyer";
+        }
+    }
+
+    // 일반회원 프로필 수정 → MemberService
+    @PostMapping("/api/updateProfile")
+    @Transactional
+    public String updateProfileMember(@ModelAttribute MemberDTO dto,
+                                      @RequestParam(required = false) String newPassword,
+                                      @RequestParam(required = false) String confirmPassword,
+                                      @SessionAttribute(value = "loginUser", required = false) SessionUser loginUser,
+                                      HttpSession session,
+                                      RedirectAttributes ra) {
+        if (loginUser == null || !"MEMBER".equalsIgnoreCase(loginUser.role)) {
+            return "redirect:/member/login";
+        }
+        if (loginUser.memberIdx == null ||
+           (dto.getMemberIdx() != null && !loginUser.memberIdx.equals(dto.getMemberIdx()))) {
+            return "redirect:/member/login";
+        }
+
+        try {
+            var result = memberService.updateMemberProfile(dto, newPassword, confirmPassword,
+                                                           loginUser.userIdx, loginUser.memberIdx);
+
+            // 세션 갱신
+            loginUser.userId = result.newUserId();
+            session.setAttribute("loginUser", loginUser);
+
+            Object msObj = session.getAttribute("loginMember");
+            if (msObj instanceof MemberSession ms) {
+                MemberEntity me = result.member();
+                ms.memberId = me.getMemberId();
+                ms.memberEmail = me.getMemberEmail();
+                ms.memberNickname = me.getMemberNickname();
+                ms.interestIdx1 = me.getInterestIdx1();
+                ms.interestIdx2 = me.getInterestIdx2();
+                ms.interestIdx3 = me.getInterestIdx3();
+                session.setAttribute("loginMember", ms);
+            }
+
+            ra.addFlashAttribute("updated", true);
+            return "redirect:/member/mypage";
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/member/mypage";
+        }
+    }
+
+    // 변호사 프로필 수정 → LawyerService
+    @PostMapping("/api/updateProfileLawyer")
+    @Transactional
+    public String updateProfileLawyer(@ModelAttribute LawyerDTO dto,
+                                      @RequestParam(required = false) String newPassword,
+                                      @RequestParam(required = false) String confirmPassword,
+                                      @SessionAttribute(value = "loginUser", required = false) SessionUser loginUser,
+                                      HttpSession session,
+                                      RedirectAttributes ra) {
+        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.role)) {
+            return "redirect:/member/login";
+        }
+        if (loginUser.lawyerIdx == null ||
+           (dto.getLawyerIdx() != null && !loginUser.lawyerIdx.equals(dto.getLawyerIdx()))) {
+            return "redirect:/member/login";
+        }
+
+        try {
+            var result = lawyerService.updateProfileFromPortal(dto, newPassword, confirmPassword,
+                                                               loginUser.userIdx, loginUser.lawyerIdx);
+
+            // 세션 갱신
+            loginUser.userId = result.newUserId();
+            session.setAttribute("loginUser", loginUser);
+
+            Object lsObj = session.getAttribute("loginLawyer");
+            if (lsObj instanceof LawyerSession ls) {
+                LawyerEntity le = result.lawyer();
+                ls.lawyerId = le.getLawyerId();
+                ls.lawyerEmail = le.getLawyerEmail();
+                ls.interestIdx = le.getInterestIdx();
+                session.setAttribute("loginLawyer", ls);
+            }
+
+            ra.addFlashAttribute("updated", true);
+            return "redirect:/member/mypage";
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/member/mypage";
+        }
+    }
+
+    // 아이디 찾기 / 비밀번호 재설정 → MemberService
+    @PostMapping("/api/findId")
+    @ResponseBody
+    public String findId(@RequestParam String memberPhone,
+                         @RequestParam String memberIdnum) {
+        return memberService.findId(memberPhone, memberIdnum);
+    }
+
+    @PostMapping("/api/resetPw")
+    @ResponseBody
+    @Transactional
+    public String resetPw(@RequestParam String memberId,
+                          @RequestParam String memberPhone,
+                          @RequestParam String memberIdnum,
+                          @RequestParam String newPassword,
+                          @RequestParam String confirmPassword) {
+        return memberService.resetPassword(memberId, memberPhone, memberIdnum, newPassword, confirmPassword);
+    }
+
+    // 내부 유틸/세션 DTO
+    private static String roleUpper(String s){ return s == null ? "" : s.toUpperCase(); }
+    private static String safe(String s) { return s == null ? "" : s; }
+
+    public static class SessionUser {
+        public Long userIdx;
+        public String userId;
+        public String role; // MEMBER/LAWYER/ADMIN
+        public Integer memberIdx;
+        public Integer lawyerIdx;
+        public Integer adminIdx;
+        public SessionUser(Long userIdx, String userId, String role,
+                           Integer memberIdx, Integer lawyerIdx, Integer adminIdx) {
+            this.userIdx = userIdx; this.userId = userId; this.role = role;
+            this.memberIdx = memberIdx; this.lawyerIdx = lawyerIdx; this.adminIdx = adminIdx;
+        }
+    }
+    public static class MemberSession {
+        public Integer memberIdx;
+        public String memberId;
+        public String memberName;
+        public String memberEmail;
+        public String memberPhone;
+        public String memberNickname;
+        public Integer interestIdx1, interestIdx2, interestIdx3;
+        public MemberSession(Integer memberIdx, String memberId, String memberName, String memberEmail,
+                             String memberPhone, String memberNickname,
+                             Integer interestIdx1, Integer interestIdx2, Integer interestIdx3) {
+            this.memberIdx = memberIdx; this.memberId = memberId; this.memberName = memberName;
+            this.memberEmail = memberEmail; this.memberPhone = memberPhone; this.memberNickname = memberNickname;
+            this.interestIdx1 = interestIdx1; this.interestIdx2 = interestIdx2; this.interestIdx3 = interestIdx3;
+        }
+    }
+    public static class LawyerSession {
+        public Integer lawyerIdx;
+        public String lawyerId;
+        public String lawyerName;
+        public String lawyerEmail;
+        public String lawyerPhone;
+        public Integer interestIdx;
+        public LawyerSession(Integer lawyerIdx, String lawyerId, String lawyerName, String lawyerEmail,
+                             String lawyerPhone, Integer interestIdx) {
+            this.lawyerIdx = lawyerIdx; this.lawyerId = lawyerId; this.lawyerName = lawyerName;
+            this.lawyerEmail = lawyerEmail; this.lawyerPhone = lawyerPhone; this.interestIdx = interestIdx;
+        }
+    }
+    public static class AdminSession {
+        public Integer adminIdx;
+        public String adminId;
+        public String adminName;
+        public String adminEmail;
+        public String adminPhone;
+        public AdminSession(Integer adminIdx, String adminId, String adminName,
+                            String adminEmail, String adminPhone) {
+            this.adminIdx = adminIdx; this.adminId = adminId; this.adminName = adminName;
+            this.adminEmail = adminEmail; this.adminPhone = adminPhone;
+        }
+    }
 }

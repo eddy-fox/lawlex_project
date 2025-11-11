@@ -71,7 +71,7 @@ public class BoardController {
             return "write";
         }
         MemberEntity memberEntity = this.memberService.getMember(principal.getName());
-        this.boardService.create(boardForm.getBoard_title(), boardForm.getBoard_content(), memberEntity);
+        this.boardService.create(boardForm.getBoardTitle(), boardForm.getBoardContent(), memberEntity);
         return "redirect:/board/list";
 
     }
@@ -85,10 +85,10 @@ public class BoardController {
             return "write";
         }
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        if(!boardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        this.boardService.modify(boardEntity, boardForm.getBoard_title(), boardForm.getBoard_content());
+        this.boardService.modify(boardEntity, boardForm.getBoardTitle(), boardForm.getBoardContent());
         return String.format("redirect:/board/detail/%s", id);
 
     }
@@ -98,7 +98,7 @@ public class BoardController {
     public String boardDelete(Principal principal, @PathVariable("id") Integer id) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        if(!boardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.boardService.delete(boardEntity);

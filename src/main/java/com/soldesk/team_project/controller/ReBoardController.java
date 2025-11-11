@@ -46,7 +46,7 @@ public class ReBoardController {
             model.addAttribute("boardEntity", memberEntity);
             return "question_detail";
         }
-        ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboard_content(), memberEntity);
+        ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboardContent(), memberEntity);
         return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
@@ -57,10 +57,10 @@ public class ReBoardController {
     Principal principal) {
 
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        if(!reboardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        reboardForm.setReboard_content(reboardEntity.getReboardContent());
+        reboardForm.setReboardContent(reboardEntity.getReboardContent());
         return "answer_form";
         
     }
@@ -74,10 +74,10 @@ public class ReBoardController {
             return "answer_form";
         }
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        if(!reboardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        this.reboardService.modify(reboardEntity, reboardForm.getReboard_content());
+        this.reboardService.modify(reboardEntity, reboardForm.getReboardContent());
         return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
@@ -87,7 +87,7 @@ public class ReBoardController {
     public String reboardDelete(Principal principal, @PathVariable("id") Integer id) {
 
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        if(!reboardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.reboardService.delete(reboardEntity);
