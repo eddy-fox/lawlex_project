@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>채팅아이콘</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
   <div class="page-chatIcon" th:fragment="page-chatIcon">
@@ -26,7 +26,7 @@
       <div class="list" role="list">
         <div class="item" role="listitem" data-status="live" data-unread="true">
           <div class="pico">
-            <img src="img/avatar-01.jpg" alt="김가람 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="김가람 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -39,7 +39,7 @@
         </div>
         <div class="item" role="listitem" data-status="live" data-unread="true">
           <div class="pico">
-            <img src="img/avatar-02.jpg" alt="박서준 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="박서준 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -52,7 +52,7 @@
         </div>
         <div class="item" role="listitem" data-status="live" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-03.jpg" alt="이다연 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="이다연 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -65,7 +65,7 @@
         </div>
         <div class="item" role="listitem" data-status="live" data-unread="true">
           <div class="pico">
-            <img src="img/avatar-04.jpg" alt="최민호 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="최민호 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -78,7 +78,7 @@
         </div>
         <div class="item" role="listitem" data-status="wait" data-unread="true">
           <div class="pico">
-            <img src="img/avatar-05.jpg" alt="정유진 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="정유진 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -91,7 +91,7 @@
         </div>
         <div class="item" role="listitem" data-status="wait" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-06.jpg" alt="한지호 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="한지호 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -104,7 +104,7 @@
         </div>
         <div class="item" role="listitem" data-status="wait" data-unread="true">
           <div class="pico">
-            <img src="img/avatar-07.jpg" alt="오세린 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="오세린 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -117,7 +117,7 @@
         </div>
         <div class="item" role="listitem" data-status="wait" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-08.jpg" alt="유도현 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="유도현 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -130,7 +130,7 @@
         </div>
         <div class="item" role="listitem" data-status="end" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-09.jpg" alt="장예린 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="장예린 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -143,7 +143,7 @@
         </div>
         <div class="item" role="listitem" data-status="end" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-10.jpg" alt="신도윤 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="신도윤 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -156,7 +156,7 @@
         </div>
         <div class="item" role="listitem" data-status="end" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-11.jpg" alt="윤서아 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="윤서아 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -169,7 +169,7 @@
         </div>
         <div class="item" role="listitem" data-status="end" data-unread="false">
           <div class="pico">
-            <img src="img/avatar-12.jpg" alt="배현우 변호사">
+            <img th:src="@{/img/testavatar.png}" alt="배현우 변호사">
           </div>
           <a href="#" class="meta">
             <div class="row">
@@ -183,6 +183,6 @@
       </div>
     </section>
   </div>
-    <script src="js.js"></script>
+    <script th:src="@{/js/js.js}"></script>
 </body>
 </html>
