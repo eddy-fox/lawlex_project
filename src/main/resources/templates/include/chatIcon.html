@@ -1,188 +1,244 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns="https://www.thymeleaf.org">
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>채팅아이콘</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+  <meta charset="UTF-8">
+  <title>chat icon</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-  <div class="page-chatIcon" th:fragment="page-chatIcon">
-    <button class="icon" aria-expanded="false" aria-label="채팅 목록 열기">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M20 16c0 1.1-.9 2-2 2H9l-5 4V6c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
-        <path d="M8 8.5h8M8 11h8M8 13.5h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
-      </svg>
-      <span class="badge">7</span>
-    </button>
-    <section class="panel" hidden>
-      <div class="tabs" role="tablist">
-        <div class="tab is-active" data-filter="all" aria-selected="true">전체 <span class="cnt-all">0</span></div>
-        <div class="tab" data-filter="live" aria-selected="false">상담중 <span class="cnt-live">0</span></div>
-        <div class="tab" data-filter="wait" aria-selected="false">대기중 <span class="cnt-wait">0</span></div>
-        <div class="tab" data-filter="end" aria-selected="false">종료 <span class="cnt-end">0</span></div>
-        <span class="sp total-label"></span>
+<!-- 로그인 했을 때만 아이콘 보이게 -->
+<div class="page-chatIcon"
+     th:fragment="page-chatIcon"
+     th:if="${session.loginMember != null or session.loginLawyer != null}">
+
+  <!-- 버튼: role 담아두기 -->
+  <button class="icon"
+          id="chatIconBtn"
+          aria-expanded="false"
+          th:data-role="${session.loginMember != null} ? 'MEMBER' : 'LAWYER'"
+          th:aria-label="${session.loginMember != null} ? '채팅 목록 열기' : '상담 메인으로 이동'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 16c0 1.1-.9 2-2 2H9l-5 4V6c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10z"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+      <path d="M8 8.5h8M8 11h8M8 13.5h6"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+    </svg>
+    <span class="badge" id="chatBadge" hidden>0</span>
+  </button>
+
+  <!-- 회원일 때만 나오는 패널 -->
+  <section class="panel"
+           id="chatPanel"
+           th:if="${session.loginMember != null}"
+           hidden>
+    <div class="tabs" role="tablist">
+      <div class="tab is-active" data-filter="all" aria-selected="true">
+        전체 <span class="cnt-all">0</span>
       </div>
-      <div class="list" role="list">
-        <div class="item" role="listitem" data-status="live" data-unread="true">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="김가람 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>김가람 변호사</b>
-              <span class="stamp">오늘 14:22</span>
-            </div>
-            <div class="preview">자료 확인했습니다. 사건번호 공유해 주세요.</div>
-          </a>
-          <span class="label live">상담중</span>
-        </div>
-        <div class="item" role="listitem" data-status="live" data-unread="true">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="박서준 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>박서준 변호사</b>
-              <span class="stamp">오늘 13:58</span>
-            </div>
-            <div class="preview">통화 가능 시간 남겨주시면 맞춰 연락드릴게요.</div>
-          </a>
-          <span class="label live">상담중</span>
-        </div>
-        <div class="item" role="listitem" data-status="live" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="이다연 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>이다연 변호사</b>
-              <span class="stamp">오늘 12:40</span>
-            </div>
-            <div class="preview">합의서 초안 검토했고 수정 의견 드렸습니다.</div>
-          </a>
-          <span class="label live">상담중</span>
-        </div>
-        <div class="item" role="listitem" data-status="live" data-unread="true">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="최민호 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>최민호 변호사</b>
-              <span class="stamp">오늘 11:55</span>
-            </div>
-            <div class="preview">증빙 서류 3건 업로드 부탁드립니다.</div>
-          </a>
-          <span class="label live">상담중</span>
-        </div>
-        <div class="item" role="listitem" data-status="wait" data-unread="true">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="정유진 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>정유진 변호사</b>
-              <span class="stamp">오늘 10:41</span>
-            </div>
-            <div class="preview">시간 되실 때 채팅 재개 부탁드립니다.</div>
-          </a>
-          <span class="label wait">대기중</span>
-        </div>
-        <div class="item" role="listitem" data-status="wait" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="한지호 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>한지호 변호사</b>
-              <span class="stamp">오늘 09:30</span>
-            </div>
-            <div class="preview">추가 질문 있으시면 남겨 주세요.</div>
-          </a>
-          <span class="label wait">대기중</span>
-        </div>
-        <div class="item" role="listitem" data-status="wait" data-unread="true">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="오세린 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>오세린 변호사</b>
-              <span class="stamp">어제 19:03</span>
-            </div>
-            <div class="preview">내일 오후 미팅 가능하십니다.</div>
-          </a>
-          <span class="label wait">대기중</span>
-        </div>
-        <div class="item" role="listitem" data-status="wait" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="유도현 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>유도현 변호사</b>
-              <span class="stamp">어제 17:20</span>
-            </div>
-            <div class="preview">사건 개요를 간단히 정리해 주시면 좋겠습니다.</div>
-          </a>
-          <span class="label wait">대기중</span>
-        </div>
-        <div class="item" role="listitem" data-status="end" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="장예린 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>장예린 변호사</b>
-              <span class="stamp">어제 16:20</span>
-            </div>
-            <div class="preview">확인 감사합니다. 접수 완료되었습니다.</div>
-          </a>
-          <span class="label end">종료</span>
-        </div>
-        <div class="item" role="listitem" data-status="end" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="신도윤 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>신도윤 변호사</b>
-              <span class="stamp">어제 14:10</span>
-            </div>
-            <div class="preview">필요 문서 모두 수령했습니다.</div>
-          </a>
-          <span class="label end">종료</span>
-        </div>
-        <div class="item" role="listitem" data-status="end" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="윤서아 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>윤서아 변호사</b>
-              <span class="stamp">어제 09:55</span>
-            </div>
-            <div class="preview">진행 마무리되었고 자료 보관 처리했습니다.</div>
-          </a>
-          <span class="label end">종료</span>
-        </div>
-        <div class="item" role="listitem" data-status="end" data-unread="false">
-          <div class="pico">
-            <img th:src="@{/img/testavatar.png}" alt="배현우 변호사">
-          </div>
-          <a href="#" class="meta">
-            <div class="row">
-              <b>배현우 변호사</b>
-              <span class="stamp">2일 전 18:12</span>
-            </div>
-            <div class="preview">추가 문의 시 새 상담으로 남겨 주세요.</div>
-          </a>
-          <span class="label end">종료</span>
-        </div>
+      <div class="tab" data-filter="live" aria-selected="false">
+        상담중 <span class="cnt-live">0</span>
       </div>
-    </section>
-  </div>
-    <script th:src="@{/js/js.js}"></script>
+      <div class="tab" data-filter="wait" aria-selected="false">
+        대기중 <span class="cnt-wait">0</span>
+      </div>
+      <div class="tab" data-filter="end" aria-selected="false">
+        종료 <span class="cnt-end">0</span>
+      </div>
+      <span class="sp total-label">총 0건</span>
+    </div>
+    <div class="list" id="chatList" role="list">
+      <p class="empty">채팅방이 없습니다.</p>
+    </div>
+  </section>
+</div>
+
+<!-- 이 스크립트는 style.css에 있는 기존 chatIcon JS 대신 써 -->
+<script>
+(function () {
+  var root = document.querySelector('.page-chatIcon');
+  if (!root) return;
+
+  var btn      = root.querySelector('.icon');
+  var panel    = root.querySelector('#chatPanel');
+  var list     = root.querySelector('#chatList');
+  var badge    = root.querySelector('#chatBadge');
+  var role     = btn ? btn.dataset.role : null; // MEMBER | LAWYER
+
+  // 상태 문자열 → 네 패널에서 쓰는 data-status 값으로 변환
+  function toStatus(state) {
+    if (!state) return 'wait';
+    state = state.toUpperCase();
+    if (state === 'ACTIVE') return 'live';
+    if (state === 'PENDING') return 'wait';
+    // 그 외 DECLINED, EXPIRED, CANCELLED 등은 종료로
+    return 'end';
+  }
+
+  // 리스트 비우고 다시 그리기
+  function renderRooms(rooms) {
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!rooms || rooms.length === 0) {
+      list.innerHTML = '<p class="empty">채팅방이 없습니다.</p>';
+      updateCounts([]);
+      return;
+    }
+
+    rooms.forEach(function (room) {
+      var st = toStatus(room.state);
+      var item = document.createElement('div');
+      item.className = 'item';
+      item.setAttribute('role', 'listitem');
+      item.dataset.status = st;
+      item.dataset.unread = 'false'; // 서버에서 안 줘서 일단 false
+
+      item.innerHTML =
+        '<div class="pico">' +
+          '<img src="/img/testavatar.png" alt="프로필">' +
+        '</div>' +
+        '<a class="meta">' +
+          '<div class="row">' +
+            '<b>' + (room.chatroomName || '상담방') + '</b>' +
+            '<span class="stamp">' + (room.lastMessageAt || '') + '</span>' +
+          '</div>' +
+          '<div class="preview">' + (room.lastMessage || '') + '</div>' +
+        '</a>' +
+        '<span class="label ' + st + '">' +
+          (st === 'live' ? '상담중' : st === 'wait' ? '대기중' : '종료') +
+        '</span>';
+
+      item.addEventListener('click', function () {
+        window.location.href = '/chat/room?roomId=' + room.chatroomIdx;
+      });
+
+      list.appendChild(item);
+    });
+
+    updateCounts(rooms);
+  }
+
+  // 탭 숫자 갱신
+  function updateCounts(rooms) {
+    var all  = rooms.length;
+    var live = rooms.filter(function (r) { return toStatus(r.state) === 'live'; }).length;
+    var wait = rooms.filter(function (r) { return toStatus(r.state) === 'wait'; }).length;
+    var end  = rooms.filter(function (r) { return toStatus(r.state) === 'end'; }).length;
+
+    var elAll   = root.querySelector('.cnt-all');
+    var elLive  = root.querySelector('.cnt-live');
+    var elWait  = root.querySelector('.cnt-wait');
+    var elEnd   = root.querySelector('.cnt-end');
+    var elTotal = root.querySelector('.total-label');
+
+    if (elAll)   elAll.textContent = all;
+    if (elLive)  elLive.textContent = live;
+    if (elWait)  elWait.textContent = wait;
+    if (elEnd)   elEnd.textContent  = end;
+    if (elTotal) elTotal.textContent = '총 ' + all + '건';
+  }
+
+  // 필터 적용
+  function applyFilter(filter) {
+    if (!list) return;
+    var items = list.querySelectorAll('.item');
+    items.forEach(function (it) {
+      var st = it.dataset.status;
+      if (filter === 'all' || filter === st) {
+        it.style.display = '';
+      } else {
+        it.style.display = 'none';
+      }
+    });
+    root.setAttribute('data-view', filter);
+  }
+
+  // 탭 클릭
+  root.addEventListener('click', function (e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    if (!panel || panel.hidden) return; // 닫혀있으면 무시
+    root.querySelectorAll('.tab').forEach(function (t) {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('is-active');
+    tab.setAttribute('aria-selected', 'true');
+    applyFilter(tab.dataset.filter);
+  });
+
+  // 패널 열기/닫기
+  function togglePanel(open) {
+    if (!panel) return;
+    panel.hidden = !open;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  // 외부 클릭시 닫기
+  document.addEventListener('click', function (e) {
+    if (!panel || panel.hidden) return;
+    if (!root.contains(e.target)) {
+      togglePanel(false);
+    }
+  });
+
+  // ESC 닫기
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      togglePanel(false);
+    }
+  });
+
+  // 버튼 클릭 동작
+  btn.addEventListener('click', function () {
+    if (role === 'LAWYER') {
+      // 변호사는 리스트 안 쓰고 바로 메인으로
+      window.location.href = '/chat/lawyer';
+      return;
+    }
+    // 회원이면 패널 토글 + 열릴 때 방 목록 불러오기
+    var willOpen = panel.hidden;
+    togglePanel(willOpen);
+    if (willOpen) {
+      fetch('/chat/api/member/rooms')
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rooms) {
+          renderRooms(rooms);
+          // 열릴 때는 기본 필터 all
+          applyFilter('all');
+        })
+        .catch(function () { /* 실패해도 조용히 */ });
+    }
+  });
+
+  // 처음에 뱃지 숫자만 채우기
+  if (role === 'MEMBER') {
+    fetch('/chat/api/member/rooms/badge')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        var count = (data.unread || 0) + (data.pending || 0);
+        if (count > 0) {
+          badge.textContent = count;
+          badge.hidden = false;
+        }
+      })
+      .catch(function () {});
+  } else if (role === 'LAWYER') {
+    // 변호사는 대기중(PENDING)만 뱃지로
+    fetch('/chat/api/lawyer/badge')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        var count = (data.pending || 0);
+        if (count > 0) {
+          badge.textContent = count;
+          badge.hidden = false;
+        }
+      })
+      .catch(function () {});
+  }
+})();
+</script>
 </body>
 </html>

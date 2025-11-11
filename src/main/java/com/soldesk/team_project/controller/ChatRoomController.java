@@ -30,21 +30,35 @@ public class ChatRoomController {
 
     /* ===================== 공통: 방 입장/읽음/비활성 ===================== */
 
-    /** 채팅방 화면: 초기 진입 시 최신 N개를 먼저 내려주고, 이후부터는 커서 API로 추가 로딩 */
+    /**
+     * 채팅방 화면
+     * - 변호사 로그인 → chat/lChating.html
+     * - 일반회원 로그인 → chat/gChating.html
+     */
     @GetMapping("/room")
     public String room(@RequestParam Integer roomId,
                        @RequestParam(defaultValue = "50") int size,
                        Model model,
+                       @SessionAttribute(value = "loginMember", required = false) MemberDTO loginMember,
+                       @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer,
                        HttpServletResponse resp) throws Exception {
+
         ChatRoomDTO room = chatroomService.getRoom(roomId);
         if (room == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "존재하지 않는 채팅방");
             return null;
         }
+
         List<ChatdataDTO> initBatch = chatDataService.loadLatestBatch(roomId, size); // ASC로 반환
-        model.addAttribute("room",      room);
+        model.addAttribute("room", room);
         model.addAttribute("initBatch", initBatch);
-        return "chat/room";
+
+        // 변호사/회원에 따라 다른 템플릿
+        if (loginLawyer != null) {
+            return "chat/lChating";   // templates/chat/lChating.html
+        } else {
+            return "chat/gChating";   // templates/chat/gChating.html
+        }
     }
 
     /** 읽음 시각 갱신 (who = MEMBER | LAWYER) */
@@ -64,10 +78,6 @@ public class ChatRoomController {
 
     /* ===================== 커서 기반 히스토리 API ===================== */
 
-    /**
-     * 최초: /api/room/history?roomId=1&size=50 (beforeId 없음) → 최신 50개(ASC)
-     * 추가: /api/room/history?roomId=1&beforeId={맨위 chatIdx}&size=50 → 이전 50개(ASC)
-     */
     @GetMapping("/api/room/history")
     @ResponseBody
     public List<ChatdataDTO> history(@RequestParam Integer roomId,
@@ -81,7 +91,7 @@ public class ChatRoomController {
 
     /* ===================== 일반회원: 메인(변호사 카드) & 신청 ===================== */
 
-    /** 일반회원 메인: 요일/시간 기준 변호사 카드만 표시 (내 방 목록은 헤더 Ajax로) */
+    /** 일반회원 메인 */
     @GetMapping("/member")
     public String memberMain(@RequestParam(name = "dow", required = false) Integer dow,            // 0=Mon..6=Sun
                              @RequestParam(name = "duration", defaultValue = "60") int duration,   // 30 or 60
@@ -98,17 +108,13 @@ public class ChatRoomController {
         }
         model.addAttribute("selectedDow", dow);
         model.addAttribute("duration",    duration);
+        // 이 메서드는 네가 calendarService에 만든 이름과 맞춰야 한다
         model.addAttribute("lawyers", calendarService.listLawyersForDayAsMap(dow));
 
-        return "chat/member-main";
+        return "chat/gMain"; // templates/chat/gMain.html
     }
 
-    /**
-     * 회원 → 변호사 채팅 신청
-     * - durationMinutes: 30분(100P) 또는 60분(200P)
-     * - 마감 1시간 전/가능 시간대 검증은 calendarService.canRequestNow
-     * - 포인트 차감은 수락 시점(accept)에서 처리
-     */
+    /** 회원 → 변호사 채팅 신청 */
     @PostMapping("/request")
     public String requestChat(@RequestParam Integer lawyerIdx,
                               @RequestParam Integer durationMinutes, // 30 or 60
@@ -155,7 +161,7 @@ public class ChatRoomController {
 
     /* ===================== 변호사: 메인(대기/진행/종료) & 수락/거절 ===================== */
 
-    /** 헤더 뱃지 클릭 → 변호사 메인 페이지 */
+    /** 변호사 메인 페이지 */
     @GetMapping("/lawyer")
     public String lawyerMain(Model model,
                              @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer,
@@ -177,10 +183,10 @@ public class ChatRoomController {
         model.addAttribute("badge",
                 chatroomService.getLawyerRoomBadges(lawyerIdx));
 
-        return "chat/lawyer-main";
+        return "chat/lawyerMain"; // templates/chat/lawyerMain.html
     }
 
-    /** 대기중 상담 수락 (수락 시 포인트 차감 + expiresAt 설정) */
+    /** 대기중 상담 수락 */
     @PostMapping("/lawyer/accept")
     public String accept(@RequestParam Integer roomId,
                          @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer,

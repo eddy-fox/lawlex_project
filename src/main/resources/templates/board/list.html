@@ -28,6 +28,7 @@
               </tr>
             </thead>
             <tbody id="tbody">
+<<<<<<< HEAD
               <tr class="text-center" th:each="board, loop : ${paging}">
                 <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
                 <td class="text-start">
@@ -35,6 +36,20 @@
                 </td>
               </tr>
             </tbody> 
+=======
+              <tr class="text-center" th:each="boardEntity, loop : ${paging}">
+                <td th:text="${boardEntity.boardIdx}"></td>
+                <td class="text-start">
+                  <a th:href="@{|/board/detail/${boardEntity.boardIdx}|}" th:text="${boardEntity.boardTitle}"></a>
+                  <span class="text-danger small ms-2"
+                  th:if="${#lists.size(boardEntity.reboardList) > 0}"
+                  th:text="${#lists.size(boardEntity.reboardList)}"></span>
+                </td>
+                <td th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${boardEntity.boardViews}"></td>
+              </tr>
+            </tbody>
+>>>>>>> main
           </table>
 
           <div class="below">

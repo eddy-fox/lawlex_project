@@ -1,16 +1,14 @@
 package com.soldesk.team_project.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soldesk.team_project.DataNotFoundException;
-import com.soldesk.team_project.dto.ReboardDTO;
 import com.soldesk.team_project.entity.BoardEntity;
-import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.repository.ReBoardRepository;
 
@@ -23,12 +21,16 @@ public class ReBoardService {
     private final ReBoardRepository reboardRepository;
     private final PythonService pythonService;
 
-    public ReBoardEntity create(BoardEntity board, String content, MemberEntity author) {
+    public ReBoardEntity create(BoardEntity board, String content, LawyerEntity lawyer) {
 
         ReBoardEntity reboard = new ReBoardEntity();
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
         reboard.setBoard(board);
+<<<<<<< HEAD
+=======
+        reboard.setLawyer(lawyer);
+>>>>>>> main
         this.reboardRepository.save(reboard);
         return reboard;
 
@@ -73,10 +75,9 @@ public class ReBoardService {
 
             // 답변 게시글 생성            
             ReBoardEntity reboardEntity = new ReBoardEntity();
-            reboardEntity.setBoardIdx(boardEntity.getBoardIdx());
+            reboardEntity.setReboardIdx(boardEntity.getBoardIdx());
             reboardEntity.setReboardTitle("GPT가 작성한 답변입니다.");
             reboardEntity.setReboardContent(answer);
-            reboardEntity.setLawyerIdx(0);
 
             reboardRepository.save(reboardEntity);
 
@@ -84,7 +85,11 @@ public class ReBoardService {
     //         e.printStackTrace();
     //     }
 
+<<<<<<< HEAD
 
     // }
+=======
+    }
+>>>>>>> main
     
 }
