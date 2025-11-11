@@ -5,33 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>일반회원챗</title>
     <link rel="stylesheet" th:href="@{/css/gChating.css}">
-  <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
+<div class="include" th:replace="~{include/header :: header}"></div>
+
 <main class="page-gChating">
   <div class="container">
+
+    <!-- JS가 쓸 숨겨진 값들 -->
+    <input type="hidden" id="roomId" th:value="${room.chatroomIdx}">
+    <input type="hidden" id="senderType" value="MEMBER">
+    <input type="hidden" id="senderId" th:value="${loginMember.memberIdx}">
+    <input type="hidden" id="expiresAt" th:value="${room.expiresAt}">
+
     <section class="room" aria-label="채팅방">
       <header class="head">
         <img src="" class="pic" alt="프로필">
-        <div class="info"><div class="name">000변호사</div><div class="timewin">상담가능시간 : 월,수 오전 11:00 - 오후 5:00</div></div>
-        <div class="badges"><span class="remain" id="remainTime">남은시간 14:22</span></div>
+        <div class="info">
+          <!-- 방 이름이 변호사 이름에 가까울 거라고 가정 -->
+          <div class="name" th:text="${room.chatroomName}">000변호사</div>
+          <!-- 상담가능시간은 일단 서버에서 안 주니까 방 이름 밑에 설명만 간단히 -->
+          <div class="timewin">
+            <!-- 필요하면 나중에 calendarService 결과로 교체 -->
+            상담 중입니다
+          </div>
+        </div>
+        <div class="badges">
+          <span class="remain" id="remainTime"
+                th:if="${room.expiresAt != null}"
+                th:text="'남은시간 계산중...'">남은시간 14:22</span>
+        </div>
       </header>
 
+      <!-- 메시지 영역 -->
       <div class="msgs" id="msgs">
-        <div style="text-align:center; margin:8px 0 2px;"><span class="daychip">10.13 (월)</span></div>
-        <div class="msg-row lawyer"><div class="bubble">안녕하세요 ***님. 어떤 내용으로 도와드릴까요?</div><div class="meta">오후 12:41</div></div>
-        <div class="divider-wrap"><div class="rule"></div>여기까지 읽었습니다<div class="rule"></div></div>
-        <div class="msg-row user"><div class="meta">오후 1:41</div><div class="bubble">안녕하세요 변호사님</div></div>
+        <!-- 입장 시점에 서버가 내려준 메시지들 뿌리기 -->
+        <div th:if="${initBatch != null}"
+             th:each="msg : ${initBatch}"
+             th:insert="~{::messageRow(msg=${msg}, loginMember=${loginMember})}"></div>
       </div>
 
+      <!-- 입력 영역 -->
       <div class="dock">
         <div class="previews" id="previews" aria-live="polite"></div>
         <div class="inputbar">
           <div class="toolbar">
-            <button class="icon-btn" id="btnUpload" title="사진 올리기" aria-label="사진 올리기">
+            <button class="icon-btn" id="btnUpload" title="사진 올리기" aria-label="사진 올리기" type="button">
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7a2 2 0 0 1 2-2h2.5l1-1h5l1 1H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z" fill="none" stroke="#5160a7" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M4 7a2 2 0 0 1 2-2h2.5l1-1h5l1 1H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"
+                      fill="none" stroke="#5160a7" stroke-width="1.6" stroke-linejoin="round" />
                 <circle cx="12" cy="13" r="3" fill="none" stroke="#5160a7" stroke-width="1.6" />
                 <path d="M12 8v-3M10.5 6.5h3" stroke="#5160a7" stroke-width="1.6" stroke-linecap="round" />
               </svg>
@@ -39,7 +62,7 @@
             <input type="file" id="fileUpload" class="sr-only" accept="image/*" multiple>
           </div>
           <textarea class="few" id="inputMsg" placeholder="메시지를 입력하세요"></textarea>
-          <button class="send" id="btnSend">보내기</button>
+          <button class="send" id="btnSend" type="button">보내기</button>
         </div>
       </div>
     </section>
@@ -56,8 +79,39 @@
     <button type="button" class="arrow next" id="btnNext" aria-label="다음">›</button>
   </aside>
 </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/gChating.js}"></script>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+<script th:src="@{/js/js.js}"></script>
+<script th:src="@{/js/gChating.js}"></script>
+
+<!-- ================== 메시지 한 줄 템플릿 ================== -->
+<th:block th:fragment="messageRow (msg, loginMember)">
+  <!-- 내가 보낸 건 오른쪽, 변호사가 보낸 건 왼쪽 -->
+  <div th:class="'msg-row ' + (${msg.senderType} == 'MEMBER' ? 'user' : 'lawyer')">
+    <!-- 내가 보낸 경우 시간 먼저 -->
+    <div th:if="${msg.senderType} == 'MEMBER'" class="meta"
+         th:text="${#temporals.format(msg.chatRegDate, 'HH:mm')}">오후 1:41</div>
+
+    <!-- 텍스트 버블 -->
+    <div th:if="${msg.chatContent != null}" class="bubble">
+      <div th:text="${msg.chatContent}">내용</div>
+    </div>
+
+    <!-- 상대가 보낸 경우 시간은 뒤에 -->
+    <div th:if="${msg.senderType} != 'MEMBER'" class="meta"
+         th:text="${#temporals.format(msg.chatRegDate, 'HH:mm')}">오후 1:41</div>
+
+    <!-- 첨부가 있을 때 -->
+    <div th:if="${msg.attachments != null and #lists.size(msg.attachments) > 0}" class="media">
+      <a th:each="att : ${msg.attachments}"
+         th:href="@{'/chat/attachment/' + ${att.attachmentId}}"
+         target="_blank">
+        <img th:src="@{'/chat/attachment/' + ${att.attachmentId}}"
+             th:alt="${att.fileName} ?: '첨부'" />
+      </a>
+    </div>
+  </div>
+</th:block>
+
 </body>
 </html>

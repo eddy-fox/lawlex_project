@@ -18,7 +18,7 @@
             <div class="inout">
                 <a th:href="@{/aAll}">개발용 모든 링크 모음</a>
                 <div> <!-- th:if="${loginMember != null}" 로그인 성공 -->
-                    <div class="page-chatIcon" th:replace="~{include/chatIcon :: page-chatIcon}"></div>
+                    <div th:replace="~{include/chatIcon :: page-chatIcon}"></div>
                     <a href="#">마이페이지</a>
                     <a href="#">로그아웃</a>
                     <a th:href="@{/admin/memberManagement}">관리자 페이지</a><!-- th:if="${loginMember.role == 'ADMIN'} 관리자로 로그인 한다면" -->
@@ -30,7 +30,24 @@
         </div>
         <nav class="main-menu">
             <a th:href="@{/board/list}">상담</a>
-            <a href="#">실시간 상담</a>
+            <!-- 로그인한 일반회원이면 → /chat/member -->
+            <a th:if="${session.loginMember != null}"
+            th:href="@{/chat/member}">
+            실시간 상담
+            </a>
+
+            <!-- 로그인한 변호사이면 → /chat/lawyer -->
+            <a th:if="${session.loginLawyer != null}"
+            th:href="@{/chat/lawyer}">
+            실시간 상담
+            </a>
+
+            <!-- 로그인 안 했으면 → 로그인 페이지로 -->
+            <a th:if="${session.loginMember == null and session.loginLawyer == null}"
+            th:href="@{/member/login}">
+            실시간 상담
+            </a>
+
             <a th:href="@{/newsBoard/main}">News</a>
             <a th:href="@{/rank/ranking}">랭킹</a>
             <a th:href="@{/question/faq}">문의</a>
