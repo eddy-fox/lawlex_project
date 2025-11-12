@@ -1,0 +1,40 @@
+@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+
+.page-qnaInfo{--ink:#000;--line:#e5e7eb;--navy:#000777;display:flex;justify-content:center;margin:100px 0;color:var(--ink);line-height:1.6;font-family:'Gooorm Sans','Pretendard Variable','Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif}
+.page-qnaInfo *{box-sizing:border-box;margin:0;padding:0}
+
+.page-qnaInfo .inner{width:100%;max-width:1000px}
+.page-qnaInfo .frame{padding:50px 10px;border-top:1px solid var(--navy);border-bottom:1px solid var(--navy);display:grid;row-gap:15px}
+
+.page-qnaInfo .chips{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.page-qnaInfo .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:12px;color:#333}
+.page-qnaInfo .chip-public{border-color:#d6ead6;background:#f1fff1;color:#1f5d1f}
+.page-qnaInfo .chip-secret{border-color:#ffd6d6;background:#fff5f5;color:#c1121f}
+.page-qnaInfo .chip-answer{border-color:#cfe0ff;background:#f5f9ff;color:#0f3e9e}
+
+.page-qnaInfo .meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px;color:#444}
+.page-qnaInfo .meta-item{display:flex;align-items:center;gap:6px}
+.page-qnaInfo .meta-key{color:#666}
+.page-qnaInfo .meta-val{color:#111;font-weight:500}
+
+.page-qnaInfo .section{display:block}
+.page-qnaInfo .section-label{display:flex;align-items:center;gap:8px;margin-top:30px;margin-bottom:10px;font-size:14px;font-weight:600;color:var(--ink)}
+.page-qnaInfo .section-label .chips{margin-left:8px}
+.page-qnaInfo .section-label .answer-date{margin-left:auto;font-size:13px;color:#444}
+
+.page-qnaInfo .box{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff;padding:12px 14px;font-size:14px;white-space:pre-line}
+
+.page-qnaInfo .answer{display:grid;row-gap:8px}
+
+.page-qnaInfo .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:6px}
+.page-qnaInfo .btn{padding:5px 10px;border:none;border-radius:5px;font-size:15px;cursor:pointer}
+.page-qnaInfo .btn-submit{text-decoration:none;background:var(--navy);color:#fff}
+
+@media (max-width:768px){
+  .page-qnaInfo .frame{padding:20px 0}
+  .page-qnaInfo .meta{width:100%}
+  .page-qnaInfo .actions{flex-direction:column}
+  .page-qnaInfo .btn{width:100%}
+}

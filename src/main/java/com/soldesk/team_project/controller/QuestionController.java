@@ -57,25 +57,25 @@ public class QuestionController {
         return "question/qnaWrite";
     }
 
-    //     @GetMapping("/qnaInfo")
-    // public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
-    //     QuestionDTO infoQ = questionService.getQ(qIdx);
-    //     // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
+        @GetMapping("/qnaInfo")
+    public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model) {
+        QuestionDTO infoQ = questionService.getQ(qIdx);
+        // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
         
-    //     Integer mIdx = infoQ.getMemberIdx();
-    //     Integer lIdx = infoQ.getLawyerIdx();
+        Integer mIdx = infoQ.getMemberIdx();
+        Integer lIdx = infoQ.getLawyerIdx();
 
-    //     if (lIdx != null) {
-    //         LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
-    //         infoQ.setInfoId(l.getLawyerId());
-    //         infoQ.setInfoName(l.getLawyerName());
-    //     }else if (mIdx != null) {
-    //         MemberDTO m = memberService.qMemberInquiry(mIdx);
-    //         infoQ.setInfoId(m.getMemberId());
-    //         infoQ.setInfoName(m.getMemberName());
-    //     }
-    //     model.addAttribute("infoQ", infoQ);
-    //     return "admin/qnaInfo";
-    // }
+        if (lIdx != null) {
+            LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
+            infoQ.setInfoId(l.getLawyerId());
+            infoQ.setInfoName(l.getLawyerName());
+        }else if (mIdx != null) {
+            MemberDTO m = memberService.qMemberInquiry(mIdx);
+            infoQ.setInfoId(m.getMemberId());
+            infoQ.setInfoName(m.getMemberName());
+        }
+        model.addAttribute("infoQ", infoQ);
+        return "question/qnaInfo";
+    }
 
 }
