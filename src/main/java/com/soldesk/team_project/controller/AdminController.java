@@ -1,6 +1,7 @@
 package com.soldesk.team_project.controller;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -249,20 +250,25 @@ public class AdminController {
         return "redirect:/admin/lawyer/pending";
     */
 
-    /* Q 작성글 상세보기 */
-    // @GetMapping("/qnaAnswer")
-    // public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
-    //     QuestionDTO infoQ = questionService.getQ(qIdx);
-    //     model.addAttribute("infoQ", infoQ);
-    //     if (infoQ != null && infoQ.getMemberIdx() != null){
-    //         MemberDTO mInfoQ =  
-    //         model.addAttribute("mInfoQ", mInfoQ);
-    //     }else if(infoQ != null && infoQ.getLawyerIdx() != null){
+    /* Q 문의글 상세보기 */
+    @GetMapping("/qnaAnswer")
+    public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
+        QuestionDTO infoQ = questionService.getQ(qIdx);
+        // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
+        
+        Integer mIdx = infoQ.getMemberIdx();
+        Integer lIdx = infoQ.getLawyerIdx();
 
-    //         model.addAttribute(null, infoQ);
-
-    //     }
-
-    //     return "admin/qnaAnswer";
-    // }
+        if (lIdx != null) {
+            LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
+            infoQ.setInfoId(l.getLawyerId());
+            infoQ.setInfoName(l.getLawyerName());
+        }else if (mIdx != null) {
+            MemberDTO m = memberService.qMemberInquiry(mIdx);
+            infoQ.setInfoId(m.getMemberId());
+            infoQ.setInfoName(m.getMemberName());
+        }
+        model.addAttribute("infoQ", infoQ);
+        return "admin/qnaAnswer";
+    }
 }

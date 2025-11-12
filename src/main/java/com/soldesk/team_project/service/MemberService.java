@@ -1,5 +1,6 @@
 package com.soldesk.team_project.service;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -300,5 +301,11 @@ public class MemberService {
     // ====== 결과 객체 ======
     public record MemberUpdateResult(String newUserId, MemberEntity member) {}
 
+    // 문의 상세 조회 필요한 id 와 name
+    public MemberDTO qMemberInquiry(Integer memberIdx){
+        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
+        MemberDTO memberDTO = convertMemberDTO(memberEntity);
+        return memberDTO;
+    }
     
 }

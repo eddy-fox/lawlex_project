@@ -48,14 +48,14 @@
 
                         <tr th:each="qList : ${qnaPaging.content}">
                             <td class="num" th:text="${qList.qIdx}">1</td>
-                            <td class="title" th:if="${qList.qSecret == 1}">
-                                <a href="#">비밀글 입니다</a>
+
+                            <td class="title" th:with="isSecret=${qList.qSecret != null and qList.qSecret == '1'}">
+                                <span th:if="${isSecret}" >🔒 비밀글 입니다</span>
+                                <a th:if="${!isSecret}" th:href="@{/admin/qnaAnswer(qIdx=${qList.qIdx})}" th:text="${qList.qTitle}"></a>
                             </td>
-                            <td class="title" th:unless="${qList.qSecret == 1}">
-                                <a th:href="@{/admin/qnaAnswer(qIdx=${qList.qIdx})}" th:text="${qList.qTitle}"></a>
-                            </td>
-                            <td class="answer" th:if="${qList.qAnswer == 1}">✓</td>
-                            <td class="answer" th:unless="${qList.qAnswer == 1}">-</td>
+
+                            <td class="answer" th:text="${qList.qAnswer == 1 ? '✓' : '-'}">-</td>
+
                             <td class="date"><time th:text="${qList.qRegDate}">2025-12-24</time></td>
                         </tr>
                     

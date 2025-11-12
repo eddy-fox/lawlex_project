@@ -204,6 +204,13 @@ public class LawyerService {
     public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {
 
     }
+
+    // 문의 상세 조회 필요한 id 와 name
+    public LawyerDTO qLawyerInquiry(Integer lawyerIdx){
+        LawyerEntity lawyerEntity = lawyerRepository.findById(lawyerIdx).orElse(null);
+        LawyerDTO lawyerDTO = convertLawyerDTO(lawyerEntity);
+        return lawyerDTO;
+    }
     
 }
 

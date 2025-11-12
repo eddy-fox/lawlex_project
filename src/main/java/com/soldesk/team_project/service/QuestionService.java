@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionService {
 
+
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
     private final LawyerRepository lawyerRepository;
@@ -34,7 +35,7 @@ public class QuestionService {
         questionDTO.setQTitle(questionEntity.getQuestionTitle());
         questionDTO.setQContent(questionEntity.getQuestionContent());
         questionDTO.setQRegDate(questionEntity.getQuestionRegDate());
-        questionDTO.setQSecret("Y".equalsIgnoreCase(questionEntity.getQuestionSecret()) ? "🔒" : "🔓");
+        questionDTO.setQSecret(questionEntity.getQuestionSecret());
         questionDTO.setQAnswer(questionEntity.getQuestionAnswer());
         questionDTO.setQActive(questionEntity.getQuestionActive());
         
@@ -59,7 +60,7 @@ public class QuestionService {
         questionEntity.setQuestionTitle(questionDTO.getQTitle());
         questionEntity.setQuestionContent(questionDTO.getQContent());
         questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
-        questionEntity.setQuestionSecret(questionEntity.getQuestionSecret());
+        questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
         questionEntity.setQuestionActive(questionEntity.getQuestionActive());
 
@@ -120,15 +121,12 @@ public class QuestionService {
         QuestionEntity questionEntity = convertQuestionEntity(qnaWrite);
         questionRepository.save(questionEntity);
     }
-
-    // public 
     
-    // public QuestionDTO getQ(int qIdx){
-    //  QuestionEntity QuestionEntity = questionRepository.findById(qIdx).orElse(null);
-    //  QuestionDTO QuestionDTO = convertQuestionDTO(QuestionEntity);
-    //  return QuestionDTO;
-    // }
-
+    public QuestionDTO getQ(int qIdx){
+        QuestionEntity questionEntity = questionRepository.findById(qIdx).orElse(null);
+        QuestionDTO questionDTO = convertQuestionDTO(questionEntity);
+     return questionDTO;
+    }
     
 }
 

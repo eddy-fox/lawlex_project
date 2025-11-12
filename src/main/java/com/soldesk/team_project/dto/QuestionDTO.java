@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -19,11 +20,7 @@ public class QuestionDTO {
     private Integer memberIdx;
     private Integer lawyerIdx;
 
-    private String memberId;
-    private String memberName;
-
-    private String  lawyerId;
-    private String  lawyerName;
-
+    private String infoId;
+    private String infoName;
 
 }
