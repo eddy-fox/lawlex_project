@@ -1,63 +1,95 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아이디 비번 찾기</title>
-    <link rel="stylesheet" th:href="@{/css/loginFind.css}">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>아이디/비밀번호 찾기</title>
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+  <link th:href="@{/css/login.css}" rel="stylesheet">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
-  <main class="page-loginFind">
+<div class="include" th:replace="~{include/header :: header}"></div>
 
-    <section class="section">
-      <h1 class="title">아이디찾기</h1>
-      <form class="form" id="formFindId" novalidate>
-        <div class="field">
-          <input class="input" id="idPhone" type="tel" placeholder="전화번호 입력" required>
-        </div>
-        <div class="field">
-          <div class="inline">
-            <input class="input flex-1" id="idCode" type="text" placeholder="인증번호 입력" required>
-            <button class="pill" type="button" id="btnIdCode">인증번호</button>
+<main class="page-login">
+  <div class="login-container">
+    <header class="login-header">
+      <h1>아이디 / 비밀번호 찾기</h1>
+      <p class="desc">전화번호와 생년월일(YYMMDD)로 본인확인 후 진행합니다.</p>
+    </header>
+
+    <section class="card-grid">
+      <!-- 아이디 찾기 -->
+      <article class="card">
+        <h2>아이디 찾기</h2>
+        <form id="findIdForm" class="login-form" th:action="@{/member/api/findId}" method="post" novalidate>
+          <div class="form-group">
+            <input class="input" id="fi-memberPhone" name="memberPhone" type="tel"
+                   placeholder="전화번호 (예: 010-1234-5678)" autocomplete="tel" required>
+            <p class="field-error" id="err-fi-phone"></p>
           </div>
-        </div>
-        <button class="primary-btn" type="submit" id="btnFindId">아이디 찾기</button>
-      </form>
+          <div class="form-group">
+            <input class="input" id="fi-memberIdnum" name="memberIdnum" type="text"
+                   placeholder="생년월일 (YYMMDD 또는 YY/MM/DD)" inputmode="numeric" required>
+            <p class="field-error" id="err-fi-idnum"></p>
+          </div>
+          <button type="submit" class="btn btn-primary">아이디 찾기</button>
+        </form>
+      </article>
+
+      <!-- 비밀번호 재설정 -->
+      <article class="card">
+        <h2>비밀번호 재설정</h2>
+        <form id="resetPwForm" class="login-form" th:action="@{/member/api/resetPw}" method="post" novalidate>
+          <div class="form-group">
+            <input class="input" id="fp-memberId" name="memberId" type="text"
+                   placeholder="아이디" autocomplete="username" required>
+            <p class="field-error" id="err-fp-id"></p>
+          </div>
+          <div class="form-group">
+            <input class="input" id="fp-memberPhone" name="memberPhone" type="tel"
+                   placeholder="전화번호 (예: 010-1234-5678)" autocomplete="tel" required>
+            <p class="field-error" id="err-fp-phone"></p>
+          </div>
+          <div class="form-group">
+            <input class="input" id="fp-memberIdnum" name="memberIdnum" type="text"
+                   placeholder="생년월일 (YYMMDD 또는 YY/MM/DD)" inputmode="numeric" required>
+            <p class="field-error" id="err-fp-idnum"></p>
+          </div>
+
+          <div class="form-group">
+            <input class="input" id="fp-newPassword" name="newPassword" type="password"
+                   placeholder="새 비밀번호 (3자 이상)" minlength="3" required>
+            <p class="field-error" id="err-fp-new"></p>
+          </div>
+          <div class="form-group">
+            <input class="input" id="fp-confirmPassword" name="confirmPassword" type="password"
+                   placeholder="새 비밀번호 확인" minlength="3" required>
+            <p class="field-error" id="err-fp-confirm"></p>
+          </div>
+
+          <button type="submit" class="btn btn-primary">비밀번호 재설정</button>
+        </form>
+      </article>
     </section>
 
-    <section class="section">
-      <h1 class="title">비밀번호찾기</h1>
-      <form class="form" id="formFindPw" novalidate>
-        <div class="field">
-          <input class="input" id="pwPhone" type="tel" placeholder="전화번호 입력" required>
-        </div>
-        <div class="field">
-          <div class="inline">
-            <input class="input flex-1" id="pwCode" type="text" placeholder="인증번호 입력" required>
-            <button class="pill" type="button" id="btnPwCode">인증번호</button>
-          </div>
-        </div>
-        <div class="field">
-          <input class="input" id="newPw" type="password" placeholder="새로운 비밀번호 입력" minlength="6" required>
-        </div>
-        <div class="field">
-          <input class="input" id="newPw2" type="password" placeholder="비밀번호 확인" minlength="6" required>
-        </div>
-        <button class="primary-btn" type="submit" id="btnPwReset">비밀번호 재설정</button>
-      </form>
-    </section>
-
-    <div class="modal-overlay" id="modalOverlay">
-      <div class="modal">
-        <p class="modal-message" id="modalMessage">메시지</p>
-        <button class="modal-close-btn" id="modalCloseBtn">확인</button>
-      </div>
+    <div class="assist-links" style="margin-top:16px;">
+      <a th:href="@{/member/login}" class="assist-link">로그인 화면으로</a>
+      <a th:href="@{/member/join/type}" class="assist-link">회원가입</a>
     </div>
-  </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/loginFind.js}"></script>
+  </div>
+</main>
+
+<!-- 모달 -->
+<div id="modalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header"><strong>알림</strong></div>
+    <div class="modal-body"><p id="modalMessage"></p></div>
+    <div class="modal-footer"><button id="modalCloseBtn" class="btn btn-secondary">닫기</button></div>
+  </div>
+</div>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+
+<script th:src="@{/js/loginFind.js}"></script>
 </body>
 </html>
