@@ -28,6 +28,7 @@ import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.entity.*;
@@ -141,9 +142,15 @@ public class MemberController {
         return result;
     }
 
+
+
     // 로그인 / 로그아웃
     @GetMapping("/login")
-    public String loginForm() { return "member/login"; }
+    public String loginForm(@RequestParam(name = "need", required = false) String need,
+        Model model) {  if (need != null) {
+        model.addAttribute("need", need);
+    }
+    return "member/login"; }
 
     /**
      * 유저마스터 테이블 없이 로그인:
@@ -233,7 +240,7 @@ public class MemberController {
 
             AdminSession as = new AdminSession(
                     a.getAdminIdx(), a.getAdminId(), a.getAdminName(),
-                    a.getAdminEmail(), a.getAdminPhone()
+                    a.getAdminEmail(), a.getAdminPhone(), a.getAdminRole()
             );
             session.setAttribute("loginAdmin", as);
             session.removeAttribute("loginMember");
@@ -350,6 +357,8 @@ public class MemberController {
     }
 
     // 세션 DTO들 
+
+    @Data
     public static class MemberSession {
         public Integer memberIdx;
         public String memberId;
@@ -366,6 +375,8 @@ public class MemberController {
             this.interestIdx1 = interestIdx1; this.interestIdx2 = interestIdx2; this.interestIdx3 = interestIdx3;
         }
     }
+
+    @Data
     public static class LawyerSession {
         public Integer lawyerIdx;
         public String lawyerId;
@@ -379,16 +390,19 @@ public class MemberController {
             this.lawyerEmail = lawyerEmail; this.lawyerPhone = lawyerPhone; this.interestIdx = interestIdx;
         }
     }
+
+    @Data
     public static class AdminSession {
         public Integer adminIdx;
         public String adminId;
         public String adminName;
         public String adminEmail;
         public String adminPhone;
+        public String adminRole;
         public AdminSession(Integer adminIdx, String adminId, String adminName,
-                            String adminEmail, String adminPhone) {
+                            String adminEmail, String adminPhone, String adminRole) {
             this.adminIdx = adminIdx; this.adminId = adminId; this.adminName = adminName;
-            this.adminEmail = adminEmail; this.adminPhone = adminPhone;
+            this.adminEmail = adminEmail; this.adminPhone = adminPhone; this.adminRole = adminRole;
         }
     }
 
