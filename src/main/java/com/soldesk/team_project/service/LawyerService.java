@@ -212,4 +212,10 @@ public class LawyerService {
 
     // 결과 DTO
     public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {}
+
+    // 로그인 아이디로 변호사 한 명 가져오기
+    public LawyerEntity getLawyer(String lawyerId) {
+    return lawyerRepository.findByLawyerId(lawyerId)
+            .orElseThrow(() -> new DataNotFoundException("변호사를 찾을 수 없습니다."));
+}
 }
