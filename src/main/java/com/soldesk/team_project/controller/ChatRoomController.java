@@ -30,7 +30,7 @@ public class ChatRoomController {
     private final CalendarService calendarService;
 
 
-        @GetMapping("/chat")
+        @GetMapping("/")   // 또는 @GetMapping("/")
 public String chatGate(
         @SessionAttribute(value = "loginMember", required = false) Object loginMember,
         @SessionAttribute(value = "loginLawyer", required = false) Object loginLawyer
@@ -226,8 +226,8 @@ public String chatGate(
     public String lawyerMain(Model model,
                              @SessionAttribute(value = "loginLawyer", required = false) Object loginLawyer,
                              HttpServletResponse resp,
-                             @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "20") int size) throws Exception {
+                             @RequestParam(name = "page", defaultValue = "0") int page,
+                             @RequestParam(name = "size", defaultValue = "20") int size) throws Exception {
 
         Integer lawyerIdx = extractLawyerId(loginLawyer);
         if (lawyerIdx == null) {

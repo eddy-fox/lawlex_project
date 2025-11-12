@@ -142,9 +142,15 @@ public class MemberController {
         return result;
     }
 
+
+
     // 로그인 / 로그아웃
     @GetMapping("/login")
-    public String loginForm() { return "member/login"; }
+    public String loginForm(@RequestParam(name = "need", required = false) String need,
+        Model model) {  if (need != null) {
+        model.addAttribute("need", need);
+    }
+    return "member/login"; }
 
     /**
      * 유저마스터 테이블 없이 로그인:
@@ -351,6 +357,8 @@ public class MemberController {
     }
 
     // 세션 DTO들 
+
+    @Data
     public static class MemberSession {
         public Integer memberIdx;
         public String memberId;
@@ -367,6 +375,7 @@ public class MemberController {
             this.interestIdx1 = interestIdx1; this.interestIdx2 = interestIdx2; this.interestIdx3 = interestIdx3;
         }
     }
+
     @Data
     public static class LawyerSession {
         public Integer lawyerIdx;
@@ -380,35 +389,22 @@ public class MemberController {
             this.lawyerIdx = lawyerIdx; this.lawyerId = lawyerId; this.lawyerName = lawyerName;
             this.lawyerEmail = lawyerEmail; this.lawyerPhone = lawyerPhone; this.interestIdx = interestIdx;
         }
-        public Object getLawyerIdx() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'getLawyerIdx'");
+    }
+
+    @Data
+    public static class AdminSession {
+        public Integer adminIdx;
+        public String adminId;
+        public String adminName;
+        public String adminEmail;
+        public String adminPhone;
+        public String adminRole;
+        public AdminSession(Integer adminIdx, String adminId, String adminName,
+                            String adminEmail, String adminPhone, String adminRole) {
+            this.adminIdx = adminIdx; this.adminId = adminId; this.adminName = adminName;
+            this.adminEmail = adminEmail; this.adminPhone = adminPhone; this.adminRole = adminRole;
         }
     }
-    @Data
-public static class AdminSession {
-
-    private Integer adminIdx;
-    private String adminId;
-    private String adminName;
-    private String adminEmail;
-    private String adminPhone;
-    private String adminRole;   // ← 꼭 넣어두기
-
-    public AdminSession(Integer adminIdx,
-                        String adminId,
-                        String adminName,
-                        String adminEmail,
-                        String adminPhone,
-                        String adminRole) {
-        this.adminIdx = adminIdx;
-        this.adminId = adminId;
-        this.adminName = adminName;
-        this.adminEmail = adminEmail;
-        this.adminPhone = adminPhone;
-        this.adminRole = adminRole;
-    }
-}
 
     // 비밀번호 암호화 + 1234~~  가능하게
     private boolean passwordMatches(String raw, String db) {
