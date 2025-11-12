@@ -155,27 +155,54 @@ public class MemberController {
     public String loginForm() { return "member/login"; }
 
     @PostMapping("/login")
-    public String loginSubmit(@ModelAttribute("loginConfirmMember") MemberDTO loginConfirmMember,
-                              HttpSession session) {
-        String userId = loginConfirmMember.getMemberId();
-        String rawPw  = loginConfirmMember.getMemberPass();
+public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
+                          HttpSession session) {
 
-        UserMasterEntity u = userMasterRepository.findByUserId(userId)
-                .filter(x -> passwordEncoder.matches(rawPw, x.getPassword()))
-                .orElse(null);
-        if (u == null) return "redirect:/member/login?error";
+    String userId = loginConfirmMember.getMemberId();
+    String rawPw  = loginConfirmMember.getMemberPass();
 
-        // 공통 세션
-        String role = roleUpper(u.getRole());
-        SessionUser su = new SessionUser(u.getUserIdx(), safe(u.getUserId()), role,
-                u.getMemberIdx(), u.getLawyerIdx(), u.getAdminIdx());
+    System.out.println("=== LOGIN TRY ===");
+    System.out.println("userId = " + userId);
+    System.out.println("rawPw  = " + rawPw);
+
+    // 1) 먼저 user_master에서 통합 계정 찾기
+    var uOpt = userMasterRepository.findByUserId(userId);
+    if (uOpt.isPresent()) {
+        var u = uOpt.get();
+        String dbPw = u.getPassword();
+        boolean matched = false;
+
+        // 암호화된 경우
+        if (dbPw != null) {
+            matched = passwordEncoder.matches(rawPw, dbPw);
+            // 더미처럼 평문 저장된 경우도 허용
+            if (!matched && rawPw.equals(dbPw)) {
+                matched = true;
+            }
+        }
+
+        if (!matched) {
+            System.out.println("user_master password not matched");
+            return "redirect:/member/login?error";
+        }
+
+        // 여기부터는 원래 세션 세팅 로직
+        String role = u.getRole() == null ? "" : u.getRole().toUpperCase();
+        SessionUser su = new SessionUser(
+                u.getUserIdx(),
+                u.getUserId(),
+                role,
+                u.getMemberIdx(),
+                u.getLawyerIdx(),
+                u.getAdminIdx()
+        );
         session.setAttribute("loginUser", su);
 
-        // 프로필 세션
+        // 역할별 세션 정보 채우기
         switch (role) {
             case "MEMBER" -> {
-                if (su.memberIdx != null) {
-                    memberRepository.findById(su.memberIdx).ifPresent(me -> {
+                if (u.getMemberIdx() != null) {
+                    memberRepository.findById(u.getMemberIdx()).ifPresent(me -> {
                         MemberSession ms = new MemberSession(
                                 me.getMemberIdx(), me.getMemberId(), me.getMemberName(),
                                 me.getMemberEmail(), me.getMemberPhone(), me.getMemberNickname(),
@@ -186,8 +213,8 @@ public class MemberController {
                 }
             }
             case "LAWYER" -> {
-                if (su.lawyerIdx != null) {
-                    lawyerRepository.findById(su.lawyerIdx).ifPresent(le -> {
+                if (u.getLawyerIdx() != null) {
+                    lawyerRepository.findById(u.getLawyerIdx()).ifPresent(le -> {
                         LawyerSession ls = new LawyerSession(
                                 le.getLawyerIdx(), le.getLawyerId(), le.getLawyerName(),
                                 le.getLawyerEmail(), le.getLawyerPhone(), le.getInterestIdx()
@@ -197,8 +224,8 @@ public class MemberController {
                 }
             }
             case "ADMIN" -> {
-                if (su.adminIdx != null) {
-                    adminRepository.findById(su.adminIdx).ifPresent(ad -> {
+                if (u.getAdminIdx() != null) {
+                    adminRepository.findById(u.getAdminIdx()).ifPresent(ad -> {
                         AdminSession as = new AdminSession(
                                 ad.getAdminIdx(), ad.getAdminId(), ad.getAdminName(),
                                 ad.getAdminEmail(), ad.getAdminPhone()
@@ -208,9 +235,113 @@ public class MemberController {
                 }
             }
         }
+
         session.setMaxInactiveInterval(60 * 60); // 1시간
+        System.out.println("=== LOGIN OK via user_master ===");
         return "redirect:/";
     }
+
+    // 2) user_master에 없으면 member 테이블에서 직접 로그인 (더미용)
+    var mOpt = memberRepository.findByMemberId(userId);
+    if (mOpt.isPresent()) {
+        var m = mOpt.get();
+        String dbPw = m.getMemberPass();
+        if (dbPw != null && dbPw.equals(rawPw)) {
+            // 세션에 공통 유저 정보처럼 넣기
+            SessionUser su = new SessionUser(
+                    null,
+                    m.getMemberId(),
+                    "MEMBER",
+                    m.getMemberIdx(),
+                    null,
+                    null
+            );
+            session.setAttribute("loginUser", su);
+
+            MemberSession ms = new MemberSession(
+                    m.getMemberIdx(), m.getMemberId(), m.getMemberName(),
+                    m.getMemberEmail(), m.getMemberPhone(), m.getMemberNickname(),
+                    m.getInterestIdx1(), m.getInterestIdx2(), m.getInterestIdx3()
+            );
+            session.setAttribute("loginMember", ms);
+
+            session.setMaxInactiveInterval(60 * 60);
+            System.out.println("=== LOGIN OK via member table ===");
+            return "redirect:/";
+        } else {
+            System.out.println("member table password not matched");
+            return "redirect:/member/login?error";
+        }
+    }
+
+    // 3) 혹시 변호사 테이블만 있는 경우도 대비
+    var lOpt = lawyerRepository.findByLawyerId(userId);
+    if (lOpt.isPresent()) {
+        var l = lOpt.get();
+        String dbPw = l.getLawyerPass();
+        if (dbPw != null && dbPw.equals(rawPw)) {
+            SessionUser su = new SessionUser(
+                    null,
+                    l.getLawyerId(),
+                    "LAWYER",
+                    null,
+                    l.getLawyerIdx(),
+                    null
+            );
+            session.setAttribute("loginUser", su);
+
+            LawyerSession ls = new LawyerSession(
+                    l.getLawyerIdx(), l.getLawyerId(), l.getLawyerName(),
+                    l.getLawyerEmail(), l.getLawyerPhone(), l.getInterestIdx()
+            );
+            session.setAttribute("loginLawyer", ls);
+
+            session.setMaxInactiveInterval(60 * 60);
+            System.out.println("=== LOGIN OK via lawyer table ===");
+            return "redirect:/";
+        } else {
+            System.out.println("lawyer table password not matched");
+            return "redirect:/member/login?error";
+        }
+    }
+
+    // 4) 관리자 테이블만 있는 경우
+    var aOpt = adminRepository.findByAdminId(userId);
+    if (aOpt.isPresent()) {
+        var a = aOpt.get();
+        String dbPw = a.getAdminPass();
+        if (dbPw != null && dbPw.equals(rawPw)) {
+            SessionUser su = new SessionUser(
+                    null,
+                    a.getAdminId(),
+                    "ADMIN",
+                    null,
+                    null,
+                    a.getAdminIdx()
+            );
+            session.setAttribute("loginUser", su);
+
+            AdminSession as = new AdminSession(
+                    a.getAdminIdx(), a.getAdminId(), a.getAdminName(),
+                    a.getAdminEmail(), a.getAdminPhone()
+            );
+            session.setAttribute("loginAdmin", as);
+
+            session.setMaxInactiveInterval(60 * 60);
+            System.out.println("=== LOGIN OK via admin table ===");
+            return "redirect:/";
+        } else {
+            System.out.println("admin table password not matched");
+            return "redirect:/member/login?error";
+        }
+    }
+
+    // 여기까지 왔으면 어떤 테이블에서도 못 찾은 것
+    System.out.println("user not found in any table");
+    return "redirect:/member/login?error";
+}
+
+
 
     @PostMapping("/logout")
     public String logout(HttpSession session) {

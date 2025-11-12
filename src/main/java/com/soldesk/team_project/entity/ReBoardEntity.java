@@ -35,26 +35,23 @@ public class ReBoardEntity {
     private LocalDate reboardRegDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-<<<<<<< HEAD
-    @JoinColumn(name = "board_idx")
-    private BoardEntity board;
+    @JoinColumn(name = "lawyer_idx")
+    private LawyerEntity lawyerIdx;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer;
-=======
-    @JoinColumn(name = "lawyer_idx")
+    @ManyToOne
     private LawyerEntity lawyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
+    private BoardEntity boardIdx;
+
+    @ManyToOne
     private BoardEntity board;
 
     @ManyToOne
     @JoinColumn(name = "member_idx")
-    private MemberEntity member;
+    private MemberEntity memberIdx;
 
     private LocalDate modifyDate;
->>>>>>> main
 
 }

@@ -21,18 +21,20 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     Page<BoardEntity> findAll(Specification<BoardEntity> spec, Pageable pageable);
 
     @Query("""
-    select distinct q
+    select q
     from BoardEntity q
-    left join q.author u1
-    left join q.reboardList a
-    left join a.author u2
+    left join q.member m
     where
         lower(q.boardTitle)   like lower(concat('%', :kw, '%'))
-    or lower(q.boardContent) like lower(concat('%', :kw, '%'))
-    or (u1.memberId is not null and lower(u1.memberId) like lower(concat('%', :kw, '%')))
-    or (a.reboardContent is not null and lower(a.reboardContent) like lower(concat('%', :kw, '%')))
-    or (u2.memberId is not null and lower(u2.memberId) like lower(concat('%', :kw, '%')))
+        or lower(q.boardContent) like lower(concat('%', :kw, '%'))
+        or (m.memberId is not null and lower(m.memberId) like lower(concat('%', :kw, '%')))
     """)
     Page<BoardEntity> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
-
+    
+    @Query("SELECT b FROM BoardEntity b WHERE (:interestIdx IS NULL OR b.interest.interestIdx = :interestIdx) " + 
+           "AND (:keyword IS NULL OR b.boardTitle LIKE %:keyword%)")
+    Page<BoardEntity> findByInterestIdx(@Param("interestIdx") Integer interestIdx,
+                                        @Param("keyword") String keyword,
+                                        Pageable pageable);
+                                        
 }

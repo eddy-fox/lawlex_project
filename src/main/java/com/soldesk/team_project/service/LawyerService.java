@@ -2,11 +2,13 @@ package com.soldesk.team_project.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.UserMasterEntity;
@@ -205,6 +207,18 @@ public class LawyerService {
 
     }
     
+    //변호사 이름 검색
+    public LawyerEntity getLawyer(String lawyerName) {
+
+        Optional<LawyerEntity> lawyerEntity = this.lawyerRepository.findByLawyerName(lawyerName);
+        if(lawyerEntity.isPresent()) {
+            return lawyerEntity.get();
+        } else {
+            throw new DataNotFoundException("lawyerName not found");
+        }
+        
+    }
+
 }
 
 

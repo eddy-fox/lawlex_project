@@ -31,7 +31,7 @@ public class NewsBoardEntity {
     @Column(name="news_title")
     private String newsTitle;
 
-    @Column(name="news_content")
+    @Column(name="news_content", columnDefinition = "TEXT")
     private String newsContent;
 
     @Column(name="news_regdate")

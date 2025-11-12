@@ -27,6 +27,7 @@ public class ReBoardService {
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
         reboard.setBoard(board);
+        reboard.setLawyer(lawyer);
         this.reboardRepository.save(reboard);
         return reboard;
 

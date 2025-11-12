@@ -17,6 +17,7 @@ import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.form.ReBoardForm;
 import com.soldesk.team_project.service.BoardService;
+import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.ReBoardService;
 
@@ -25,26 +26,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 
-
 @RequestMapping("/reboard")
 @RequiredArgsConstructor
 @Controller
 public class ReBoardController {
-    
+
     private final BoardService boardService;
     private final ReBoardService reboardService;
-    private final LawyerEntity lawyerEntity;
-    private final MemberService memberService;
-
+    private final LawyerService lawyerService;
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("create/{id}")
-    public String createReboard(Model model, @PathVariable("id") Integer id,
-    @Valid ReBoardForm reboardForm, BindingResult bindingResult, Principal principal) {
+    @PostMapping("/create/{id}")
+    public String createReboard(Model model,
+                                @PathVariable("id") Integer id,
+                                @Valid ReBoardForm reboardForm,
+                                BindingResult bindingResult,
+                                Principal principal) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        MemberEntity memberEntity = this.memberService.getMember(principal.getName());
-        if(bindingResult.hasErrors()) {
-            model.addAttribute("boardEntity", memberEntity);
+        LawyerEntity lawyerEntity = this.lawyerService.getLawyer(principal.getName());
+        if (bindingResult.hasErrors()) {
+            // 에러 났을 때는 다시 원래 게시글 정보 보여줘야 하니까 이걸 넣어야 함
+            model.addAttribute("boardEntity", boardEntity);
             return "question_detail";
         }
         ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboardContent(), lawyerEntity);
@@ -54,46 +56,53 @@ public class ReBoardController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String reboardModify(ReBoardForm reboardForm, @PathVariable("id") Integer id,
-    Principal principal) {
+    public String reboardModify(ReBoardForm reboardForm,
+                                @PathVariable("id") Integer id,
+                                Principal principal) {
 
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
+        if(!reboardEntity.getLawyer().getLawyerName().equals(principal.getName())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
         reboardForm.setReboardContent(reboardEntity.getReboardContent());
         return "answer_form";
-        
+
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
-    public String reboardModify(@Valid ReBoardForm reboardForm, BindingResult bindingResult,
-    @PathVariable("id") Integer id, Principal principal) {
+    public String reboardModify(@Valid ReBoardForm reboardForm,
+                                BindingResult bindingResult,
+                                @PathVariable("id") Integer id,
+                                Principal principal) {
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "answer_form";
         }
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
+        if(!reboardEntity.getLawyer().getLawyerName().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
         this.reboardService.modify(reboardEntity, reboardForm.getReboardContent());
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
-    
+        return String.format("redirect:/board/detail/%s#reboard_%s",
+                reboardEntity.getBoard().getBoardIdx(),
+                reboardEntity.getReboardIdx());
+
     }
-    
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
-    public String reboardDelete(Principal principal, @PathVariable("id") Integer id) {
+    public String reboardDelete(Principal principal,
+                                @PathVariable("id") Integer id) {
 
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
         if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.reboardService.delete(reboardEntity);
-        return String.format("redirect:/board/detail/%s", reboardEntity.getBoard().getBoardIdx());
-
+        return String.format("redirect:/board/detail/%s",
+                reboardEntity.getBoard().getBoardIdx());
+                
     }
 
 }
