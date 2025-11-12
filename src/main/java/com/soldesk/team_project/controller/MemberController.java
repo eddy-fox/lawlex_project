@@ -257,7 +257,7 @@ public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
                     null,
                     null
             );
-            session.setAttribute("loginUser", su);
+            session.setAttribute("loginUser", su); 
 
             MemberSession ms = new MemberSession(
                     m.getMemberIdx(), m.getMemberId(), m.getMemberName(),

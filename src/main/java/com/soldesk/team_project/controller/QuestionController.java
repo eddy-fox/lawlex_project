@@ -5,14 +5,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.QuestionService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,10 +37,14 @@ public class QuestionController {
     }
 
     @GetMapping("/qnaList")
-    public String qnaList(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    public String qnaList(@RequestParam(value = "page", defaultValue = "1") int page,
+                            @SessionAttribute(value = "loginUser", required = false) MemberController.SessionUser su,
+                            Model model ) {
 
-        Page<QuestionDTO> paging = this.questionService.getQnaPaging(page);
+        Page<QuestionDTO> paging = questionService.getQnaPaging(page);
+
         model.addAttribute("qnaPaging", paging);
+       
         return "question/qnaList";
     }
     
@@ -46,10 +54,6 @@ public class QuestionController {
         return "question/qnaWrite";
     
     }
-// @SessionAttribute("loginMember")MemberDTO loginMember,
-// @SessionAttribute("loginLawyer")LawyerDTO loginLawyer) {
-//     qnaWrite.setMemberIdx(loginMember.getMemberIdx());
-//     qnaWrite.setLawyerIdx(loginLawyer.getLawyerIdx());
 
     @PostMapping("/qnaWrite")
     public String qnaWriteSubmit(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite) {
@@ -62,6 +66,7 @@ public class QuestionController {
         QuestionDTO infoQ = questionService.getQ(qIdx);
         // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
         
+
         Integer mIdx = infoQ.getMemberIdx();
         Integer lIdx = infoQ.getLawyerIdx();
 

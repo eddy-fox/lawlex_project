@@ -37,7 +37,7 @@ public class QuestionEntity {
     private LocalDate questionRegDate;
     
     @Column(name = "q_secret")
-    private String questionSecret;
+    private Integer questionSecret;
     
     @Column(name = "q_answer")
     private Integer questionAnswer;

@@ -49,10 +49,20 @@
                         <tr th:each="qList : ${qnaPaging.content}">
                             <td class="num" th:text="${qList.qIdx}">1</td>
 
-                            <td class="title" th:with="isSecret=${qList.qSecret != null and qList.qSecret == '1'}">
+                            <td class="title" th:with="su = ${session.loginUser},
+                                                       role = ${(su != null and su.fole != null) ? su.role.toUpperCase() : ''},
+                                                       isSecret = ${(qList.qSecret == 1) or (qList.qSecret == '1')},
+                                                       canSee = ${!isSecret
+                                                                or (role == 'MEMBER' and me != null and me == qList.memberIdx)
+                                                                or (role == 'LAWYER' and me != null and qList.lawyerIdx != null and me == qList.lawyerIdx )}">
+                                <a th:if="${canSee}"
+                                   th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}"
+                                   th:text="${isSecret ? '🔒 '+qList.qTitle : qList.qTitle}"></a>
+                                                                
+                               <!--  <a th:if="${isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}" th:text="${'🔒'+qList.qTitle}"></a>
                                 <a th:if="${isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}">🔒 비밀글 입니다</a>
-                                <!-- <a th:if="${isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}" th:text="${'🔒'+qList.qTitle}"></a> -->
-                                <a th:if="${!isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}" th:text="${qList.qTitle}"></a>
+                                <a th:if="${!isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}" th:text="${qList.qTitle}"></a> -->
+                                <span th:if="${!canSee}" th:text="'🔒 비밀글 입니다'"></span>
                             </td>
 
                             <td class="answer" th:text="${qList.qAnswer == 1 ? '✓' : '-'}">-</td>
