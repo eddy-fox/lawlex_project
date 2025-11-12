@@ -160,29 +160,51 @@ public class CalendarService {
      * - end - 60분 이후 신청 불가
      */
     @Transactional(readOnly = true)
-    public boolean canRequestNow(Integer lawyerIdx, Integer durationMinutes) {
-        int dow = todayDow0to6();
-        var list = calendarRepository
-                .findByLawyerLawyerIdxAndCalendarWeeknameAndCalendarActiveOrderByCalendarStartTimeAsc(
-                        lawyerIdx, dow, 1);
-        if (list.isEmpty()) return false;
+public boolean canRequestNow(Integer lawyerIdx, Integer durationMinutes) {
+    int dow = todayDow0to6();
+    var list = calendarRepository
+            .findByLawyerLawyerIdxAndCalendarWeeknameAndCalendarActiveOrderByCalendarStartTimeAsc(
+                    lawyerIdx, dow, 1);
+    if (list.isEmpty()) return false;
 
-        LocalTime now = LocalTime.now();
-        int dur = (durationMinutes == null || durationMinutes <= 0) ? 60 : durationMinutes;
-        LocalTime willEnd = now.plusMinutes(dur);
+    LocalTime now = LocalTime.now();
+    int dur = (durationMinutes == null || durationMinutes <= 0) ? 60 : durationMinutes;
+    LocalTime willEnd = now.plusMinutes(dur);
 
-        for (var c : list) {
-            LocalTime start = c.getCalendarStartTime();
-            LocalTime end   = c.getCalendarEndTime();
-            if (now.isBefore(end) && !now.isBefore(start)) {
-                LocalTime lastStartAllowed = end.minusMinutes(60);
-                if (!willEnd.isAfter(end) && !now.isAfter(lastStartAllowed)) {
-                    return true;
+    for (var c : list) {
+        LocalTime start = c.getCalendarStartTime();
+        LocalTime end   = c.getCalendarEndTime();
+
+        // 지금이 이 슬롯 안에 있어야 함
+        if (now.isBefore(end) && !now.isBefore(start)) {
+
+            // 60분 상담은 "끝나기 60분 전"까지만
+            if (dur == 60) {
+                LocalTime lastStart60 = end.minusMinutes(60);
+                if (now.isAfter(lastStart60)) {
+                    return false; // 60분은 불가
                 }
+                // 여기까지 왔으면 end까지 60분 남으니까 OK
+                return true;
+            }
+
+            // 30분 상담은 end까지 30분만 남아도 OK
+            if (dur == 30) {
+                if (willEnd.isAfter(end)) {
+                    return false; // 30분 넣었는데 end를 넘어버리면 불가
+                }
+                return true;
+            }
+
+            // 다른 시간대 쓰고 싶을 때 기본
+            if (!willEnd.isAfter(end)) {
+                return true;
             }
         }
-        return false;
     }
+    return false;
+}
+
 
     /* ========== 멤버 메인용: 요일별 변호사 카드 데이터(Map) ========== */
 
@@ -192,37 +214,70 @@ public class CalendarService {
      * - 같은 변호사는 대표 구간으로 가장 이른 시작 시간을 사용
      */
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> listLawyersForDayAsMap(int weekday) {
-        var slots = calendarRepository
-                .findByCalendarWeeknameAndCalendarActiveOrderByCalendarStartTimeAsc(weekday, 1);
-        if (slots.isEmpty()) return List.of();
+public List<Map<String, Object>> listLawyersForDayAsMap(int weekday) {
+    int todayDow = todayDow0to6();
+    var slots = calendarRepository
+            .findByCalendarWeeknameAndCalendarActiveOrderByCalendarStartTimeAsc(weekday, 1);
+    if (slots.isEmpty()) return List.of();
 
-        Map<LawyerEntity, List<CalendarEntity>> byLawyer =
-                slots.stream().collect(Collectors.groupingBy(CalendarEntity::getLawyer));
+    Map<LawyerEntity, List<CalendarEntity>> byLawyer =
+            slots.stream().collect(Collectors.groupingBy(CalendarEntity::getLawyer));
 
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (var entry : byLawyer.entrySet()) {
-            var lawyer   = entry.getKey();
-            var daySlots = entry.getValue();
+    List<Map<String, Object>> available = new ArrayList<>();
+    List<Map<String, Object>> unavailable = new ArrayList<>();
 
-            var first = daySlots.stream()
-                    .min(Comparator.comparing(CalendarEntity::getCalendarStartTime))
-                    .orElse(null);
+    for (var entry : byLawyer.entrySet()) {
+        LawyerEntity lawyer = entry.getKey();
+        List<CalendarEntity> daySlots = entry.getValue();
 
-            Map<String, Object> m = new HashMap<>();
-            m.put("lawyerIdx",  lawyer.getLawyerIdx());
-            m.put("lawyerName", lawyer.getLawyerName());
-            m.put("weekday",    weekday);
-            m.put("start",      first != null ? first.getCalendarStartTime().toString() : null);
-            m.put("end",        first != null ? first.getCalendarEndTime().toString()   : null);
-            list.add(m);
+        CalendarEntity first = daySlots.stream()
+                .min(Comparator.comparing(CalendarEntity::getCalendarStartTime))
+                .orElse(null);
+
+        Map<String, Object> m = new HashMap<>();
+        m.put("lawyerIdx",  lawyer.getLawyerIdx());
+        m.put("imgPath",    lawyer.getLawyerImgPath());
+        m.put("name",       lawyer.getLawyerName());
+        m.put("timeRange",  first != null
+                ? first.getCalendarStartTime() + " ~ " + first.getCalendarEndTime()
+                : "상시");
+
+        boolean can30 = false;
+        boolean can60 = false;
+
+        if (weekday == todayDow) {
+            can30 = canRequestNow(lawyer.getLawyerIdx(), 30);
+            can60 = canRequestNow(lawyer.getLawyerIdx(), 60);
         }
 
-        // 시작 시간이 빠른 순으로만 정렬
-        list.sort(Comparator.comparing(m -> {
-            var s = (String) m.get("start");
-            return s == null ? "99:99" : s;
-        }));
-        return list;
+        m.put("can30", can30);
+        m.put("can60", can60);
+
+        // 신청 버튼 전체 활성/비활성(위에 먼저, 아래에 나중)
+        if (weekday == todayDow && (can30 || can60)) {
+            m.put("canRequestNow", true);
+            available.add(m);
+        } else {
+            m.put("canRequestNow", false);
+            unavailable.add(m);
+        }
     }
+
+    // 정렬은 위에서 했던 것처럼...
+    Comparator<Map<String, Object>> byTime =
+            Comparator.comparing((Map<String, Object> x) -> {
+                String tr = (String) x.get("timeRange");
+                if (tr != null && tr.contains("~")) return tr.split("~")[0].trim();
+                return tr != null ? tr : "99:99";
+            });
+    available.sort(byTime);
+    unavailable.sort(byTime);
+
+    List<Map<String, Object>> result = new ArrayList<>();
+    result.addAll(available);
+    result.addAll(unavailable);
+    return result;
+}
+
+
 }

@@ -28,6 +28,7 @@ import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.entity.*;
@@ -228,7 +229,7 @@ public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
                     adminRepository.findById(u.getAdminIdx()).ifPresent(ad -> {
                         AdminSession as = new AdminSession(
                                 ad.getAdminIdx(), ad.getAdminId(), ad.getAdminName(),
-                                ad.getAdminEmail(), ad.getAdminPhone()
+                                ad.getAdminEmail(), ad.getAdminPhone(), ad.getAdminRole()
                         );
                         session.setAttribute("loginAdmin", as);
                     });
@@ -323,7 +324,7 @@ public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
 
             AdminSession as = new AdminSession(
                     a.getAdminIdx(), a.getAdminId(), a.getAdminName(),
-                    a.getAdminEmail(), a.getAdminPhone()
+                    a.getAdminEmail(), a.getAdminPhone(), a.getAdminRole()
             );
             session.setAttribute("loginAdmin", as);
 
@@ -544,6 +545,7 @@ public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
             this.interestIdx1 = interestIdx1; this.interestIdx2 = interestIdx2; this.interestIdx3 = interestIdx3;
         }
     }
+    @Data
     public static class LawyerSession {
         public Integer lawyerIdx;
         public String lawyerId;
@@ -556,19 +558,35 @@ public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
             this.lawyerIdx = lawyerIdx; this.lawyerId = lawyerId; this.lawyerName = lawyerName;
             this.lawyerEmail = lawyerEmail; this.lawyerPhone = lawyerPhone; this.interestIdx = interestIdx;
         }
-    }
-    public static class AdminSession {
-        public Integer adminIdx;
-        public String adminId;
-        public String adminName;
-        public String adminEmail;
-        public String adminPhone;
-        public AdminSession(Integer adminIdx, String adminId, String adminName,
-                            String adminEmail, String adminPhone) {
-            this.adminIdx = adminIdx; this.adminId = adminId; this.adminName = adminName;
-            this.adminEmail = adminEmail; this.adminPhone = adminPhone;
+        public Object getLawyerIdx() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getLawyerIdx'");
         }
     }
+    @Data
+public static class AdminSession {
+
+    private Integer adminIdx;
+    private String adminId;
+    private String adminName;
+    private String adminEmail;
+    private String adminPhone;
+    private String adminRole;   // ← 꼭 넣어두기
+
+    public AdminSession(Integer adminIdx,
+                        String adminId,
+                        String adminName,
+                        String adminEmail,
+                        String adminPhone,
+                        String adminRole) {
+        this.adminIdx = adminIdx;
+        this.adminId = adminId;
+        this.adminName = adminName;
+        this.adminEmail = adminEmail;
+        this.adminPhone = adminPhone;
+        this.adminRole = adminRole;
+    }
+}
 
     @GetMapping("/oauth2/additional-info")
     public String showAdditionalInfoForm() {
