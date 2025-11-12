@@ -27,10 +27,6 @@ public class ReBoardService {
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
         reboard.setBoard(board);
-<<<<<<< HEAD
-=======
-        reboard.setLawyer(lawyer);
->>>>>>> main
         this.reboardRepository.save(reboard);
         return reboard;
 
@@ -61,8 +57,8 @@ public class ReBoardService {
     }
 
     // GPT 자동 답변 생성
-    // @Transactional
-    // public void gptAutoReboard(BoardEntity boardEntity) {
+    @Transactional
+    public void gptAutoReboard(BoardEntity boardEntity) {
 
         try {
             // GPT API 실행
@@ -81,15 +77,11 @@ public class ReBoardService {
 
             reboardRepository.save(reboardEntity);
 
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-<<<<<<< HEAD
 
-    // }
-=======
     }
->>>>>>> main
     
 }
