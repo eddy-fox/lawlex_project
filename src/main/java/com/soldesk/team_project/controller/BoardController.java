@@ -34,12 +34,22 @@ public class BoardController {
     private final MemberService memberService;
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page,
-    @RequestParam(value="kw", defaultValue="") String kw) {
+    public String list(Model model, 
+    @RequestParam(value="page", defaultValue="0") int page,
+    @RequestParam(value="kw", defaultValue="") String kw,
+    @RequestParam(value="interestIdx", required = false) Integer interestIdx) {
 
-        Page<BoardEntity> paging = this.boardService.getList(page, kw);
+        if(interestIdx == null) {
+            interestIdx = 1;
+        }
+
+        Page<BoardEntity> paging;
+       
+        paging = this.boardService.getListByInterest(page, kw, interestIdx);
+   
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
+        model.addAttribute("interestIdx", interestIdx);
         return "board/list";
 
     }
@@ -49,7 +59,7 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
-        return "board/reboard";
+        return "board/detail";
 
     }
 
@@ -80,7 +90,7 @@ public class BoardController {
     Principal principal, @PathVariable("id") Integer id) {
         
         if(bindingResult.hasErrors()) {
-            return "write";
+            return "board/write";
         }
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
