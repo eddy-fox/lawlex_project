@@ -26,7 +26,7 @@ import lombok.Builder;
 @Table(name = "member")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 @Builder
 
@@ -62,12 +62,18 @@ public class MemberEntity {
     @Column(name = "member_nickname")
     private String memberNickname;
 
-    @Column(name = "member_point")
-    private Integer memberPoint;
+    @Column(name = "member_point", columnDefinition = "TINYINT(0) DEFAULT 0")
+    private Integer memberPoint = 0;
 
     @Builder.Default
     @Column(name = "member_active", columnDefinition = "TINYINT(1) DEFAULT 1")
     private Integer memberActive = 1;
+
+    @Column(name = "provider")
+    private String provider; // ex: "google"
+
+    @Column(name = "provider_id")
+    private String providerId; // ex: 구글 sub 값
 
     @Column(name = "interest_idx1")
     private Integer interestIdx1;

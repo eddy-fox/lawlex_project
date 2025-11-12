@@ -120,8 +120,9 @@ public class ChatroomService {
         e.setState("ACTIVE");
         chatroomRepo.save(e);
 
-        // 포인트 차감은 동료 모듈에서 처리(수락 시점)
-        // pointService.charge(e.getMember().getMemberIdx(), -e.getPointCost(), "채팅 상담 수락");
+       Integer memberIdx = e.getMember().getMemberIdx();
+       int pointCost = e.getPointCost();   // 100 or 200
+    // purchaseService.minusPoint(memberIdx, pointCost);  ← 이런 식으로
     }
 
     @Transactional

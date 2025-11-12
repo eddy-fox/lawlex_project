@@ -31,4 +31,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer>{
     boolean existsByMemberId(String memberId);
     Optional<MemberEntity> findByMemberName(String memberName);
 
+    // OAuth2 회원가입 email 중복체크
+    Optional<MemberEntity> findByMemberEmailAndMemberActive(String email, Integer memberActive);
+
 }

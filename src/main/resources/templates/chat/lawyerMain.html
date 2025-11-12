@@ -4,102 +4,177 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>채팅메인-변호사</title>
+  <!-- 네가 쓰는 공통 css -->
   <link rel="stylesheet" th:href="@{/css/lawyerMain.css}">
   <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
+  <!-- 헤더 인클루드 -->
   <div class="include" th:replace="~{include/header :: header}"></div>
+
   <main class="page-lawyerMain">
     <div class="container">
 
+      <!-- 대기중인 상담 -->
       <section class="section">
-        <h2>대기중인 상담</h2>
+        <h2>
+          대기중인 상담
+          <span th:if="${badge != null}" style="font-size:12px; color:#999;">
+            ( [[${badge.pending}]] 건 )
+          </span>
+        </h2>
         <div class="list">
-          <div class="row">
-            <div class="client"><input type="text" value="의뢰인 닉네임" readonly></div>
-            <div class="preview">안녕하세요</div>
+          <!-- 한 줄 -->
+          <div class="row"
+               th:each="room : ${pendingRooms}">
+            <div class="client">
+              <input type="text" th:value="${room.chatroomName}" readonly>
+            </div>
+            <div class="preview"
+                 th:text="${room.lastMessage != null ? room.lastMessage : '신청 메시지 대기중'}">
+              안녕하세요
+            </div>
             <div class="actions">
-              <button class="btn open-accept" type="button" data-case="101">수락</button>
-              <button class="btn danger open-reject" type="button" data-case="101">거절</button>
+              <button class="btn open-accept" type="button"
+                      th:attr="data-room=${room.chatroomIdx}">수락</button>
+              <button class="btn danger open-reject" type="button"
+                      th:attr="data-room=${room.chatroomIdx}">거절</button>
             </div>
           </div>
-          <div class="row">
-            <div class="client"><input type="text" value="의뢰인 닉네임" readonly></div>
-            <div class="preview">안녕하세요</div>
-            <div class="actions">
-              <button class="btn open-accept" type="button" data-case="102">수락</button>
-              <button class="btn danger open-reject" type="button" data-case="102">거절</button>
-            </div>
-          </div>
+
+          <!-- 없을 때 -->
+          <p th:if="${#lists.isEmpty(pendingRooms)}" style="color:#999;">대기중인 상담이 없습니다.</p>
         </div>
       </section>
 
+      <!-- 진행중인 상담 -->
       <section class="section">
-        <h2>진행중인 상담</h2>
+        <h2>
+          진행중인 상담
+          <span th:if="${badge != null}" style="font-size:12px; color:#999;">
+            ( [[${badge.active}]] 건 )
+          </span>
+        </h2>
         <div class="list">
-          <div class="row">
-            <div class="client"><input type="text" value="의뢰인 닉네임" readonly></div>
-            <div class="preview">내용미리보기</div>
+          <div class="row"
+               th:each="room : ${activeRooms}">
+            <div class="client">
+              <input type="text" th:value="${room.chatroomName}" readonly>
+            </div>
+            <div class="preview"
+                 th:text="${room.lastMessage != null ? room.lastMessage : '최근 메시지가 없습니다.'}">
+              내용미리보기
+            </div>
             <div class="actions">
-              <button class="btn" type="button">입장</button>
+              <a class="btn" th:href="@{/chat/room(roomId=${room.chatroomIdx})}">입장</a>
             </div>
           </div>
-          <div class="row">
-            <div class="client"><input type="text" value="의뢰인 닉네임" readonly></div>
-            <div class="preview">내용미리보기</div>
-            <div class="actions">
-              <button class="btn" type="button">입장</button>
-            </div>
-          </div>
+          <p th:if="${#lists.isEmpty(activeRooms)}" style="color:#999;">진행중인 상담이 없습니다.</p>
         </div>
       </section>
 
+      <!-- 종료한 상담 -->
       <section class="section">
         <h2>종료한 상담</h2>
         <div class="list">
-          <div class="row">
-            <div class="client"><input type="text" value="의뢰인 닉네임" readonly></div>
-            <div class="preview"></div>
+          <div class="row"
+               th:each="room : ${endedRooms}">
+            <div class="client">
+              <input type="text" th:value="${room.chatroomName}" readonly>
+            </div>
+            <div class="preview" th:text="${room.state}"></div>
             <div class="actions">
-              <button class="btn ghost" type="button">내용보기</button>
+              <a class="btn ghost" th:href="@{/chat/room(roomId=${room.chatroomIdx})}">내용보기</a>
             </div>
           </div>
-          <div class="row">
-            <div class="client"><input type="text" value="의뢰인 닉네임" readonly></div>
-            <div class="preview"></div>
-            <div class="actions">
-              <button class="btn ghost" type="button">내용보기</button>
-            </div>
-          </div>
+          <p th:if="${#lists.isEmpty(endedRooms)}" style="color:#999;">종료된 상담이 없습니다.</p>
         </div>
       </section>
+
     </div>
-    <div class="modal" id="confirmModalAccept" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitleAccept">
+
+    <!-- 수락 모달 -->
+    <div class="modal" id="confirmModalAccept" aria-hidden="true"
+         role="dialog" aria-modal="true" aria-labelledby="modalTitleAccept">
       <div class="dialog">
         <h3 id="modalTitleAccept">수락하시겠습니까?</h3>
         <p>선택한 상담을 진행 상태로 변경합니다. 계속하시겠어요?</p>
         <div class="yn">
           <button class="btn ghost" type="button" data-close="accept">아니오</button>
-          <button class="btn" type="button" data-ok="accept">예</button>
+          <form id="acceptForm" th:action="@{/chat/lawyer/accept}" method="post" style="display:inline;">
+            <input type="hidden" name="roomId" id="acceptRoomId">
+            <button class="btn" type="submit" data-ok="accept">예</button>
+          </form>
         </div>
         <span class="sr-only" id="caseAccept"></span>
       </div>
     </div>
-  
-    <div class="modal" id="confirmModalReject" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitleReject">
+
+    <!-- 거절 모달 -->
+    <div class="modal" id="confirmModalReject" aria-hidden="true"
+         role="dialog" aria-modal="true" aria-labelledby="modalTitleReject">
       <div class="dialog">
         <h3 id="modalTitleReject">거절하시겠습니까?</h3>
         <p>선택한 상담을 거절 처리합니다. 계속하시겠어요?</p>
         <div class="yn">
           <button class="btn ghost" type="button" data-close="reject">아니오</button>
-          <button class="btn danger" type="button" data-ok="reject">예</button>
+          <form id="rejectForm" th:action="@{/chat/lawyer/decline}" method="post" style="display:inline;">
+            <input type="hidden" name="roomId" id="rejectRoomId">
+            <button class="btn danger" type="submit" data-ok="reject">예</button>
+          </form>
         </div>
         <span class="sr-only" id="caseReject"></span>
       </div>
     </div>
   </main>
+
+  <!-- 푸터 인클루드 -->
   <div class="include" th:replace="~{include/footer :: footer}"></div>
+
+  <!-- 공통 js -->
   <script th:src="@{/js/js.js}"></script>
+
+  <!-- 이 페이지용 스크립트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const modalAccept = document.getElementById('confirmModalAccept');
+      const modalReject = document.getElementById('confirmModalReject');
+      const acceptRoomInput = document.getElementById('acceptRoomId');
+      const rejectRoomInput = document.getElementById('rejectRoomId');
+
+      // 수락 열기
+      document.querySelectorAll('.open-accept').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const roomId = btn.getAttribute('data-room');
+          acceptRoomInput.value = roomId;
+          modalAccept.setAttribute('aria-hidden', 'false');  // CSS와 맞춤
+        });
+      });
+
+      // 거절 열기
+      document.querySelectorAll('.open-reject').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const roomId = btn.getAttribute('data-room');
+          rejectRoomInput.value = roomId;
+          modalReject.setAttribute('aria-hidden', 'false');
+        });
+      });
+
+      // 닫기
+      document.querySelectorAll('[data-close="accept"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          modalAccept.setAttribute('aria-hidden', 'true');
+        });
+      });
+      document.querySelectorAll('[data-close="reject"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          modalReject.setAttribute('aria-hidden', 'true');
+        });
+      });
+    });
+  </script>
+
+  <!-- 네가 따로 쓰는 js 있으면 마지막에 -->
   <script th:src="@{/js/lawyerMain.js}"></script>
 </body>
 </html>

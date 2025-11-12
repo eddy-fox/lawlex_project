@@ -15,13 +15,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
+import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.PointDTO;
 import com.soldesk.team_project.dto.ProductDTO;
 import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.dto.TemporaryOauthDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.service.LawyerService;
+import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.entity.*;
@@ -34,10 +40,6 @@ import com.soldesk.team_project.entity.AdminEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.UserMasterEntity;
-import com.soldesk.team_project.repository.AdminRepository;
-import com.soldesk.team_project.repository.LawyerRepository;
-import com.soldesk.team_project.repository.MemberRepository;
-import com.soldesk.team_project.repository.UserMasterRepository;
 
 
 
@@ -59,25 +61,14 @@ public class MemberController {
     private final InterestRepository interestRepository; // 로이어 관심 1개를 조인으로 세팅할 때 사용
     private final PasswordEncoder passwordEncoder;
 
-
-    // 임시 로그인
-    @GetMapping("/loginTemp")
-    public String loginTemp() {
-
-        return "member/loginTemp";
-    }
-    @PostMapping("/loginTemp")
-    public String loginTempVerify() {
-
-        return "redirect:/";
-    }
+    private final JwtProvider jwtProvider;
 
     // 멤버 포인트
     @GetMapping("/point")
-    public String pointMain(Model model) {
+    public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
         
-        int memberIdx = 1; // 회원정보 받아와서 넘겨야함
-        
+        Integer memberIdx = loginUser.getMemberIdx();
+                
         // 포인트 구매 상품
         List<ProductDTO> productList = purchaseService.getBuyPointProduct();
         model.addAttribute("productList", productList);
@@ -92,15 +83,22 @@ public class MemberController {
         return "member/point";
     }
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model) {
+    public String productPurchase(
+        @RequestParam("selectedProduct") int productNum, Model model,
+        @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+
+        Integer memberIdx = loginUser.getMemberIdx();
+        String memberIdxStr = String.valueOf(memberIdx);
+        List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
+        model.addAttribute("member", member);
 
         // 구매 검증을 위한 ID 생성
         String purchaseId = "order-" + System.currentTimeMillis();
         // 구매 요청 내역 생성
-        PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId); // 회원정보도 같이 줘야함
+        PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId, memberIdx);
         model.addAttribute("purchase", purchase);
         
-        return "payment/checkout"; // 넘어갈 때 회원 정보 같이 넘겨줘야함
+        return "payment/checkout";
     }
 
     @GetMapping("/testOCR") 
@@ -157,27 +155,54 @@ public class MemberController {
     public String loginForm() { return "member/login"; }
 
     @PostMapping("/login")
-    public String loginSubmit(@ModelAttribute("loginConfirmMember") MemberDTO loginConfirmMember,
-                              HttpSession session) {
-        String userId = loginConfirmMember.getMemberId();
-        String rawPw  = loginConfirmMember.getMemberPass();
+public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
+                          HttpSession session) {
 
-        UserMasterEntity u = userMasterRepository.findByUserId(userId)
-                .filter(x -> passwordEncoder.matches(rawPw, x.getPassword()))
-                .orElse(null);
-        if (u == null) return "redirect:/member/login?error";
+    String userId = loginConfirmMember.getMemberId();
+    String rawPw  = loginConfirmMember.getMemberPass();
 
-        // 공통 세션
-        String role = roleUpper(u.getRole());
-        SessionUser su = new SessionUser(u.getUserIdx(), safe(u.getUserId()), role,
-                u.getMemberIdx(), u.getLawyerIdx(), u.getAdminIdx());
+    System.out.println("=== LOGIN TRY ===");
+    System.out.println("userId = " + userId);
+    System.out.println("rawPw  = " + rawPw);
+
+    // 1) 먼저 user_master에서 통합 계정 찾기
+    var uOpt = userMasterRepository.findByUserId(userId);
+    if (uOpt.isPresent()) {
+        var u = uOpt.get();
+        String dbPw = u.getPassword();
+        boolean matched = false;
+
+        // 암호화된 경우
+        if (dbPw != null) {
+            matched = passwordEncoder.matches(rawPw, dbPw);
+            // 더미처럼 평문 저장된 경우도 허용
+            if (!matched && rawPw.equals(dbPw)) {
+                matched = true;
+            }
+        }
+
+        if (!matched) {
+            System.out.println("user_master password not matched");
+            return "redirect:/member/login?error";
+        }
+
+        // 여기부터는 원래 세션 세팅 로직
+        String role = u.getRole() == null ? "" : u.getRole().toUpperCase();
+        SessionUser su = new SessionUser(
+                u.getUserIdx(),
+                u.getUserId(),
+                role,
+                u.getMemberIdx(),
+                u.getLawyerIdx(),
+                u.getAdminIdx()
+        );
         session.setAttribute("loginUser", su);
 
-        // 프로필 세션
+        // 역할별 세션 정보 채우기
         switch (role) {
             case "MEMBER" -> {
-                if (su.memberIdx != null) {
-                    memberRepository.findById(su.memberIdx).ifPresent(me -> {
+                if (u.getMemberIdx() != null) {
+                    memberRepository.findById(u.getMemberIdx()).ifPresent(me -> {
                         MemberSession ms = new MemberSession(
                                 me.getMemberIdx(), me.getMemberId(), me.getMemberName(),
                                 me.getMemberEmail(), me.getMemberPhone(), me.getMemberNickname(),
@@ -188,8 +213,8 @@ public class MemberController {
                 }
             }
             case "LAWYER" -> {
-                if (su.lawyerIdx != null) {
-                    lawyerRepository.findById(su.lawyerIdx).ifPresent(le -> {
+                if (u.getLawyerIdx() != null) {
+                    lawyerRepository.findById(u.getLawyerIdx()).ifPresent(le -> {
                         LawyerSession ls = new LawyerSession(
                                 le.getLawyerIdx(), le.getLawyerId(), le.getLawyerName(),
                                 le.getLawyerEmail(), le.getLawyerPhone(), le.getInterestIdx()
@@ -199,8 +224,8 @@ public class MemberController {
                 }
             }
             case "ADMIN" -> {
-                if (su.adminIdx != null) {
-                    adminRepository.findById(su.adminIdx).ifPresent(ad -> {
+                if (u.getAdminIdx() != null) {
+                    adminRepository.findById(u.getAdminIdx()).ifPresent(ad -> {
                         AdminSession as = new AdminSession(
                                 ad.getAdminIdx(), ad.getAdminId(), ad.getAdminName(),
                                 ad.getAdminEmail(), ad.getAdminPhone()
@@ -210,9 +235,113 @@ public class MemberController {
                 }
             }
         }
+
         session.setMaxInactiveInterval(60 * 60); // 1시간
+        System.out.println("=== LOGIN OK via user_master ===");
         return "redirect:/";
     }
+
+    // 2) user_master에 없으면 member 테이블에서 직접 로그인 (더미용)
+    var mOpt = memberRepository.findByMemberId(userId);
+    if (mOpt.isPresent()) {
+        var m = mOpt.get();
+        String dbPw = m.getMemberPass();
+        if (dbPw != null && dbPw.equals(rawPw)) {
+            // 세션에 공통 유저 정보처럼 넣기
+            SessionUser su = new SessionUser(
+                    null,
+                    m.getMemberId(),
+                    "MEMBER",
+                    m.getMemberIdx(),
+                    null,
+                    null
+            );
+            session.setAttribute("loginUser", su);
+
+            MemberSession ms = new MemberSession(
+                    m.getMemberIdx(), m.getMemberId(), m.getMemberName(),
+                    m.getMemberEmail(), m.getMemberPhone(), m.getMemberNickname(),
+                    m.getInterestIdx1(), m.getInterestIdx2(), m.getInterestIdx3()
+            );
+            session.setAttribute("loginMember", ms);
+
+            session.setMaxInactiveInterval(60 * 60);
+            System.out.println("=== LOGIN OK via member table ===");
+            return "redirect:/";
+        } else {
+            System.out.println("member table password not matched");
+            return "redirect:/member/login?error";
+        }
+    }
+
+    // 3) 혹시 변호사 테이블만 있는 경우도 대비
+    var lOpt = lawyerRepository.findByLawyerId(userId);
+    if (lOpt.isPresent()) {
+        var l = lOpt.get();
+        String dbPw = l.getLawyerPass();
+        if (dbPw != null && dbPw.equals(rawPw)) {
+            SessionUser su = new SessionUser(
+                    null,
+                    l.getLawyerId(),
+                    "LAWYER",
+                    null,
+                    l.getLawyerIdx(),
+                    null
+            );
+            session.setAttribute("loginUser", su);
+
+            LawyerSession ls = new LawyerSession(
+                    l.getLawyerIdx(), l.getLawyerId(), l.getLawyerName(),
+                    l.getLawyerEmail(), l.getLawyerPhone(), l.getInterestIdx()
+            );
+            session.setAttribute("loginLawyer", ls);
+
+            session.setMaxInactiveInterval(60 * 60);
+            System.out.println("=== LOGIN OK via lawyer table ===");
+            return "redirect:/";
+        } else {
+            System.out.println("lawyer table password not matched");
+            return "redirect:/member/login?error";
+        }
+    }
+
+    // 4) 관리자 테이블만 있는 경우
+    var aOpt = adminRepository.findByAdminId(userId);
+    if (aOpt.isPresent()) {
+        var a = aOpt.get();
+        String dbPw = a.getAdminPass();
+        if (dbPw != null && dbPw.equals(rawPw)) {
+            SessionUser su = new SessionUser(
+                    null,
+                    a.getAdminId(),
+                    "ADMIN",
+                    null,
+                    null,
+                    a.getAdminIdx()
+            );
+            session.setAttribute("loginUser", su);
+
+            AdminSession as = new AdminSession(
+                    a.getAdminIdx(), a.getAdminId(), a.getAdminName(),
+                    a.getAdminEmail(), a.getAdminPhone()
+            );
+            session.setAttribute("loginAdmin", as);
+
+            session.setMaxInactiveInterval(60 * 60);
+            System.out.println("=== LOGIN OK via admin table ===");
+            return "redirect:/";
+        } else {
+            System.out.println("admin table password not matched");
+            return "redirect:/member/login?error";
+        }
+    }
+
+    // 여기까지 왔으면 어떤 테이블에서도 못 찾은 것
+    System.out.println("user not found in any table");
+    return "redirect:/member/login?error";
+}
+
+
 
     @PostMapping("/logout")
     public String logout(HttpSession session) {
@@ -439,5 +568,42 @@ public class MemberController {
             this.adminIdx = adminIdx; this.adminId = adminId; this.adminName = adminName;
             this.adminEmail = adminEmail; this.adminPhone = adminPhone;
         }
+    }
+
+    @GetMapping("/oauth2/additional-info")
+    public String showAdditionalInfoForm() {
+        return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
+    }
+    @PostMapping("/oauth2/complete")
+    public void saveAdditionalInfo(@ModelAttribute("member123")MemberDTO memberDTO,
+                                    HttpSession session, HttpServletResponse response) throws IOException{
+
+        TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
+        if (tempUser == null) {
+            response.sendRedirect("/member/login");
+            return;
+        }
+        MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
+        session.removeAttribute("oauth2TempUser");
+        String token = jwtProvider.createToken(savedUser);
+        
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("status", HttpServletResponse.SC_OK);
+        responseMap.put("message", "Login successful");
+
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("email", savedUser.getMemberEmail());
+        dataMap.put("name", savedUser.getMemberName());
+        dataMap.put("token", token);
+
+        responseMap.put("data", dataMap);
+
+        // JSON으로 직렬화 후 응답
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(responseMap);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonResponse);
     }
 }

@@ -96,9 +96,9 @@
             orderName: "[[${purchase.product.content}]]",
             successUrl: window.location.origin + "/payment/success",
             failUrl: window.location.origin + "/payment/fail",
-            customerEmail: "customer123@gmail.com", // 받아온 회원정보로 수정
-            customerName: "김토스", // 받아온 회원정보로 수정
-            customerMobilePhone: "01012341234", // 받아온 회원정보로 수정
+            customerEmail: "[[${member.memberEmail}]]", 
+            customerName: "[[${member.memberName}]]",
+            customerMobilePhone: "[[${member.memberPhone}]]", 
           });
         });
       }

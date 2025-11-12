@@ -5,82 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>채팅메인 일반회원</title>
   <link rel="stylesheet" th:href="@{/css/gMain.css}">
-<link th:href="@{/css/style.css}" rel="stylesheet">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
+
   <main class="page-gMain">
     <div class="container">
 
+      <!-- 요일 선택 -->
       <div class="weekday" id="weekday">
-        <button class="chip" data-day="월" type="button">월요일</button>
-        <button class="chip" data-day="화" type="button">화요일</button>
-        <button class="chip is-active" data-day="수" type="button" aria-pressed="true">수요일</button>
-        <button class="chip" data-day="목" type="button">목요일</button>
-        <button class="chip" data-day="금" type="button">금요일</button>
+        <a class="chip"
+           th:classappend="${selectedDow} == 0 ? ' is-active' : ''"
+           th:href="@{/chat/member(dow=0, duration=${duration})}">월요일</a>
+        <a class="chip"
+           th:classappend="${selectedDow} == 1 ? ' is-active' : ''"
+           th:href="@{/chat/member(dow=1, duration=${duration})}">화요일</a>
+        <a class="chip"
+           th:classappend="${selectedDow} == 2 ? ' is-active' : ''"
+           th:href="@{/chat/member(dow=2, duration=${duration})}">수요일</a>
+        <a class="chip"
+           th:classappend="${selectedDow} == 3 ? ' is-active' : ''"
+           th:href="@{/chat/member(dow=3, duration=${duration})}">목요일</a>
+        <a class="chip"
+           th:classappend="${selectedDow} == 4 ? ' is-active' : ''"
+           th:href="@{/chat/member(dow=4, duration=${duration})}">금요일</a>
       </div>
 
+      <!-- 변호사 카드들 -->
       <section class="cards" id="cards">
 
-        <article class="card" data-days="수,목">
+        <article class="card" th:each="law : ${lawyers}">
           <div class="photo">사진</div>
+
           <div class="info">
-            <h3 class="name">변호사이름</h3>
-            <div class="meta">상담가능시간 · 09:30~12:00</div>
+            <h3 class="name" th:text="${law.lawyerName}">변호사이름</h3>
+            <div class="meta">
+              상담가능시간 ·
+              <span th:text="${law.start != null ? law.start : '시간 미등록'}"></span>
+              <span th:if="${law.end != null}"> ~ <span th:text="${law.end}"></span></span>
+            </div>
+            <div class="meta" th:if="${law.canRequestNow == false}"
+                 style="color:#dc2626; margin-top:4px;">
+              지금은 신청할 수 없는 시간입니다.
+            </div>
+
+            <!-- 신청 폼 -->
+            <form th:action="@{/chat/request}" method="post" style="margin-top:12px;">
+              <input type="hidden" name="lawyerIdx" th:value="${law.lawyerIdx}">
+
+              <!-- 카드 안 라디오 2개 -->
+              <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                <label style="display:flex; gap:4px; align-items:center; font-size:12px; color:#374151;">
+                  <input type="radio" name="durationMinutes" value="30"
+                         th:checked="${duration} == 30">
+                  30분 (100P)
+                </label>
+                <label style="display:flex; gap:4px; align-items:center; font-size:12px; color:#374151;">
+                  <input type="radio" name="durationMinutes" value="60"
+                         th:checked="${duration} == 60">
+                  60분 (200P)
+                </label>
+              </div>
+
+              <button class="btn" type="submit"
+                      th:disabled="${law.canRequestNow == false}">
+                신청
+              </button>
+            </form>
           </div>
-          <button class="btn" type="button">신청</button>
         </article>
 
-        <article class="card" data-days="수,금">
-          <div class="photo">사진</div>
-          <div class="info">
-            <h3 class="name">변호사이름</h3>
-            <div class="meta">상담가능시간 · 13:00~17:00</div>
-          </div>
-          <button class="btn" type="button">신청</button>
-        </article>
-
-        <article class="card" data-days="화,수">
-          <div class="photo">사진</div>
-          <div class="info">
-            <h3 class="name">변호사이름</h3>
-            <div class="meta">상담가능시간 · 10:00~18:00</div>
-          </div>
-          <button class="btn" type="button">신청</button>
-        </article>
-
-        <article class="card" data-days="수">
-          <div class="photo">사진</div>
-          <div class="info">
-            <h3 class="name">변호사이름</h3>
-            <div class="meta">상담가능시간 · 오전/오후 협의</div>
-          </div>
-          <button class="btn" type="button">신청</button>
-        </article>
-
-        <article class="card" data-days="화,수,목,금">
-          <div class="photo">사진</div>
-          <div class="info">
-            <h3 class="name">변호사이름</h3>
-            <div class="meta">상담가능시간 · 상시</div>
-          </div>
-          <button class="btn" type="button">신청</button>
-        </article>
-
-        <article class="card" data-days="수,금">
-          <div class="photo">사진</div>
-          <div class="info">
-            <h3 class="name">변호사이름</h3>
-            <div class="meta">상담가능시간 · 14:00~19:00</div>
-          </div>
-          <button class="btn" type="button">신청</button>
-        </article>
-
-        <p class="empty" id="empty" hidden>해당 요일에 상담 가능한 변호사가 없습니다.</p>
+        <!-- 없을 때 -->
+        <p class="empty"
+           th:if="${#lists.isEmpty(lawyers)}">
+          해당 요일에 상담 가능한 변호사가 없습니다.
+        </p>
       </section>
     </div>
   </main>
+
   <div class="include" th:replace="~{include/footer :: footer}"></div>
+
   <script th:src="@{/js/js.js}"></script>
   <script th:src="@{/js/gMain.js}"></script>
 </body>

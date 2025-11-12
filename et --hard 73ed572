@@ -1,0 +1,379 @@
+[33ma11f26b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mhe[m[33m)[m recommit without big model file
+[33mc19d83b[m remove large model file from repo
+[33m6bf22a5[m 수정
+[33m0ffb297[m Merge branch 'main' into he
+[33m92bf97a[m kobert attach
+[33m73ed572[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #56 from eddy-fox/th
+[33m4951d45[m[33m ([m[1;31morigin/th[m[33m)[m 11.11
+[33m26c439f[m 1111
+[33m9d3ef5b[m Merge pull request #55 from eddy-fox/ym
+[33m43102cf[m[33m ([m[1;31morigin/ym[m[33m)[m oauth, session
+[33mbfe1571[m Merge pull request #54 from eddy-fox/he
+[33m2789c20[m[33m ([m[1;31morigin/he[m[33m)[m chat연결
+[33m64d998e[m Merge branch 'main' into ym
+[33m5bae0de[m google oauth
+[33m0c3d3ba[m Merge branch 'main' into th
+[33mb44b138[m test
+[33m43011be[m Merge pull request #53 from eddy-fox/he
+[33md527b97[m 1111
+[33m06cb0fe[m Merge pull request #52 from eddy-fox/he
+[33mc12a206[m 수정
+[33m40c43a9[m Merge pull request #51 from eddy-fox/dy2
+[33mfa5f5ce[m Merge pull request #50 from eddy-fox/yr
+[33m3b436fc[m Merge pull request #49 from eddy-fox/he
+[33m67fe6ac[m oauth추가
+[33mad2ecd0[m[33m ([m[1;31morigin/yr[m[33m)[m  11-10  학원끝
+[33m20cc3dd[m[33m ([m[1;31morigin/dy2[m[33m)[m 회원정보 전달 및 수정
+[33m78a0ecd[m 1110
+[33mdfb431f[m  확인1
+[33me00d439[m Merge branch 'main' into ym
+[33m3a6bb58[m merging
+[33mf4cc827[m Merge pull request #48 from eddy-fox/he
+[33mb7274c4[m admin
+[33m2fe8502[m  main merge 성공 실행됨
+[33m37c208e[m Merge branch 'main' into ym
+[33m9f898c5[m 수정
+[33m3d191a4[m Merge pull request #47 from eddy-fox/he
+[33mecb3c47[m merge오류완
+[33m6f7b2da[m  main 과 merge 중
+[33m73d3193[m main merge 시도 하기전 저장
+[33m48aa477[m Merge pull request #45 from eddy-fox/yr
+[33m0ecb66d[m Merge pull request #46 from eddy-fox/he
+[33mb4cd328[m merge오류1차
+[33ma664310[m  OAuth2MemberService 잡기
+[33m770222d[m 학원컴 11-10
+[33m51debaa[m Merge branch 'main' into yr
+[33m0f58475[m Merge pull request #44 from eddy-fox/dy2
+[33mdc2c113[m 11-09
+[33m720ef80[m  11-07 학원끝
+[33mc6cac1e[m 11/07
+[33mfd03e03[m  qnaWrite html css js 11-07
+[33m06046ec[m  qna anwer list html css js 10-07
+[33m9d7be24[m add config
+[33m4448217[m new
+[33ma1d9139[m Merge pull request #43 from eddy-fox/yr
+[33ma9afcb1[m Merge pull request #42 from eddy-fox/ym
+[33m1297c74[m  11-06 학원끝
+[33m6615290[m ocr 연동.
+[33m3ae5234[m ocr 연동
+[33m68d0f5d[m 11-06
+[33med91fac[m Merge branch 'main' into ym
+[33med28fc0[m Merge branch 'main' of https://github.com/eddy-fox/lawlex_project
+[33mcabafee[m btn
+[33mb9d4291[m maint merge
+[33meb51572[m ad 이미지 업로드, 사이드바 선택표시, entity default 설정
+[33mfc3fd23[m  11-05 학원 끝
+[33m9f767d6[m 생각을 다시 시작한다
+[33m4455bef[m 실행은되는데 변경한게 적용안되고 실행된다 이상하다 일단 commit을 해본뒤 다시 실행해보자 시도 시작
+[33m0a7eb0f[m Merge pull request #41 from eddy-fox/th
+[33m5d1b000[m Merge pull request #40 from eddy-fox/yr
+[33m11f044b[m Merge branch 'main' of https://github.com/eddy-fox/lawlex_project
+[33mb850769[m 11-05 main merging
+[33m0df3de8[m 11-05
+[33m2bca1e6[m 1104
+[33ma2f50ea[m 11-04
+[33m33c34fc[m Merge pull request #39 from eddy-fox/he
+[33mdf244a7[m 251104 수정
+[33m42009dd[m Merge pull request #38 from eddy-fox/ym
+[33mb635ca6[m Merge branch 'main' into yr
+[33md541eb5[m  faq
+[33mcfac825[m entity 수정
+[33m12a3010[m Merge pull request #37 from eddy-fox/ym
+[33m8310afe[m python 연동
+[33mff46f5a[m  faq 11-04
+[33m2dafbef[m  무슨상황인지 모르겠다
+[33mb894b38[m mybook
+[33m68ff042[m 어딘가 오타를 고치다
+[33mceb02c9[m test1
+[33m52f6b90[m test123
+[33ma0a68b1[m 수정
+[33m980cb8a[m Merge branch 'yr' of https://github.com/eddy-fox/lawlex_project into yr
+[33m305c4f2[m Merge pull request #36 from eddy-fox/yr
+[33me68065c[m html css js 경로 수정 완 aAll.html 연결 끝어둠
+[33m2505248[m html 이동과 all 폴더 삭제
+[33m1300f5d[m css | js 정리
+[33m41adc27[m 광고 css
+[33m037009f[m Merge pull request #35 from eddy-fox/he
+[33mb341ba8[m 구글드라이브
+[33m03fe7b9[m Merge pull request #34 from eddy-fox/he
+[33m96e9459[m Merge branch 'yr' into he
+[33me141cff[m Merge pull request #33 from eddy-fox/ym
+[33m730e71c[m[33m ([m[1;32myr[m[33m)[m side end
+[33mf902282[m noticeList.css 수정중 수정해야함 까먹지말것
+[33m2daa70e[m board side end
+[33m1aae119[m admin side end
+[33m45ddd4a[m side 1v
+[33me8f2566[m chaIcon
+[33m5373543[m chatIcon
+[33ma7c7f16[m chating
+[33mbda9a5e[m css 작업
+[33m33b92b6[m 10-31
+[33m9f7a7e1[m news 10-31
+[33m21ab0dd[m 10-31 book
+[33mf066ba7[m 임시
+[33mfae1773[m 10-30
+[33md496ff6[m 주석 추가
+[33m893cfee[m 오류수정
+[33m762b0d3[m 10-30일 원상복귀
+[33mbb56e14[m 10-30일 side를 만들다 일이 커저서 다시 돌아가 페이지를 다 만들고 만들기로 했다 건든거 다시 다 수정하고 돌려두었다 페이지 만들고 수정해라
+[33m6f17a5e[m  side 시도 시작
+[33mde67c29[m 10-29 newsBorad 작업중
+[33m12be867[m  index 10-29
+[33m96d20e8[m Merge pull request #30 from eddy-fox/he
+[33m8dba435[m Merge pull request #31 from eddy-fox/ym
+[33m3d09c81[m merge
+[33me188341[m 광고 관련 html, 기능 추가
+[33me6abe9a[m 251029 채팅1차 전체 완성
+[33m03d3f1e[m Merge branch 'main' into ym
+[33mf6e55f7[m Merge branch 'main' of https://github.com/eddy-fox/lawlex_project
+[33m0d11d2d[m 포인트, 구매에 변호사 idx 제거
+[33m6ecd0cc[m[33m ([m[1;32mym[m[33m)[m Merge branch 'ym' of https://github.com/eddy-fox/lawlex_project into ym
+[33m60c2c40[m 채팅1차
+[33m213ca87[m Merge pull request #29 from eddy-fox/he
+[33m711503f[m 구글드라이브 오류해결
+[33maa60a0a[m Merge pull request #28 from eddy-fox/he
+[33m3111c74[m 구글제외나머지수정
+[33mf347d8b[m Merge pull request #27 from eddy-fox/th
+[33m21de362[m 10-28 학원끝
+[33m5447850[m member 폴더
+[33m13cf7d0[m ad DTO, Entity추가
+[33m86511ea[m 1028-2
+[33m17455e8[m 1027
+[33ma80cfa3[m Merge pull request #26 from eddy-fox/he
+[33mecae960[m Merge pull request #25 from eddy-fox/yr
+[33maa60ad4[m 251027-채팅1차
+[33m6a98446[m  member 폴더 10-27 학원 끝
+[33mfcd9367[m 광고 관련 html 작업
+[33mb622706[m board 이름 수정 html css js aAll temporary
+[33mfd8bb7f[m  작업전 수정함 확인밎 작업준비
+[33m0352faa[m gJoin lJoin html css js
+[33m066195e[m compelete payment
+[33m6e69dca[m loginChoice.html css js
+[33m1fe09b7[m 251024
+[33m432696d[m Merge pull request #23 from eddy-fox/he
+[33m66931f4[m Merge pull request #22 from eddy-fox/th
+[33mf2e66c2[m Merge branch 'main' into th
+[33m1dbfadb[m Merge pull request #21 from eddy-fox/yr
+[33me09a23f[m 251024-newsboard1차완
+[33m5ca731f[m 1024_board
+[33m817fc12[m  10-24 로그인 아이디비번찾기 수정함
+[33m1368745[m loginFind.hmtl css js
+[33ma7af0fb[m login.html css js
+[33m48e014e[m dy_1~9 시작전
+[33mb07490b[m complete merge
+[33m9d715aa[m merge main
+[33m70ccdd5[m save file
+[33m8700687[m Merge pull request #20 from eddy-fox/ym
+[33m55e4d77[m Merge pull request #20 from eddy-fox/ym
+[33m5043a5c[m 수정2차
+[33mf130b52[m 수정2차
+[33m5e56aad[m merge main2
+[33m94b4fa7[m merge main
+[33m10019e4[m Merge branch 'main' of https://github.com/eddy-fox/lawlex_project
+[33ma69e058[m merge 전 저장
+[33m59c45dd[m Merge pull request #19 from eddy-fox/he
+[33m1666b61[m Merge pull request #19 from eddy-fox/he
+[33m02445e6[m Merge branch 'main' into he
+[33m598a0c8[m Merge branch 'main' into he
+[33m48816a9[m 251024
+[33m85b7ca3[m 251024
+[33mbb74ed9[m Merge pull request #17 from eddy-fox/yr
+[33m3339eb8[m Merge pull request #17 from eddy-fox/yr
+[33m791c7a3[m Merge pull request #16 from eddy-fox/th
+[33mf2a68ae[m Merge pull request #16 from eddy-fox/th
+[33m8152005[m lawyerMain html css js
+[33md3b3651[m lawyerMain html css js
+[33me3f3a82[m 10-23 학원 끝 gMain
+[33m2906093[m 10-23 학원 끝 gMain
+[33m3e167fe[m 10-23 학원 게시판 페이지들
+[33m27c6cdc[m 10-23 학원 게시판 페이지들
+[33mcd4ae86[m boardWrite
+[33m8230574[m boardWrite
+[33m8fa9591[m boardModify
+[33m276975d[m boardModify
+[33me7c9c15[m boardList
+[33m29bba72[m boardList
+[33m1708307[m boardAnswer
+[33m9d46286[m boardAnswer
+[33m2919da7[m add toss secretKey
+[33m68a0ef6[m add toss secretKey
+[33m62772f3[m my notebook pull
+[33mb3815f9[m my notebook pull
+[33m644642f[m memberController 수정
+[33mfe51745[m memberController 수정
+[33m75bfaf1[m 이것저것 많이 추가함....
+[33m14ca733[m 이것저것 많이 추가함....
+[33mfda73b2[m 이것저것 많이 추가함...
+[33m607b011[m 이것저것 많이 추가함...
+[33m8a13847[m 학원끝 10-22
+[33m5b5c6a6[m 학원끝 10-22
+[33m52b6455[m  채팅 페이지들 코드 일자를 정렬했음 코드정렬만 했음 스타일 안 했음 스타일 해야 함
+[33mc1423d0[m  채팅 페이지들 코드 일자를 정렬했음 코드정렬만 했음 스타일 안 했음 스타일 해야 함
+[33m4427752[m question
+[33m011d736[m question
+[33m62f8a41[m 관리자 문의 회원 관리 스타일 위치 수정 완.....ㅜㅜ .........음.....정말 완인걸까.....음.......
+[33mdd9eb4d[m 관리자 문의 회원 관리 스타일 위치 수정 완.....ㅜㅜ .........음.....정말 완인걸까.....음.......
+[33mfa3a43b[m 관리자 문의관리와 회원관리 스타일 비슷하게 만들기
+[33mbd0cabb[m 관리자 문의관리와 회원관리 스타일 비슷하게 만들기
+[33mded82bb[m merging main
+[33m577345c[m merging main
+[33m7141fd8[m 포인트 결제 form postmapping 수정
+[33mc14faed[m 포인트 결제 form postmapping 수정
+[33m82951b9[m application.properties에서 병합 충돌 해결
+[33m8bd7172[m application.properties에서 병합 충돌 해결
+[33m36a2d36[m Merge branch 'yr' into 1017
+[33m8af0dc6[m Merge branch 'yr' into 1017
+[33m304cd9a[m pulled main
+[33m3396c35[m pulled main
+[33m48ae228[m 관리자 회원관리 memberManagement
+[33m1438c04[m 관리자 회원관리 memberManagement
+[33ma0a0d53[m 관리자 운의글 관리 QnAManagement.html
+[33m6a4fd1a[m 관리자 운의글 관리 QnAManagement.html
+[33ma5e37dc[m 관리자 광고 상새 adInfo.html
+[33m2ca00a4[m 관리자 광고 상새 adInfo.html
+[33m6c77ab1[m  광고관리리스트 adList.html
+[33m681f5d8[m  광고관리리스트 adList.html
+[33m0d51bd8[m Merge pull request #15 from eddy-fox/he
+[33m2908875[m Merge pull request #15 from eddy-fox/he
+[33mee202a8[m 10-22 학원 시작전으로 일단 표기 진행중...
+[33me09c8bb[m 10-22 학원 시작전으로 일단 표기 진행중...
+[33m5a410b4[m  포인트 결제 페이지
+[33m53b14fc[m  포인트 결제 페이지
+[33m38d1c11[m 0001
+[33m2d0c239[m 0001
+[33m7e8dfa8[m 251021he
+[33m03fecd8[m 251021he
+[33ma16e4eb[m 251021
+[33m47abaea[m 251021
+[33m37391fc[m point, payment function 작업중
+[33m22341f7[m point, payment function 작업중
+[33m3447d7a[m 결제-메인페이지 관리자-광고관리-리스트 관리자-광고관리-상세 관리자-문의글관리 관리자-회원관리 학원 나가기 전 10-21
+[33ma14f9df[m 결제-메인페이지 관리자-광고관리-리스트 관리자-광고관리-상세 관리자-문의글관리 관리자-회원관리 학원 나가기 전 10-21
+[33m13d7a60[m  상담게시판_리스트 페이지 숫자 와 제목 검색어 검색 위치
+[33mc74b9c9[m  상담게시판_리스트 페이지 숫자 와 제목 검색어 검색 위치
+[33m3c15df9[m Merge branch 'main' into yr
+[33m3ff81a9[m Merge branch 'main' into yr
+[33m25c2b5d[m test
+[33mf084570[m test
+[33m68022b8[m Merge pull request #14 from eddy-fox/he
+[33mc9f5d42[m Merge pull request #14 from eddy-fox/he
+[33mca08e13[m defname
+[33mbc0c20b[m defname
+[33mc02bf36[m Merge branch 'main' into he
+[33m314af23[m Merge branch 'main' into he
+[33m5845f91[m columnName
+[33m60c273b[m columnName
+[33m8f65725[m test
+[33m9ee1188[m test
+[33m5deab4d[m 10-21 시작 전 main merge
+[33m2ced9a5[m 10-21 시작 전 main merge
+[33m99b6492[m test
+[33m67318e5[m test
+[33m78b2f6b[m Merge pull request #13 from eddy-fox/ym
+[33m8e7e9a8[m Merge pull request #13 from eddy-fox/ym
+[33m61ea25c[m entity 연동 수정
+[33md4c8efc[m entity 연동 수정
+[33m64bb1d1[m 251021-1
+[33m2128a03[m 251021-1
+[33m1416496[m 할말없음
+[33m53ef4e4[m 할말없음
+[33m20101bd[m 10 21
+[33m3b03e3d[m 10 21
+[33m1abdb48[m newsboard + adminDTO entity
+[33m45d79b1[m newsboard + adminDTO entity
+[33m013e3d8[m point, QnA function 수정 중
+[33m20e0082[m point, QnA function 수정 중
+[33m3a04c02[m 251020_newsBoardCreate
+[33m5305483[m 251020_newsBoardCreate
+[33md1ae840[m pulled main
+[33m6df37a5[m pulled main
+[33m2e7a861[m html resuouce merge
+[33mddb2c91[m html resuouce merge
+[33mb44b8c8[m 문의글관리 merge
+[33m46cda0b[m 문의글관리 merge
+[33m83b9999[m add QnA manage function2
+[33m1841491[m add QnA manage function2
+[33m2bf8669[m add QnA manage function
+[33m41308ac[m add QnA manage function
+[33m6efdf2e[m merged ym
+[33m781e5bc[m merged ym
+[33mc03e73a[m 질문컨트롤러 질문디티오 랭킹디티오
+[33m9ff855b[m 질문컨트롤러 질문디티오 랭킹디티오
+[33m0fd3a32[m last week
+[33mcf7443a[m last week
+[33maf6b33e[m  일단 GPT 로 만들어 디자인이나 등등 맞지 않을 수 있습니다 figma ai 사용은 다음주에 가능
+[33mdb2fb2d[m  일단 GPT 로 만들어 디자인이나 등등 맞지 않을 수 있습니다 figma ai 사용은 다음주에 가능
+[33m2093421[m 준비 준비 준비 figma ai 다씀 gemini gpt 는 창작해서 만드는대 figma ai 는 이미지 대로 만들고 창작 안해고 하지 말라는거 다 하지 못하게 해두 었는대 막혔다. 원통해라
+[33m6dd191b[m 준비 준비 준비 figma ai 다씀 gemini gpt 는 창작해서 만드는대 figma ai 는 이미지 대로 만들고 창작 안해고 하지 말라는거 다 하지 못하게 해두 었는대 막혔다. 원통해라
+[33mf777e53[m 251017-1
+[33m29e9dee[m 251017-1
+[33m768eb23[m 251017
+[33ma6ea238[m 251017
+[33mca68230[m add question DTO, Entity, Repository, Service
+[33m3810257[m add question DTO, Entity, Repository, Service
+[33m73c1341[m 기본틀
+[33m2189e03[m 기본틀
+[33m61a7348[m html 기본틀
+[33me98de72[m html 기본틀
+[33m60ff533[m qnaManagement.html 추가
+[33mf91bcc1[m qnaManagement.html 추가
+[33m139393e[m test2
+[33m2e50504[m test2
+[33me8573ed[m 변호사 관리 추가
+[33m6c82756[m 변호사 관리 추가
+[33ma736974[m lawyer추가
+[33m8213e66[m lawyer추가
+[33m45a6afd[m 15
+[33m0b8ad51[m 15
+[33m4ca4cbf[m lawyer추가
+[33m9eca002[m lawyer추가
+[33mc32e030[m add lawyerManagement.html
+[33m3081d72[m add lawyerManagement.html
+[33m16087cb[m interestName받아오기
+[33me1585a9[m interestName받아오기
+[33meb86d41[m 10-16 학원에서 나가기
+[33me2bf65b[m 10-16 학원에서 나가기
+[33m2ef0695[m index include style 기본들
+[33md48e910[m index include style 기본들
+[33m6376eb0[m index style 정리전
+[33mec83b64[m index style 정리전
+[33m48c7a91[m 10-16 | 작업 시작전 main merge
+[33m7028b5c[m 10-16 | 작업 시작전 main merge
+[33mfe1b935[m 10.16 ym merge
+[33m3305da3[m 10.16 ym merge
+[33m395d27b[m 일단 폴더만 만들어둠
+[33m13e507b[m 일단 폴더만 만들어둠
+[33ma0e9e08[m ym_test3
+[33m9f4395f[m ym_test3
+[33m5fd4c19[m Merge pull request #7 from eddy-fox/ym
+[33m8c9d3c1[m Merge pull request #7 from eddy-fox/ym
+[33m05dfa0c[m Merge branch 'main' into ym
+[33me48c0df[m Merge branch 'main' into ym
+[33md82e07d[m sample1
+[33mdc51833[m sample1
+[33m5de9c04[m biuldgradle
+[33m7fdbddf[m biuldgradle
+[33mc7be486[m Merge branch 'main' of https://github.com/eddy-fox/lawlex_project
+[33m3683838[m Merge branch 'main' of https://github.com/eddy-fox/lawlex_project
+[33m83233c2[m testfile_delete
+[33m04becd4[m testfile_delete
+[33m768353d[m 251014 Merge(YM)
+[33mf7088d0[m 251014 Merge(YM)
+[33mb9daa01[m ym_version1
+[33m0c848d7[m ym_version1
+[33mb625234[m Merge pull request #2 from eddy-fox/th
+[33m385f809[m Merge pull request #2 from eddy-fox/th
+[33mce55d59[m Merge pull request #3 from eddy-fox/ym
+[33mefd7ac0[m Merge pull request #3 from eddy-fox/ym
+[33mff26015[m Merge pull request #4 from eddy-fox/yr
+[33m77d1f07[m Merge pull request #4 from eddy-fox/yr
+[33m7b6c11a[m Merge pull request #5 from eddy-fox/dy
+[33m99ecad3[m Merge pull request #5 from eddy-fox/dy
+[33m00ab038[m yr test
+[33m20620ce[m markdown
+[33m45e14e6[m day2
+[33m65810b7[m ym_test
+[33me713480[m Merge pull request test01
+[33ma4f8aa7[m Merge pull request test01
+[33m4c115b9[m test01
+[33maf842fd[m[33m ([m[1;32mswitch[m[33m)[m init

@@ -1,9 +1,7 @@
 package com.soldesk.team_project.controller;
 
 import java.security.Principal;
-import java.util.List;
 
-import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +40,7 @@ public class BoardController {
         Page<BoardEntity> paging = this.boardService.getList(page, kw);
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
-        return "list";
+        return "board/list";
 
     }
 
@@ -51,7 +49,7 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
-        return "detail";
+        return "board/reboard";
 
     }
 
@@ -59,7 +57,7 @@ public class BoardController {
     @GetMapping("/create")
     public String boardCreate(BoardForm boardForm) {
 
-        return "write";
+        return "board/write";
 
     }
 
@@ -68,10 +66,10 @@ public class BoardController {
     public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult, Principal principal) {
 
         if(bindingResult.hasErrors()) {
-            return "write";
+            return "board/write";
         }
         MemberEntity memberEntity = this.memberService.getMember(principal.getName());
-        this.boardService.create(boardForm.getBoard_title(), boardForm.getBoard_content(), memberEntity);
+        this.boardService.create(boardForm.getBoardTitle(), boardForm.getBoardContent(), memberEntity);
         return "redirect:/board/list";
 
     }
@@ -85,10 +83,10 @@ public class BoardController {
             return "write";
         }
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        if(!boardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        this.boardService.modify(boardEntity, boardForm.getBoard_title(), boardForm.getBoard_content());
+        this.boardService.modify(boardEntity, boardForm.getBoardTitle(), boardForm.getBoardContent());
         return String.format("redirect:/board/detail/%s", id);
 
     }
@@ -98,7 +96,7 @@ public class BoardController {
     public String boardDelete(Principal principal, @PathVariable("id") Integer id) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        if(!boardEntity.getAuthor().getMemberId().equals(principal.getName())) {
+        if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.boardService.delete(boardEntity);
