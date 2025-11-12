@@ -57,7 +57,7 @@ public class QuestionController {
         return "question/qnaWrite";
     }
 
-        @GetMapping("/qnaInfo")
+    @GetMapping("/qnaInfo")
     public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model) {
         QuestionDTO infoQ = questionService.getQ(qIdx);
         // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
