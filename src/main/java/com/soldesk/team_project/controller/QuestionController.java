@@ -5,10 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
-import com.soldesk.team_project.dto.LawyerDTO;
-import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
 import com.soldesk.team_project.service.QuestionService;
 
@@ -39,7 +36,7 @@ public class QuestionController {
     
     @GetMapping("/qnaWrite")
     public String qnaWrite(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite){
-    
+        
         return "question/qnaWrite";
     
     }
@@ -53,5 +50,7 @@ public class QuestionController {
         questionService.qnaWriting(qnaWrite);
         return "question/qnaWrite";
     }
+
+    
 
 }

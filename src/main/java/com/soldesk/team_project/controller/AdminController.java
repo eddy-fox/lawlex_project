@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +16,6 @@ import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
-import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.infra.DriveUploader;
 import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
@@ -250,5 +248,21 @@ public class AdminController {
 
         return "redirect:/admin/lawyer/pending";
     */
-    
+
+    /* Q 작성글 상세보기 */
+    // @GetMapping("/qnaAnswer")
+    // public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
+    //     QuestionDTO infoQ = questionService.getQ(qIdx);
+    //     model.addAttribute("infoQ", infoQ);
+    //     if (infoQ != null && infoQ.getMemberIdx() != null){
+    //         MemberDTO mInfoQ =  
+    //         model.addAttribute("mInfoQ", mInfoQ);
+    //     }else if(infoQ != null && infoQ.getLawyerIdx() != null){
+
+    //         model.addAttribute(null, infoQ);
+
+    //     }
+
+    //     return "admin/qnaAnswer";
+    // }
 }

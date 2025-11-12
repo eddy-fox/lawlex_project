@@ -8,8 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/ranking.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
+
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
+    <div class="include" th:replace="~{include/header :: header}"></div>
     <main class="page-ranking">
         <div class="container">
 
@@ -18,23 +19,29 @@
             </div>
 
             <div class="filter">
-                <a class="pickBtn" th:href="@{/rank/ranking(pick='like')}" th:classappend="${pick} == 'like' ? ' on' : ''">좋아요순</a>
-                <a class="pickBtn" th:href="@{/rank/ranking(pick='answer')}" th:classappend="${pick} == 'answer' ? ' on' : ''">답변수순</a>
+                <a class="pickBtn" th:href="@{/rank/ranking(pick='like')}"
+                    th:classappend="${pick} == 'like' ? ' on' : ''">좋아요순</a>
+                <a class="pickBtn" th:href="@{/rank/ranking(pick='answer')}"
+                    th:classappend="${pick} == 'answer' ? ' on' : ''">답변수순</a>
             </div>
 
             <section>
-                <div class="top" th:each="rank, st : ${rankingList}" th:class="${st.index==0 ? 'top-1' : (st.index==1 ? 'top-2' : (st.index==2 ? 'top-3' : 'top'))}">
+                <div class="top" th:each="rank, st : ${rankingList}"
+                    th:class="${st.index==0 ? 'top-1' : (st.index==1 ? 'top-2' : (st.index==2 ? 'top-3' : 'top'))}">
                     <div class="left">
                         <div class="num">1위</div>
-                        <div class="photo" th:if="${st.index<3}"><img th:src="@{/${rank.lawyerImgPath}}" th:alt="${rank.lawyerName}"></div>
+                        <div class="photo" th:if="${st.index<3}"><img th:src="@{/${rank.lawyerImgPath}}"
+                                th:alt="${rank.lawyerName}"></div>
                     </div>
                     <div class="among"><a class="name" th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</a></div>
                     <div class="right">
-                        <div class="pick" >좋아요 <span class="v" th:text="${#numbers.formatInteger(rank.lawyerLike, 0, 'COMMA')}">3,451</span></div>
-                        <div class="pick">답변수 <span class="v" th:text="${#numbers.formatInteger(rank.lawyerAnswerCnt, 0, 'COMMA')}">3,951</span></div>
+                        <div class="pick">좋아요 <span class="v"
+                                th:text="${#numbers.formatInteger(rank.lawyerLike, 0, 'COMMA')}">3,451</span></div>
+                        <div class="pick">답변수 <span class="v"
+                                th:text="${#numbers.formatInteger(rank.lawyerAnswerCnt, 0, 'COMMA')}">3,951</span></div>
                     </div>
                 </div>
-  
+
             </section>
 
             <section class="category-section">

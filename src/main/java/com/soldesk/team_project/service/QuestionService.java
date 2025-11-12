@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
@@ -107,17 +108,27 @@ public class QuestionService {
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
     }
     
-
+    
     public Page<QuestionDTO> getQnaPaging(int page){
         int p = Math.max(page, 1) - 1;
         Pageable pageable = PageRequest.of(p, 10);
         return questionRepository.findAllByOrderByQuestionRegDateDesc(pageable)
         .map(this::convertQuestionDTO);
     }
-
+    
     public void qnaWriting(QuestionDTO qnaWrite){
         QuestionEntity questionEntity = convertQuestionEntity(qnaWrite);
         questionRepository.save(questionEntity);
     }
+
+    // public 
+    
+    // public QuestionDTO getQ(int qIdx){
+    //  QuestionEntity QuestionEntity = questionRepository.findById(qIdx).orElse(null);
+    //  QuestionDTO QuestionDTO = convertQuestionDTO(QuestionEntity);
+    //  return QuestionDTO;
+    // }
+
+    
 }
 

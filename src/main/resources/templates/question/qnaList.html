@@ -52,7 +52,7 @@
                                 <a href="#">비밀글 입니다</a>
                             </td>
                             <td class="title" th:unless="${qList.qSecret == 1}">
-                                <a href="#" th:text="${qList.qTitle}"></a>
+                                <a th:href="@{/admin/qnaAnswer(qIdx=${qList.qIdx})}" th:text="${qList.qTitle}"></a>
                             </td>
                             <td class="answer" th:if="${qList.qAnswer == 1}">✓</td>
                             <td class="answer" th:unless="${qList.qAnswer == 1}">-</td>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>적성글 상세</title>
+    <link rel="stylesheet" th:href="@{/css/qnaWrite.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-qnaWrite">
+        <div class="inner">
+            <section class="frame">
+                <form th:action="@{/question/qnaWrite}" th:object="${qnaWrite}" id="qnaForm" method="post">
+                    <div class="form-group">
+                        <div class="header-line">
+                            <!-- <input type="hidden" th:field="*{memberIdx}"> -->
+                            <label for="titleInput" class="form-label">제목</label>
+                            <div class="checkbox-group in-header">
+                                <input type="hidden" name="qSecret" value="0">
+                                <input type="checkbox" id="secretCheck" class="checkbox-input" name="qSecret" th:field="*{qSecret}" value="1"/>
+                                <label for="secretCheck" class="checkbox-label">비밀글로 작성</label>
+                            </div>
+                        </div>
+                        <input id="titleInput" type="text" class="form-input" placeholder="제목을 입력하세요" th:field="*{qTitle}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contentTextarea" class="form-label">내용</label>
+                        <textarea id="contentTextarea" class="form-textarea" placeholder="상세 문의 내용을 작성해주세요." th:field="*{qContent}"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-cancel" id="cancelBtn">취소</button>
+                        <button type="submit" class="btn btn-submit" id="submitBtn" disabled>글쓰기</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/qnaWrite.js}"></script>
+</body>
+</html>

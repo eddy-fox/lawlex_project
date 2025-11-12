@@ -19,4 +19,11 @@ public class QuestionDTO {
     private Integer memberIdx;
     private Integer lawyerIdx;
 
+    private String memberId;
+    private String memberName;
+
+    private String  lawyerId;
+    private String  lawyerName;
+
+
 }

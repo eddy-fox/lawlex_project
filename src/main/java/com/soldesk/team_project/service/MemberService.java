@@ -281,4 +281,11 @@ public class MemberService {
 
     // ====== 결과 객체 ======
     public record MemberUpdateResult(String newUserId, MemberEntity member) {}
+
+    public MemberDTO getIdx(Integer memberIdx){
+        return memberRepository.findById(memberIdx)
+                               .map(this::convertMemberDTO)
+                               .orElse(null);
+    }
+    
 }
