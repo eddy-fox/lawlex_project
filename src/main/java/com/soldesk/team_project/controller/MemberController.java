@@ -67,7 +67,10 @@ public class MemberController {
     @GetMapping("/point")
     public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
         
+        // 세션에서 회원 가져오기
         Integer memberIdx = loginUser.getMemberIdx();
+        MemberDTO member = memberService.searchSessionMember(memberIdx);
+        model.addAttribute("member", member);
                 
         // 포인트 구매 상품
         List<ProductDTO> productList = purchaseService.getBuyPointProduct();
@@ -570,40 +573,4 @@ public String loginSubmit(@ModelAttribute MemberDTO loginConfirmMember,
         }
     }
 
-    @GetMapping("/oauth2/additional-info")
-    public String showAdditionalInfoForm() {
-        return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
-    }
-    @PostMapping("/oauth2/complete")
-    public void saveAdditionalInfo(@ModelAttribute("member123")MemberDTO memberDTO,
-                                    HttpSession session, HttpServletResponse response) throws IOException{
-
-        TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
-        if (tempUser == null) {
-            response.sendRedirect("/member/login");
-            return;
-        }
-        MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
-        session.removeAttribute("oauth2TempUser");
-        String token = jwtProvider.createToken(savedUser);
-        
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("status", HttpServletResponse.SC_OK);
-        responseMap.put("message", "Login successful");
-
-        Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("email", savedUser.getMemberEmail());
-        dataMap.put("name", savedUser.getMemberName());
-        dataMap.put("token", token);
-
-        responseMap.put("data", dataMap);
-
-        // JSON으로 직렬화 후 응답
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseMap);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
-    }
 }

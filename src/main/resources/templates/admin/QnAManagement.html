@@ -66,7 +66,10 @@
                     <td class="center"><span th:text="${nq.memberId}"></span></td>
                     <td><span th:text="${nq.qTitle}"></span></td>
                     <td class="center"><span th:text="${nq.qRegDate}"></span></td>
-                    <td class="center"><span th:text="${nq.qSecret}"></span></td>
+                    <td class="center">
+                      <span th:if="${nq.qSecret == 1}">🔒</span>
+                      <span th:unless="${nq.qSecret == 1}">🔓</span>
+                    </td>
                 </tr>
               </tbody>
             </table>
@@ -99,7 +102,10 @@
                     <td class="center"><span th:text="${cq.memberId}"></span></td>
                     <td><span th:text="${cq.qTitle}"></span></td>
                     <td class="center"><span th:text="${cq.qRegDate}"></span></td>
-                    <td class="center"><span th:text="${cq.qSecret}"></span></td>
+                    <td class="center">
+                      <span th:if="${cq.qSecret == 1}">🔒</span>
+                      <span th:unless="${cq.qSecret == 1}">🔓</span>
+                    </td>
                 </tr>
               </tbody>
             </table>
