@@ -36,7 +36,7 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     Optional<LawyerEntity> findByLawyerPhoneAndLawyerIdnum(String lawyerPhone, String lawyerIdnum);
     Optional<LawyerEntity> findByLawyerIdxAndLawyerPhoneAndLawyerIdnum(Integer lawyerIdx, String lawyerPhone, String lawyerIdnum);
 
-    Optional<LawyerEntity> findByLawyerName(String lawyerName);
-    
+    boolean existsByLawyerId(String lawyerId);
+
 } 
 
