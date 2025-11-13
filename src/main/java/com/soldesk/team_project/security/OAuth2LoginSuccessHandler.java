@@ -9,10 +9,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-<<<<<<< HEAD
-=======
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
->>>>>>> main
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
