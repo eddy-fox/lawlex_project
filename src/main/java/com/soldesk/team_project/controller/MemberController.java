@@ -153,24 +153,6 @@ public class MemberController {
     }
     return "member/login"; }
 
-<<<<<<< HEAD
-    // 2) user_master에 없으면 member 테이블에서 직접 로그인 (더미용)
-    var mOpt = memberRepository.findByMemberId(userId);
-    if (mOpt.isPresent()) {
-        var m = mOpt.get();
-        String dbPw = m.getMemberPass();
-        if (dbPw != null && dbPw.equals(rawPw)) {
-            // 세션에 공통 유저 정보처럼 넣기
-            SessionUser su = new SessionUser(
-                    null,
-                    m.getMemberId(),
-                    "MEMBER",
-                    m.getMemberIdx(),
-                    null,
-                    null
-            );
-            session.setAttribute("loginUser", su); 
-=======
     /**
      * 유저마스터 테이블 없이 로그인:
      * 1) member -> 2) lawyer -> 3) admin 순으로 ID 조회
@@ -183,7 +165,6 @@ public class MemberController {
     public String loginSubmit(@RequestParam("memberId") String userId,
                               @RequestParam("memberPass") String rawPw,
                               HttpSession session) {
->>>>>>> main
 
         // 1) MEMBER
         var mOpt = memberRepository.findByMemberId(userId);

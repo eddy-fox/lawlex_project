@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.MemberEntity;
 
 @Repository
 public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
@@ -37,6 +38,8 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     Optional<LawyerEntity> findByLawyerIdxAndLawyerPhoneAndLawyerIdnum(Integer lawyerIdx, String lawyerPhone, String lawyerIdnum);
 
     boolean existsByLawyerId(String lawyerId);
+
+    Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
 
 } 
 
