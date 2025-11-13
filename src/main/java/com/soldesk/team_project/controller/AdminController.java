@@ -18,7 +18,6 @@ import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
-import com.soldesk.team_project.infra.DriveUploader;
 import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
@@ -35,7 +34,6 @@ public class AdminController {
     private final LawyerService lawyerService;
     private final QuestionService questionService;
     private final AdService adService;
-    private final DriveUploader driveUploader;
 
     // 일반 회원 관리
     @GetMapping("/memberManagement")

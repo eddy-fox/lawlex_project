@@ -130,7 +130,15 @@ public class MemberService {
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
 
-    // 특정 회원 검색
+    // 세션에서 가져온 회원 검색
+    public MemberDTO searchSessionMember(int memberIdx) {
+        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
+        MemberDTO memberDTO = convertMemberDTO(memberEntity);
+
+        return memberDTO;
+    }
+
+    //특정 회원 검색
     public MemberEntity getMember(String memberName) {
         Optional<MemberEntity> member = this.memberRepository.findByMemberName(memberName);
         if (member.isPresent()) {

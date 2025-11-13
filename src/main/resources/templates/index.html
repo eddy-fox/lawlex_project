@@ -10,30 +10,26 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
     <main class="page-index">
-    <section class="hero">
-    <div class="inner">
-        <button class="nav-btn nav-prev" onclick="prevSlide()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M12 4L6 10L12 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </button>
+      <section class="hero">
+        <div class="inner">
 
-        <div class="content">
-        <h1 class="ttl-big">바쁜 <span class="hl">일상</span> 속<br/>지금 가장 필요한 답을</h1>
-        <p class="desc">상담은 빠르게, 정보는 정확하게. 분야별 전문 변호사와 믿을 수 있는 법률 정보를 한 곳에서.</p>
-        <div class="actions">
-            <button class="btn btn-outline logged-only">상담 이어서 하기</button>
-            <button class="btn btn-primary">바로 상담받기</button>
-        </div>
-        </div>
+          <button class="nav-btn nav-prev" onclick="prevSlide()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M12 4L6 10L12 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
 
-        <button class="nav-btn nav-next" onclick="nextSlide()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </button>
-    </div>
-    </section>
+          <!-- <div class="content" th:each="ad : ${adList}">
+            <a th:href="@{/}"
+          </div> -->
+          
+          <button class="nav-btn nav-next" onclick="nextSlide()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </section>
 
     <section>
     <div class="wrap">
