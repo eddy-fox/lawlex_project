@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -257,6 +258,40 @@ public class MemberController {
         // 전부 없음
         return "redirect:/member/login?error=nouser";
     }
+
+    // 일반회원가입 처리
+    @PostMapping(value = "/join/normal", produces = "text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> joinNormalSubmit(@ModelAttribute MemberDTO dto) {
+        try {
+        // 필수 클라이언트 검증이 있어도 서버에서 한 번 더 안전장치
+        if (dto.getMemberAgree() == null || !"Y".equalsIgnoreCase(dto.getMemberAgree())) {
+            return ResponseEntity.badRequest().body("개인정보 수신동의(Y)가 필요합니다.");
+        }
+        // 관심 분야 3개 모두 선택 + 서로 달라야 함
+        Integer i1 = dto.getInterestIdx1(), i2 = dto.getInterestIdx2(), i3 = dto.getInterestIdx3();
+        if (i1 == null || i2 == null || i3 == null) {
+            return ResponseEntity.badRequest().body("관심 분야 3개를 모두 선택해주세요.");
+        }
+        if (i1.equals(i2) || i1.equals(i3) || i2.equals(i3)) {
+            return ResponseEntity.badRequest().body("관심 분야는 서로 다른 항목으로 선택해주세요.");
+        }
+
+        // 실제 가입 처리
+        memberService.joinNormal(dto);
+
+        // fetch로 받는 쪽에서 redirected 처리할 수 있게 302로 로그인으로 보냄
+        return ResponseEntity.status(302)
+                .header("Location", "/member/login?joined=true")
+                .body("OK");
+    } catch (IllegalArgumentException e) {
+        // 서비스에서 던진 구체 메시지 그대로 내려줌
+        return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+    }
+}
 
     @PostMapping("/logout")
     public String logout(HttpSession session) {

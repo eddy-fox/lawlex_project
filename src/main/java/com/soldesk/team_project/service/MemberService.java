@@ -167,33 +167,41 @@ public class MemberService {
         return memberDup || lawyerDup;
     }
 
-    // 일반 회원가입 (항상 BCrypt 저장) 
-    @Transactional
-    public void joinNormal(MemberDTO dto) {
-        if (isUserIdDuplicate(dto.getMemberId())) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-        }
-        validateDistinctInterests(dto);
-
-        String enc = passwordEncoder.encode(dto.getMemberPass());
-
-        MemberEntity me = MemberEntity.builder()
-                .memberId(dto.getMemberId())
-                .memberPass(enc) // 항상 해시 저장
-                .memberName(dto.getMemberName())
-                .memberEmail(dto.getMemberEmail())
-                .memberPhone(digits(dto.getMemberPhone()))
-                .memberIdnum(digits(dto.getMemberIdnum()))
-                .memberNickname(dto.getMemberNickname())
-                .memberAgree(dto.getMemberAgree())
-                .memberActive(1)
-                .interestIdx1(dto.getInterestIdx1())
-                .interestIdx2(dto.getInterestIdx2())
-                .interestIdx3(dto.getInterestIdx3())
-                .build();
-
-        memberRepository.save(me);
+// 일반 회원가입 (항상 BCrypt 저장)
+@Transactional
+public void joinNormal(MemberDTO dto) {
+    // 중복 체크
+    if (isUserIdDuplicate(dto.getMemberId())) {
+        throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
     }
+    // 관심분야 검증(서로 달라야 함)
+    validateDistinctInterests(dto);
+
+    // 비번 인코딩
+    String enc = passwordEncoder.encode(dto.getMemberPass());
+
+    // DB 하위호환: interest_idx(단일) NOT NULL 대응 → interestIdx1 값으로 채워 저장
+    MemberEntity me = MemberEntity.builder()
+            .memberId(dto.getMemberId())
+            .memberPass(enc)
+            .memberName(dto.getMemberName())
+            .memberEmail(dto.getMemberEmail())
+            .memberPhone(digits(dto.getMemberPhone()))
+            .memberIdnum(digits(dto.getMemberIdnum()))
+            .memberNickname(dto.getMemberNickname())
+            .memberAgree(dto.getMemberAgree())
+            .memberActive(1)
+            // 호환 컬럼
+            .interestIdx(dto.getInterestIdx1())
+            // 새 3필드
+            .interestIdx1(dto.getInterestIdx1())
+            .interestIdx2(dto.getInterestIdx2())
+            .interestIdx3(dto.getInterestIdx3())
+            .build();
+
+    memberRepository.save(me);
+}
+
 
     // 일반회원 프로필 수정 세션의 memberIdx로 검증
     @Transactional

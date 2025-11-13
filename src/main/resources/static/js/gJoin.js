@@ -1,182 +1,216 @@
-// gJoin.js - 회원가입 페이지 전용 (디자인 클래스는 그대로 사용)
-(function () {
-  const $ = (sel) => document.querySelector(sel);
-
-  const form = $('#joinForm');
-  const memberId = $('#memberId');
-  const dupBtn = $('#dupBtn');
-  const dupMsg = $('#dupMsg');
-
-  const pass = $('#memberPass');
-  const pass2 = $('#passConfirm');
-  const pwMsg = $('#pwMsg');
-
-  const phone = $('#memberPhone');
-  const idnum = $('#memberIdnum');
-
-  const i1 = $('#interest1');
-  const i2 = $('#interest2');
-  const i3 = $('#interest3');
-  const interestMsg = $('#interestMsg');
-
-  const privacyBtn = $('#privacyBtn');
-  const memberAgree = $('#memberAgree');
-  const agreeMsg = $('#agreeMsg');
-
-  let dupOk = false;
-
-  // 유틸
-  function setMsg(el, text, ok) {
-    el.textContent = text || '';
-    el.classList.remove('ok', 'bad');
-    if (!text) return;
-    el.classList.add(ok ? 'ok' : 'bad');
-  }
-  function digitsOnly(input) {
-    input.value = (input.value || '').replace(/\D/g, '');
-  }
-  function allDistinct(a, b, c) {
-    return a && b && c && a !== b && a !== c && b !== c;
-  }
-
-  // 아이디 입력이 바뀌면 중복확인 상태 초기화
-  memberId.addEventListener('input', () => {
-    dupOk = false;
-    setMsg(dupMsg, '');
-  });
-
-  // 아이디 중복확인 (member + lawyer 통합 체크, 서버가 "OK"/"DUP" 반환)
-  dupBtn.addEventListener('click', async () => {
-    const id = (memberId.value || '').trim();
-    if (!id) {
-      setMsg(dupMsg, '아이디를 입력하세요.', false);
-      memberId.focus();
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const show = (el, msg, isOk) => {
+    if (!el) return;
+    if (!msg) {
+      el.textContent = "";
+      el.classList.remove("error", "success");
       return;
     }
-    try {
-      const res = await fetch(`/member/api/checkId?memberId=${encodeURIComponent(id)}`, {
-        method: 'GET',
-        credentials: 'same-origin',
-      });
-      const txt = (await res.text()).trim().toUpperCase();
+    el.textContent = msg;
+    el.classList.toggle("error", isOk === false);
+    el.classList.toggle("success", isOk === true);
+  };
 
-      if (txt === 'OK') {
-        dupOk = true;
-        setMsg(dupMsg, '사용 가능한 아이디입니다.', true);
-        dupBtn.classList.add('complete-btn');
-      } else if (txt === 'DUP') {
-        dupOk = false;
-        setMsg(dupMsg, '이미 사용 중인 아이디입니다.', false);
-        dupBtn.classList.remove('complete-btn');
-      } else {
-        dupOk = false;
-        setMsg(dupMsg, `확인 실패: ${txt}`, false);
-      }
+  const form = $("#joinForm");
+  const submitBtn = $("#submitBtn");
+
+  // 아이디 & 중복확인
+  const memberId = $("#memberId");
+  const dupBtn = $("#dupBtn");
+  const dupMsg = $("#dupMsg");
+  let idCheckedOk = false;
+  let idTouched = false;
+
+  memberId.addEventListener("input", () => {
+    idTouched = true;
+    idCheckedOk = false;
+    const v = memberId.value.trim();
+    if (!v) { show(dupMsg, ""); return; }
+    if (v.length < 4) { show(dupMsg, "아이디는 4자 이상 입력하세요.", false); return; }
+    show(dupMsg, "중복확인을 눌러주세요.");
+  });
+
+  dupBtn.addEventListener("click", async () => {
+    const v = memberId.value.trim();
+    if (v.length < 4) { show(dupMsg, "아이디는 4자 이상 입력하세요.", false); memberId.focus(); return; }
+    try {
+      show(dupMsg, "확인 중…");
+      const res = await fetch(`/member/api/checkId?memberId=${encodeURIComponent(v)}`, { credentials: "same-origin" });
+      const text = (await res.text()).trim();
+      if (text === "OK") { idCheckedOk = true; show(dupMsg, "사용 가능한 아이디입니다.", true); }
+      else if (text === "DUP") { idCheckedOk = false; show(dupMsg, "이미 사용 중인 아이디입니다.", false); }
+      else { idCheckedOk = false; show(dupMsg, `확인 실패: ${text}`, false); }
     } catch (e) {
-      dupOk = false;
-      setMsg(dupMsg, '중복 확인 중 오류가 발생했습니다.', false);
+      idCheckedOk = false;
+      show(dupMsg, `오류: ${e.message}`, false);
     }
   });
 
-  // 비밀번호 일치 실시간 체크
-  function checkPwMatch() {
-    const a = pass.value || '';
-    const b = pass2.value || '';
-    if (!a && !b) {
-      setMsg(pwMsg, '');
-      return true;
-    }
-    if (a.length < 3) {
-      setMsg(pwMsg, '비밀번호는 3자 이상 입력하세요.', false);
-      return false;
-    }
-    if (a === b) {
-      setMsg(pwMsg, '비밀번호가 일치합니다.', true);
-      return true;
-    } else {
-      setMsg(pwMsg, '비밀번호가 일치하지 않습니다.', false);
-      return false;
-    }
-  }
-  pass.addEventListener('input', checkPwMatch);
-  pass2.addEventListener('input', checkPwMatch);
-
-  // 숫자만
-  phone.addEventListener('input', () => digitsOnly(phone));
-  idnum.addEventListener('input', () => digitsOnly(idnum));
-
-  // 관심분야 중복 방지
-  function validateInterests() {
-    const a = i1.value, b = i2.value, c = i3.value;
-    if (!a || !b || !c) {
-      setMsg(interestMsg, '관심 분야 3개를 모두 선택하세요.', false);
-      return false;
-    }
-    if (!allDistinct(a, b, c)) {
-      setMsg(interestMsg, '서로 다른 관심 분야로 선택해주세요.', false);
-      return false;
-    }
-    setMsg(interestMsg, '');
+  // 비밀번호
+  const memberPass = $("#memberPass");
+  const passConfirm = $("#passConfirm");
+  const pwMsg = $("#pwMsg");
+  function validatePw() {
+    const a = memberPass.value;
+    const b = passConfirm.value;
+    if (a.length < 4) { show(pwMsg, "비밀번호는 4자 이상이어야 합니다.", false); return false; }
+    if (a !== b) { show(pwMsg, "비밀번호 확인이 일치하지 않습니다.", false); return false; }
+    show(pwMsg, "");
     return true;
   }
-  [i1, i2, i3].forEach(sel => sel.addEventListener('change', validateInterests));
+  memberPass.addEventListener("input", validatePw);
+  passConfirm.addEventListener("input", validatePw);
 
-  // 개인정보 수신 동의 토글 (두 번 누르면 취소)
-  privacyBtn.addEventListener('click', () => {
-    const on = memberAgree.value === 'Y';
-    if (on) {
-      memberAgree.value = 'N';
-      privacyBtn.classList.remove('complete-btn');
-      setMsg(agreeMsg, '수신 동의가 해제되었습니다.', false);
-    } else {
-      memberAgree.value = 'Y';
-      privacyBtn.classList.add('complete-btn');
-      setMsg(agreeMsg, '수신 동의 완료', true);
-    }
+  // 이메일
+  const memberEmail = $("#memberEmail");
+  const emailMsg = $("#emailMsg");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function validateEmail() {
+    const v = (memberEmail.value || "").trim();
+    if (!emailRegex.test(v)) { show(emailMsg, "올바른 이메일 형식이 아닙니다. 예) user@example.com", false); return false; }
+    show(emailMsg, "");
+    return true;
+  }
+  memberEmail.addEventListener("blur", validateEmail);
+  memberEmail.addEventListener("input", () => show(emailMsg, ""));
+
+  // 전화번호
+  const memberPhone = $("#memberPhone");
+  const phoneMsg = $("#phoneMsg");
+  function fmtPhone(raw) {
+    const d = (raw || "").replace(/\D/g, "");
+    if (d.length <= 3) return d;
+    if (d.length <= 7) return d.slice(0,3) + "-" + d.slice(3);
+    return d.slice(0,3) + "-" + d.slice(3,7) + "-" + d.slice(7,11);
+  }
+  function validatePhone() {
+    const d = (memberPhone.value || "").replace(/\D/g, "");
+    if (!(d.length === 10 || d.length === 11)) { show(phoneMsg, "전화번호 자릿수가 올바르지 않습니다.", false); return false; }
+    show(phoneMsg, "");
+    return true;
+  }
+  memberPhone.addEventListener("input", () => {
+    const cur = memberPhone.selectionStart;
+    memberPhone.value = fmtPhone(memberPhone.value);
+    // 커서 이동 보정은 생략(디자인만 유지)
+    show(phoneMsg, "");
   });
+  memberPhone.addEventListener("blur", validatePhone);
+
+  // 생년월일(YYMMDD 6자리)
+  const memberIdnum = $("#memberIdnum");
+  const birthMsg = $("#birthMsg");
+  const birth6 = /^[0-9]{6}$/;
+  function validateBirth() {
+    const v = (memberIdnum.value || "").replace(/\D/g, "");
+    if (!birth6.test(v)) { show(birthMsg, "생년월일은 6자리(YYMMDD)로 입력하세요.", false); return false; }
+    show(birthMsg, "");
+    return true;
+  }
+  memberIdnum.addEventListener("input", () => {
+    memberIdnum.value = (memberIdnum.value || "").replace(/\D/g, "").slice(0,6);
+    show(birthMsg, "");
+  });
+  memberIdnum.addEventListener("blur", validateBirth);
+
+  // 관심분야
+  const interest1 = $("#interest1");
+  const interest2 = $("#interest2");
+  const interest3 = $("#interest3");
+  const interestMsg = $("#interestMsg");
+  function validateInterests() {
+    const a = interest1.value, b = interest2.value, c = interest3.value;
+    if (!a || !b || !c) { show(interestMsg, "관심 분야 3개를 모두 선택하세요.", false); return false; }
+    if (a === b || a === c || b === c) { show(interestMsg, "서로 다른 항목으로 선택하세요.", false); return false; }
+    show(interestMsg, "");
+    return true;
+  }
+  [interest1, interest2, interest3].forEach(el => el.addEventListener("change", validateInterests));
+
+// 개인정보 수신 동의 토글
+const privacyBtn = document.querySelector("#privacyBtn");
+const memberAgree = document.querySelector("#memberAgree");
+const agreeMsg = document.querySelector("#agreeMsg");
+
+function validateAgree() {
+  if (memberAgree.value !== "Y") {
+    agreeMsg.textContent = "개인정보 수신동의(필수) 필요";
+    agreeMsg.classList.add("error"); agreeMsg.classList.remove("success");
+    return false;
+  }
+  agreeMsg.textContent = "";
+  agreeMsg.classList.remove("error","success");
+  return true;
+}
+
+privacyBtn.addEventListener("click", () => {
+  const on = memberAgree.value === "Y";
+  memberAgree.value = on ? "N" : "Y";
+
+  //  원본 디자인 호환: active 클래스로 토글
+  privacyBtn.classList.toggle("active", !on);
+  privacyBtn.setAttribute("aria-pressed", String(!on));
+  privacyBtn.textContent = !on ? "개인 정보 수신 동의(동의됨)" : "개인 정보 수신 동의";
+
+  validateAgree();
+});
+
 
   // 제출
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // 최소 검증
-    if (!dupOk) {
-      setMsg(dupMsg, '아이디 중복확인을 진행하세요.', false);
-      memberId.focus();
-      return;
-    }
-    if (!checkPwMatch()) {
-      pass2.focus();
-      return;
-    }
-    if (!validateInterests()) {
-      i1.focus();
-      return;
-    }
+    // 필수 검증
+    if ((memberId.value || "").trim().length < 4) { show(dupMsg, "아이디는 4자 이상 입력하세요.", false); memberId.focus(); return; }
+    if (!idCheckedOk) { if (idTouched) show(dupMsg, "중복확인을 진행하세요.", false); memberId.focus(); return; }
+    if (!validatePw()) { passConfirm.focus(); return; }
+    if (!validateEmail()) { memberEmail.focus(); return; }
+    if (!validatePhone()) { memberPhone.focus(); return; }
+    if (!validateBirth()) { memberIdnum.focus(); return; }
+    if (!validateInterests()) { interest1.focus(); return; }
+    if (!validateAgree()) { privacyBtn.focus(); return; }
+
+    const fd = new FormData(form);
+    submitBtn.disabled = true;
+    const orig = submitBtn.textContent;
+    submitBtn.textContent = "처리 중…";
 
     try {
-      const fd = new FormData(form); // CSRF 히든필드 포함
-      const res = await fetch(form.action, {
-        method: 'POST',
+      const action = form.getAttribute("action") || "/member/join/normal";
+      const res = await fetch(action, {
+        method: "POST",
         body: fd,
-        credentials: 'same-origin',
+        credentials: "same-origin",
+        redirect: "follow",
       });
 
-      // 서버가 redirect:/member/login?joined 로 리다이렉트
+      // 302 → login?joined=true 로 이동 처리
       if (res.redirected) {
         window.location.href = res.url;
         return;
       }
 
-      // 실패 시 대충 메시지
-      if (!res.ok) {
-        setMsg(agreeMsg, '가입 처리 중 오류가 발생했습니다.', false);
-      } else {
-        // 혹시 200으로 뭔가 내려오면 로그인으로 유도
-        window.location.href = '/member/login?joined';
+      const text = await res.text();
+
+      if (res.ok) {
+        // 컨트롤러에서 "OK" 바디 내려주는 경우
+        if (/^OK$/i.test(text.trim())) {
+          window.location.href = "/member/login?joined=true";
+          return;
+        }
+        // 그 외 정상응답은 안내만
+        alert(text.trim());
+        return;
       }
+
+      // 400/500 케이스: 서비스에서 내려준 메시지 보여주기
+      alert(text || "가입 처리 중 오류가 발생했습니다.");
     } catch (err) {
-      setMsg(agreeMsg, '네트워크 오류가 발생했습니다.', false);
+      alert(`네트워크 오류: ${err.message}`);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = orig;
     }
   });
 })();
