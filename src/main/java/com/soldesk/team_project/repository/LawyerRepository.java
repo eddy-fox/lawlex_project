@@ -32,6 +32,7 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     List<LawyerEntity> findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerCommentAsc(String lawyerComment, Integer lawyerActive);
     
     Optional<LawyerEntity> findByLawyerId(String lawyerId);
+    Optional<LawyerEntity> findByLawyerName(String lawyerName);
 
     Optional<LawyerEntity> findByLawyerPhoneAndLawyerIdnum(String lawyerPhone, String lawyerIdnum);
     Optional<LawyerEntity> findByLawyerIdxAndLawyerPhoneAndLawyerIdnum(Integer lawyerIdx, String lawyerPhone, String lawyerIdnum);

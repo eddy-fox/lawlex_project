@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상담글_답변_전후</title>
+    <title>상담글 상세</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/reBoard.css}">
 </head>
@@ -19,9 +19,66 @@
             <div class="post-meta" th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></div>
             <div class="card-text" th:text="${boardEntity.boardContent}"></div>
 
-            <div class="note" id="replyBox">
+            <div class="edit">
+              <a class="link" th:href="@{|/board/modify/${boardEntity.boardIdx}|}"
+              sec:authorize="isAuthenticated()" th:if="${boardEntity.member != null and #authentication.
+              getPrincipal().getMemberIdx() == boardEntity.member.memberIdx}" th:text="수정"></a>
+              <a class="link" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.boardIdx}|}"
+              sec:authorize="isAuthenticated()" th:if="${boardEntity.member != null and #authentication.
+              getPrincipal().getMemberIdx() == boardEntity.member.memberIdx}" th:text="삭제"></a>
+            </div>
+
+            <div class="ans" th:each="reBoardEntity : ${BoardEntity.reboardList}">
+              <a th:id="|reBoardEntity_${reBoardEntity.reBoardIdx}|"></a>
+              <div class="card-body">
+                <div class="card-text" th:text="${reBoardEntity.reboardContent}"></div>
+                <div class="badge bg-light text-dark p-2 text-start">
+                  <div class="mb-2">
+                    <span th:if="${reBoardEntity.lawyer != null}" th:text="${reBoardEntity.lawyer.lawyerName}"></span>
+                  </div>
+                  <div th:text="${#temporals.format(reBoardEntity.reboardRegDate, 'yyyy-MM-dd')}"></div>
+                </div>
+              </div>
+              <div class="my-3">
+                <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary" th:data-uri="@{|/reboard/vote/${reBoardEntity.reboardIdx}|}">도움됐어요
+                  <span class="badge rounded-pill bg-success" th:text="${#lists.size(reboardEntity.voter)}"></span>
+                </a>
+                <a th:href="@{|/reboard/modify/${reBoardEntity.reboardIdx}|}" class="btn btn-sm btn-outline-secondary"
+                sec:authorize="isAuthenticated()" th:if="${reboardEntity.lawyer != null and #authentication.getPrincipal().
+                getLawyerName() == reboardEntity.lawyer.lawyerName}" th:text="수정"></a>
+                <a href="javascript:void(0);" th:data-uri="@{|/reboard/delete/${reboardEntity.reboardIdx}|}"
+                class="delete btn btn-sm btn-outline-secondary"
+                sec:authorize="isAuthenticated()"
+                th:if="${reboard.lawyer != null and #authentication.
+                getPrincipal().getLawyerName() == reboardEntity.lawyer.layerName}" th:text="삭제"></a>
+              </div>
+              <!-- 답변 작성 -->
+              <form th:action="@{|/reboard/create/${boardEntity.boardIdx}|}" th:object="${reBoardForm}"| method="post" class="my-3">
+                <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+                <textarea sec:authorize="isAnonymous()" disabled
+                th:field="*{reboardContent}" class="form-control" rows="10"></textarea>
+                <textarea sec:authorize="isAuthenticated()"
+                th:field="*{reboardContent}" class="form-control" rows="10"></textarea>
+                <input type="submit" value="답변 등록" class="btn btn-primary my-2">
+              </form>
+              <!-- <article class="cmt">
+                <div class="cmt-head">
+                  <div class="cmt-avatar"><img src="https://via.placeholder.com/72x96" alt="프로필"></div>
+                  <div class="chip">김현중 변호사</div>
+                  <div class="chip">2025-09-29 21:14</div>
+                  <div class="chip">😊 도움됐어요 <strong>2</strong></div>
+                </div>
+                <div class="cmt-body">
+                    소액의 벌금 정도로 마무리 가능성이 높습니다.
+                    유사 사건 다수 처리 경험이 있습니다.
+                    상담 답변은 사무장이 아닌 변호사가 직접 작성합니다.
+                </div>
+              </article> -->
+            </div>
+
+            <!-- <div class="note" id="replyBox">
               <div class="note-header">
-                <span class="badge" id="statusText" th:if="${ReBoardE}">변호사님의 답변을 기다리고 있어요.
+                <span class="badge" id="statusText" th:if="${ReBoard}">변호사님의 답변을 기다리고 있어요.
                   <button id="open" class="btn">답변하기</button>
                 </span>
               </div>
@@ -33,7 +90,7 @@
                   <button id="cancel" class="btn ghost">취소</button>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div id="comments"></div>
 
