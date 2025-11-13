@@ -16,10 +16,11 @@ import com.soldesk.team_project.dto.ChatRoomDTO;
 import com.soldesk.team_project.dto.ChatdataDTO;
 import com.soldesk.team_project.entity.ChatAttachmentEntity;
 import com.soldesk.team_project.entity.ChatdataEntity;
-import com.soldesk.team_project.infra.DriveUploader;
 import com.soldesk.team_project.repository.ChatattachmentRepository;
 import com.soldesk.team_project.repository.ChatdataRepository;
 import com.soldesk.team_project.repository.ChatroomRepository;
+import com.soldesk.team_project.service.FirebaseStorageService;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,10 +34,7 @@ public class ChatdataService {
 
     private final ChatroomService chatroomService; // 마지막 메시지 갱신/권한검사 재사용
 
-    private final DriveUploader driveUploader; // (뉴스보드와 동일한 업로더 사용)
-
-    @Value("${google.drive.chatting-folder-id}")
-    private String chatFolderId;
+    private final FirebaseStorageService storageService;
 
     /* ===================== DTO 변환 ===================== */
 
@@ -88,6 +86,22 @@ private ChatdataDTO toDto(ChatdataEntity e) {
         return s.length() <= max ? s : s.substring(0, max);
     }
 
+    private String nowUuidName(String originalFilename) {
+    String ext = getExt(originalFilename);
+    String now = java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+    String shortUuid = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+    return now + "-" + shortUuid + ext; // 예: 20251113_213015123-7f3a9c1b.jpg
+}
+private String getExt(String original) {
+    if (original == null || original.isBlank()) return ".bin";
+    int i = original.lastIndexOf('.');
+    if (i < 0 || i == original.length() - 1) return ".bin";
+    String ext = original.substring(i).toLowerCase(java.util.Locale.ROOT);
+    if (ext.length() > 10 || ext.contains("/") || ext.contains("\\") || ext.contains(" ")) return ".bin";
+    return ext;
+}
+
     /* ===================== 메시지 전송 ===================== */
 
     /**
@@ -123,33 +137,35 @@ private ChatdataDTO toDto(ChatdataEntity e) {
 
         // 4) 첨부 저장 (옵션)
         List<ChatAttachmentEntity> savedAttachments = new ArrayList<>();
-        if (files != null) {
-            int order = 0;
-            for (MultipartFile f : files) {
-                if (f == null || f.isEmpty()) continue;
+if (files != null) {
+    int order = 0;
+    for (MultipartFile f : files) {
+        if (f == null || f.isEmpty()) continue;
 
-                // 업로드 (DriveUploader 사용)
-                var info = driveUploader.upload(f, chatFolderId);
-                // info.name(), info.directUrl() 사용 (뉴스보드와 동일 패턴)
+        // ✅ Firebase 업로드
+        String filename = nowUuidName(f.getOriginalFilename());
+        // 방별로 하위 폴더 분리 (원하면 roomId 빼고 "chatdata/"만 써도 됩니다)
+        String objectPath = "chatdata/" + roomId + "/" + filename;
 
-                ChatAttachmentEntity att = new ChatAttachmentEntity();
-                att.setChatData(msg);
-                att.setFileUrl(info.thumbnailUrl()); 
-                att.setFileName(info.name());
-                att.setContentType(f.getContentType());
-                att.setFileSize((int) f.getSize()); // Entity가 Integer라 캐스팅
-                att.setSortOrder(order++);
-                att.setActive(1);
-                att.setCreatedAt(LocalDateTime.now());
+        var uploaded = storageService.upload(f, objectPath); // id & url 동시 생성
 
-                attachRepo.save(att);
-                savedAttachments.add(att);
-            }
-            // 양방향 컬렉션에 추가(선택)
-            if (msg.getAttachments() != null) {
-                msg.getAttachments().addAll(savedAttachments);
-            }
-        }
+        ChatAttachmentEntity att = new ChatAttachmentEntity();
+        att.setChatData(msg);
+        att.setFileUrl(uploaded.url());        // ✅ 화면에서 바로 쓰는 전체 URL
+        att.setFileName(filename);             // 예: 2025...-abcd1234.jpg
+        att.setContentType(f.getContentType());
+        att.setFileSize((int) f.getSize());    // Entity가 Integer면 캐스팅
+        att.setSortOrder(order++);
+        att.setActive(1);
+        att.setCreatedAt(LocalDateTime.now());
+
+        attachRepo.save(att);
+        savedAttachments.add(att);
+    }
+    if (msg.getAttachments() != null) {
+        msg.getAttachments().addAll(savedAttachments);
+    }
+}
 
         // 5) 마지막 메시지 미리보기 구성
         String preview;
