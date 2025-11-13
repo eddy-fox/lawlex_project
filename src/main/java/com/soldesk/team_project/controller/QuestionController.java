@@ -54,4 +54,5 @@ public class QuestionController {
         return "question/qnaWrite";
     }
 
+
 }

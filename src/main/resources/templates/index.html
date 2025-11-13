@@ -19,9 +19,13 @@
             </svg>
           </button>
 
-          <!-- <div class="content" th:each="ad : ${adList}">
-            <a th:href="@{/}"
-          </div> -->
+          <div class="content" th:each="ad, iterStat : ${adList}"
+            th:id="'slide-' + ${iterStat.index}"
+            th:classappend="${iterStat.index == 0} ? ' active' : ''">
+            <a href="#" th:onclick="|adCount(${ad.adIdx})|">
+                <img th:src="${ad.adImgPath}" th:alt="${ad.adName}">
+            </a>
+          </div>
           
           <button class="nav-btn nav-next" onclick="nextSlide()">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -205,4 +209,49 @@
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/index.js}"></script>
 </body>
+
+<script>
+  // 광고 슬라이드
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.content');
+  const totalSlides = slides.length;
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.style.display = i === index ? 'block' : 'none';
+    });
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    showSlide(currentSlide);
+  }
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(currentSlide);
+  }
+
+  setInterval(nextSlide, 10000);
+
+  document.addEventListener("DOMContentLoaded", () => showSlide(0));
+
+  // 변호사 페이지 이동 + 조회수 증가
+  function adCount(adIdx, lawyerIdx) {
+  fetch('/admin/adCount', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adIdx: adIdx })
+  })
+  .then(response => {
+    if (response.ok) {
+      // DB에서 adViews 증가 성공 시 변호사 페이지로 이동
+      window.location.href = `/lawyer/myPage?lawyerIdx=${lawyerIdx}`;
+    } else {
+      console.error('조회수 증가 실패');
+    }
+  })
+  .catch(err => console.error('에러 발생:', err));
+}
+
+</script>
 </html>

@@ -68,17 +68,12 @@ public class MemberController {
     // -------------------- 포인트 --------------------
     @GetMapping("/point")
     public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
-<<<<<<< HEAD
         
         // 세션에서 회원 가져오기
         Integer memberIdx = loginUser.getMemberIdx();
         MemberDTO member = memberService.searchSessionMember(memberIdx);
         model.addAttribute("member", member);
                 
-=======
-        Integer memberIdx = loginUser.getMemberIdx();
-
->>>>>>> 4afbc57b152ade63ec42984adb767f74c09c09ef
         // 포인트 구매 상품
         List<ProductDTO> productList = purchaseService.getBuyPointProduct();
         model.addAttribute("productList", productList);

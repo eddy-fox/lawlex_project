@@ -13,8 +13,8 @@ function updateHeroSlide(){
   if(b[0]) b[0].textContent=slides[currentSlide].button1;
   if(b[2]) b[2].textContent=slides[currentSlide].button2;
 }
-function prevSlide(){currentSlide=(currentSlide-1+slides.length)%slides.length;updateHeroSlide();}
-function nextSlide(){currentSlide=(currentSlide+1)%slides.length;updateHeroSlide();}
+// function prevSlide(){currentSlide=(currentSlide-1+slides.length)%slides.length;updateHeroSlide();}
+// function nextSlide(){currentSlide=(currentSlide+1)%slides.length;updateHeroSlide();}
 setInterval(nextSlide,5000);
 
 document.addEventListener('click',e=>{

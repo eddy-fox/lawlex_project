@@ -121,4 +121,14 @@ public class AdService {
         adRepository.save(adEntity);
     }
 
+    // 광고 조회수 증가
+    @Transactional
+    public void increaseAdViews(int adIdx) {
+        AdEntity adEntity = adRepository.findById(adIdx).orElse(null);
+        int view = adEntity.getAdViews();
+        view += 1;
+        adEntity.setAdViews(view);
+        adRepository.save(adEntity);
+    }
+
 }
