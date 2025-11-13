@@ -38,13 +38,22 @@ public class QuestionController {
 
     @GetMapping("/qnaList")
     public String qnaList(@RequestParam(value = "page", defaultValue = "1") int page,
-                            @SessionAttribute(value = "loginUser", required = false) MemberController.SessionUser su,
-                            Model model ) {
+                            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                            Model model) {
 
         Page<QuestionDTO> paging = questionService.getQnaPaging(page);
-
         model.addAttribute("qnaPaging", paging);
        
+        if(loginUser != null){
+            model.addAttribute("loginUser", loginUser);
+            if(loginUser.getMemberIdx() != null){
+                model.addAttribute("myIdxM", loginUser.getMemberIdx());
+            }
+            if(loginUser.getLawyerIdx() != null) {
+                model.addAttribute("myIdxL", loginUser.getLawyerIdx());
+            }
+        }
+
         return "question/qnaList";
     }
     

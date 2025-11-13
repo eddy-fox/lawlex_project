@@ -42,7 +42,7 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     
     boolean existsByLawyerId(String lawyerId);
 
-    Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
+    // Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
 
 } 
 
