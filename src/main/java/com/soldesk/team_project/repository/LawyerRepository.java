@@ -36,8 +36,7 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     Optional<LawyerEntity> findByLawyerPhoneAndLawyerIdnum(String lawyerPhone, String lawyerIdnum);
     Optional<LawyerEntity> findByLawyerIdxAndLawyerPhoneAndLawyerIdnum(Integer lawyerIdx, String lawyerPhone, String lawyerIdnum);
 
-    // OAuth2 회원가입 email 중복체크
-    Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer lawyerActive);
+    boolean existsByLawyerId(String lawyerId);
 
 } 
 

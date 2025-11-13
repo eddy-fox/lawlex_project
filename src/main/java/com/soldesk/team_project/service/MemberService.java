@@ -27,19 +27,15 @@ import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.entity.UserMasterEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 
-
-
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-    
+
     private final MemberRepository memberRepository;
     private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final UserMasterRepository userMasterRepository;
     private final LawyerRepository lawyerRepository;
-
 
     private MemberDTO convertMemberDTO (MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
@@ -53,8 +49,7 @@ public class MemberService {
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
         memberDTO.setMemberActive(memberEntity.getMemberActive());
-        memberDTO.setInterestIdx1(memberEntity.getInterestIdx());
-        
+        memberDTO.setInterestIdx1(memberEntity.getInterestIdx()); // 기존 로직 유지
         return memberDTO;
     }
 
@@ -71,14 +66,13 @@ public class MemberService {
     //     memberEntity.setMemberNickname(memberDTO.getMemberNickname());
     //     InterestEntity interestEntity = interestRepository.findById(memberDTO.getInterestIdx()).orElse(null);
     //     memberEntity.setMemberInterest(interestEntity);
-        
     //     return memberEntity;
     // }
+
 
     // 전체 회원 조회
     public List<MemberDTO> getAllMember() {
         List<MemberEntity> memberEntityList = memberRepository.findByMemberActive(1);
-        
         return memberEntityList.stream()
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
@@ -93,67 +87,84 @@ public class MemberService {
                     int idx = Integer.parseInt(keyword);
                     memberEntityList = memberRepository.findByMemberIdxAndMemberActive(idx, 1);
                 } catch (NumberFormatException e) {
-                memberEntityList = new ArrayList<>();
-                } break;
-            case "id": memberEntityList = memberRepository
-                .findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1); break;
-            case "name": memberEntityList = memberRepository
-                .findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1); break;
-            case "idnum": memberEntityList = memberRepository
-                .findByMemberIdnumContainingAndMemberActiveOrderByMemberIdnumAsc(keyword, 1); break;
-            case "email": memberEntityList = memberRepository
-                .findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberEmailAsc(keyword, 1); break;
-            case "phone": memberEntityList = memberRepository
-                .findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(keyword, 1); break;
-            case "nickname": memberEntityList = memberRepository
-                .findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(keyword, 1); break;
-            default: memberEntityList = memberRepository.findByMemberActive(1);
-         break;
+                    memberEntityList = new ArrayList<>();
+                }
+                break;
+            case "id":
+                memberEntityList = memberRepository
+                    .findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1);
+                break;
+            case "name":
+                memberEntityList = memberRepository
+                    .findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1);
+                break;
+            case "idnum":
+                memberEntityList = memberRepository
+                    .findByMemberIdnumContainingAndMemberActiveOrderByMemberIdnumAsc(keyword, 1);
+                break;
+            case "email":
+                memberEntityList = memberRepository
+                    .findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberEmailAsc(keyword, 1);
+                break;
+            case "phone":
+                memberEntityList = memberRepository
+                    .findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(keyword, 1);
+                break;
+            case "nickname":
+                memberEntityList = memberRepository
+                    .findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(keyword, 1);
+                break;
+            default:
+                memberEntityList = memberRepository.findByMemberActive(1);
+                break;
         }
+
         return memberEntityList.stream()
             .map(memberEntity -> convertMemberDTO(memberEntity)).collect(Collectors.toList());
     }
 
-    // 세션에서 가져온 회원 검색
-    public MemberDTO searchSessionMember(int memberIdx) {
-        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
-        MemberDTO memberDTO = convertMemberDTO(memberEntity);
-
-        return memberDTO;
-    }
-
-    //특정 회원 검색
+    // 특정 회원 검색
     public MemberEntity getMember(String memberName) {
-
         Optional<MemberEntity> member = this.memberRepository.findByMemberName(memberName);
-        if(member.isPresent()) {
+        if (member.isPresent()) {
             return member.get();
         } else {
             throw new DataNotFoundException("member not found");
         }
-        
-    }
-       // ====== 공통 유틸 ======
-    private static String digits(String s){ return s == null ? null : s.replaceAll("\\D",""); }
-    private static boolean notBlank(String s){ return s != null && !s.isBlank(); }
-    private static String roleUpper(String s){ return s == null ? "" : s.toUpperCase(); }
-
-    // ====== 공통: 아이디 중복 체크 ======
-    public boolean isUserIdDuplicate(String userId){
-        return userMasterRepository.existsByUserId(userId);
     }
 
-    // ====== 일반 회원가입 ======
+
+    // 공통 유틸 
+    private static String digits(String s) { return s == null ? null : s.replaceAll("\\D", ""); }
+    private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
+    private static Integer nz(Integer v) { return v == null ? -1 : v; }
+    private static void validateDistinctInterests(MemberDTO d) {
+        Integer a = nz(d.getInterestIdx1()), b = nz(d.getInterestIdx2()), c = nz(d.getInterestIdx3());
+        if (a.equals(b) || a.equals(c) || b.equals(c)) {
+            throw new IllegalArgumentException("관심 분야는 서로 다른 항목으로 선택해주세요.");
+        }
+    }
+
+    // 아이디 중복 체크 
+    public boolean isUserIdDuplicate(String userId) {
+        boolean memberDup = memberRepository.existsByMemberId(userId);
+        boolean lawyerDup = lawyerRepository.existsByLawyerId(userId);
+        return memberDup || lawyerDup;
+    }
+
+    // 일반 회원가입 (항상 BCrypt 저장) 
     @Transactional
-    public void joinNormal(MemberDTO dto){
-        if (isUserIdDuplicate(dto.getMemberId())){
+    public void joinNormal(MemberDTO dto) {
+        if (isUserIdDuplicate(dto.getMemberId())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
+        validateDistinctInterests(dto);
+
         String enc = passwordEncoder.encode(dto.getMemberPass());
 
         MemberEntity me = MemberEntity.builder()
                 .memberId(dto.getMemberId())
-                .memberPass(enc)
+                .memberPass(enc) // 항상 해시 저장
                 .memberName(dto.getMemberName())
                 .memberEmail(dto.getMemberEmail())
                 .memberPhone(digits(dto.getMemberPhone()))
@@ -165,146 +176,131 @@ public class MemberService {
                 .interestIdx2(dto.getInterestIdx2())
                 .interestIdx3(dto.getInterestIdx3())
                 .build();
-        me = memberRepository.save(me);
 
-        UserMasterEntity u = UserMasterEntity.builder()
-                .userId(dto.getMemberId())
-                .password(enc)
-                .status("ACTIVE")
-                .memberIdx(me.getMemberIdx())
-                .role("MEMBER")
-                .build();
-        userMasterRepository.save(u);
+        memberRepository.save(me);
     }
 
-    // ====== 일반회원 프로필 수정 (아이디/비번/닉네임/이메일/관심3개) ======
+    // 일반회원 프로필 수정 세션의 memberIdx로 검증
     @Transactional
-    public MemberUpdateResult updateMemberProfile(MemberDTO dto,
-                                                  String newPassword,
-                                                  String confirmPassword,
-                                                  Long userIdx,
-                                                  Integer memberIdx){
-        UserMasterEntity u = userMasterRepository.findById(userIdx).orElseThrow();
-        MemberEntity me = memberRepository.findById(memberIdx).orElseThrow();
+    public MemberUpdateResult updateMemberProfile(
+            MemberDTO dto,
+            String newPassword,
+            String confirmPassword,
+            Long ignoredUserIdx,   // 기존 시그니처 유지 (사용 안 함)
+            Integer memberIdx
+    ) {
+        if (memberIdx == null) throw new IllegalArgumentException("본인만 수정할 수 있습니다.");
+
+        MemberEntity me = memberRepository.findById(memberIdx)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
         // 아이디 변경
-        if (notBlank(dto.getMemberId()) && !dto.getMemberId().equals(u.getUserId())){
-            if (isUserIdDuplicate(dto.getMemberId())){
+        if (notBlank(dto.getMemberId()) && !dto.getMemberId().equals(me.getMemberId())) {
+            if (isUserIdDuplicate(dto.getMemberId())) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
             }
-            u.setUserId(dto.getMemberId());
             me.setMemberId(dto.getMemberId());
         }
 
-        // 비밀번호 변경
-        if (notBlank(newPassword) || notBlank(confirmPassword)){
-            if (!notBlank(newPassword) || !newPassword.equals(confirmPassword)){
+        // 비밀번호 변경(있으면 무조건 해시 저장)
+        if (notBlank(newPassword) || notBlank(confirmPassword)) {
+            if (!notBlank(newPassword) || !newPassword.equals(confirmPassword)) {
                 throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
             }
-            String enc = passwordEncoder.encode(newPassword);
-            u.setPassword(enc);
-            me.setMemberPass(enc);
+            me.setMemberPass(passwordEncoder.encode(newPassword));
         }
 
-        // 닉네임/이메일/관심3
-        me.setMemberNickname(dto.getMemberNickname());
-        me.setMemberEmail(dto.getMemberEmail());
-        me.setInterestIdx1(dto.getInterestIdx1());
-        me.setInterestIdx2(dto.getInterestIdx2());
-        me.setInterestIdx3(dto.getInterestIdx3());
+        // 관심분야 중복 금지 체크 + 프로필 갱신
+        validateDistinctInterests(dto);
+        if (dto.getMemberNickname() != null) me.setMemberNickname(dto.getMemberNickname());
+        if (dto.getMemberEmail() != null)    me.setMemberEmail(dto.getMemberEmail());
+        if (dto.getInterestIdx1() != null)   me.setInterestIdx1(dto.getInterestIdx1());
+        if (dto.getInterestIdx2() != null)   me.setInterestIdx2(dto.getInterestIdx2());
+        if (dto.getInterestIdx3() != null)   me.setInterestIdx3(dto.getInterestIdx3());
 
-        userMasterRepository.save(u);
         memberRepository.save(me);
 
-        return new MemberUpdateResult(u.getUserId(), me);
+        // 컨트롤러에서 쓰는 반환 타입 유지
+        return new MemberUpdateResult(me.getMemberId(), me);
     }
-    
-    //관심분야 중복 선택 방지
-    private static Integer nz(Integer v){ return v == null ? -1 : v; }
-    private void validateDistinctInterests(MemberDTO d){
-    Integer a = nz(d.getInterestIdx1()), b = nz(d.getInterestIdx2()), c = nz(d.getInterestIdx3());
-    if (a.equals(b) || a.equals(c) || b.equals(c)) {
-        throw new IllegalArgumentException("관심 분야는 서로 다른 항목으로 선택해주세요.");
-    }
-}
 
+    // OAuth2
+    @Transactional
     public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
-    MemberEntity memberEntity = MemberEntity.builder()
-        .memberId(tempUser.getEmail())
-        .memberPass("{noop}oauth2")
-        .memberName(tempUser.getName())
-        .memberEmail(tempUser.getEmail())
-        .memberPhone(memberDTO.getMemberPhone())
-        .memberIdnum(memberDTO.getMemberIdnum())
-        .interestIdx1(memberDTO.getInterestIdx())
-        .memberActive(1)
-        .provider(tempUser.getProvider())
-        .build();
+        // FIX: interestIdx1만 저장(폼에서 하나만 받는 설계이므로)
+        MemberEntity memberEntity = MemberEntity.builder()
+                .memberId(tempUser.getEmail())
+                .memberPass("{noop}oauth2")
+                .memberName(tempUser.getName())
+                .memberEmail(tempUser.getEmail())
+                .memberPhone(digits(memberDTO.getMemberPhone()))
+                .memberIdnum(digits(memberDTO.getMemberIdnum()))
+                .interestIdx1(memberDTO.getInterestIdx1())
+                .memberActive(1)
+                .provider(tempUser.getProvider())
+                .build();
         return memberRepository.save(memberEntity);
     }
 
-
-    // ====== 아이디 찾기 ======
-    public String findId(String memberPhone, String memberIdnum){
+    // 아이디 찾기 member → lawyer 순서
+    public String findId(String memberPhone, String memberIdnum) {
         String phone = digits(memberPhone);
         String idnum = digits(memberIdnum);
 
-        var mem = memberRepository.findByMemberPhoneAndMemberIdnum(phone, idnum)
-                .flatMap(m -> userMasterRepository.findByMemberIdx(m.getMemberIdx()));
-        if (mem.isPresent()) return mem.get().getUserIdx() + "/" + mem.get().getUserId();
+        // 1) 일반회원
+        var memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(phone, idnum);
+        if (memOpt.isPresent()) {
+            return memOpt.get().getMemberId();
+        }
 
-        var law = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phone, idnum)
-                .flatMap(l -> userMasterRepository.findByLawyerIdx(l.getLawyerIdx()));
-        return law.map(u -> u.getUserIdx() + "/" + u.getUserId()).orElse("NOT_FOUND");
+        // 2) 변호사
+        var lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phone, idnum);
+        if (lawOpt.isPresent()) {
+            return lawOpt.get().getLawyerId();
+        }
+
+        return "NOT_FOUND";
     }
 
-    // ====== 비밀번호 재설정 ======
+    // 비밀번호 재설정 아이디→member/lawyer 판별 후 검증
     @Transactional
     public String resetPassword(String memberId,
                                 String memberPhone,
                                 String memberIdnum,
                                 String newPassword,
-                                String confirmPassword){
-        if (!newPassword.equals(confirmPassword)) return "MISMATCH";
+                                String confirmPassword) {
+        if (!Objects.equals(newPassword, confirmPassword)) return "MISMATCH";
 
         String phone = digits(memberPhone);
         String idnum = digits(memberIdnum);
 
-        Optional<UserMasterEntity> uOpt = userMasterRepository.findByUserId(memberId);
-        if (uOpt.isEmpty()) return "FAIL";
-        UserMasterEntity u = uOpt.get();
-
-        boolean verified = switch (roleUpper(u.getRole())){
-            case "MEMBER" -> {
-                MemberEntity me = (u.getMemberIdx()!=null) ? memberRepository.findById(u.getMemberIdx()).orElse(null) : null;
-                yield me != null && phone.equals(me.getMemberPhone()) && idnum.equals(me.getMemberIdnum());
-            }
-            case "LAWYER" -> {
-                LawyerEntity le = (u.getLawyerIdx()!=null) ? lawyerRepository.findById(u.getLawyerIdx()).orElse(null) : null;
-                yield le != null && phone.equals(le.getLawyerPhone()) && idnum.equals(le.getLawyerIdnum());
-            }
-            case "ADMIN" -> {
-                // 관리자 인증 조건은 필요 시 확장
-                yield false;
-            }
-            default -> false;
-        };
-        if (!verified) return "FAIL";
-
-        String enc = passwordEncoder.encode(newPassword);
-        u.setPassword(enc);
-
-        // 레거시 동기화
-        if ("MEMBER".equalsIgnoreCase(u.getRole()) && u.getMemberIdx()!=null){
-            memberRepository.findById(u.getMemberIdx()).ifPresent(m -> m.setMemberPass(enc));
+        // 1) MEMBER 우선
+        Optional<MemberEntity> mOpt = memberRepository.findByMemberId(memberId);
+        if (mOpt.isPresent()) {
+            MemberEntity me = mOpt.get();
+            boolean verified = Objects.equals(phone, me.getMemberPhone())
+                             && Objects.equals(idnum, me.getMemberIdnum());
+            if (!verified) return "FAIL";
+            me.setMemberPass(passwordEncoder.encode(newPassword));
+            memberRepository.save(me);
+            return "OK";
         }
-        if ("LAWYER".equalsIgnoreCase(u.getRole()) && u.getLawyerIdx()!=null){
-            lawyerRepository.findById(u.getLawyerIdx()).ifPresent(l -> l.setLawyerPass(enc));
+
+        // 2) LAWYER
+        Optional<LawyerEntity> lOpt = lawyerRepository.findByLawyerId(memberId);
+        if (lOpt.isPresent()) {
+            LawyerEntity le = lOpt.get();
+            boolean verified = Objects.equals(phone, le.getLawyerPhone())
+                             && Objects.equals(idnum, le.getLawyerIdnum());
+            if (!verified) return "FAIL";
+            le.setLawyerPass(passwordEncoder.encode(newPassword));
+            lawyerRepository.save(le);
+            return "OK";
         }
-        userMasterRepository.save(u);
-        return "OK";
+
+        return "FAIL";
     }
 
-    // ====== 결과 객체 ======
+    // ====== 결과 DTO ======
     public record MemberUpdateResult(String newUserId, MemberEntity member) {}
 }
