@@ -43,11 +43,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())          // 컨트롤러가 /member/login 직접 처리
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .logout(logout -> logout.disable())         // 컨트롤러의 /member/logout 사용
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                    "/",
                     "/static/**","/css/**","/main.css",
-                    "/member/login","/member/join/**",
+                    "/member/login","/member/loginTemp",
+                    "/member/join/**",
                     "/member/api/**","/member/popup/**",
                     "/oauth2/**"
                 ).permitAll()

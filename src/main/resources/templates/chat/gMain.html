@@ -8,86 +8,117 @@
   <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-  <div class="include" th:replace="~{include/header :: header}"></div>
+<div class="include" th:replace="~{include/header :: header}"></div>
 
-  <main class="page-gMain">
-    <div class="container">
+<main class="page-gMain">
+  <div class="container">
 
-      <!-- 요일 선택 -->
-      <div class="weekday" id="weekday">
-        <a class="chip"
-           th:classappend="${selectedDow} == 0 ? ' is-active' : ''"
-           th:href="@{/chat/member(dow=0, duration=${duration})}">월요일</a>
-        <a class="chip"
-           th:classappend="${selectedDow} == 1 ? ' is-active' : ''"
-           th:href="@{/chat/member(dow=1, duration=${duration})}">화요일</a>
-        <a class="chip"
-           th:classappend="${selectedDow} == 2 ? ' is-active' : ''"
-           th:href="@{/chat/member(dow=2, duration=${duration})}">수요일</a>
-        <a class="chip"
-           th:classappend="${selectedDow} == 3 ? ' is-active' : ''"
-           th:href="@{/chat/member(dow=3, duration=${duration})}">목요일</a>
-        <a class="chip"
-           th:classappend="${selectedDow} == 4 ? ' is-active' : ''"
-           th:href="@{/chat/member(dow=4, duration=${duration})}">금요일</a>
-      </div>
+   
+      <!-- 현재 선택된 요일 유지 -->
+      <input type="hidden" name="dow" th:value="${selectedDow}">
+      <label style="margin-right:10px;">
+        <input type="radio" name="duration" value="30"
+               th:checked="${duration} == 30"> 30분 (100P)
+      </label>
+      <label>
+        <input type="radio" name="duration" value="60"
+               th:checked="${duration} == 60"> 60분 (200P)
+      </label>
+    </form>
 
-      <!-- 변호사 카드들 -->
-      <section class="cards" id="cards">
-
-        <article class="card" th:each="law : ${lawyers}">
-          <div class="photo">사진</div>
-
-          <div class="info">
-            <h3 class="name" th:text="${law.lawyerName}">변호사이름</h3>
-            <div class="meta">
-              상담가능시간 ·
-              <span th:text="${law.start != null ? law.start : '시간 미등록'}"></span>
-              <span th:if="${law.end != null}"> ~ <span th:text="${law.end}"></span></span>
-            </div>
-            <div class="meta" th:if="${law.canRequestNow == false}"
-                 style="color:#dc2626; margin-top:4px;">
-              지금은 신청할 수 없는 시간입니다.
-            </div>
-
-            <!-- 신청 폼 -->
-            <form th:action="@{/chat/request}" method="post" style="margin-top:12px;">
-              <input type="hidden" name="lawyerIdx" th:value="${law.lawyerIdx}">
-
-              <!-- 카드 안 라디오 2개 -->
-              <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
-                <label style="display:flex; gap:4px; align-items:center; font-size:12px; color:#374151;">
-                  <input type="radio" name="durationMinutes" value="30"
-                         th:checked="${duration} == 30">
-                  30분 (100P)
-                </label>
-                <label style="display:flex; gap:4px; align-items:center; font-size:12px; color:#374151;">
-                  <input type="radio" name="durationMinutes" value="60"
-                         th:checked="${duration} == 60">
-                  60분 (200P)
-                </label>
-              </div>
-
-              <button class="btn" type="submit"
-                      th:disabled="${law.canRequestNow == false}">
-                신청
-              </button>
-            </form>
-          </div>
-        </article>
-
-        <!-- 없을 때 -->
-        <p class="empty"
-           th:if="${#lists.isEmpty(lawyers)}">
-          해당 요일에 상담 가능한 변호사가 없습니다.
-        </p>
-      </section>
+    <!-- 요일 선택 -->
+    <div class="weekday" id="weekday">
+      <a class="chip"
+         th:classappend="${selectedDow} == 0 ? ' is-active' : ''"
+         th:href="@{/chat/member(dow=0, duration=${duration})}">월요일</a>
+      <a class="chip"
+         th:classappend="${selectedDow} == 1 ? ' is-active' : ''"
+         th:href="@{/chat/member(dow=1, duration=${duration})}">화요일</a>
+      <a class="chip"
+         th:classappend="${selectedDow} == 2 ? ' is-active' : ''"
+         th:href="@{/chat/member(dow=2, duration=${duration})}">수요일</a>
+      <a class="chip"
+         th:classappend="${selectedDow} == 3 ? ' is-active' : ''"
+         th:href="@{/chat/member(dow=3, duration=${duration})}">목요일</a>
+      <a class="chip"
+         th:classappend="${selectedDow} == 4 ? ' is-active' : ''"
+         th:href="@{/chat/member(dow=4, duration=${duration})}">금요일</a>
     </div>
-  </main>
 
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <!-- 변호사 카드 목록 -->
+    <section class="cards" id="cards">
 
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/gMain.js}"></script>
+  <article class="card"
+           th:each="law : ${lawyers}">
+    <div class="photo">
+      <img th:if="${law.imgPath != null}"
+           th:src="@{${law.imgPath}}"
+           alt="변호사 사진"
+           style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+      <span th:if="${law.imgPath == null}">사진</span>
+    </div>
+
+    <div class="info">
+      <h3 class="name" th:text="${law.name}">변호사</h3>
+      <div class="meta" th:text="'상담가능시간 · ' + ${law.timeRange}">상담가능시간 · 상시</div>
+    </div>
+
+    <!-- 여기부터 카드 내부 개별 라디오 -->
+    <form th:action="@{/chat/request}" method="post" class="card-form" style="margin-top:10px;">
+  <input type="hidden" name="lawyerIdx" th:value="${law.lawyerIdx}">
+
+  <div class="duration-choice" style="margin-bottom:8px;">
+    <!-- 30분: 되면 그대로, 안 되면 disable -->
+    <label style="margin-right:8px;">
+      <input type="radio"
+             name="durationMinutes"
+             value="30"
+             th:disabled="${law.can30} == false"
+             th:checked="${law.can30} ? true : false">
+      30분 (100P)
+    </label>
+
+    <!-- 60분: 마감 1시간 전이면 law.can60=false 라서 여기만 비활성화됨 -->
+    <label>
+      <input type="radio"
+             name="durationMinutes"
+             value="60"
+             th:disabled="${law.can60} == false"
+             th:checked="${law.can60} == true and ${law.can30} == false">
+      60분 (200P)
+    </label>
+  </div>
+
+  <button class="btn"
+          type="submit"
+          th:disabled="${law.canRequestNow} == false"
+          th:text="${law.canRequestNow} ? '신청' : '지금은 신청 불가'"
+          th:classappend="${law.canRequestNow} ? '' : ' cancel'">
+    신청
+  </button>
+</form>
+  </article>
+
+  <p class="empty"
+     th:if="${#lists.isEmpty(lawyers)}">
+    해당 요일에 상담 가능한 변호사가 없습니다.
+  </p>
+</section>
+
+  </div>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+
+<script th:src="@{/js/js.js}"></script>
+<script>
+  // 위에 있는 duration 라디오를 선택하면 같은 페이지로 다시 요청해서 duration만 바꾸도록
+  const durationForm = document.getElementById('durationForm');
+  if (durationForm) {
+    durationForm.addEventListener('change', function () {
+      this.submit();
+    });
+  }
+</script>
 </body>
 </html>

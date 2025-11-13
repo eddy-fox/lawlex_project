@@ -3,44 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문의작성하기</title>
+    <title th:text="|소식 수정 - ${board.newsTitle}|">소식 수정</title>
     <link rel="stylesheet" th:href="@{/css/qnaWrite.css}">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div class="include" th:replace="~{include/header :: header}"></div>
-    <main class="page-qnaWrite">
-        <div class="inner">
-            <section class="frame">
-                <form th:action="@{/question/qnaWrite}" th:object="${qnaWrite}" id="qnaForm" method="post">
-                    <div class="form-group">
-                        <div class="header-line">
-                            <!-- <input type="hidden" th:field="*{memberIdx}"> -->
-                            <label for="titleInput" class="form-label">제목</label>
-                            <div class="checkbox-group in-header">
-                                <input type="hidden" name="qSecret" value="0">
-                                <input type="checkbox" id="secretCheck" class="checkbox-input" name="qSecret" th:field="*{qSecret}" value="1"/>
-                                <label for="secretCheck" class="checkbox-label">비밀글로 작성</label>
-                            </div>
-                        </div>
-                        <input id="titleInput" type="text" class="form-input" placeholder="제목을 입력하세요" th:field="*{qTitle}"/>
-                    </div>
+<div class="include" th:replace="~{include/header :: header}"></div>
 
-                    <div class="form-group">
-                        <label for="contentTextarea" class="form-label">내용</label>
-                        <textarea id="contentTextarea" class="form-textarea" placeholder="상세 문의 내용을 작성해주세요." th:field="*{qContent}"></textarea>
-                    </div>
+<main class="page-qnaWrite">
+    <div class="inner">
+        <section class="frame">
+            <!-- /newsBoard/modify 로 보냄 -->
+            <form th:action="@{/newsBoard/modify}"
+                  th:object="${board}"
+                  method="post"
+                  enctype="multipart/form-data">
 
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-cancel" id="cancelBtn">취소</button>
-                        <button type="submit" class="btn btn-submit" id="submitBtn" disabled>글쓰기</button>
+                <!-- PK -->
+                <input type="hidden" name="newsIdx" th:value="*{newsIdx}"/>
+
+                <!-- 어떤 게시판인지 넘기기 (1=공지, 2=뉴스, 3=동영상, 4=칼럼) -->
+                <input type="hidden" th:field="*{category.categoryIdx}"/>
+
+                <!-- 제목 -->
+                <div class="form-group">
+                    <div class="header-line">
+                        <label for="titleInput" class="form-label">제목</label>
+
+                        <!-- 카테고리 뱃지 표시 -->
+                        <span class="badge"
+                              th:switch="*{category.categoryIdx}">
+                            <span th:case="1">공지</span>
+                            <span th:case="2">뉴스</span>
+                            <span th:case="3">동영상</span>
+                            <span th:case="4">칼럼</span>
+                            <span th:case="*">소식</span>
+                        </span>
                     </div>
-                </form>
-            </section>
-        </div>
-    </main>
-    <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/qnaWrite.js}"></script>
+                    <input id="titleInput"
+                           type="text"
+                           class="form-input"
+                           placeholder="제목을 입력하세요"
+                           th:field="*{newsTitle}"
+                           required/>
+                </div>
+
+                <!-- 내용 -->
+                <div class="form-group">
+                    <label for="contentTextarea" class="form-label">내용</label>
+                    <textarea id="contentTextarea"
+                              class="form-textarea"
+                              placeholder="내용을 입력하세요."
+                              th:field="*{newsContent}"
+                              rows="10"
+                              required></textarea>
+                </div>
+
+                <!-- 기존 이미지가 있으면 보여주기 -->
+                <div class="form-group" th:if="*{driveFileId} != null">
+                    <label class="form-label">현재 대표 이미지</label>
+                    <img th:src="|https://drive.google.com/thumbnail?id=${board.driveFileId}&sz=w800|"
+                         alt="대표 이미지" style="max-width: 300px; display:block; margin-bottom:8px;">
+                </div>
+
+                <!-- 새 이미지 업로드 -->
+                <div class="form-group">
+                    <label for="imgFile" class="form-label">대표 이미지 변경</label>
+                    <input id="imgFile"
+                           name="newsBoardFile"
+                           type="file"
+                           class="form-input"
+                           accept="image/*">
+                    <p class="help">이미지를 다시 선택하면 서버에서 구글드라이브로 재업로드합니다.</p>
+                </div>
+
+                <!-- 동영상 카테고리일 때만 노출 -->
+                <div class="form-group"
+                     th:if="*{category.categoryIdx} == 3">
+                    <label for="videoUrl" class="form-label">동영상 URL</label>
+                    <input id="videoUrl"
+                           type="text"
+                           class="form-input"
+                           th:field="*{videoUrl}"
+                           placeholder="https://...">
+                </div>
+
+                <div class="form-actions">
+                    <!-- 취소는 보기 페이지 or 목록 -->
+                    <a th:href="@{|/newsBoard/detail?newsIdx=${board.newsIdx}|}"
+                       class="btn btn-cancel">취소</a>
+                    <button type="submit" class="btn btn-submit">수정</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+<script th:src="@{/js/js.js}"></script>
 </body>
 </html>

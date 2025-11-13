@@ -9,10 +9,15 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+<<<<<<< HEAD
+=======
+import com.soldesk.team_project.dto.TemporaryOauthDTO;
+>>>>>>> main
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -27,28 +32,20 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         // OAuth2 로그인 완료 후 Principal 가져오기
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        HttpSession session = request.getSession();
 
-        // MemberEntity 기반 JWT 생성
-        String token = jwtProvider.createToken(principal.getMember());
+        TemporaryOauthDTO temp = (session != null) ? (TemporaryOauthDTO) session.getAttribute("tempOauth") : null;
 
-        String email = principal.getEmail();
-        String name = principal.getUsername();
+        if (temp != null) {
+            // 신규 사용자 → 회원 유형 선택 페이지로 리디렉트
+            getRedirectStrategy().sendRedirect(request, response, "/member/loginChoice");
+        } else {
+            // 기존 사용자 → JWT 생성 후 메인 페이지로 리디렉트
+            String token = jwtProvider.createToken(principal.getUser());
+            String redirectUrl = "http://localhost:8080/?token=" + token;
+            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+        }
 
-        // session에 저장
-        
-        getRedirectStrategy().sendRedirect(request, response, "/");
     }
 
-    // JWT 응답용 간단 DTO
-    // private static class JwtResponse {
-    //     public String token;
-    //     public String email;
-    //     public String username;
-
-    //     public JwtResponse(String token, String email, String username) {
-    //         this.token = token;
-    //         this.email = email;
-    //         this.username = username;
-    //     }
-    // }
 }

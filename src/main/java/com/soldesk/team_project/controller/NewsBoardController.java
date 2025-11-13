@@ -14,12 +14,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.soldesk.team_project.dto.NewsBoardDTO;
+import com.soldesk.team_project.controller.MemberController.AdminSession;
+import com.soldesk.team_project.controller.MemberController.LawyerSession;
 import com.soldesk.team_project.entity.AdminEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.NewsBoardEntity;
 import com.soldesk.team_project.entity.NewsCategoryEntity;
+import com.soldesk.team_project.dto.NewsBoardDTO;
 import com.soldesk.team_project.infra.DriveUploader;
+import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.NewsBoardRepository;
 import com.soldesk.team_project.repository.NewsCategoryRepository;
 
@@ -33,6 +37,8 @@ public class NewsBoardController {
 
     private final NewsBoardRepository newsBoardRepository;
     private final NewsCategoryRepository newsCategoryRepository;
+    private final AdminRepository adminRepository;     // 세션→엔티티 변환용
+    private final LawyerRepository lawyerRepository;   // 세션→엔티티 변환용
     private final DriveUploader driveUploader;
 
     @Value("${google.drive.newsboard-folder-id}")
@@ -43,10 +49,9 @@ public class NewsBoardController {
     private static final int CATEGORY_VIDEO  = 3;
     private static final int CATEGORY_COLUMN = 4;
 
-    /* ================= 메인 ================= */
+    /* ================ 메인 ================ */
     @GetMapping("/main")
     public String newsMain(Model model) {
-
         List<NewsBoardEntity> newsList = newsBoardRepository
                 .findByCategoryCategoryIdxAndNewsActiveOrderByNewsIdxDesc(2, 1)
                 .stream().limit(3).collect(Collectors.toList());
@@ -71,11 +76,12 @@ public class NewsBoardController {
         return "newsBoard/nMain";
     }
 
-    /* ================= 리스트 ================= */
+    /* ================ 리스트 ================ */
     @GetMapping("/list")
     public String list(@RequestParam(name = "category", defaultValue = "1") Integer categoryIdx,
                        @RequestParam(name = "page", defaultValue = "1") Integer page,
-                       Model model) {
+                       Model model,
+                       HttpSession session) {
 
         int pageSize = 10;
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("newsIdx").descending());
@@ -99,7 +105,10 @@ public class NewsBoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("categoryIdx", categoryIdx);
 
-        // 공지는 따로
+        // 뷰에서 권한체크하려고 넣어주는 것
+        model.addAttribute("loginAdmin", getLoginAdmin(session));
+        model.addAttribute("loginLawyer", getLoginLawyer(session));
+
         if (categoryIdx == CATEGORY_NOTICE) {
             return "newsBoard/noticeList";
         } else {
@@ -107,20 +116,24 @@ public class NewsBoardController {
         }
     }
 
-    /* ================= 상세 ================= */
+    /* ================ 상세 ================ */
     @GetMapping("/detail")
     public String detail(@RequestParam("newsIdx") Integer newsIdx,
-                         Model model) {
+                         Model model,
+                         HttpSession session) {
 
         NewsBoardEntity board = newsBoardRepository.findById(newsIdx).orElse(null);
         if (board == null || board.getNewsActive() == 0) {
             return "redirect:/newsBoard/list";
         }
 
+        // 조회수 +1
         board.setNewsViews(board.getNewsViews() == null ? 1 : board.getNewsViews() + 1);
         newsBoardRepository.save(board);
 
         model.addAttribute("board", board);
+        model.addAttribute("loginAdmin", getLoginAdmin(session));
+        model.addAttribute("loginLawyer", getLoginLawyer(session));
 
         int cat = board.getCategory().getCategoryIdx();
         if (cat == CATEGORY_COLUMN) {
@@ -130,7 +143,7 @@ public class NewsBoardController {
         }
     }
 
-    /* ================= 글쓰기 폼 ================= */
+    /* ================ 글쓰기 폼 ================ */
     @GetMapping("/write")
     public String writeForm(@RequestParam("category") Integer categoryIdx,
                             HttpSession session,
@@ -144,11 +157,11 @@ public class NewsBoardController {
         dto.setCategoryIdx(categoryIdx);
         model.addAttribute("news", dto);
 
-        return "newsBoard/write";
+        return "newsBoard/newswrite";
     }
 
-    /* ================= 글쓰기 처리 ================= */
-     @PostMapping("/write")
+    /* ================ 글쓰기 처리 ================ */
+    @PostMapping("/write")
 public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
                           @RequestParam(value = "imgFile", required = false) MultipartFile imgFile,
                           HttpSession session) throws Exception {
@@ -157,6 +170,10 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
     if (!canWrite(categoryIdx, session)) {
         return "redirect:/newsBoard/list?category=" + categoryIdx;
     }
+
+    // 🔴 여기서 무조건 엔티티로 다시 꺼낸다
+    AdminEntity loginAdmin = getLoginAdmin(session);   // 세션에 AdminSession 있어도 엔티티로 바꿔줄 거임
+    LawyerEntity loginLawyer = getLoginLawyer(session); // 아래에 헬퍼 하나 더 만들거야
 
     NewsBoardEntity entity = new NewsBoardEntity();
     entity.setNewsTitle(dto.getNewsTitle());
@@ -170,13 +187,13 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
     NewsCategoryEntity category = newsCategoryRepository.findById(categoryIdx).orElse(null);
     entity.setCategory(category);
 
-    // 작성자
-    AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
-    LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
+    // ✨ 작성자 세팅
     if (categoryIdx == CATEGORY_COLUMN) {
+        // 칼럼은 변호사
         entity.setLawyer(loginLawyer);
     } else {
-        entity.setAdmin(loginAdmin);
+        // 공지/뉴스/동영상은 관리자
+        entity.setAdmin(loginAdmin);   // ← 이게 null 아니어야 admin_idx가 들어감
     }
 
     // 동영상이면 url
@@ -184,22 +201,20 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         entity.setVideoUrl(dto.getVideoUrl());
     }
 
-    // ✅ 파일 있으면 드라이브에 업로드하고 id만 저장
+    // 이미지 업로드
     if (imgFile != null && !imgFile.isEmpty()) {
-        // modify랑 똑같이
         var info = driveUploader.upload(imgFile, newsFolderId);
-        // 업로드 성공했으면 엔티티에 세팅
         entity.setFileAttached(1);
         entity.setStoredFileName(info.name());
         entity.setDriveFileId(info.fileId());
-        // entity.setNewsImgPath(null); // 드라이브만 쓸 거면 굳이 안 써도 됨
     }
 
     newsBoardRepository.save(entity);
     return "redirect:/newsBoard/list?category=" + categoryIdx;
 }
 
-    /* ================= 수정 폼 ================= */
+
+    /* ================ 수정 폼 ================ */
     @GetMapping("/modify")
     public String modifyForm(@RequestParam("newsIdx") Integer newsIdx,
                              HttpSession session,
@@ -214,10 +229,10 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         }
 
         model.addAttribute("board", board);
-        return "newsBoard/modify";
+        return "newsBoard/newsmodify";
     }
 
-    /* ================= 수정 처리 ================= */
+    /* ================ 수정 처리 ================ */
     @PostMapping("/modify")
     public String modifySubmit(@RequestParam("newsIdx") Integer newsIdx,
                                @ModelAttribute NewsBoardDTO dto,
@@ -238,12 +253,10 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         if (file != null && !file.isEmpty()) {
             try {
                 var info = driveUploader.upload(file, newsFolderId);
-
                 board.setFileAttached(1);
                 board.setStoredFileName(info.name());
-                board.setDriveFileId(info.fileId());    // ← 새 id 저장
-                board.setNewsImgPath(null);             // 화면에서 조립
-
+                board.setDriveFileId(info.fileId());
+                board.setNewsImgPath(null);
             } catch (Exception e) {
                 // 실패 시 기존 이미지 유지
             }
@@ -258,7 +271,7 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         return "redirect:/newsBoard/detail?newsIdx=" + newsIdx;
     }
 
-    /* ================= 삭제 ================= */
+    /* ================ 삭제 ================ */
     @PostMapping("/delete")
     public String delete(@RequestParam("newsIdx") Integer newsIdx,
                          HttpSession session) {
@@ -269,17 +282,21 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         }
 
         if (!isOwner(board, session)) {
+            // 작성자가 아니면 그냥 상세로 돌려보내기
             return "redirect:/newsBoard/detail?newsIdx=" + newsIdx;
         }
 
-        board.setNewsActive(0);
+        board.setNewsActive(0);          // 소프트 삭제
         newsBoardRepository.save(board);
 
-        Integer cat = board.getCategory() != null ? board.getCategory().getCategoryIdx() : 1;
+        Integer cat = board.getCategory() != null
+                ? board.getCategory().getCategoryIdx()
+                : CATEGORY_NOTICE;
+
         return "redirect:/newsBoard/list?category=" + cat;
     }
 
-    /* ================= 좋아요 ================= */
+    /* ================ 좋아요 ================ */
     @PostMapping("/like")
     @ResponseBody
     public String like(@RequestParam("newsIdx") Integer newsIdx) {
@@ -293,34 +310,74 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         return "OK";
     }
 
-    /* ================= 권한 체크 ================= */
+    /* ================ 권한 체크 ================ */
     private boolean canWrite(Integer categoryIdx, HttpSession session) {
-        AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
-        LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
+    AdminEntity loginAdmin = getLoginAdmin(session);
+    LawyerEntity loginLawyer = getLoginLawyer(session);
 
-        if (categoryIdx == CATEGORY_NOTICE) {
-            return loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
-        } else if (categoryIdx == CATEGORY_NEWS || categoryIdx == CATEGORY_VIDEO) {
-            return loginAdmin != null && "reporter".equalsIgnoreCase(loginAdmin.getAdminRole());
-        } else if (categoryIdx == CATEGORY_COLUMN) {
-            return loginLawyer != null;
-        }
-        return false;
+    if (categoryIdx == CATEGORY_NOTICE) {
+        // 공지 : 관리자만
+        return loginAdmin != null
+                && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+    } else if (categoryIdx == CATEGORY_NEWS) {
+        // 뉴스 : 기자
+        return loginAdmin != null
+                && "reporter".equalsIgnoreCase(loginAdmin.getAdminRole());
+    } else if (categoryIdx == CATEGORY_VIDEO) {
+        // 동영상 : 관리자
+        return loginAdmin != null
+                && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+    } else if (categoryIdx == CATEGORY_COLUMN) {
+        // 칼럼 : 변호사
+        return loginLawyer != null;
     }
+    return false;
+}
+
 
     private boolean isOwner(NewsBoardEntity board, HttpSession session) {
-        AdminEntity loginAdmin = (AdminEntity) session.getAttribute("loginAdmin");
-        LawyerEntity loginLawyer = (LawyerEntity) session.getAttribute("loginLawyer");
-
         int cat = board.getCategory().getCategoryIdx();
 
-        if (cat == CATEGORY_NOTICE || cat == CATEGORY_NEWS || cat == CATEGORY_VIDEO) {
-            if (board.getAdmin() == null || loginAdmin == null) return false;
-            return board.getAdmin().getAdminIdx().equals(loginAdmin.getAdminIdx());
-        } else if (cat == CATEGORY_COLUMN) {
-            if (board.getLawyer() == null || loginLawyer == null) return false;
-            return board.getLawyer().getLawyerIdx().equals(loginLawyer.getLawyerIdx());
+        // 칼럼 → 변호사
+        if (cat == CATEGORY_COLUMN) {
+            LawyerEntity loginLawyer = getLoginLawyer(session);
+            return loginLawyer != null &&
+                   board.getLawyer() != null &&
+                   board.getLawyer().getLawyerIdx().equals(loginLawyer.getLawyerIdx());
         }
-        return false;
+
+        // 나머지(공지/뉴스/동영상) → 관리자
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        return loginAdmin != null &&
+               board.getAdmin() != null &&
+               board.getAdmin().getAdminIdx().equals(loginAdmin.getAdminIdx());
+    }
+
+    /* ================ 세션 → 엔티티 변환 헬퍼 ================ */
+    private AdminEntity getLoginAdmin(HttpSession session) {
+        Object obj = session.getAttribute("loginAdmin");
+        if (obj == null) return null;
+
+        if (obj instanceof AdminEntity ae) {
+            return ae;
+        }
+        if (obj instanceof AdminSession as) {
+            return adminRepository.findById(as.getAdminIdx()).orElse(null);
+        }
+        return null;
+    }
+
+    private LawyerEntity getLoginLawyer(HttpSession session) {
+        Object obj = session.getAttribute("loginLawyer");
+        if (obj == null) return null;
+
+        if (obj instanceof LawyerEntity le) {
+            return le;
+        }
+        if (obj instanceof LawyerSession ls) {
+            // LawyerSession 은 네가 public 필드로 만들어놨으니까 이렇게 접근
+            return lawyerRepository.findById(ls.lawyerIdx).orElse(null);
+        }
+        return null;
     }
 }

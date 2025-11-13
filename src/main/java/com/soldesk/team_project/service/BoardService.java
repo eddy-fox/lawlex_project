@@ -62,6 +62,15 @@ public class BoardService {
         
     }
 
+    public Page<BoardEntity> getListByInterest(int page, String kw, int interestIdx) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("boardRegDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return this.boardRepository.findByInterestIdx(interestIdx, kw, pageable);
+        
+    }
+
     public BoardEntity getBoardEntity(Integer id) {
 
         Optional<BoardEntity> boardEntity = this.boardRepository.findById(id);

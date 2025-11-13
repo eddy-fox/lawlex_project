@@ -19,13 +19,14 @@ public class JwtProvider {
 
     private final long EXPIRATION_MS = 1000 * 60 * 60; // 1시간
 
-    public String createToken(MemberEntity member) {
+    public String createToken(UserBase user) {
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
         
         return Jwts.builder()
-                .setSubject(member.getMemberEmail())
-                .claim("id", member.getMemberIdx())
+                .setSubject(user.getEmail())
+                .claim("idx", user.getIdx())
+                .claim("name", user.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key)

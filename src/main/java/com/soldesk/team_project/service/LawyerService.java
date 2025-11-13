@@ -2,16 +2,19 @@ package com.soldesk.team_project.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.UserMasterEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.UserMasterRepository;
 import com.soldesk.team_project.util.FileStorageService;
 
@@ -32,6 +35,9 @@ public class LawyerService {
 
     private final UserMasterRepository userMasterRepository;
     private final InterestRepository interestRepository;
+    
+    private final MemberRepository memberRepository;
+
 
     private LawyerDTO convertLawyerDTO (LawyerEntity lawyerEntity) {
         LawyerDTO lawyerDTO = new LawyerDTO();
@@ -113,98 +119,94 @@ public class LawyerService {
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
 
-    private static String trim(String s){ return s == null ? null : s.trim(); }
-    private static String digits(String s){ return s == null ? null : s.replaceAll("\\D", ""); }
-    private static boolean notBlank(String s){ return s != null && !s.isBlank(); }
-
+    // 변호사 회원가입
     @Transactional
-    public void joinFromPortal(LawyerDTO dto){
-        if (userMasterRepository.existsByUserId(dto.getLawyerId())){
+    public void joinFromPortal(LawyerDTO dto) {
+        // 아이디 중복 (멤버/로이어 전체에서 중복 불가)
+        if (isUserIdDuplicate(dto.getLawyerId())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
-        String enc = passwordEncoder.encode(dto.getLawyerPass());
+
+        // 비밀번호 암호화 (null 아니고 공백 아닐 때만)
+        String encPass = null;
+        if (notBlank(dto.getLawyerPass())) {
+            encPass = passwordEncoder.encode(dto.getLawyerPass());
+        } else {
+            throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+        }
 
         LawyerEntity le = LawyerEntity.builder()
                 .lawyerId(dto.getLawyerId())
-                .lawyerPass(enc)
+                .lawyerPass(encPass)
                 .lawyerName(dto.getLawyerName())
                 .lawyerEmail(dto.getLawyerEmail())
-                .lawyerPhone(dto.getLawyerPhone()!=null ? dto.getLawyerPhone().replaceAll("\\D","") : null)
-                .lawyerIdnum(dto.getLawyerIdnum()!=null ? dto.getLawyerIdnum().replaceAll("\\D","") : null)
+                .lawyerPhone(digits(dto.getLawyerPhone()))
+                .lawyerTel(digits(dto.getLawyerTel()))
+                .lawyerIdnum(digits(dto.getLawyerIdnum()))
                 .lawyerAddress(dto.getLawyerAddress())
-                .lawyerComment(dto.getLawyerComment())
-                .lawyerActive(1)
+                .lawyerNickname(dto.getLawyerNickname())
+                .interestIdx(dto.getInterestIdx())   // 로이어는 단일 관심사 사용
+                .lawyerActive(1)                     // 활성
+                .lawyerAuth(0)                       // 기본 미승인(필요시)
                 .build();
 
-        if (dto.getInterestIdx()!=null){
-            // 읽기전용 컬럼(interest_idx)은 조인으로 세팅
-            interestRepository.findById(dto.getInterestIdx()).ifPresent(le::setInterest);
-            // 세션 즉시 반영 용도로 필드도 세팅(컬럼 insertable/updatable=false여도 세션 객체엔 값 보관 가능)
-            le.setInterestIdx(dto.getInterestIdx());
-        }
-
-        le = lawyerRepository.save(le);
-
-        UserMasterEntity u = UserMasterEntity.builder()
-                .userId(dto.getLawyerId())
-                .password(enc)
-                .status("ACTIVE")
-                .lawyerIdx(le.getLawyerIdx())
-                .role("LAWYER")
-                .build();
-        userMasterRepository.save(u);
+        lawyerRepository.save(le);
     }
 
-    // 변호사 프로필 수정 (아이디/비번/이메일/주소/한줄소개/관심1)
+    // 변호사 프로필 수정 
     @Transactional
-    public LawyerUpdateResult updateProfileFromPortal(LawyerDTO dto,
-                                                      String newPassword,
-                                                      String confirmPassword,
-                                                      Long userIdx,
-                                                      Integer lawyerIdx){
-        UserMasterEntity u = userMasterRepository.findById(userIdx).orElseThrow();
-        LawyerEntity le = lawyerRepository.findById(lawyerIdx).orElseThrow();
+    public LawyerUpdateResult updateProfileFromPortal(
+            LawyerDTO dto,
+            String newPassword,
+            String confirmPassword,
+            Long /*unused*/ userIdx,
+            Integer lawyerIdx
+    ) {
+        // userIdx는 현 흐름에서 사용하지 않음(로그인은 user_master 미사용)
+        LawyerEntity le = lawyerRepository.findById(lawyerIdx)
+                .orElseThrow(() -> new IllegalArgumentException("변호사 계정을 찾을 수 없습니다."));
 
-        // 아이디 변경
-        if (dto.getLawyerId()!=null && !dto.getLawyerId().isBlank() && !dto.getLawyerId().equals(u.getUserId())){
-            if (userMasterRepository.existsByUserId(dto.getLawyerId())){
+        // 아이디 변경 처리
+        if (notBlank(dto.getLawyerId()) && !dto.getLawyerId().equals(le.getLawyerId())) {
+            if (isUserIdDuplicate(dto.getLawyerId())) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
             }
-            u.setUserId(dto.getLawyerId());
             le.setLawyerId(dto.getLawyerId());
         }
 
         // 비밀번호 변경
-        if ((newPassword!=null && !newPassword.isBlank()) || (confirmPassword!=null && !confirmPassword.isBlank())){
-            if (newPassword==null || !newPassword.equals(confirmPassword)){
+        if (notBlank(newPassword) || notBlank(confirmPassword)) {
+            if (!notBlank(newPassword) || !newPassword.equals(confirmPassword)) {
                 throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
             }
-            String enc = passwordEncoder.encode(newPassword);
-            u.setPassword(enc);
-            le.setLawyerPass(enc);
+            le.setLawyerPass(passwordEncoder.encode(newPassword));
         }
 
-        // 이메일/주소/소개
-        le.setLawyerEmail(dto.getLawyerEmail());
-        le.setLawyerAddress(dto.getLawyerAddress());
-        le.setLawyerComment(dto.getLawyerComment());
+        // 기본 프로필 갱신
+        if (notBlank(dto.getLawyerName()))     le.setLawyerName(dto.getLawyerName());
+        if (notBlank(dto.getLawyerEmail()))    le.setLawyerEmail(dto.getLawyerEmail());
+        if (notBlank(dto.getLawyerNickname())) le.setLawyerNickname(dto.getLawyerNickname());
+        if (notBlank(dto.getLawyerAddress()))  le.setLawyerAddress(dto.getLawyerAddress());
+        if (dto.getInterestIdx() != null)      le.setInterestIdx(dto.getInterestIdx());
 
-        // 관심1 
-        if (dto.getInterestIdx()!=null){
-            interestRepository.findById(dto.getInterestIdx()).ifPresent(le::setInterest);
-            le.setInterestIdx(dto.getInterestIdx());
-        }
+        if (notBlank(dto.getLawyerPhone())) le.setLawyerPhone(digits(dto.getLawyerPhone()));
+        if (notBlank(dto.getLawyerTel()))   le.setLawyerTel(digits(dto.getLawyerTel()));
+        if (notBlank(dto.getLawyerIdnum())) le.setLawyerIdnum(digits(dto.getLawyerIdnum()));
 
-        userMasterRepository.save(u);
         lawyerRepository.save(le);
 
-        return new LawyerUpdateResult(u.getUserId(), le);
+        // 컨트롤러에서 세션 갱신에 쓰일 수 있도록 변경된 핵심 값 반환
+        return new LawyerUpdateResult(le.getLawyerId(), le);
     }
 
-    public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {
-
+    // 중복 체크 (멤버/로이어 통합)
+    public boolean isUserIdDuplicate(String userId) {
+        boolean memberDup = memberRepository.existsByMemberId(userId);
+        boolean lawyerDup = lawyerRepository.existsByLawyerId(userId);
+        return memberDup || lawyerDup;
     }
 
+<<<<<<< HEAD
     // 문의 상세 조회 필요한 id 와 name
     public LawyerDTO qLawyerInquiry(Integer lawyerIdx){
         LawyerEntity lawyerEntity = lawyerRepository.findById(lawyerIdx).orElse(null);
@@ -212,6 +214,18 @@ public class LawyerService {
         return lawyerDTO;
     }
     
+=======
+    // 유틸 
+    private static String digits(String s) { return s == null ? null : s.replaceAll("\\D", ""); }
+    private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
+
+    // 결과 DTO
+    public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {}
+
+    // 로그인 아이디로 변호사 한 명 가져오기
+    public LawyerEntity getLawyer(String lawyerId) {
+    return lawyerRepository.findByLawyerId(lawyerId)
+            .orElseThrow(() -> new DataNotFoundException("변호사를 찾을 수 없습니다."));
 }
-
-
+>>>>>>> main
+}

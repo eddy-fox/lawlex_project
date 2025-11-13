@@ -14,7 +14,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
+import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +27,13 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
     private final HttpServletRequest request;
     private final MemberRepository memberRepository;
+    private final LawyerRepository lawyerRepository;
 
-    public PrincipalOauth2UserService(HttpServletRequest request, MemberRepository memberRepository) {
+    public PrincipalOauth2UserService(HttpServletRequest request, 
+        MemberRepository memberRepository, LawyerRepository lawyerRepository) {
         this.request = request;
         this.memberRepository = memberRepository;
+        this.lawyerRepository = lawyerRepository;
     }
 
     @Override
@@ -41,20 +46,25 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        Optional<MemberEntity> user = memberRepository.findByMemberEmailAndMemberActive(email, 1);
+        Optional<MemberEntity> memberUser = memberRepository.findByMemberEmailAndMemberActive(email, 1);
+        Optional<LawyerEntity> lawyerUser = lawyerRepository.findByLawyerEmailAndLawyerActive(email, 1);
 
-         if (user.isEmpty()) {
-            MemberEntity member = new MemberEntity();
-            member.setMemberId(email);
-            member.setMemberEmail(email);
-            member.setMemberName(name);
-            member.setMemberPass("LawLexOAuth2");
-            member.setInterestIdx(1);
-            memberRepository.save(member);
+         if (memberUser.isEmpty() && lawyerUser.isEmpty()) {
+            TemporaryOauthDTO temp = new TemporaryOauthDTO(email, name, provider, providerId);
+            temp.setEmail(email);
+            temp.setName(name);
+            temp.setProvider(provider);
+            temp.setProviderId(providerId);
 
-            return new PrincipalDetails(member, oAuth2User.getAttributes());
+            HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                                    .getRequest().getSession();
+            session.setAttribute("tempOauth", temp);
+
+            return new PrincipalDetails(null, oAuth2User.getAttributes());
+        } else if (memberUser.isPresent() && lawyerUser.isEmpty()){
+            return new PrincipalDetails(memberUser.get(), oAuth2User.getAttributes());
         } else {
-            return new PrincipalDetails(user.get(), oAuth2User.getAttributes());
+            return new PrincipalDetails(lawyerUser.get(), oAuth2User.getAttributes());
         }
     }
 }
