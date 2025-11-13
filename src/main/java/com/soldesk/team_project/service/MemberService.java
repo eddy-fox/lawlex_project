@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.entity.InterestEntity;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
@@ -22,10 +23,16 @@ import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.UserMasterRepository;
 
-import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.entity.UserMasterEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
+
+import java.util.NoSuchElementException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 @Service
 @RequiredArgsConstructor
@@ -223,6 +230,32 @@ public class MemberService {
         // 컨트롤러에서 쓰는 반환 타입 유지
         return new MemberUpdateResult(me.getMemberId(), me);
     }
+
+    // 세션에서 로그인된 유저 가져오기
+
+    //  서비스 내부에서 세션의 loginUser(UserMasterDTO) 꺼내기
+    private UserMasterDTO currentLoginUserOrThrow() {
+        ServletRequestAttributes attrs =
+            (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attrs.getRequest().getSession(false);
+        if (session == null) throw new IllegalStateException("로그인이 필요합니다.");
+        Object obj = session.getAttribute("loginUser");
+        if (obj instanceof UserMasterDTO u) return u;
+        throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
+}
+
+    // 세션의 로그인 유저가 일반회원일 때, 그 프로필 DTO 반환
+    @Transactional(readOnly = true)
+    public MemberDTO getSessionMember() {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"MEMBER".equalsIgnoreCase(login.getRole())) {
+        throw new IllegalStateException("일반회원만 접근 가능합니다.");
+    }
+    return memberRepository.findById(login.getMemberIdx())
+            .map(this::convertMemberDTO)
+            .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
+}
+    
 
     // OAuth2
     @Transactional

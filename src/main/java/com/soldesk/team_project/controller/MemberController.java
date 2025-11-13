@@ -265,7 +265,10 @@ public class MemberController {
     public String joinType() { return "member/loginChoice"; }
 
     @GetMapping({"/join/normal", "/joinNormal"})
-    public String joinNormalForm() { return "member/gjoin"; }
+    public String joinNormalForm(Model model){
+        model.addAttribute("interests", interestRepository.findAll());
+        return "member/gjoin";
+    }
 
     @GetMapping({"/join/lawyer", "/lawyer/join"})
     public String joinLawyerForm() { return "member/ljoin"; }
@@ -319,10 +322,10 @@ public class MemberController {
         return memberService.resetPassword(memberId, memberPhone, memberIdnum, newPassword, confirmPassword);
     }
 
-    //컨트롤 아이디중복확인 멤버 + 변호사
-    @GetMapping(value="/api/checkId", produces="text/plain;charset=UTF-8")
+    //컨트롤 아이디중복확인 멤버
+    @GetMapping(value = "/api/checkId", produces = "text/plain;charset=UTF-8")
     @ResponseBody
-    public String checkId(@RequestParam String memberId){
+    public String checkId(@RequestParam("memberId") String memberId) {
         return memberService.isUserIdDuplicate(memberId) ? "DUP" : "OK";
     }
 
@@ -424,3 +427,23 @@ public class MemberController {
         return isBcrypt ? passwordEncoder.matches(raw, db) : raw.equals(db);
     }
 }
+
+
+
+/*유저 마스터 dto에 저장된 세션 가져오는 코드 
+
+// 컨트롤러 예시
+@GetMapping("/mypage")
+public String mypage(Model model) {
+    // 일반회원 화면일 때
+    MemberDTO me = memberService.getSessionMember();
+    model.addAttribute("member", me);
+    return "member/ginfo";
+}
+
+// 다른 서비스 예시
+public void doSomethingForCurrentLawyer() {
+    LawyerDTO me = lawyerService.getSessionLawyer();
+    // ... 로직 ...
+}
+*/
