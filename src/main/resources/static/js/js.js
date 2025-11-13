@@ -1,7 +1,8 @@
 // index
 // header
 // footer
-// chatIcon 
+// chatIcon - 주석 처리: chatIcon.html의 스크립트를 사용하므로 충돌 방지
+/*
     (function () {
       document.querySelectorAll('.page-chatIcon').forEach(function (root) {
         var btn = root.querySelector('.icon'),
@@ -82,6 +83,7 @@
         applyFilter('all');
       });
     })();
+*/
 
 // chatIcon 밑
 
@@ -148,3 +150,4 @@
   window.initSideMenus = boot;
 })();
 //  side 밑
+

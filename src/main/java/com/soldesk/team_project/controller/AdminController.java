@@ -22,6 +22,8 @@ import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.QuestionService;
+import com.soldesk.team_project.service.FirebaseStorageService;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +36,24 @@ public class AdminController {
     private final LawyerService lawyerService;
     private final QuestionService questionService;
     private final AdService adService;
+    private final FirebaseStorageService storageService; 
+
+    private String nowUuidName(String originalFilename) {
+    if (originalFilename == null) originalFilename = "";
+    String ext = "";
+    int idx = originalFilename.lastIndexOf('.');
+    if (idx >= 0 && idx < originalFilename.length() - 1) {
+        ext = originalFilename.substring(idx).toLowerCase(); // .jpg 등
+    } else {
+        ext = ".bin";
+    }
+
+    String now = java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+    String uuid8 = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+
+    return now + "-" + uuid8 + ext;   // 예: 20251113_223512123-1a2b3c4d.jpg
+}
 
     // 일반 회원 관리
     @GetMapping("/memberManagement")
@@ -163,9 +183,13 @@ public class AdminController {
         String desiredName = adRegistration.getAdImgPath();
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            String parentFolderId = "YOUR_DRIVE_FOLDER_ID";
-            // DriveUploader.UploadedFileInfo uploaded = driveUploader.upload(imageFile, parentFolderId, desiredName);
-        }
+        String filename   = nowUuidName(imageFile.getOriginalFilename());
+        String objectPath = "ad/" + filename;  // ✅ 광고는 ad 폴더에
+
+        var uploaded = storageService.upload(imageFile, objectPath);
+        // 정책: adImgPath 에 "풀 URL" 저장
+        adRegistration.setAdImgPath(uploaded.url());
+    }
 
         // 광고 등록 처리
         adService.registProcess(adRegistration);
@@ -201,8 +225,18 @@ public class AdminController {
         return "admin/adModify";
     }
     @PostMapping("/adModify")
-    public String modifySubmit(@ModelAttribute("modifyAd") AdDTO modifyAd, Model model) {
+    public String modifySubmit(@ModelAttribute("modifyAd") AdDTO modifyAd,@RequestParam(value = "imageFile", required = false) MultipartFile imageFile, Model model) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+        String filename   = nowUuidName(imageFile.getOriginalFilename());
+        String objectPath = "ads/" + filename;
+
+        var uploaded = storageService.upload(imageFile, objectPath);
+        
+        modifyAd.setAdImgPath(uploaded.url());   // 기존 경로 덮어쓰기
+    }
+        
         adService.modifyProcess(modifyAd);
+        
 
         return "redirect:/admin/adInfo?adIdx=" + modifyAd.getAdIdx();
     }
