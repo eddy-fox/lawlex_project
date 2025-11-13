@@ -45,19 +45,19 @@ public class QuestionEntity {
     @Column(name = "q_active")
     private Integer questionActive;
 
-    @Column(name = "member_idx", insertable = false, updatable = false)
+    @Column(name = "member_idx")
     private Integer memberIdx;
 
-    @Column(name = "lawyer_idx", insertable = false, updatable = false)
+    @Column(name = "lawyer_idx")
     private Integer lawyerIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_idx")
+    @JoinColumn(name = "member_idx", insertable = false, updatable = false)
     private MemberEntity member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyer;
+    @JoinColumn(name = "lawyer_idx", insertable = false, updatable = false)
+    private LawyerEntity lawyer; 
     
     
 }

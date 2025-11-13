@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.checkerframework.checker.units.qual.min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,6 @@ public class QuestionService {
 
 
     private final QuestionRepository questionRepository;
-    private final MemberRepository memberRepository;
-    private final LawyerRepository lawyerRepository;
 
     private QuestionDTO convertQuestionDTO (QuestionEntity questionEntity) {
         QuestionDTO questionDTO = new QuestionDTO();
@@ -37,19 +36,8 @@ public class QuestionService {
         questionDTO.setQSecret(questionEntity.getQuestionSecret());
         questionDTO.setQAnswer(questionEntity.getQuestionAnswer());
         questionDTO.setQActive(questionEntity.getQuestionActive());
-        
-        if (questionEntity.getMemberIdx() != null) {
-            questionDTO.setMemberIdx(questionEntity.getMemberIdx());
-        } else {
-            questionDTO.setMemberIdx(null);
-        }
-
-        if (questionEntity.getLawyerIdx() != null) {
-            questionDTO.setLawyerIdx(questionEntity.getLawyerIdx());
-        } else {
-            questionDTO.setLawyerIdx(null);
-        }
-
+        questionDTO.setMemberIdx(questionEntity.getMemberIdx());
+        questionDTO.setLawyerIdx(questionEntity.getLawyerIdx());
         return questionDTO;
     }
 
@@ -61,14 +49,9 @@ public class QuestionService {
         questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
         questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
-        questionEntity.setQuestionActive(questionEntity.getQuestionActive());
-
-        MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
-        LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
-
-        questionEntity.setMemberIdx(memberEntity.getMemberIdx());
-        questionEntity.setLawyerIdx(lawyerEntity.getLawyerIdx());
-        
+        questionEntity.setQuestionActive(questionDTO.getQActive());
+        questionEntity.setMemberIdx(questionDTO.getMemberIdx());
+        questionEntity.setLawyerIdx(questionDTO.getLawyerIdx());
         return questionEntity;
     }
 
@@ -117,14 +100,14 @@ public class QuestionService {
     }
 
     /* 일반 회원 자기문의 보기 */
-    public Page<QuestionDTO> getMQnaPagingM(Integer mIdx, int page){
+    public Page<QuestionDTO> getQnaPagingM(Integer mIdx, int page){
         int p = Math.max(page,1)-1;
         Pageable pageable = PageRequest.of(p,10);
         return questionRepository.findByMemberIdxOrderByQuestionRegDateDesc(mIdx, pageable)
         .map(this::convertQuestionDTO);
     }
     /* 변호사 회원 자기문의 보기 */
-    public Page<QuestionDTO> getLQnaPagingM(Integer lIdx, int page){
+    public Page<QuestionDTO> getQnaPagingL(Integer lIdx, int page){
         int p = Math.max(page,1)-1;
         Pageable pageable = PageRequest.of(p,10);
         return questionRepository.findByLawyerIdxOrderByQuestionRegDateDesc(lIdx, pageable)
@@ -133,6 +116,17 @@ public class QuestionService {
 
     
     public void qnaWriting(QuestionDTO qnaWrite){
+
+        if (qnaWrite.getQRegDate() == null) {
+            qnaWrite.setQRegDate(java.time.LocalDate.now());
+        }
+        if (qnaWrite.getQAnswer() == null) {
+            qnaWrite.setQAnswer(0);
+        }
+        if (qnaWrite.getQActive() == null) {
+            qnaWrite.setQActive(1);
+        }
+        
         QuestionEntity questionEntity = convertQuestionEntity(qnaWrite);
         questionRepository.save(questionEntity);
     }

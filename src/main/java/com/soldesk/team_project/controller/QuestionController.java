@@ -50,9 +50,9 @@ public class QuestionController {
             Integer mIdx = loginUser.getMemberIdx();
             Integer lIdx = loginUser.getLawyerIdx();
             if(mine && mIdx!= null){ /* 일반회원이 확인 */
-                paging = questionService.getMQnaPagingM(mIdx, page);
+                paging = questionService.getQnaPagingM(mIdx, page);
             }else if(mine && lIdx != null){ /* 변호사회원 확인 */
-                paging = questionService.getLQnaPagingM(lIdx, page);
+                paging = questionService.getQnaPagingL(lIdx, page);
             }else {
                 paging = questionService.getQnaPaging(page);
             }
@@ -74,22 +74,34 @@ public class QuestionController {
     }
     
     @GetMapping("/qnaWrite")
-    public String qnaWrite(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite){
-        
-        return "question/qnaWrite";
-    
-    }
+    public String qnaWrite(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser){
 
-    @PostMapping("/qnaWrite")
-    public String qnaWriteSubmit(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite) {
-        questionService.qnaWriting(qnaWrite);
+        if(loginUser == null){ return "redirect:/member/login"; }
+        System.out.println("\n"+ qnaWrite.toString() + "\n");
         return "question/qnaWrite";
+    }
+    
+    @PostMapping("/qnaWrite")
+    public String qnaWriteSubmit(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite,
+                                @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+        
+        if(loginUser.getMemberIdx() != null ) {
+            qnaWrite.setMemberIdx(loginUser.getMemberIdx());
+        }
+        if(loginUser.getLawyerIdx() != null) {
+            qnaWrite.setLawyerIdx(loginUser.getLawyerIdx());
+        }
+
+        questionService.qnaWriting(qnaWrite);
+        System.out.println("\n"+ qnaWrite.toString() + "\n");
+        return "redirect:/question/qnaList";
     }
 
     @GetMapping("/qnaInfo")
     public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model) {
         QuestionDTO infoQ = questionService.getQ(qIdx);
-        // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
+
         
 
         Integer mIdx = infoQ.getMemberIdx();

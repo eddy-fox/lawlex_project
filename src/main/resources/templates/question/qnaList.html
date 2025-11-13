@@ -23,8 +23,11 @@
                         <input type="text" name="search" placeholder="검색">
                         <button type="button" class="btn-search">검색</button>
                     </form>
-                    <a class="btn" th:if="${session.loginUser != null}"
-                                    th:href="@{/question/qnaList(page=1, mine=true)}">내가 작성한 문의 보기</a>
+                    <a class="btn"
+                        th:if="${session.loginUser != null}"
+                        th:href="${mine} ? @{/question/qnaList(page=1, mine=false)} : @{/question/qnaList(page=1, mine=true)}"
+                        th:text="${mine} ? '전체 문의 보기' : '내가 작성한 문의 보기'">
+                    </a>
                 </div>
 
                 <table>

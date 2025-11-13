@@ -15,7 +15,10 @@
                 <form th:action="@{/question/qnaWrite}" th:object="${qnaWrite}" id="qnaForm" method="post">
                     <div class="form-group">
                         <div class="header-line">
-                            <!-- <input type="hidden" th:field="*{memberIdx}"> -->
+                            <input type="hidden"  th:field="*{memberIdx}">
+                            <input type="hidden"  th:field="*{lawyerIdx}">
+                            <input type="hidden" th:field="*{qRegDate}">
+                            <input type="hidden" name="qAnswer" value="0">
                             <label for="titleInput" class="form-label">제목</label>
                             <div class="checkbox-group in-header">
                                 <input type="hidden" name="qSecret" value="0">
