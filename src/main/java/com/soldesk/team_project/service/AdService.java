@@ -40,24 +40,24 @@ public class AdService {
         return adDTO;
     }
 
-    // Ad DTO -> Entity
-    private AdEntity convertAdEntity (AdDTO adDTO) {
-        AdEntity adEntity = new AdEntity();
-        adEntity.setAdIdx(adDTO.getAdIdx());
-        adEntity.setAdName(adDTO.getAdName());
-        adEntity.setAdImgPath(adDTO.getAdImgPath());
-        adEntity.setAdLink(adDTO.getAdLink());
-        adEntity.setAdStartDate(adDTO.getAdStartDate());
-        adEntity.setAdDuration(adDTO.getAdDuration());
-        adEntity.setAdViews(adDTO.getAdViews());
-        adEntity.setAdActive(adDTO.getAdActive());
-        adEntity.setLawyerIdx(adDTO.getLawyerIdx());
+        // Ad DTO -> Entity
+        private AdEntity convertAdEntity (AdDTO adDTO) {
+            AdEntity adEntity = new AdEntity();
+            adEntity.setAdIdx(adDTO.getAdIdx());
+            adEntity.setAdName(adDTO.getAdName());
+            adEntity.setAdImgPath(adDTO.getAdImgPath());
+            adEntity.setAdLink(adDTO.getAdLink());
+            adEntity.setAdStartDate(adDTO.getAdStartDate());
+            adEntity.setAdDuration(adDTO.getAdDuration());
+            adEntity.setAdViews(adDTO.getAdViews());
+            adEntity.setAdActive(adDTO.getAdActive());
+            adEntity.setLawyerIdx(adDTO.getLawyerIdx());
 
-        LawyerEntity lawyerEntity = lawyerRepository.findById(adDTO.getLawyerIdx()).orElse(null);
-        adEntity.setLawyer(lawyerEntity);
+            LawyerEntity lawyerEntity = lawyerRepository.findById(adDTO.getLawyerIdx()).orElse(null);
+            adEntity.setLawyer(lawyerEntity);
 
-        return adEntity;
-    }
+            return adEntity;
+        }
 
     // 만료된 광고 비활성화
     @Transactional

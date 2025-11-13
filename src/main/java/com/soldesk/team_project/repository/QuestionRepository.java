@@ -22,4 +22,6 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
 
     Page<QuestionEntity> findAllByOrderByQuestionRegDateDesc(Pageable pageable);
 
+    QuestionEntity findByAnswerAnswerIdx(Integer aIdx);
+
 }

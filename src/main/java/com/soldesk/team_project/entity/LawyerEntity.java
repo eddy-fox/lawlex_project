@@ -1,5 +1,7 @@
 package com.soldesk.team_project.entity;
 
+import java.util.List;
+
 import com.soldesk.team_project.security.UserBase;
 
 import jakarta.persistence.Column;
@@ -89,7 +91,10 @@ public class LawyerEntity implements UserBase{
     private InterestEntity interest;
 
     @OneToMany(mappedBy = "lawyer")
-    private java.util.List<AdEntity> ad;
+    private List<AdEntity> ad;
+
+    @OneToMany(mappedBy = "lawyer")
+    private List<QuestionEntity> question;
 
     // Oauth2User용 메서드
     @Override

@@ -182,21 +182,21 @@ public class PurchaseService {
 
     @Transactional
     public void usePoint(int memberIdx, int amount) {
-    MemberEntity member = memberRepository.findById(memberIdx).orElseThrow();
-    int cur = member.getMemberPoint();
-    if (cur < amount) {
-        throw new IllegalStateException("포인트가 부족합니다.");
+        MemberEntity member = memberRepository.findById(memberIdx).orElseThrow();
+        int cur = member.getMemberPoint();
+        if (cur < amount) {
+            throw new IllegalStateException("포인트가 부족합니다.");
+        }
+        member.setMemberPoint(cur - amount);
+
+        PointEntity point = new PointEntity();
+        point.setPointDivision("사용");
+        point.setPointState(-amount);
+        point.setPointHistory(amount + " 포인트 상담 차감");
+        point.setMemberIdx(memberIdx);
+
+        memberRepository.save(member);
+        pointRepository.save(point);
     }
-    member.setMemberPoint(cur - amount);
-
-    PointEntity point = new PointEntity();
-    point.setPointDivision("사용");
-    point.setPointState(-amount);
-    point.setPointHistory(amount + " 포인트 상담 차감");
-    point.setMemberIdx(memberIdx);
-
-    memberRepository.save(member);
-    pointRepository.save(point);
-}
 
 }

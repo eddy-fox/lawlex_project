@@ -13,10 +13,13 @@ public class QuestionDTO {
     private String qTitle;
     private String qContent;
     private LocalDate qRegDate;
-    private String qSecret;
+    private Integer qSecret;
     private Integer qAnswer;
     private Integer qActive;
     private Integer memberIdx;
     private Integer lawyerIdx;
+
+    private String infoId;
+    private String infoName;
 
 }

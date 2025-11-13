@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의글 상세</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/qnaInfo.css}">
+</head>
+
+<body>
+    <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-qnaInfo">
+        <div class="inner">
+            <section class="frame">
+
+                <div class="section">
+                    <div class="section-label" th:with="isSecret=${infoQ.qSecret != null and infoQ.qSecret == '1'},
+                  isAnswered=${infoQ.qAnswer != null and infoQ.qAnswer == 1}">
+                        <span>제목</span>
+                        <time class="answer-date" th:text="${infoQ.qRegDate}">2025-11-04</time>
+
+                        <div class="chips">
+                            <div class="chip chip-secret" th:if="${isSecret}">비밀글</div>
+                            <div class="chip chip-public" th:if="${!isSecret}">공개글</div>
+                            <div class="chip chip-answer" th:if="${isAnswered}">답변완료</div>
+                        </div>
+                    </div>
+
+                    <div class="box" th:text="${infoQ.qTitle}">실제 문의사항 제목</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-label"><span>문의 내용</span></div>
+                    <div class="box" th:text="${infoQ.qContent}">
+                        회원가입 시 인증메일이 오지 않습니다. 확인 부탁드립니다.
+                    </div>
+                </div>
+
+                <div class="section answer" th:with="isAnswered=${infoQ.qAnswer != null and infoQ.qAnswer == 1}">
+                    <div class="section-label">
+                        <span>답변</span>
+                        <time class="answer-date" th:if="${isAnswered}" th:text="${questionAnswer.aRegDate}">2025-11-04</time>
+                    </div>
+
+                    <!-- 답변 있음 -->
+                    <div class="box" th:if="${isAnswered}">
+                        <div class="box" th:text="${questionAnswer.aContent}"></div>
+                        <a th:href="@{/question/answerModify(aIdx=${questionAnswer.aIdx})}" th:if="${admin != null}" class="btn btn-submit">수정</a>
+                        <a th:href="@{/question/answerDelete(aIdx=${questionAnswer.aIdx})}" th:if="${admin != null}" class="btn btn-delete">삭제</a>
+                    </div>
+                    
+                    <!-- 답변 없음 -->
+                    <div class="block answer-section">
+                      <form th:action="@{/question/answerWrite}" method="post"
+                        th:object="${answerWrite}" enctype="multipart/form-data"
+                        th:if="${!isAnswered and admin != null}">
+
+                        <input type="hidden" th:field="*{qIdx}">
+                        <input type="hidden" th:field="*{adminIdx}">
+                        <textarea th:field="*{aContent}" id="aContent" class="answer-textarea"></textarea>
+
+                        <div class="action-buttons">
+                            <button th:if="${!isAnswered}" class="btn btn-submit" type="submit">답변하기</button>
+                        </div>
+                      </form>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <a class="btn btn-submit"
+                        th:href="@{/question/qnaList}">목록</a>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+</body>
+
+</html>
