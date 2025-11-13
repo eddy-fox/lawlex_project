@@ -319,6 +319,13 @@ public class MemberController {
         return memberService.resetPassword(memberId, memberPhone, memberIdnum, newPassword, confirmPassword);
     }
 
+    //컨트롤 아이디중복확인 멤버 + 변호사
+    @GetMapping(value="/api/checkId", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public String checkId(@RequestParam String memberId){
+        return memberService.isUserIdDuplicate(memberId) ? "DUP" : "OK";
+    }
+
     // OAuth
     @GetMapping("/oauth2/additional-info")
     public String showAdditionalInfoForm() {

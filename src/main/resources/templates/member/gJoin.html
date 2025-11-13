@@ -1,45 +1,111 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>일반회원가입</title>
-    <link rel="stylesheet" th:href="@{/css/gJoin.css}">
-  <link th:href="@{/css/style.css}" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일반회원가입</title>
+  <link rel="stylesheet" th:href="@{/css/gJoin.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
-    <main class="page-gJoin">
+
+  <main class="page-gJoin">
     <section class="center-card">
-    <div class="head">
+      <div class="head">
         <h1 class="title">회원가입</h1>
-    </div>
-    <form class="form" action="#" method="post">
+        <!-- 서버 에러 플래시 메시지 -->
+        <p class="alert error" th:if="${error}" th:text="${error}">에러 메시지</p>
+      </div>
+
+      <!-- 실제 서버 제출용: /member/api/join/normal -->
+      <form id="gJoinForm" class="form" th:action="@{/member/api/join/normal}" method="post">
+        <!-- 아이디 -->
         <div class="field">
-        <div class="inline">
-            <input class="input" type="text" placeholder="아이디">
+          <div class="inline">
+            <input class="input" id="memberId" name="memberId" type="text" placeholder="아이디" autocomplete="username" required>
             <button class="pill" type="button" id="dupBtn">중복확인</button>
+          </div>
+          <small id="idHelp" class="help"></small>
         </div>
-        </div>
-        <div class="field"><input class="input" type="password" placeholder="비밀번호"></div>
-        <div class="field"><input class="input" type="password" placeholder="비밀번호 확인"></div>
-        <div class="field"><input class="input" type="text" placeholder="닉네임"></div>
-        <div class="field"><input class="input" type="email" placeholder="이메일"></div>
-        <div class="field"><input class="input" type="tel" placeholder="전화번호"></div>
-        <div class="field"><input class="input" type="date" placeholder="생년월일"></div>
+
+        <!-- 비밀번호 -->
         <div class="field">
-        <div class="agree-area">
+          <input class="input" id="memberPass" name="memberPass" type="password" placeholder="비밀번호" autocomplete="new-password" required>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="field">
+          <input class="input" id="memberPass2" name="memberPass2" type="password" placeholder="비밀번호 확인" autocomplete="new-password" required>
+          <small id="passHelp" class="help"></small>
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="field">
+          <input class="input" id="memberNickname" name="memberNickname" type="text" placeholder="닉네임" required>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="field">
+          <input class="input" id="memberEmail" name="memberEmail" type="email" placeholder="이메일" autocomplete="email" required>
+        </div>
+
+        <!-- 전화번호 -->
+        <div class="field">
+          <input class="input" id="memberPhone" name="memberPhone" type="tel" placeholder="전화번호" inputmode="numeric" required>
+        </div>
+
+        <!-- 생년월일(= memberIdnum) -->
+        <div class="field">
+          <!-- date를 쓰되 서버에서는 digits()로 숫자만 사용 -->
+          <input class="input" id="memberIdnum" name="memberIdnum" type="date" placeholder="생년월일" required>
+        </div>
+
+        <!-- 관심분야 3개 -->
+        <div class="field">
+          <div class="inline" style="gap:.5rem; width:100%;">
+            <select class="input" id="interestIdx1" name="interestIdx1" required style="flex:1;">
+              <option value="">관심 분야 1</option>
+              <option th:each="it : ${interests}"
+                      th:value="${it.interest_idx}"
+                      th:text="${it.interest_name}">형사</option>
+            </select>
+            <select class="input" id="interestIdx2" name="interestIdx2" required style="flex:1;">
+              <option value="">관심 분야 2</option>
+              <option th:each="it : ${interests}"
+                      th:value="${it.interest_idx}"
+                      th:text="${it.interest_name}">민사</option>
+            </select>
+            <select class="input" id="interestIdx3" name="interestIdx3" required style="flex:1;">
+              <option value="">관심 분야 3</option>
+              <option th:each="it : ${interests}"
+                      th:value="${it.interest_idx}"
+                      th:text="${it.interest_name}">가사</option>
+            </select>
+          </div>
+          <small id="interestHelp" class="help"></small>
+        </div>
+
+        <!-- 개인정보 수신 동의 -->
+        <div class="field">
+          <div class="agree-area">
+            <input type="hidden" id="memberAgree" name="memberAgree" value="N">
             <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
-            <button class="small-btn" type="button" id="verifyBtn">본인인증</button>
+          </div>
+          <small id="privacyHelp" class="help"></small>
         </div>
-        </div>
+
         <div class="divider"></div>
-        <button class="primary-btn" type="submit">회원가입</button>
-    </form>
+
+        <button class="primary-btn" type="submit" id="submitBtn">회원가입</button>
+        <small id="submitHelp" class="help"></small>
+      </form>
     </section>
-    </main>
-    <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/gJoin.js}"></script>
+  </main>
+
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/gJoin.js}"></script>
 </body>
 </html>
