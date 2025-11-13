@@ -22,7 +22,7 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
     List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String memberId, Integer qAnswer, Integer qActive);
     // List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndqAnswer(String memberId, String qAnswer);
 
-    Page<QuestionEntity> findAllByOrderByQuestionRegDateDesc(Pageable pageable);
-
- 
+    Page<QuestionEntity> findAllByOrderByQuestionRegDateDesc(Pageable pageable); /* 모두 조회 */
+    Page<QuestionEntity> findByMemberIdxOrderByQuestionRegDateDesc(Integer mIdx, Pageable pageable); /* 자신에 글 조회 */
+    Page<QuestionEntity> findByLawyerIdxOrderByQuestionRegDateDesc(Integer LIdx, Pageable pageable); /* 자신에 글 조회 */
 }

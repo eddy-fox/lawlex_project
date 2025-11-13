@@ -1,5 +1,7 @@
 package com.soldesk.team_project.controller;
 
+import java.util.zip.Inflater;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,11 +40,26 @@ public class QuestionController {
 
     @GetMapping("/qnaList")
     public String qnaList(@RequestParam(value = "page", defaultValue = "1") int page,
-                            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          @RequestParam(value = "mine", defaultValue = "false" ) boolean mine,
+                          @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                             Model model) {
 
-        Page<QuestionDTO> paging = questionService.getQnaPaging(page);
+        Page<QuestionDTO> paging;
+
+        if(mine && loginUser != null){
+            Integer mIdx = loginUser.getMemberIdx();
+            Integer lIdx = loginUser.getLawyerIdx();
+            if(mine && mIdx!= null){ /* 일반회원이 확인 */
+                paging = questionService.getMQnaPagingM(mIdx, page);
+            }else if(mine && lIdx != null){ /* 변호사회원 확인 */
+                paging = questionService.getLQnaPagingM(lIdx, page);
+            }else {
+                paging = questionService.getQnaPaging(page);
+            }
+        }else{ paging = questionService.getQnaPaging(page); }
+
         model.addAttribute("qnaPaging", paging);
+        model.addAttribute("mine", mine);
        
         if(loginUser != null){
             model.addAttribute("loginUser", loginUser);
@@ -53,7 +70,6 @@ public class QuestionController {
                 model.addAttribute("myIdxL", loginUser.getLawyerIdx());
             }
         }
-
         return "question/qnaList";
     }
     

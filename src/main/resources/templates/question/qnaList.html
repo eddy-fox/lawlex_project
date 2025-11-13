@@ -23,7 +23,8 @@
                         <input type="text" name="search" placeholder="검색">
                         <button type="button" class="btn-search">검색</button>
                     </form>
-                    <a class="btn" >내가 작성한 문의 보기</a>
+                    <a class="btn" th:if="${session.loginUser != null}"
+                                    th:href="@{/question/qnaList(page=1, mine=true)}">내가 작성한 문의 보기</a>
                 </div>
 
                 <table>
@@ -56,7 +57,7 @@
 
                                 <a th:if="${canSee}"
                                    th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}"
-                                   th:text="${isSecret ? '🔒 [본인] '+qList.qTitle : qList.qTitle}"></a>
+                                   th:text="${isSecret ? '🔒 [본인글] '+qList.qTitle : qList.qTitle}"></a>
                                                                 
                                    <span th:if="${!canSee}" th:text="'🔒 비밀글 입니다'"></span>
                                 </td>
@@ -80,14 +81,14 @@
                               start=${block*10 + 1},
                               end=${T(java.lang.Math).min(total, start + 9)}">
 
-                    <a class="prev" th:href="@{/question/qnaList(page=${current - 1})}">&lt;</a>
+                    <a class="prev" th:href="@{/question/qnaList(page=${current - 1}, mine=${mine})}">&lt;</a>
                     <a class="page"
                         th:each="n : ${#numbers.sequence(start, end)}"
                         th:text="${n}"
-                        th:href="@{/question/qnaList(page=${n})}"
+                        th:href="@{/question/qnaList(page=${n}, mine=${mine})}"
                         th:classappend="${n == current} ? ' current'">
                     </a>
-                    <a class="next" th:href="@{/question/qnaList(page=${current + 1})}">&gt;</a>
+                    <a class="next" th:href="@{/question/qnaList(page=${current + 1}, mine=${mine})}">&gt;</a>
                 </nav>
 
 
