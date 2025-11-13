@@ -131,7 +131,7 @@ public class MemberService {
         return memberDTO;
     }
 
-    // 특정 회원 검색
+    //특정 회원 검색
     public MemberEntity getMember(String memberName) {
         Optional<MemberEntity> member = this.memberRepository.findByMemberName(memberName);
         if (member.isPresent()) {
