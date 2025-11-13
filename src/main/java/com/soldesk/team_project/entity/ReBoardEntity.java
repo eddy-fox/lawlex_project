@@ -36,15 +36,21 @@ public class ReBoardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawyer_idx")
+    private LawyerEntity lawyerIdx;
+
+    @ManyToOne
     private LawyerEntity lawyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
+    private BoardEntity boardIdx;
+
+    @ManyToOne
     private BoardEntity board;
 
     @ManyToOne
     @JoinColumn(name = "member_idx")
-    private MemberEntity member;
+    private MemberEntity memberIdx;
 
     private LocalDate modifyDate;
 

@@ -29,5 +29,12 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
         or lower(q.boardContent) like lower(concat('%', :kw, '%'))
         or (m.memberId is not null and lower(m.memberId) like lower(concat('%', :kw, '%')))
     """)
-Page<BoardEntity> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
+    Page<BoardEntity> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
+    
+    @Query("SELECT b FROM BoardEntity b WHERE (:interestIdx IS NULL OR b.interest.interestIdx = :interestIdx) " + 
+           "AND (:keyword IS NULL OR b.boardTitle LIKE %:keyword%)")
+    Page<BoardEntity> findByInterestIdx(@Param("interestIdx") Integer interestIdx,
+                                        @Param("keyword") String keyword,
+                                        Pageable pageable);
+                                        
 }

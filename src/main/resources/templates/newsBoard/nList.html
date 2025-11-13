@@ -17,50 +17,34 @@
     <div class="sideMenu" th:replace="~{include/nSide :: nSide}"></div>
 
     <div class="among">
-        <!-- 1(공지)는 여기서 안 쓴다 -->
+
+        <!-- 공지(1)는 여기 안 씀 -->
         <div th:if="${categoryIdx == 1}">
             이 페이지는 공지사항용이 아닙니다.
         </div>
 
         <section class="frame" th:if="${categoryIdx != 1}">
-               <div class="list-top">
-        <h1 class="list-title"
-            th:text="${categoryIdx == 2} ? '뉴스'
-                     : (${categoryIdx == 3} ? '동영상'
-                     : (${categoryIdx == 4} ? '칼럼' : '목록'))">
-            목록
-        </h1>
 
-        <!-- 뉴스(2) : reporter -->
-        <a th:if="${categoryIdx == 2
-                   and session.loginAdmin != null
-                   and session.loginAdmin.adminRole == 'reporter'}"
-           th:href="@{/newsBoard/write(category=2)}"
-           class="btn-write">
-            글쓰기
-        </a>
+            <div class="list-top">
+    <h1 class="list-title"
+        th:text="${categoryIdx == 2} ? '뉴스'
+                 : (${categoryIdx == 3} ? '동영상'
+                 : (${categoryIdx == 4} ? '칼럼' : '목록'))">
+        목록
+    </h1>
 
-        <!-- 동영상(3) : admin -->
-        <a th:if="${categoryIdx == 3
-                   and session.loginAdmin != null
-                   and session.loginAdmin.adminRole == 'admin'}"
-           th:href="@{/newsBoard/write(category=3)}"
-           class="btn-write">
-            글쓰기
-        </a>
-
-        <!-- 칼럼(4) : lawyer -->
-        <a th:if="${categoryIdx == 4
-                   and session.loginLawyer != null}"
-           th:href="@{/newsBoard/write(category=4)}"
-           class="btn-write">
-            글쓰기
-        </a>
+    <!-- 로그인만 돼 있으면 보여주기 (실제 권한은 컨트롤러에서 다시 체크) -->
+    <a th:if="${loginAdmin != null or loginLawyer != null}"
+       th:href="@{/newsBoard/write(category=${categoryIdx})}"
+       class="btn-write">
+        글쓰기
+    </a>
     </div>
 
+            <!-- 리스트가 비었을 때 -->
             <p th:if="${#lists.isEmpty(boards)}">등록된 글이 없습니다.</p>
 
-            <!-- 리스트 -->
+            <!-- 리스트 아이템 -->
             <a th:each="board : ${boards}"
                th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}"
                class="news-link item">
@@ -74,32 +58,29 @@
                 </div>
 
                 <!-- 2,3일 때만 썸네일 -->
-                <!-- 2,3일 때만 썸네일 -->
-<div th:if="${categoryIdx == 2 or categoryIdx == 3}"
-     class="thumb" aria-hidden="true">
+                <div th:if="${categoryIdx == 2 or categoryIdx == 3}"
+                     class="thumb" aria-hidden="true">
 
-    <!-- NEWS 이미지 -->
-    <img th:if="${categoryIdx == 2 and board.driveFileId != null}"
-     th:src="@{'https://drive.google.com/thumbnail?id=' + ${board.driveFileId} + '&sz=220'}"
-     alt="thumbnail"
-     style="width:100%;height:100%;object-fit:cover;display:block;">
+                    <!-- 뉴스: 구글드라이브 썸네일 -->
+                    <img th:if="${categoryIdx == 2 and board.driveFileId != null}"
+                         th:src="@{'https://drive.google.com/thumbnail?id=' + ${board.driveFileId} + '&sz=220'}"
+                         alt="thumbnail"
+                         style="width:100%;height:100%;object-fit:cover;display:block;">
 
-    <!-- 동영상 유튜브 썸네일 -->
-    <img th:if="${categoryIdx == 3 and board.videoId != null}"
-         th:src="'https://img.youtube.com/vi/' + ${board.videoId} + '/hqdefault.jpg'"
-         alt="video thumbnail"
-         style="width:100%;height:100%;object-fit:cover;display:block;">
+                    <!-- 동영상: 유튜브 썸네일 -->
+                    <img th:if="${categoryIdx == 3 and board.videoId != null}"
+                         th:src="'https://img.youtube.com/vi/' + ${board.videoId} + '/hqdefault.jpg'"
+                         alt="video thumbnail"
+                         style="width:100%;height:100%;object-fit:cover;display:block;">
 
-    <!-- 아무것도 없으면 플레이스홀더 -->
-    <div th:if="${
-            (categoryIdx == 2 and board.newsImgPath == null)
-         or (categoryIdx == 3 and board.videoId == null)
-        }"
-         class="thumb-placeholder">이미지</div>
-</div>
-
-
-                <!-- 4(칼럼)는 썸네일 아예 없음 -->
+                    <!-- 아무것도 없을 때 -->
+                    <div th:if="${
+                            (categoryIdx == 2 and board.driveFileId == null)
+                         or (categoryIdx == 3 and board.videoId == null)
+                        }"
+                         class="thumb-placeholder">이미지</div>
+                </div>
+                <!-- 4(칼럼)는 썸네일 없음 -->
             </a>
 
         </section>
@@ -122,6 +103,7 @@
                th:href="@{/newsBoard/list(category=${categoryIdx}, page=${currentPage + 1})}"
                class="page-link next">다음</a>
         </nav>
+
     </div>
 </main>
 
