@@ -3,6 +3,8 @@ package com.soldesk.team_project.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.soldesk.team_project.security.UserBase;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +32,7 @@ import lombok.Builder;
 @AllArgsConstructor
 @Builder
 
-public class MemberEntity {
+public class MemberEntity implements UserBase{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -100,5 +102,26 @@ public class MemberEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberInterestEntity> memberInterests = new ArrayList<>();
+
+    // Oauth2User용 메서드
+    @Override
+    public Integer getIdx() {
+        return this.memberIdx;
+    }
+
+    @Override
+    public String getEmail() {
+        return this.memberEmail;
+    }
+
+    @Override
+    public String getName() {
+        return this.memberName;
+    }
+
+    @Override
+    public Integer isActive() {
+        return this.memberActive;
+    }
 
 }

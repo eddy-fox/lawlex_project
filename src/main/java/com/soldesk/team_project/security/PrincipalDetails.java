@@ -9,8 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.soldesk.team_project.entity.MemberEntity;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,17 +16,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
-    private final MemberEntity member;
+    private final UserBase user; // MemberEntity or LawyerEntity 모두 가능
     private Map<String, Object> attributes;
 
-    // 일반 로그인용 생성자
-    // public PrincipalDetails() {
-    //     this.member = member;
-    // }
-
     // OAuth 로그인용 생성자
-    public PrincipalDetails(MemberEntity member, Map<String, Object> attributes) {
-        this.member = member;
+    public PrincipalDetails(UserBase user, Map<String, Object> attributes) {
+        this.user = user;
         this.attributes = attributes;
     }
 
@@ -48,24 +41,24 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return member.getMemberName(); // OAuth2User.getName()용
+        return user.getName();
     }
 
     // UserDetails 인터페이스 구현
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // member 권한 반환 (예: "ROLE_MEMBER")
-        return List.of(new SimpleGrantedAuthority("ROLE_MEMBER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_MEMBER")); // 필요시 ROLE 구분 추가
     }
 
     @Override
     public String getPassword() {
-        return member.getMemberPass();
+        // OAuth는 패스워드 없을 수 있음
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return member.getMemberEmail(); // 로그인 ID용
+        return user.getEmail();
     }
 
     @Override
@@ -75,7 +68,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonLocked() {
-        return member.getMemberActive() == 1;
+        if (user.isActive() == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
@@ -85,19 +82,23 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isEnabled() {
-        return member.getMemberActive() == 1;
+        if (user.isActive() == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // 편의 메서드
-    public Integer getMemberIdx() {
-        return member.getMemberIdx();
+    public Integer getUserId() {
+        return user.getIdx();
     }
 
     public String getEmail() {
-        return member.getMemberEmail();
+        return user.getEmail();
     }
 
-    public String getMemberName() {
-        return member.getMemberName();
+    public String getUserName() {
+        return user.getName();
     }
 }

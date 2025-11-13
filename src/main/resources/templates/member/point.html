@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <title>포인트 메인</title>
-   <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-   <link th:href="@{/css/style.css}" rel="stylesheet"> -->
-    <style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>포인트 메인</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/point.css}">
+    <!-- <style>
        .point-option {
            border: 2px solid #ccc;
            border-radius: 10px;
@@ -19,103 +19,120 @@
            border-color: #000777;
            background-color: #e9f2ff;
        }
-   </style>
+   </style> -->
 </head>
 <body>
     <!-- 헤더 -->
+    <div class="include" th:replace="~{include/header :: header}"></div>
 
     <!-- 메인 -->
-    <!-- 포인트 결제 -->
-    <h1>포인트 결제</h1>
-    <div>잔여 포인트: 0</div> <br>
+    <main class="page-point">
+        
+      <!-- 포인트 결제 -->
+      <form id="payment-form" th:action="@{/member/point}" method="post" class="container">
+        <div class="titlebar">
+            <h1>포인트 결제</h1>
+            <span class="small">잔여 포인트: <b th:text="${member.memberPoint}"></b></span>
+        </div>
 
-    <form id="payment-form" th:action="@{/member/point}" method="post">
-        <input type="hidden" name="selectedProduct" id="selectedProduct">
-
-        <div id="point-selection">
-            <div th:each="product : ${productList}">
-                <div class="point-option" data-product="${product.productIdx}" >
-                    <div th:text="${product.productContent}"></div>
-                    <div th:text="${product.productPrice}"></div>
+        <section class="card split">
+          <div class="payment">
+            <div class="opt-grid">
+              <input type="hidden" name="selectedProduct" id="selectedProduct">
+              <div th:each="product : ${productList}">
+                <div data-product="${product.productIdx}" class="opt point-option">
+                    <div th:text="${product.productContent}" class="tag"></div>
+                    <div th:text="${product.productPrice}" class="price"></div>
                 </div>
+              </div>
             </div>
-        </div>
-        <div>
-            <label for="#">결제 주의사항</label>
-            <div>
-                주의사항
-                줄글
-            </div>
-            <div>
-                <label for="agree">동의합니까?</label>
+          </div>
+
+          <aside class="side">
+            <div class="label">결제 주의사항</div>
+            <textarea name="reason" placeholder="내용을 입력해주세요"></textarea>
+            <div class="radio-row">
+                동의합니까?
+              <label for="agree" class="radio-square">
                 <input type="checkbox" id="agree" name="agree" value="yes">네 ✔</input>
+              </label>
             </div>
-        </div>
-        <button type="submit">결제하기</button>
-    </form>
+            <button type="submit" class="btn">결제하기</button>
+          </aside>
+        </section>
+      </form>
 
     <!-- 이용 내역 -->
-    <div>
-        <span id="pointHistory" onclick="point()" style="cursor: pointer;">포인트 이용 내역</span>
-        <span id="paymentHistory" onclick="payment()" style="cursor: pointer;">결제 내역</span>
-    </div>
+      <section>
+        <div class="tabs">
+          <div id="pointHistory" onclick="point()" class="tab active">포인트 이용 내역</div>
+          <div class="tab divider">|</div>
+          <div id="paymentHistory" onclick="payment()" class="tab">결제 내역</div>
+        </div>
     
-    <!-- 포인트 이용 내역 -->
-    <h1>포인트 이용 내역</h1>
-    <!-- <div>
-        <span onclick="toggleSection('point', this)" style="cursor: pointer;">포인트 이용 내역</span>
-    </div> -->
-    
-    <div id="point" name="point">
-        <div>
-            <span>일시</span>
-            <span>구분</span>
-            <span>변동 포인트</span>
-            <span>내역</span>
+      <!-- 포인트 이용 내역 -->    
+      <div id="point" name="point" class="history">
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:22%">일시</th>
+                <th style="width:15%">구분</th>
+                <th style="width:13%">변동 포인트</th>
+                <th style="width:15%">내역</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="point : ${pointList}">
+                <td th:text="${point.pointRegDate}"></td>
+                <td th:text="${point.pointDivision}"></td>
+                <td th:text="${point.pointState}"></td>
+                <td th:text="${point.pointHistory}"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div th:each="point : ${pointList}">
-            <span th:text="${point.pointRegDate}"></span>
-            <span th:text="${point.pointDivision}"></span>
-            <span th:text="${point.pointState}"></span>
-            <span th:text="${point.pointHistory}"></span>
-        </div>
-    </div>
+      </div>
 
-    <!-- 결제 내역 -->
-    <h1>결제 내역</h1>
-    <!-- <div>
-        <span onclick="toggleSection('payment', this)" style="cursor: pointer;">결제 내역</span>
-    </div> -->
+      <!-- 결제 내역 -->    
+      <div id="payment" name="payment" class="history" style="display: none;">
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:22%">일시</th>
+                <th style="width:15%">충전 금액</th>
+                <th style="width:13%">포인트</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="purchase : ${purchaseList}">
+                <td th:text="${purchase.purchaseRegDate}"></td>
+                <td th:text="${purchase.productPrice}"></td>
+                <td th:text="${purchase.productContent}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-    <div id="payment" name="payment" style="display: none;">
-        <div>
-            <span>일시</span>
-            <span>충전 금액</span>
-            <span>포인트</span>
-        </div>
-        <div th:each="purchase : ${purchaseList}">
-            <span th:text="${purchase.purchaseRegDate}"></span>
-            <span th:text="${purchase.productPrice}"></span>
-            <span th:text="${purchase.productContent}"></span>
-        </div>
-    </div>
+      </section>
+    </main>
 
     <!-- 푸터 -->
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
 
 </body>
 
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 <script>
-    // function toggleSection(sectionId, toggleElement) {
-    //     const section = document.getElementById(sectionId);
-    //     if (section.style.display === 'none') {
-    //         section.style.display = 'block';
-    //         toggleElement.textContent = '생략하기 ▲';
-    //     } else {
-    //         section.style.display = 'none';
-    //         toggleElement.textContent = '펼쳐보기 ▼';
-    //     }
-    // }
+    // 탭 활성 토글
+    document.querySelectorAll('.tabs .tab').forEach(tab=>{
+        tab.addEventListener('click',()=>{
+            if(tab.classList.contains('divider')) return;
+            document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+            tab.classList.add('active');
+        });
+    });
     function point() {
         document.getElementById('point').style.display = 'block';
         document.getElementById('payment').style.display = 'none';

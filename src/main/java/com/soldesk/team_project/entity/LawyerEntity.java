@@ -1,5 +1,7 @@
 package com.soldesk.team_project.entity;
 
+import com.soldesk.team_project.security.UserBase;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +24,7 @@ import lombok.Builder.Default;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class LawyerEntity {
+public class LawyerEntity implements UserBase{
 
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,4 +91,24 @@ public class LawyerEntity {
     @OneToMany(mappedBy = "lawyer")
     private java.util.List<AdEntity> ad;
 
+    // Oauth2User용 메서드
+    @Override
+    public Integer getIdx() {
+        return this.lawyerIdx;
+    }
+
+    @Override
+    public String getEmail() {
+        return this.lawyerEmail;
+    }
+
+    @Override
+    public String getName() {
+        return this.lawyerName;
+    }
+
+    @Override
+    public Integer isActive() {
+        return this.lawyerActive;
+    }
 }
