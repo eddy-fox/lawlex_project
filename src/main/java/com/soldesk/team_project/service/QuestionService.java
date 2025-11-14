@@ -95,7 +95,7 @@ public class QuestionService {
     public Page<QuestionDTO> getQnaPaging(int page){
         int p = Math.max(page, 1) - 1;
         Pageable pageable = PageRequest.of(p, 10);
-        return questionRepository.findAllByOrderByQuestionRegDateDesc(pageable)
+        return questionRepository.findAllByOrderByQuestionRegDateDescQuestionIdxDesc(pageable)
         .map(this::convertQuestionDTO);
     }
 
@@ -103,14 +103,14 @@ public class QuestionService {
     public Page<QuestionDTO> getQnaPagingM(Integer mIdx, int page){
         int p = Math.max(page,1)-1;
         Pageable pageable = PageRequest.of(p,10);
-        return questionRepository.findByMemberIdxOrderByQuestionRegDateDesc(mIdx, pageable)
+        return questionRepository.findByMemberIdxOrderByQuestionRegDateDescQuestionIdxDesc(mIdx, pageable)
         .map(this::convertQuestionDTO);
     }
     /* 변호사 회원 자기문의 보기 */
     public Page<QuestionDTO> getQnaPagingL(Integer lIdx, int page){
         int p = Math.max(page,1)-1;
         Pageable pageable = PageRequest.of(p,10);
-        return questionRepository.findByLawyerIdxOrderByQuestionRegDateDesc(lIdx, pageable)
+        return questionRepository.findByLawyerIdxOrderByQuestionRegDateDescQuestionIdxDesc(lIdx, pageable)
         .map(this::convertQuestionDTO);
     }
 
@@ -119,6 +119,9 @@ public class QuestionService {
 
         if (qnaWrite.getQRegDate() == null) {
             qnaWrite.setQRegDate(java.time.LocalDate.now());
+        }
+        if(qnaWrite.getQSecret() == null) {
+            qnaWrite.setQSecret(0);
         }
         if (qnaWrite.getQAnswer() == null) {
             qnaWrite.setQAnswer(0);
