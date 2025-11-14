@@ -1,20 +1,35 @@
 (function () {
   // ===== 기본 엘리먼트 =====
-  var scope = document.querySelector('.page-lChating');
-  if (!scope) return;
+  var scope = document.querySelector('.page-gMain') || document.querySelector('.page-lChating');
+  if (!scope) {
+    console.log('[DEBUG] .page-gMain or .page-lChating not found');
+    return;
+  }
+  console.log('[DEBUG] lChating.js initialized');
 
-  var msgs      = scope.querySelector('#msgs');
-  var input     = scope.querySelector('#inputMsg');
-  var sendBtn   = scope.querySelector('#btnSend');
+  var msgs      = document.getElementById('msgs');
+  var input     = document.getElementById('inputMsg');
+  var sendBtn   = document.getElementById('btnSend');
   var upBtn     = scope.querySelector('#btnUpload');
   var fileInput = scope.querySelector('#fileUpload');
   var previews  = scope.querySelector('#previews');
+  
+  if (!msgs) {
+    console.error('[DEBUG] #msgs element not found');
+  }
+  if (!input) {
+    console.error('[DEBUG] #inputMsg element not found');
+  }
+  if (!sendBtn) {
+    console.error('[DEBUG] #btnSend element not found');
+  }
 
   // 서버에서 내려준 방/사용자 정보
-  var roomId     = document.getElementById('roomId')     ? document.getElementById('roomId').value : null;
-  var senderType = document.getElementById('senderType') ? document.getElementById('senderType').value : 'LAWYER';
-  var senderIdEl = document.getElementById('senderId');
-  var senderId   = senderIdEl ? senderIdEl.value : null;
+  var roomIdEl     = document.getElementById('roomId');
+  var roomId       = roomIdEl ? roomIdEl.value : null;
+  var senderType   = 'LAWYER'; // 변호사 화면이므로 고정
+  var senderIdEl   = document.getElementById('meLawyerId');
+  var senderId     = senderIdEl ? senderIdEl.value : null;
 
   // 업로드할 파일들을 임시로 들고 있을 배열
   var pendingFiles = [];
@@ -45,21 +60,37 @@
   // 1. WebSocket(STOMP) 연결해서 이 방 구독
   // ======================================================
   function connectWs() {
-    if (!roomId) return;
-    // SockJS, Stomp는 html에서 불러왔다고 가정
-    var socket = new SockJS('/ws-chat');
-    stompClient = Stomp.over(socket);
-    // 로그 싫으면 끄자
-    stompClient.debug = null;
+    if (!roomId) {
+      console.log('[DEBUG] No roomId, skipping WebSocket connection');
+      return;
+    }
+    if (typeof SockJS === 'undefined') {
+      console.error('[DEBUG] SockJS not loaded');
+      return;
+    }
+    if (typeof Stomp === 'undefined') {
+      console.error('[DEBUG] Stomp not loaded. Available globals:', Object.keys(window).filter(function(k) { return k.toLowerCase().includes('stomp'); }));
+      return;
+    }
+    console.log('[DEBUG] Connecting to WebSocket, roomId:', roomId);
+    try {
+      var socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+      stompClient.debug = null;
 
-    stompClient.connect({}, function () {
-      // /topic/chat/{roomId} 구독
-      stompClient.subscribe('/topic/chat/' + roomId, function (message) {
-        var body = JSON.parse(message.body);
-        // 서버가 ChatdataDTO 형태로 보내준다고 가정
-        appendMessageDom(body);
+      stompClient.connect({}, function () {
+        console.log('[DEBUG] WebSocket connected, subscribing to /topic/chat/' + roomId);
+        stompClient.subscribe('/topic/chat/' + roomId, function (message) {
+          var body = JSON.parse(message.body);
+          console.log('[DEBUG] Received message:', body);
+          appendMessageDom(body);
+        });
+      }, function(error) {
+        console.error('[DEBUG] WebSocket connection error:', error);
       });
-    });
+    } catch (e) {
+      console.error('[DEBUG] WebSocket setup error:', e);
+    }
   }
 
   // ======================================================
@@ -104,47 +135,55 @@
   function clearPreviews() {
     pendingFiles.forEach(function (p) { URL.revokeObjectURL(p.url); });
     pendingFiles = [];
-    previews.innerHTML = '';
+    if (previews) {
+      previews.innerHTML = '';
+    }
   }
 
   // ======================================================
   // 3. 메시지 DOM에 추가 (서버/내가 보낸 거 공통)
   // ======================================================
   function appendMessageDom(msg) {
-    // msg: ChatdataDTO
-    // 변호사 화면이니까 내가(LAWYER) 보낸 건 오른쪽(user), member가 보낸 건 왼쪽(lawyer)
+    if (!msgs) {
+      console.error('[DEBUG] msgs element not found');
+      return;
+    }
+    console.log('[DEBUG] appendMessageDom called with:', msg);
+    // 변호사 화면 기준:
+    // 내가 보낸(LAWYER) → 왼쪽 .lawyer
+    // 일반회원이 보낸(MEMBER) → 오른쪽 .user
     var isMe = msg.senderType && msg.senderType.toUpperCase() === 'LAWYER';
 
     var row = document.createElement('div');
-    row.className = 'msg-row ' + (isMe ? 'user' : 'lawyer');
+    row.className = 'msg-row ' + (isMe ? 'lawyer' : 'user');
 
-    // 내가 보낸 거면 시간 먼저
-    if (isMe) {
+    // 일반회원이 보낸 메시지(MEMBER) → 오른쪽, 시간 먼저
+    if (!isMe) {
       var meta1 = document.createElement('div');
       meta1.className = 'meta';
       meta1.textContent = formatTime(msg.chatRegDate);
       row.appendChild(meta1);
     }
 
-    // 텍스트 내용
+    // 말풍선
     if (msg.chatContent) {
       var bubble = document.createElement('div');
       bubble.className = 'bubble';
-      var contentDiv = document.createElement('div');
-      contentDiv.textContent = msg.chatContent;
-      bubble.appendChild(contentDiv);
+      var inner = document.createElement('div');
+      inner.textContent = msg.chatContent;
+      bubble.appendChild(inner);
       row.appendChild(bubble);
     }
 
-    // 상대가 보낸 거면 시간 뒤에
-    if (!isMe) {
+    // 변호사가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간
+    if (isMe) {
       var meta2 = document.createElement('div');
       meta2.className = 'meta';
       meta2.textContent = formatTime(msg.chatRegDate);
       row.appendChild(meta2);
     }
 
-    // 첨부 이미지가 있으면 media로
+    // 첨부 이미지
     if (msg.attachments && msg.attachments.length > 0) {
       var media = document.createElement('div');
       media.className = 'media';
@@ -154,7 +193,7 @@
         a.target = '_blank';
         var im = document.createElement('img');
         im.src = '/chat/attachment/' + att.attachmentId;
-        im.alt = att.fileName || '첨부파일';
+        im.alt = att.fileName || '첨부';
         a.appendChild(im);
         media.appendChild(a);
       });
@@ -181,10 +220,11 @@
     }
 
     var formData = new FormData();
+    // @RequestParam을 사용하는 ChatMessageController 사용
     formData.append('roomId', roomId);
-    formData.append('senderType', senderType); // "LAWYER"
-    formData.append('senderId', senderId);
-    formData.append('content', text);
+    if (text) {
+      formData.append('content', text);
+    }
 
     // 첨부
     pendingFiles.forEach(function (p) {
@@ -194,9 +234,16 @@
     fetch('/chat/messages', {
       method: 'POST',
       body: formData
+      // FormData를 사용하면 Content-Type을 명시하지 않아야 브라우저가 자동으로 multipart/form-data로 설정
     })
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+        return res.json();
+      })
       .then(function (dto) {
+        console.log('[DEBUG] Message sent, received DTO:', dto);
         // 서버에 저장된 최종 DTO를 화면에 반영
         appendMessageDom(dto);
         // 입력창/미리보기 초기화
@@ -209,8 +256,8 @@
         }
       })
       .catch(function (err) {
-        console.error(err);
-        alert('메시지 전송에 실패했습니다.');
+        console.error('[DEBUG] Message send error:', err);
+        alert('메시지 전송에 실패했습니다: ' + err.message);
       });
   }
 
@@ -313,7 +360,7 @@
   // ======================================================
   if (input) {
     input.addEventListener('keydown', function (e) {
-      // 엔터로 전송 (쉬프트+엔터는 줄바꿈으로 남겨두고 싶으면 조건 바꾸면 됨)
+      // 엔터로 전송
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
@@ -322,7 +369,14 @@
   }
 
   if (sendBtn) {
-    sendBtn.addEventListener('click', sendMessage);
+    console.log('[DEBUG] sendBtn found, adding click listener');
+    sendBtn.addEventListener('click', function(e) {
+      console.log('[DEBUG] sendBtn clicked');
+      e.preventDefault();
+      sendMessage();
+    });
+  } else {
+    console.error('[DEBUG] sendBtn not found!');
   }
 
   if (upBtn && fileInput) {
@@ -341,7 +395,11 @@
   }
 
   // 초기화
-  connectWs();
+  if (roomId) {
+    connectWs();
+  } else {
+    console.error('[DEBUG] No roomId found, cannot connect WebSocket');
+  }
   startRemainTimer();
   scrollBottom();
 })();

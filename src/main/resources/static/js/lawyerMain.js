@@ -34,3 +34,24 @@
       if(e.key === 'Escape'){
         if(acceptModal.getAttribute('aria-hidden') === 'false') closeModal('accept');
         if(rejectModal.getAttribute('aria-hidden') === 'false') closeModal('reject'); } });
+
+    // 채팅방 팝업 열기
+    document.querySelectorAll('.open-chat-popup').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var url = this.getAttribute('href');
+        var roomId = this.getAttribute('data-room-id');
+        var popup = window.open(
+          url,
+          'chatRoom_' + roomId,
+          'width=800,height=900,scrollbars=yes,resizable=yes,location=yes,menubar=no,toolbar=no'
+        );
+        if (popup) {
+          popup.focus();
+        } else {
+          alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.');
+        }
+        return false;
+      });
+    });
