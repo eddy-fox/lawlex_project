@@ -48,10 +48,10 @@
                 <div class="category">
                     <h2>카테고리별</h2>
                 </div>
-                <div class="category-group" th:each="iRank, st : ${rankingInterest}">
-                    <h3 class="category-title" th:text="${iRank[1]}">카테고리명</h3>
-                    <div class="grid" th:each="iRank, st : ${rankingInterest}" th:if="${st.index < 3}">
-                        <div class="card" th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
+                <div class="category-group" th:each="rankI, st : ${rankingMap}" >
+                    <h3 class="category-title" th:text="${rankI.key}">카테고리명</h3>
+                    <div class="grid">
+                        <div class="card" th:each="iRank, st : ${rankI.value}" th:if="${st.index < 3}" th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
                             <div class="ranknum" 
                                  th:class="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : 'ranknum'))}" th:text="${st.index + 1} + '위'">1위</div>
                             <div class="Cphoto"><img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}"></div>
@@ -62,12 +62,12 @@
                     </div>
                 </div>
             </section>
-                                    <!-- 푸쉬 확인용 카테코리 돌리는 것 수정하면됨 -->
+
         </div>
     </main>
+
     <div class="include" th:replace="~{include/footer :: footer}"></div>
     <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/ranking.js}"></script>
 </body>
 
 </html>

@@ -1,7 +1,9 @@
 package com.soldesk.team_project.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +54,20 @@ public class RankingService {
                            .collect(Collectors.toList());
     }
 
-    public List<Object[]> getInterestAnswerRanking() {
-        return rankingRepository.findInterestAnswerRanking();
+    public Map<String, List<Object[]>> getInterestAnswerRanking() {
+        List<Object[]> rankingInterest = rankingRepository.findInterestAnswerRanking();
+
+        Map<String, List<Object[]>> rankingMap = new LinkedHashMap<>();
+        
+        for(Object[] row : rankingInterest) {
+            String interestName = (String) row[1];
+
+            List<Object[]> list = rankingMap.computeIfAbsent(interestName, k -> new ArrayList<>());
+
+            if(list.size() < 3) {
+                list.add(row);
+            }
+        }
+        return rankingMap;
     }
 }

@@ -300,17 +300,21 @@
     .page-ranking .card .ranknum3 {
       color: #fdb15b;
     }
+    
+    .page-ranking .card .Cphoto {
+      width: 90px;
+      aspect-ratio: 3/4;
+      border-radius: 10px;
+      margin: 0 auto 10px;
+      overflow: hidden;
+
+    }
+
     .Cphoto img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-    }
-
-    .page-ranking .card .Cphoto {
-      width: 90px;
-      margin: 0 auto 10px;
-      border-width: 1px;
     }
 
     .page-ranking .card .name {
