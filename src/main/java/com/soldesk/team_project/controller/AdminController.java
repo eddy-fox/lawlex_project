@@ -1,12 +1,12 @@
 package com.soldesk.team_project.controller;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -282,5 +282,26 @@ public class AdminController {
 
         return "redirect:/admin/lawyer/pending";
     */
-    
+
+    /* Q 문의글 상세보기 */
+    @GetMapping("/qnaAnswer")
+    public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
+        QuestionDTO infoQ = questionService.getQ(qIdx);
+        // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
+        
+        Integer mIdx = infoQ.getMemberIdx();
+        Integer lIdx = infoQ.getLawyerIdx();
+
+        if (lIdx != null) {
+            LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
+            infoQ.setInfoId(l.getLawyerId());
+            infoQ.setInfoName(l.getLawyerName());
+        }else if (mIdx != null) {
+            MemberDTO m = memberService.qMemberInquiry(mIdx);
+            infoQ.setInfoId(m.getMemberId());
+            infoQ.setInfoName(m.getMemberName());
+        }
+        model.addAttribute("infoQ", infoQ);
+        return "admin/qnaAnswer";
+    }
 }

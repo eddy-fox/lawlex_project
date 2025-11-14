@@ -22,7 +22,6 @@ import com.soldesk.team_project.dto.PurchaseDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.service.LawyerService;
-import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
@@ -33,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.entity.*;
 import com.soldesk.team_project.repository.*;
+import com.soldesk.team_project.security.JwtProvider;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;

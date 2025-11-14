@@ -1,9 +1,11 @@
 package com.soldesk.team_project.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +22,7 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
     List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndQuestionAnswerAndQuestionActiveOrderByQuestionIdxDesc(String memberId, Integer qAnswer, Integer qActive);
     // List<QuestionEntity> findByMember_MemberIdContainingIgnoreCaseAndqAnswer(String memberId, String qAnswer);
 
-    Page<QuestionEntity> findAllByOrderByQuestionRegDateDesc(Pageable pageable);
-
+    Page<QuestionEntity> findAllByOrderByQuestionRegDateDescQuestionIdxDesc(Pageable pageable); /* 모두 조회 */
+    Page<QuestionEntity> findByMemberIdxOrderByQuestionRegDateDescQuestionIdxDesc(Integer mIdx, Pageable pageable); /* 자신에 글 조회 */
+    Page<QuestionEntity> findByLawyerIdxOrderByQuestionRegDateDescQuestionIdxDesc(Integer LIdx, Pageable pageable); /* 자신에 글 조회 */
 }

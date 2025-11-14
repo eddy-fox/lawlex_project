@@ -86,18 +86,20 @@
             </div>
 
             <div class="write">
+                <form action="@{/cln}">
                 <div class="row">
                     <textarea class="textbox" id="cText" placeholder="내용 (Ctrl+Enter 등록)"></textarea>
                     <button class="submit" id="cBtn" type="button">등록</button>
                 </div>
+            </form>
             </div>
 
             <table class="list">
                 <thead>
                 <tr>
-                    <th>닉네임</th>
+                    <th style="width:160px">닉네임</th>
                     <th>내용</th>
-                    <th>날짜</th>
+                    <th style="width:120px">날짜</th>
                 </tr>
                 </thead>
                 <tbody id="cBody"></tbody>
