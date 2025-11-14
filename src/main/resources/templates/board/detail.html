@@ -20,12 +20,12 @@
             <div class="body" th:utext="${@commonUtil.markdown(boardEntity.boardContent)}"></div>
             <div class="edit">
               <a class="link" th:href="@{|/board/modify/${boardEntity.id}|}"
-              sec:authorize="isAuthenticated()" th:if="${boardEntity.author != null and #authentication.
-              getPrincipal().getMemberId() == boardEntity.author.memberId}" th:text="수정"></a>
+              sec:authorize="isAuthenticated()" th:if="${boardEntity.member != null and #authentication.
+              getPrincipal().getMemberId() == boardEntity.member.memberId}" th:text="수정"></a>
               <a class="link" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.id}|}"
               sec:authorize="isAuthenticated()"
-              th:if="${boardEntity.author != nu;; and #authentication.
-              getPrincipal().getMemberId() == boardEntity.author.memberId}" th:text="삭제"></a>
+              th:if="${boardEntity.member != null and #authentication.
+              getPrincipal().getMemberId() == boardEntity.member.memberId}" th:text="삭제"></a>
             </div>
           </div>
 
@@ -52,6 +52,6 @@
     </div>
   </main>
   <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/all/modify.js}"></script>  
+  <script th:src="@{/js/modify.js}"></script>  
 </body>
 </html>

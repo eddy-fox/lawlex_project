@@ -59,7 +59,7 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
-        return "board/detail";
+        return "board/reBoard";
 
     }
 

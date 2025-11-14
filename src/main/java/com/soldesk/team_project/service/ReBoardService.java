@@ -10,6 +10,7 @@ import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
+import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.ReBoardRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class ReBoardService {
     
     private final ReBoardRepository reboardRepository;
     private final PythonService pythonService;
+    private final LawyerRepository lawyerRepository;
 
     public ReBoardEntity create(BoardEntity board, String content, LawyerEntity lawyer) {
 
@@ -54,6 +56,15 @@ public class ReBoardService {
     public void delete(ReBoardEntity reboard) {
 
         this.reboardRepository.delete(reboard);
+
+    }
+
+    public void vote(ReBoardEntity reboard, LawyerEntity lawyer) {
+
+        reboard.getVoter().add(lawyer);
+        lawyer.setLawyerLike(lawyer.getLawyerLike() + 1);
+        this.reboardRepository.save(reboard);
+        this.lawyerRepository.save(lawyer);
 
     }
 
