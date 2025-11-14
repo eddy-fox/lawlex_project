@@ -1,6 +1,10 @@
 (function () {
   var scope = document.querySelector('.page-gChating');
-  if (!scope) return;
+  if (!scope) {
+    console.log('[DEBUG] .page-gChating not found');
+    return;
+  }
+  console.log('[DEBUG] gChating.js initialized');
 
   var msgs      = scope.querySelector('#msgs');
   var input     = scope.querySelector('#inputMsg');
@@ -8,6 +12,16 @@
   var upBtn     = scope.querySelector('#btnUpload');
   var fileInput = scope.querySelector('#fileUpload');
   var previews  = scope.querySelector('#previews');
+  
+  if (!msgs) {
+    console.error('[DEBUG] #msgs element not found');
+  }
+  if (!input) {
+    console.error('[DEBUG] #inputMsg element not found');
+  }
+  if (!sendBtn) {
+    console.error('[DEBUG] #btnSend element not found');
+  }
 
   var roomIdEl     = document.getElementById('roomId');
   var senderTypeEl = document.getElementById('senderType');
@@ -38,16 +52,36 @@
 
   // ================== WebSocket 연결 ==================
   function connectWs() {
-    if (!roomId) return;
-    var socket = new SockJS('/ws-chat');
-    stompClient = Stomp.over(socket);
-    stompClient.debug = null;
-    stompClient.connect({}, function () {
-      stompClient.subscribe('/topic/chat/' + roomId, function (msg) {
-        var body = JSON.parse(msg.body);
-        appendMessageDom(body);
+    if (!roomId) {
+      console.log('[DEBUG] No roomId, skipping WebSocket connection');
+      return;
+    }
+    if (typeof SockJS === 'undefined') {
+      console.error('[DEBUG] SockJS not loaded');
+      return;
+    }
+    if (typeof Stomp === 'undefined') {
+      console.error('[DEBUG] Stomp not loaded. Available globals:', Object.keys(window).filter(function(k) { return k.toLowerCase().includes('stomp'); }));
+      return;
+    }
+    console.log('[DEBUG] Connecting to WebSocket, roomId:', roomId);
+    try {
+      var socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+      stompClient.debug = null;
+      stompClient.connect({}, function () {
+        console.log('[DEBUG] WebSocket connected, subscribing to /topic/chat/' + roomId);
+        stompClient.subscribe('/topic/chat/' + roomId, function (msg) {
+          var body = JSON.parse(msg.body);
+          console.log('[DEBUG] Received message:', body);
+          appendMessageDom(body);
+        });
+      }, function(error) {
+        console.error('[DEBUG] WebSocket connection error:', error);
       });
-    });
+    } catch (e) {
+      console.error('[DEBUG] WebSocket setup error:', e);
+    }
   }
 
   // ================== 미리보기 ==================
@@ -93,6 +127,11 @@
 
   // ================== DOM에 메시지 추가 ==================
   function appendMessageDom(dto) {
+    if (!msgs) {
+      console.error('[DEBUG] msgs element not found');
+      return;
+    }
+    console.log('[DEBUG] appendMessageDom called with:', dto);
     // 일반회원 화면 기준:
     // 내가 보낸(MEMBER) → 오른쪽 .user
     // 변호사가 보낸(LAWYER) → 왼쪽 .lawyer
@@ -155,10 +194,11 @@
     }
 
     var fd = new FormData();
+    // @RequestParam을 사용하는 ChatMessageController 사용
     fd.append('roomId', roomId);
-    fd.append('senderType', senderType); // MEMBER
-    fd.append('senderId', senderId);
-    fd.append('content', text);
+    if (text) {
+      fd.append('content', text);
+    }
 
     pendingFiles.forEach(function (p) {
       fd.append('files', p.file);
@@ -167,9 +207,16 @@
     fetch('/chat/messages', {
       method: 'POST',
       body: fd
+      // FormData를 사용하면 Content-Type을 명시하지 않아야 브라우저가 자동으로 multipart/form-data로 설정
     })
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+        return res.json();
+      })
       .then(function (dto) {
+        console.log('[DEBUG] Message sent, received DTO:', dto);
         appendMessageDom(dto);
         input.value = '';
         clearPreviews();
@@ -179,8 +226,8 @@
         }
       })
       .catch(function (err) {
-        console.error(err);
-        alert('메시지 전송 실패');
+        console.error('[DEBUG] Message send error:', err);
+        alert('메시지 전송 실패: ' + err.message);
       });
   }
 

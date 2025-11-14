@@ -66,7 +66,9 @@
               내용미리보기
             </div>
             <div class="actions">
-              <a class="btn" th:href="@{/chat/room(roomId=${room.chatroomIdx})}">입장</a>
+              <a class="btn open-chat-popup" 
+                 th:href="@{/chat/room(roomId=${room.chatroomIdx})}"
+                 th:data-room-id="${room.chatroomIdx}">입장</a>
             </div>
           </div>
           <p th:if="${#lists.isEmpty(activeRooms)}" style="color:#999;">진행중인 상담이 없습니다.</p>
@@ -84,7 +86,9 @@
             </div>
             <div class="preview" th:text="${room.state}"></div>
             <div class="actions">
-              <a class="btn ghost" th:href="@{/chat/room(roomId=${room.chatroomIdx})}">내용보기</a>
+              <a class="btn ghost open-chat-popup" 
+                 th:href="@{/chat/room(roomId=${room.chatroomIdx})}"
+                 th:data-room-id="${room.chatroomIdx}">내용보기</a>
             </div>
           </div>
           <p th:if="${#lists.isEmpty(endedRooms)}" style="color:#999;">종료된 상담이 없습니다.</p>
