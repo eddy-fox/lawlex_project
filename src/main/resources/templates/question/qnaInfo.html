@@ -19,6 +19,7 @@
                     <div class="section-label" th:with="isSecret=${infoQ.qSecret != null and infoQ.qSecret == '1'},
                   isAnswered=${infoQ.qAnswer != null and infoQ.qAnswer == 1}">
                         <span>제목</span>
+                        <time class="answer-date" th:text="${infoQ.qRegDate}">2025-11-04</time>
 
                         <div class="chips">
                             <div class="chip chip-secret" th:if="${isSecret}">비밀글</div>
@@ -40,6 +41,32 @@
                 <div class="section answer" th:with="isAnswered=${infoQ.qAnswer != null and infoQ.qAnswer == 1}">
                     <div class="section-label">
                         <span>답변</span>
+                        <time class="answer-date" th:if="${isAnswered}" th:text="${questionAnswer.aRegDate}">2025-11-04</time>
+                    </div>
+
+                    <!-- 답변 있음 -->
+                    <div class="box" th:if="${isAnswered}">
+                        <div class="box" th:text="${questionAnswer.aContent}"></div>
+                        <a th:href="@{/question/answerModify(aIdx=${questionAnswer.aIdx})}" th:if="${admin != null}" class="btn btn-submit">수정</a>
+                        <a th:href="@{/question/answerDelete(aIdx=${questionAnswer.aIdx})}" th:if="${admin != null}" class="btn btn-delete">삭제</a>
+                    </div>
+                    
+                    <!-- 답변 없음 -->
+                    <div class="block answer-section">
+                      <form th:action="@{/question/answerWrite}" method="post"
+                        th:object="${answerWrite}" enctype="multipart/form-data"
+                        th:if="${!isAnswered and admin != null}">
+
+                        <input type="hidden" th:field="*{qIdx}">
+                        <input type="hidden" th:field="*{adminIdx}">
+                        <textarea th:field="*{aContent}" id="aContent" class="answer-textarea"></textarea>
+
+                        <div class="action-buttons">
+                            <button th:if="${!isAnswered}" class="btn btn-submit" type="submit">답변하기</button>
+                        </div>
+                      </form>
+                    </div>
+
                         <time class="answer-date" th:text="${infoQ.qRegDate}">2025-11-04</time>
                     </div>
 

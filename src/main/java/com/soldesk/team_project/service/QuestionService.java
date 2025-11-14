@@ -9,11 +9,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.soldesk.team_project.dto.AnswerDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.AnswerEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.QuestionEntity;
+import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.AnswerRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.QuestionRepository;
@@ -26,6 +32,10 @@ public class QuestionService {
 
 
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final MemberRepository memberRepository;
+    private final LawyerRepository lawyerRepository;
+    private final AdminRepository adminRepository;
 
     private QuestionDTO convertQuestionDTO (QuestionEntity questionEntity) {
         QuestionDTO questionDTO = new QuestionDTO();
@@ -50,9 +60,46 @@ public class QuestionService {
         questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
         questionEntity.setQuestionActive(questionDTO.getQActive());
+
+        MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
+        LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
+
+        questionEntity.setMember(memberEntity);
+        questionEntity.setLawyer(lawyerEntity);
+        
         questionEntity.setMemberIdx(questionDTO.getMemberIdx());
         questionEntity.setLawyerIdx(questionDTO.getLawyerIdx());
         return questionEntity;
+    }
+
+    private AnswerDTO convertAnswerDTO(AnswerEntity answerEntity) {
+        AnswerDTO answerDTO = new AnswerDTO();
+        answerDTO.setAIdx(answerEntity.getAnswerIdx());
+        answerDTO.setAContent(answerEntity.getAnswerContent());
+        answerDTO.setARegDate(answerEntity.getAnswerRegDate());
+        answerDTO.setAActive(answerEntity.getAnswerActive());
+        answerDTO.setQIdx(answerEntity.getQuestionIdx());
+        answerDTO.setAdminIdx(answerEntity.getAdminIdx());
+
+        return answerDTO;
+    }
+
+    private AnswerEntity convertAnswerEntity(AnswerDTO answerDTO) {
+        AnswerEntity answerEntity = new AnswerEntity();
+        answerEntity.setAnswerIdx(answerDTO.getAIdx());
+        answerEntity.setAnswerContent(answerDTO.getAContent());
+        answerEntity.setAnswerRegDate(answerDTO.getARegDate());
+        answerEntity.setAnswerActive(answerDTO.getAActive());
+        answerEntity.setQuestionIdx(answerDTO.getQIdx());
+        answerEntity.setAdminIdx(answerDTO.getAdminIdx());
+
+        QuestionEntity questionEntity = questionRepository.findById(answerDTO.getQIdx()).orElse(null);
+        AdminEntity adminEntity = adminRepository.findById(answerDTO.getAdminIdx()).orElse(null);
+
+        answerEntity.setQuestion(questionEntity);
+        answerEntity.setAdmin(adminEntity);
+
+        return answerEntity;
     }
 
 
@@ -90,6 +137,7 @@ public class QuestionService {
         return questionEntityList.stream()
             .map(questionEntity -> convertQuestionDTO(questionEntity)).collect(Collectors.toList());
     }
+    
     
     /* 모두 문의 보기 */
     public Page<QuestionDTO> getQnaPaging(int page){
@@ -142,3 +190,70 @@ public class QuestionService {
     
 }
 
+    // QIdx로 답변 찾기
+    public AnswerDTO getAnswerToQIdx(int qIdx) {
+
+        AnswerEntity answerEntity = answerRepository.findByQuestionIdxAndAnswerActive(qIdx, 1);
+        if (answerEntity == null) {
+            return null;
+        }
+
+        AnswerDTO answerDTO = convertAnswerDTO(answerEntity);
+
+        return answerDTO;
+    }
+
+    // AIdx로 문의글 찾기
+    public QuestionDTO getQuestionToAIdx(int aIdx) {
+        QuestionEntity questionEntity = questionRepository.findByAnswerAnswerIdx(aIdx);
+        QuestionDTO questionDTO = convertQuestionDTO(questionEntity);
+
+        return questionDTO;
+    }
+
+    // AIdx로 답변 찾기
+    public AnswerDTO getAnswerToAIdx(int aIdx) {
+        AnswerEntity answerEntity = answerRepository.findById(aIdx).orElse(null);
+        AnswerDTO answerDTO = convertAnswerDTO(answerEntity);
+
+        return answerDTO;
+    }
+
+    // 문의글 답변 등록
+    @Transactional
+    public void answerProcess(AnswerDTO answerWrite) {
+        
+        // 답변 저장
+        AnswerEntity answerEntity = convertAnswerEntity(answerWrite);
+        answerRepository.save(answerEntity);
+
+        // 답변 여부 변경
+        QuestionEntity questionEntity = questionRepository.findById(answerWrite.getQIdx()).orElse(null);
+        questionEntity.setQuestionAnswer(1);
+        questionRepository.save(questionEntity);
+    }
+
+    // 답변 수정
+    @Transactional
+    public void modifyAnswer(AnswerDTO answerModify) {
+        AnswerEntity answerEntity = answerRepository.findById(answerModify.getAIdx()).orElse(null);
+        answerEntity.setAnswerContent(answerModify.getAContent());
+        answerRepository.save(answerEntity);
+    }
+
+    // 답변 삭제
+    @Transactional
+    public void deleteAnswer(int aIdx) {
+        
+        // 답변 비활성화
+        AnswerEntity answerEntity = answerRepository.findById(aIdx).orElse(null);
+        answerEntity.setAnswerActive(0);
+        answerRepository.save(answerEntity);
+
+        // 문의글 답변 여부 변경
+        QuestionEntity questionEntity = questionRepository.findByAnswerAnswerIdx(aIdx);
+        questionEntity.setQuestionAnswer(0);
+        questionRepository.save(questionEntity);
+    }
+    
+}
