@@ -26,8 +26,11 @@ public class RankingController {
     @GetMapping("/ranking")
     public String ranking(@RequestParam(defaultValue = "like") String pick,Model model) {
         List<LawyerDTO> rankingList = rankingService.getRankingList(pick);
-        model.addAttribute("rankingList", rankingList);
+        List<Object[]> rankingInterest = rankingService.getInterestAnswerRanking(); 
+        
         model.addAttribute("pick", pick);
+        model.addAttribute("rankingList", rankingList);
+        model.addAttribute("rankingInterest", rankingInterest);
         return "rank/ranking";
     }
 }

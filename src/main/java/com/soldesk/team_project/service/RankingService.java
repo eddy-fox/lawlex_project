@@ -1,5 +1,6 @@
 package com.soldesk.team_project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,5 +50,9 @@ public class RankingService {
         return rankingList.stream()
                            .map(this :: convertLawyerDTO)
                            .collect(Collectors.toList());
+    }
+
+    public List<Object[]> getInterestAnswerRanking() {
+        return rankingRepository.findInterestAnswerRanking();
     }
 }

@@ -105,7 +105,7 @@ public class QuestionController {
         return "redirect:/question/qnaList";
     }
 
-    @GetMapping("/qnaInfo")
+/*     @GetMapping("/qnaInfo")
     public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model) {
         QuestionDTO infoQ = questionService.getQ(qIdx);
 
@@ -125,7 +125,7 @@ public class QuestionController {
         }
         model.addAttribute("infoQ", infoQ);
         return "question/qnaInfo";
-    }
+    } */
 
     // 문의글 상세
     @GetMapping("/qnaInfo")
