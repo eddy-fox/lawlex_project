@@ -13,12 +13,11 @@ import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.service.ChatdataService;
 import com.soldesk.team_project.service.ChatroomService;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/chat/messages") // ← /chat/api/messages 대신 여기로 확정
+@RequestMapping("/chat/api/messages") // ChatMessageController와 충돌 방지를 위해 경로 변경
 @RequiredArgsConstructor
 public class ChatdataController {
 
@@ -30,8 +29,7 @@ public class ChatdataController {
         final Integer id;
         Sender(String t, Integer i) { this.type = t; this.id = i; }
     }
-    private Sender resolveSender(@SessionAttribute(value = "loginMember", required = false) MemberDTO loginMember,
-                                 @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer) {
+    private Sender resolveSender(MemberDTO loginMember, LawyerDTO loginLawyer) {
         if (loginMember != null) return new Sender("MEMBER", loginMember.getMemberIdx());
         if (loginLawyer != null) return new Sender("LAWYER", loginLawyer.getLawyerIdx());
         return null;
@@ -40,12 +38,11 @@ public class ChatdataController {
     /** 텍스트+첨부 혼합 전송 (멀티파트) */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendMessage(
-            @RequestPart("roomId") Integer roomId,
-            @RequestPart(name = "content", required = false) String content,
-            @RequestPart(name = "files",   required = false) List<MultipartFile> files,
+            @RequestParam("roomId") Integer roomId,
+            @RequestParam(name = "content", required = false) String content,
+            @RequestParam(name = "files",   required = false) MultipartFile[] files,
             @SessionAttribute(value = "loginMember", required = false) MemberDTO loginMember,
-            @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer,
-            HttpServletResponse resp) throws Exception {
+            @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer) throws Exception {
 
         Sender sender = resolveSender(loginMember, loginLawyer);
         if (sender == null) return ResponseEntity.status(403).body("로그인이 필요합니다.");
@@ -64,14 +61,31 @@ public class ChatdataController {
             return ResponseEntity.status(409).body("상담 시간이 만료되었습니다.");
 
         boolean hasContent = (content != null && !content.isBlank());
-        boolean hasFiles   = (files != null && !files.isEmpty());
+        boolean hasFiles   = (files != null && files.length > 0);
         if (!hasContent && !hasFiles)
             return ResponseEntity.badRequest().body("메시지 내용 또는 파일이 필요합니다.");
 
-        ChatdataDTO saved = chatDataService.sendMessage(
-                roomId, sender.type, sender.id, hasContent ? content : null, files);
+        List<MultipartFile> fileList = (files != null && files.length > 0) 
+            ? java.util.Arrays.asList(files) 
+            : java.util.Collections.emptyList();
 
-        return ResponseEntity.ok(saved);
+        try {
+            System.out.println("[DEBUG] ChatdataController.sendMessage - roomId: " + roomId + ", senderType: " + sender.type + ", senderId: " + sender.id);
+            ChatdataDTO saved = chatDataService.sendMessage(
+                    roomId, sender.type, sender.id, hasContent ? content : null, fileList);
+            System.out.println("[DEBUG] ChatdataController.sendMessage - success, chatIdx: " + (saved != null ? saved.getChatIdx() : "null"));
+            return ResponseEntity.ok(saved);
+        } catch (IllegalStateException e) {
+            // ChatdataService에서 발생한 예외를 적절한 HTTP 상태 코드로 변환
+            System.out.println("[DEBUG] ChatdataController.sendMessage - IllegalStateException: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(409).body(e.getMessage());
+        } catch (Exception e) {
+            // 기타 예외는 500 에러로 처리하되 메시지 포함
+            System.out.println("[DEBUG] ChatdataController.sendMessage - Exception: " + e.getClass().getName() + " - " + e.getMessage());
+            e.printStackTrace(); // 서버 로그에 출력
+            return ResponseEntity.status(500).body("메시지 전송 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     /** 텍스트 전용 전송(JSON) */
@@ -83,19 +97,19 @@ public class ChatdataController {
             @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer) throws Exception {
         if (req == null || req.roomId() == null)
             return ResponseEntity.badRequest().body("roomId가 필요합니다.");
-        return sendMessage(req.roomId(), req.content(), null, loginMember, loginLawyer, null);
+        return sendMessage(req.roomId(), req.content(), null, loginMember, loginLawyer);
     }
 
     /** 첨부만 전송(멀티파트) */
     @PostMapping(path = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendFiles(
-            @RequestPart("roomId") Integer roomId,
-            @RequestPart("files") List<MultipartFile> files,
+            @RequestParam("roomId") Integer roomId,
+            @RequestParam("files") MultipartFile[] files,
             @SessionAttribute(value = "loginMember", required = false) MemberDTO loginMember,
             @SessionAttribute(value = "loginLawyer", required = false) LawyerDTO loginLawyer) throws Exception {
-        if (files == null || files.isEmpty())
+        if (files == null || files.length == 0)
             return ResponseEntity.badRequest().body("업로드할 파일이 없습니다.");
-        return sendMessage(roomId, null, files, loginMember, loginLawyer, null);
+        return sendMessage(roomId, null, files, loginMember, loginLawyer);
     }
 
     /** 메시지 소프트 삭제 */

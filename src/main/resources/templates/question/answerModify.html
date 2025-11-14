@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의글 답변 수정</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/qnaInfo.css}">
+</head>
+
+<body>
+    <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-qnaInfo">
+        <div class="inner">
+            <section class="frame">
+
+                <div class="section">
+                    <div class="section-label">
+                        <span>제목</span>
+                        <time class="answer-date" th:text="${question.qRegDate}">2025-11-04</time>
+                    </div>
+
+                    <div class="box" th:text="${question.qTitle}">실제 문의사항 제목</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-label"><span>문의 내용</span></div>
+                    <div class="box" th:text="${question.qContent}">
+                        회원가입 시 인증메일이 오지 않습니다. 확인 부탁드립니다.
+                    </div>
+                </div>
+
+                <div class="section answer">
+                    <div class="section-label">
+                        <span>답변</span>
+                    </div>
+                    
+                    <div class="block answer-section">
+                      <form th:action="@{/question/answerModify}" method="post"
+                        th:object="${answerModify}" enctype="multipart/form-data">
+
+                        <input type="hidden" th:field="*{aIdx}">
+                        <input type="hidden" th:field="*{qIdx}">
+                        <input type="hidden" th:field="*{adminIdx}">
+                        <textarea th:field="*{aContent}" id="aContent" class="answer-textarea"></textarea>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-submit" type="submit">수정하기</button>
+                        </div>
+                      </form>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <a class="btn btn-submit"
+                        th:href="@{/question/qnaList}">목록</a>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+</body>
+
+</html>

@@ -95,10 +95,13 @@ public class MemberEntity implements UserBase{
 
 
     @OneToMany(mappedBy = "member")
-    private java.util.List<PurchaseEntity> purchase;
+    private List<PurchaseEntity> purchase;
 
     @OneToMany(mappedBy = "member")
-    private java.util.List<PointEntity> point;
+    private List<PointEntity> point;
+
+    @OneToMany(mappedBy = "member")
+    private List<QuestionEntity> question;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberInterestEntity> memberInterests = new ArrayList<>();

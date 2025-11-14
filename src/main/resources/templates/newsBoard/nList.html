@@ -46,40 +46,42 @@
 
             <!-- 리스트 아이템 -->
             <a th:each="board : ${boards}"
-               th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}"
-               class="news-link item">
+   th:href="@{/newsBoard/detail(newsIdx=${board.newsIdx})}"
+   class="news-link item">
 
-                <!-- 왼쪽 텍스트 -->
-                <div class="news-text">
-                    <h3 class="subject" th:text="${board.newsTitle}">제목</h3>
-                    <p class="summary"
-                       th:text="${#strings.abbreviate(board.newsContent, 80)}">요약</p>
-                    <div class="date" th:text="${board.newsRegDate}">2025-10-30</div>
-                </div>
+  <!-- 왼쪽 텍스트 -->
+  <div class="news-text">
+    <h3 class="subject" th:text="${board.newsTitle}">제목</h3>
+    <p class="summary" th:text="${#strings.abbreviate(board.newsContent, 80)}">요약</p>
+    <div class="date" th:text="${board.newsRegDate}">2025-10-30</div>
+  </div>
 
-                <!-- 2,3일 때만 썸네일 -->
-                <div th:if="${categoryIdx == 2 or categoryIdx == 3}"
-                     class="thumb" aria-hidden="true">
+  <!-- 오른쪽 썸네일 (뉴스/동영상만) -->
+  <div th:if="${categoryIdx == 2 or categoryIdx == 3}"
+       class="thumb" aria-hidden="true">
 
-                    <!-- 뉴스: 구글드라이브 썸네일 -->
-                    <img th:if="${categoryIdx == 2 and board.driveFileId != null}"
-                         th:src="@{'https://drive.google.com/thumbnail?id=' + ${board.driveFileId} + '&sz=220'}"
-                         alt="thumbnail"
-                         style="width:100%;height:100%;object-fit:cover;display:block;">
+    <!-- 뉴스: Firebase 이미지 (우선순위: news_imgpath → drive_file_id) -->
+    <div th:if="${categoryIdx == 2}"
+         th:with="imgUrl=${board.newsImgPath != null && #strings.startsWith(board.newsImgPath,'http')
+                            ? board.newsImgPath
+                            : (board.driveFileId != null
+                                ? 'https://storage.googleapis.com/lawlex-82006.firebasestorage.app/' + board.driveFileId
+                                : null)}">
+      <img th:if="${imgUrl != null}" th:src="${imgUrl}" alt="thumbnail"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div th:if="${imgUrl == null}" class="thumb-placeholder">이미지</div>
+    </div>
 
-                    <!-- 동영상: 유튜브 썸네일 -->
-                    <img th:if="${categoryIdx == 3 and board.videoId != null}"
-                         th:src="'https://img.youtube.com/vi/' + ${board.videoId} + '/hqdefault.jpg'"
-                         alt="video thumbnail"
-                         style="width:100%;height:100%;object-fit:cover;display:block;">
+    <!-- 동영상: 유튜브 썸네일 -->
+    <div th:if="${categoryIdx == 3}">
+      <img th:if="${board.videoId != null}"
+           th:src="'https://img.youtube.com/vi/' + ${board.videoId} + '/hqdefault.jpg'"
+           alt="video thumbnail"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div th:if="${board.videoId == null}" class="thumb-placeholder">이미지</div>
+    </div>
 
-                    <!-- 아무것도 없을 때 -->
-                    <div th:if="${
-                            (categoryIdx == 2 and board.driveFileId == null)
-                         or (categoryIdx == 3 and board.videoId == null)
-                        }"
-                         class="thumb-placeholder">이미지</div>
-                </div>
+  </div>
                 <!-- 4(칼럼)는 썸네일 없음 -->
             </a>
 

@@ -40,24 +40,24 @@ public class AdService {
         return adDTO;
     }
 
-    // Ad DTO -> Entity
-    private AdEntity convertAdEntity (AdDTO adDTO) {
-        AdEntity adEntity = new AdEntity();
-        adEntity.setAdIdx(adDTO.getAdIdx());
-        adEntity.setAdName(adDTO.getAdName());
-        adEntity.setAdImgPath(adDTO.getAdImgPath());
-        adEntity.setAdLink(adDTO.getAdLink());
-        adEntity.setAdStartDate(adDTO.getAdStartDate());
-        adEntity.setAdDuration(adDTO.getAdDuration());
-        adEntity.setAdViews(adDTO.getAdViews());
-        adEntity.setAdActive(adDTO.getAdActive());
-        adEntity.setLawyerIdx(adDTO.getLawyerIdx());
+        // Ad DTO -> Entity
+        private AdEntity convertAdEntity (AdDTO adDTO) {
+            AdEntity adEntity = new AdEntity();
+            adEntity.setAdIdx(adDTO.getAdIdx());
+            adEntity.setAdName(adDTO.getAdName());
+            adEntity.setAdImgPath(adDTO.getAdImgPath());
+            adEntity.setAdLink(adDTO.getAdLink());
+            adEntity.setAdStartDate(adDTO.getAdStartDate());
+            adEntity.setAdDuration(adDTO.getAdDuration());
+            adEntity.setAdViews(adDTO.getAdViews());
+            adEntity.setAdActive(adDTO.getAdActive());
+            adEntity.setLawyerIdx(adDTO.getLawyerIdx());
 
-        LawyerEntity lawyerEntity = lawyerRepository.findById(adDTO.getLawyerIdx()).orElse(null);
-        adEntity.setLawyer(lawyerEntity);
+            LawyerEntity lawyerEntity = lawyerRepository.findById(adDTO.getLawyerIdx()).orElse(null);
+            adEntity.setLawyer(lawyerEntity);
 
-        return adEntity;
-    }
+            return adEntity;
+        }
 
     // 만료된 광고 비활성화
     @Transactional
@@ -118,6 +118,16 @@ public class AdService {
     public void deleteProcess(int adIdx) {
         AdEntity adEntity = adRepository.findById(adIdx).orElse(null);
         adEntity.setAdActive(0);
+        adRepository.save(adEntity);
+    }
+
+    // 광고 조회수 증가
+    @Transactional
+    public void increaseAdViews(int adIdx) {
+        AdEntity adEntity = adRepository.findById(adIdx).orElse(null);
+        int view = adEntity.getAdViews();
+        view += 1;
+        adEntity.setAdViews(view);
         adRepository.save(adEntity);
     }
 

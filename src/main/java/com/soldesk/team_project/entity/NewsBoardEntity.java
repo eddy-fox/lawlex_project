@@ -37,7 +37,7 @@ public class NewsBoardEntity {
     @Column(name="news_regdate")
     private LocalDate newsRegDate;
 
-    @Column(name="news_imgpath")
+    @Column(name="news_imgpath", columnDefinition = "TEXT")
     private String newsImgPath;
 
     @Column(name="news_like")

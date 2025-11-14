@@ -21,11 +21,11 @@ import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.NewsBoardEntity;
 import com.soldesk.team_project.entity.NewsCategoryEntity;
 import com.soldesk.team_project.dto.NewsBoardDTO;
-import com.soldesk.team_project.infra.DriveUploader;
 import com.soldesk.team_project.repository.AdminRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.NewsBoardRepository;
 import com.soldesk.team_project.repository.NewsCategoryRepository;
+import com.soldesk.team_project.service.FirebaseStorageService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +39,7 @@ public class NewsBoardController {
     private final NewsCategoryRepository newsCategoryRepository;
     private final AdminRepository adminRepository;     // 세션→엔티티 변환용
     private final LawyerRepository lawyerRepository;   // 세션→엔티티 변환용
-    private final DriveUploader driveUploader;
-
-    @Value("${google.drive.newsboard-folder-id}")
-    private String newsFolderId;
+    private final FirebaseStorageService storageService;
 
     private static final int CATEGORY_NOTICE = 1;
     private static final int CATEGORY_NEWS   = 2;
@@ -118,30 +115,26 @@ public class NewsBoardController {
 
     /* ================ 상세 ================ */
     @GetMapping("/detail")
-    public String detail(@RequestParam("newsIdx") Integer newsIdx,
-                         Model model,
-                         HttpSession session) {
+    public String detail(@RequestParam("newsIdx") Integer newsIdx, Model model, HttpSession session) {
+        var board = newsBoardRepository.findById(newsIdx).orElse(null);
+        if (board == null || board.getNewsActive() == 0) return "redirect:/newsBoard/list";
 
-        NewsBoardEntity board = newsBoardRepository.findById(newsIdx).orElse(null);
-        if (board == null || board.getNewsActive() == 0) {
-            return "redirect:/newsBoard/list";
-        }
-
-        // 조회수 +1
         board.setNewsViews(board.getNewsViews() == null ? 1 : board.getNewsViews() + 1);
         newsBoardRepository.save(board);
 
+        // ✅ 항상 news_imgpath(=풀 URL) 우선 사용, 없으면 id로부터 생성
+        String imgUrl = board.getNewsImgPath();
+        if (imgUrl == null && board.getDriveFileId() != null) {
+            imgUrl = storageService.buildPublicUrl(board.getDriveFileId()); // id → URL
+        }
+
         model.addAttribute("board", board);
+        model.addAttribute("imgUrl", imgUrl);
         model.addAttribute("loginAdmin", getLoginAdmin(session));
         model.addAttribute("loginLawyer", getLoginLawyer(session));
+        return (board.getCategory().getCategoryIdx() == 4) ? "newsBoard/cInfo" : "newsBoard/nInfo";
+}
 
-        int cat = board.getCategory().getCategoryIdx();
-        if (cat == CATEGORY_COLUMN) {
-            return "newsBoard/cInfo";
-        } else {
-            return "newsBoard/nInfo";
-        }
-    }
 
     /* ================ 글쓰기 폼 ================ */
     @GetMapping("/write")
@@ -160,6 +153,23 @@ public class NewsBoardController {
         return "newsBoard/newswrite";
     }
 
+    private String nowUuidName(String originalFilename) {
+    String ext = getExt(originalFilename);
+    String now = java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+    String shortUuid = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+    return now + "-" + shortUuid + ext; // 예: 20251113_213015123-7f3a9c1b.jpg
+}
+
+private String getExt(String original) {
+    if (original == null || original.isBlank()) return ".bin";
+    String name = original.trim();
+    int i = name.lastIndexOf('.');
+    if (i < 0 || i == name.length() - 1) return ".bin";
+    String ext = name.substring(i).toLowerCase(java.util.Locale.ROOT);
+    if (ext.length() > 10 || ext.contains("/") || ext.contains("\\") || ext.contains(" ")) return ".bin";
+    return ext;
+}
     /* ================ 글쓰기 처리 ================ */
     @PostMapping("/write")
 public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
@@ -201,14 +211,17 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         entity.setVideoUrl(dto.getVideoUrl());
     }
 
-    // 이미지 업로드
-    if (imgFile != null && !imgFile.isEmpty()) {
-        var info = driveUploader.upload(imgFile, newsFolderId);
-        entity.setFileAttached(1);
-        entity.setStoredFileName(info.name());
-        entity.setDriveFileId(info.fileId());
-    }
 
+    if (imgFile != null && !imgFile.isEmpty()) {
+    String filename = nowUuidName(imgFile.getOriginalFilename()); // 짧고 유니크한 이름
+    String objectPath = "news/" + filename;                       // 저장 폴더(news) 지정
+
+    var uploaded = storageService.upload(imgFile, objectPath);    // Firebase 업로드
+    entity.setFileAttached(1);
+    entity.setStoredFileName(filename);                           // 짧은 실제 파일명
+    entity.setNewsImgPath(uploaded.url());                     // 예: news/2025...-abcd1234.jpg
+    entity.setDriveFileId(uploaded.fileId());                        // 예: https://storage.googleapis.com/...
+}
     newsBoardRepository.save(entity);
     return "redirect:/newsBoard/list?category=" + categoryIdx;
 }
@@ -249,19 +262,35 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         board.setNewsTitle(dto.getNewsTitle());
         board.setNewsContent(dto.getNewsContent());
 
-        var file = dto.getNewsBoardFile();
-        if (file != null && !file.isEmpty()) {
-            try {
-                var info = driveUploader.upload(file, newsFolderId);
-                board.setFileAttached(1);
-                board.setStoredFileName(info.name());
-                board.setDriveFileId(info.fileId());
-                board.setNewsImgPath(null);
-            } catch (Exception e) {
-                // 실패 시 기존 이미지 유지
-            }
-        }
+        // var file = dto.getNewsBoardFile();
+        // if (file != null && !file.isEmpty()) {
+        //     try {
+        //         var info = driveUploader.upload(file, newsFolderId);
+        //         board.setFileAttached(1);
+        //         board.setStoredFileName(info.name());
+        //         board.setDriveFileId(info.fileId());
+        //         board.setNewsImgPath(null);
+        //     } catch (Exception e) {
+        //         // 실패 시 기존 이미지 유지
+        //     }
+        // }
 
+        var file = dto.getNewsBoardFile(); // 폼에서 넘어오는 MultipartFile
+    if (file != null && !file.isEmpty()) {
+    try {
+        String filename = nowUuidName(file.getOriginalFilename());
+        String objectPath = "news/" + filename;
+
+        var uploaded = storageService.upload(file, objectPath);
+        board.setFileAttached(1);
+        board.setStoredFileName(filename);
+        board.setNewsImgPath(uploaded.url());
+        board.setDriveFileId(uploaded.fileId());
+        // 필요 시 기존 드라이브 경로 무력화하고 싶으면 위처럼 새 값으로 덮어쓰기만 하면 됨
+    } catch (Exception e) {
+        // 실패 시 기존 이미지 유지
+    }
+}
         if (board.getCategory().getCategoryIdx() == CATEGORY_VIDEO) {
             board.setVideoUrl(dto.getVideoUrl());
             board.setVideoId(dto.getVideoId());

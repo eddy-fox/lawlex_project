@@ -72,6 +72,7 @@ public class LawyerService {
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
 
+
     // 태그 별 특정 변호사 검색
     public List<LawyerDTO> searchLawyers(String searchType, String keyword) {
         List<LawyerEntity> lawyerEntityList;

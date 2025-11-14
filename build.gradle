@@ -37,7 +37,6 @@ dependencies {
    // OpenAI API 연동 후 주석 해제 필요
    implementation "com.google.api-client:google-api-client:2.6.0"
    implementation "com.google.oauth-client:google-oauth-client-jetty:1.36.0"
-   implementation "com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0"
    // implementation "com.google.auth:google-auth-library-oauth2-http:1.24.0"
     // (옵션) Jackson 기반 JSON 파서가 필요하면 추가
    implementation "com.google.http-client:google-http-client-jackson2:1.43.3"
@@ -55,9 +54,10 @@ dependencies {
    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' 
    implementation 'org.springframework.security:spring-security-oauth2-jose'
    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+   implementation 'com.google.firebase:firebase-admin:9.4.0'
+   implementation 'com.google.cloud:google-cloud-storage:2.40.1'
    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-   implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 // dependencyManagement {
 //    imports {
