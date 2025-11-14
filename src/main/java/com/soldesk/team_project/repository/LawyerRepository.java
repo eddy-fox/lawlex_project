@@ -46,4 +46,3 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     // Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
 
 } 
-

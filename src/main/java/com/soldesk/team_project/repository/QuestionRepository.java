@@ -25,4 +25,6 @@ public interface QuestionRepository extends JpaRepository<QuestionEntity, Intege
     Page<QuestionEntity> findAllByOrderByQuestionRegDateDescQuestionIdxDesc(Pageable pageable); /* 모두 조회 */
     Page<QuestionEntity> findByMemberIdxOrderByQuestionRegDateDescQuestionIdxDesc(Integer mIdx, Pageable pageable); /* 자신에 글 조회 */
     Page<QuestionEntity> findByLawyerIdxOrderByQuestionRegDateDescQuestionIdxDesc(Integer LIdx, Pageable pageable); /* 자신에 글 조회 */
+
+    QuestionEntity findByAnswerAnswerIdx(Integer aIdx);
 }

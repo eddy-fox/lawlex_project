@@ -59,16 +59,14 @@ public class QuestionService {
         questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
         questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
-        questionEntity.setQuestionActive(questionDTO.getQActive());
+        questionEntity.setQuestionSecret(questionDTO.getQSecret());
 
         MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
         LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
 
         questionEntity.setMember(memberEntity);
         questionEntity.setLawyer(lawyerEntity);
-        
-        questionEntity.setMemberIdx(questionDTO.getMemberIdx());
-        questionEntity.setLawyerIdx(questionDTO.getLawyerIdx());
+
         return questionEntity;
     }
 
@@ -188,7 +186,7 @@ public class QuestionService {
      return questionDTO;
     }
     
-}
+
 
     // QIdx로 답변 찾기
     public AnswerDTO getAnswerToQIdx(int qIdx) {
@@ -254,6 +252,7 @@ public class QuestionService {
         QuestionEntity questionEntity = questionRepository.findByAnswerAnswerIdx(aIdx);
         questionEntity.setQuestionAnswer(0);
         questionRepository.save(questionEntity);
+    
     }
     
 }
