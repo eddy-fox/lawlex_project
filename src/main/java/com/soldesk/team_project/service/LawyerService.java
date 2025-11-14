@@ -72,17 +72,6 @@ public class LawyerService {
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
 
-    //특정 변호사 조회
-    public LawyerEntity getLawyer(String lawyerName) {
-
-        Optional<LawyerEntity> lawyer = this.lawyerRepository.findByLawyerName(lawyerName);
-        if(lawyer.isPresent()) {
-            return lawyer.get();
-        } else { 
-            throw new DataNotFoundException("lawyer not found");
-        }
-        
-    }
 
     // 태그 별 특정 변호사 검색
     public List<LawyerDTO> searchLawyers(String searchType, String keyword) {
