@@ -67,6 +67,11 @@
                       </form>
                     </div>
 
+                        <time class="answer-date" th:text="${infoQ.qRegDate}">2025-11-04</time>
+                    </div>
+
+                    <div class="box" th:if="${isAnswered}">관리자가 답변을 등록했습니다.</div>
+                    <div class="box" th:if="${!isAnswered}">아직 답변이 등록되지 않았습니다.</div>
                 </div>
 
                 <div class="actions">

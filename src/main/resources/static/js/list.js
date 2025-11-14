@@ -1,7 +1,12 @@
 const page_elements = document.getElementsByClassName("page-link");
 Array.from(page_elements).forEach(function(element) {
-  element.addEventListener('click', function() {
-    document.getElementById('page').value = this.dataset.page;
+  element.addEventListener('click', function(e) {
+    e.preventDefault();
+    const page = this.dataset.page;
+    const kw = document.getElementById('kw') ? document.getElementById('kw').value : '';
+    const interestIdx = document.getElementById('interestIdx') ? document.getElementById('intersetIdx').value : '';
+    console.log('CLICK PAGE -> page:', page, 'kw:', kw, 'interestIdx:', interestIdx);
+    document.getElementById('page').value = page;
     document.getElementById('searchForm').submit();
   });
 });

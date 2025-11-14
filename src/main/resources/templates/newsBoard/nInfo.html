@@ -43,12 +43,10 @@
 
         <!-- 대표 이미지 / 동영상 -->
         <!-- 뉴스(2)일 때만 드라이브 이미지 노출 -->
-        <div th:if="${cat == 2}">
-            <img class="hero"
-                 th:if="${driveId != null}"
-                 th:src="|https://drive.google.com/thumbnail?id=${driveId}&sz=w1200|"
-                 alt="대표이미지">
-        </div>
+      <!-- 뉴스(2)일 때만 표시 -->
+<div th:if="${board.category.categoryIdx == 2}">
+  <img class="hero" th:if="${imgUrl != null}" th:src="${imgUrl}" alt="대표이미지">
+</div>
 
         <!-- 동영상(3)일 때만 유튜브 -->
         <div th:if="${cat == 3}"

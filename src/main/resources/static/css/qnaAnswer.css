@@ -123,12 +123,12 @@
     }
 
     .page-qnaAnswer .badge {
-      display: none;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
+      padding: 5px 15px;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .page-qnaAnswer .badge-secret {
@@ -204,7 +204,7 @@
     .page-qnaAnswer .btn {
       padding: 10px 30px;
       border: none;
-      border-radius: 20px;
+      border-radius: 10px;
       font-size: 20px;
       cursor: pointer;
       transition: all .15s ease;
