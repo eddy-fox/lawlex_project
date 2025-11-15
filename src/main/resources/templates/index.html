@@ -19,6 +19,16 @@
             </svg>
           </button>
 
+          <!-- <div class="content" th:each="ad : ${adList}">
+            <a th:href="@{/}"
+          </div> -->
+          
+          <button class="nav-btn nav-next" onclick="nextSlide()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
           <div class="content" th:each="ad, iterStat : ${adList}"
             th:id="'slide-' + ${iterStat.index}"
             th:classappend="${iterStat.index == 0} ? ' active' : ''">
@@ -44,11 +54,14 @@
             <tr><th>#</th><th>분야</th><th>제목</th><th>조회</th></tr>
             </thead>
             <tbody>
-            <tr><td>1</td><td><span class="badge">노동</span></td><td class="cell-title">직장 내 부당지시, 어디까지 거부할 수 있나요?</td><td>1,165</td></tr>
-            <tr><td>2</td><td><span class="badge">형사</span></td><td class="cell-title">허위 사실로 신고하면 무고죄가 되나요?</td><td>1,032</td></tr>
-            <tr><td>3</td><td><span class="badge">가사</span></td><td class="cell-title">위자료랑 양육비는 어떻게 달라요?</td><td>965</td></tr>
-            <tr><td>4</td><td><span class="badge">부동산</span></td><td class="cell-title">전세 보증금 못 돌려준대요. 바로 고소 가능한가요?</td><td>823</td></tr>
-            <tr><td>5</td><td><span class="badge">민사</span></td><td class="cell-title">빌려준 돈 안 갚을 때 내용증명 먼저 보내야 하나요?</td><td>706</td></tr>
+            <tr th:each="board, iterStat : ${topBoards}">
+                <td th:text="${iterStat.count}"></td>
+                <td><span class="badge" th:text="${board.interest != null ? board.interest.interestName : '기타'}"></span></td>
+                <td class="cell-title">
+                    <a th:href="@{/board/detail/{id}(id=${board.boardIdx})}" th:text="${board.boardTitle}"></a>
+                </td>
+                <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
+            </tr>
             </tbody>
         </table>
         </div>
@@ -126,47 +139,58 @@
         <h2 class="section-ttl">알아두면 좋을 법률정보</h2>
         <div class="legal-grid">
 
-        <div class="legal-card">
-            <div class="legal-img bg-legal1">
+        <!-- 조회수 높은 동영상 2개 -->
+        <div class="legal-card" th:each="video, iterStat : ${topVideos}">
+            <div class="legal-img">
+            <img th:if="${video.videoId != null}"
+                 th:src="'https://img.youtube.com/vi/' + ${video.videoId} + '/hqdefault.jpg'"
+                 alt="video thumbnail"
+                 style="width:100%;height:100%;object-fit:cover;display:block;">
+            <img th:if="${video.videoId == null and video.newsImgPath != null}"
+                 th:src="${video.newsImgPath}"
+                 alt="video image"
+                 style="width:100%;height:100%;object-fit:cover;display:block;">
+            <div th:if="${video.videoId == null and video.newsImgPath == null}" style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;">이미지 없음</div>
             <div class="legal-badge">HOT</div>
             </div>
             <div class="legal-body">
-            <h3 class="legal-ttl">유언장은 어떻게 써야 효력이 있나요?</h3>
+            <h3 class="legal-ttl">
+                <a th:href="@{/newsBoard/detail(newsIdx=${video.newsIdx})}" th:text="${video.newsTitle}"></a>
+            </h3>
             <div class="legal-meta">
                 <svg class="legal-ic" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none"/>
                 <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5"/>
-                </svg><span>2025.01</span>
+                </svg>
+                <span th:text="${#temporals.format(video.newsRegDate, 'yyyy.MM')}"></span>
             </div>
             </div>
         </div>
 
-        <div class="legal-card">
-            <div class="legal-img bg-legal2">
+        <!-- 최신 동영상 1개 -->
+        <div class="legal-card" th:if="${latestVideo != null && !latestVideo.isEmpty()}" th:each="video : ${latestVideo}">
+            <div class="legal-img">
+            <img th:if="${video.videoId != null}"
+                 th:src="'https://img.youtube.com/vi/' + ${video.videoId} + '/hqdefault.jpg'"
+                 alt="video thumbnail"
+                 style="width:100%;height:100%;object-fit:cover;display:block;">
+            <img th:if="${video.videoId == null and video.newsImgPath != null}"
+                 th:src="${video.newsImgPath}"
+                 alt="video image"
+                 style="width:100%;height:100%;object-fit:cover;display:block;">
+            <div th:if="${video.videoId == null and video.newsImgPath == null}" style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;">이미지 없음</div>
             <div class="legal-badge new">NEW</div>
             </div>
             <div class="legal-body">
-            <h3 class="legal-ttl">스토킹 신고했는데 가해자가 합의하자고 합니다</h3>
+            <h3 class="legal-ttl">
+                <a th:href="@{/newsBoard/detail(newsIdx=${video.newsIdx})}" th:text="${video.newsTitle}"></a>
+            </h3>
             <div class="legal-meta">
                 <svg class="legal-ic" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none"/>
                 <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5"/>
-                </svg><span>2025.01</span>
-            </div>
-            </div>
-        </div>
-
-        <div class="legal-card">
-            <div class="legal-img bg-legal3">
-            <div class="legal-badge">HOT</div>
-            </div>
-            <div class="legal-body">
-            <h3 class="legal-ttl">내 사진 마음대로 올리면 초상권 침해인가요?</h3>
-            <div class="legal-meta">
-                <svg class="legal-ic" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none"/>
-                <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5"/>
-                </svg><span>2025.01</span>
+                </svg>
+                <span th:text="${#temporals.format(video.newsRegDate, 'yyyy.MM')}"></span>
             </div>
             </div>
         </div>
@@ -188,29 +212,27 @@
         </div>
 
         <div class="news-list" id="news-popular">
-        <div class="news-item"><div class="rank">1</div><div class="text">현직 모델 겸 배우, 범죄조직에 한국 여성 팔아넘겼다</div></div>
-        <div class="news-item"><div class="rank">2</div><div class="text">“성적 대리요구 애써 무시했지만”… 신고하면 벌점 가능?</div></div>
-        <div class="news-item"><div class="rank">3</div><div class="text">미성년자 성착취물 유통 280명 적발… 책임 강화 움직임</div></div>
-        <div class="news-item"><div class="rank">4</div><div class="text">[단독] 남친에 이별 통보하자 “기사 쓸거야” 협박… 첫 기소</div></div>
-        <div class="news-item"><div class="rank">5</div><div class="text">전세 사기로 13억 피해… “숨 쉴 틈 없다” 절규</div></div>
+        <div class="news-item" th:each="news, iterStat : ${popularNews}">
+            <div class="rank" th:text="${iterStat.count}"></div>
+            <div class="text">
+                <a th:href="@{/newsBoard/detail(newsIdx=${news.newsIdx})}" th:text="${news.newsTitle}"></a>
+            </div>
+        </div>
         </div>
 
-        <div class="news-list" id="news-latest">
-        <div class="news-item"><div class="rank">1</div><div class="text">새 민사소송법 개정안 통과, 전자소송 강화</div></div>
-        <div class="news-item"><div class="rank">2</div><div class="text">노동청, 불법파견 단속 강화 계획 발표</div></div>
-        <div class="news-item"><div class="rank">3</div><div class="text">헌재 “사생활 침해 목적 불법촬영, 징역형 적정”</div></div>
-        <div class="news-item"><div class="rank">4</div><div class="text">지식재산권 침해 대응 강화, 특허법원 조직 확대</div></div>
-        <div class="news-item"><div class="rank">5</div><div class="text">정부 ‘온라인 명예훼손 방지법’ 초안 공개</div></div>
+        <div class="news-list" id="news-latest" style="display: none;">
+        <div class="news-item" th:each="news, iterStat : ${latestNews}">
+            <div class="rank" th:text="${iterStat.count}"></div>
+            <div class="text">
+                <a th:href="@{/newsBoard/detail(newsIdx=${news.newsIdx})}" th:text="${news.newsTitle}"></a>
+            </div>
+        </div>
         </div>
     </div>
     </section>
     </main>
     <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/chatIcon.js}"></script>
-    <script th:src="@{/js/index.js}"></script>
-</body>
-
+    
 <script>
   // 광고 슬라이드
   let currentSlide = 0;
@@ -254,5 +276,65 @@
   .catch(err => console.error('에러 발생:', err));
 }
 
+  // 뉴스 탭 전환 (인라인 스크립트로 직접 처리)
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('탭 전환 스크립트 로드됨');
+    
+    const tabs = document.querySelectorAll('.news-tabs .tab');
+    const popularNews = document.getElementById('news-popular');
+    const latestNews = document.getElementById('news-latest');
+    
+    console.log('탭 개수:', tabs.length);
+    console.log('인기 뉴스 요소:', popularNews);
+    console.log('최신 뉴스 요소:', latestNews);
+    
+    if (tabs.length > 0 && popularNews && latestNews) {
+      tabs.forEach(function(tab, index) {
+        console.log('탭 ' + index + '에 이벤트 리스너 추가:', tab.getAttribute('data-tab'));
+        
+        tab.addEventListener('click', function(e) {
+          console.log('탭 클릭됨:', this.getAttribute('data-tab'));
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const tabName = this.getAttribute('data-tab');
+          if (!tabName) {
+            console.log('탭 이름이 없음');
+            return;
+          }
+          
+          // 모든 탭에서 active 클래스 제거
+          tabs.forEach(function(el) {
+            el.classList.remove('active');
+          });
+          
+          // 클릭한 탭에 active 클래스 추가
+          this.classList.add('active');
+          console.log('active 클래스 추가됨');
+          
+          // 뉴스 리스트 표시/숨김
+          if (tabName === 'popular') {
+            popularNews.style.display = 'block';
+            latestNews.style.display = 'none';
+            console.log('인기 뉴스 표시');
+          } else if (tabName === 'latest') {
+            popularNews.style.display = 'none';
+            latestNews.style.display = 'block';
+            console.log('최신 뉴스 표시');
+          }
+        });
+      });
+    } else {
+      console.error('탭 또는 뉴스 요소를 찾을 수 없음');
+      console.log('탭:', tabs);
+      console.log('인기 뉴스:', popularNews);
+      console.log('최신 뉴스:', latestNews);
+    }
+  });
 </script>
+
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/chatIcon.js}"></script>
+    <script th:src="@{/js/index.js}"></script>
+</body>
 </html>

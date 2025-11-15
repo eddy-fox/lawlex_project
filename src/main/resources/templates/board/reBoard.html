@@ -21,14 +21,16 @@
 
             <div class="edit">
               <a class="link" th:href="@{|/board/modify/${boardEntity.boardIdx}|}"
-              sec:authorize="isAuthenticated()" th:if="${boardEntity.member != null and #authentication.
-              getPrincipal().getMemberIdx() == boardEntity.member.memberIdx}" th:text="수정"></a>
+              sec:authorize="isAuthenticated()" 
+              th:if="${boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx}" 
+              th:text="수정"></a>
               <a class="link" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.boardIdx}|}"
-              sec:authorize="isAuthenticated()" th:if="${boardEntity.member != null and #authentication.
-              getPrincipal().getMemberIdx() == boardEntity.member.memberIdx}" th:text="삭제"></a>
+              sec:authorize="isAuthenticated()" 
+              th:if="${boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx}" 
+              th:text="삭제"></a>
             </div>
 
-            <div class="ans" th:each="reBoardEntity : ${BoardEntity.reboardList}">
+            <div class="ans" th:each="reBoardEntity : ${boardEntity.reboardList}">
               <a th:id="|reBoardEntity_${reBoardEntity.reBoardIdx}|"></a>
               <div class="card-body">
                 <div class="card-text" th:text="${reBoardEntity.reboardContent}"></div>
@@ -41,16 +43,17 @@
               </div>
               <div class="my-3">
                 <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary" th:data-uri="@{|/reboard/vote/${reBoardEntity.reboardIdx}|}">도움됐어요
-                  <span class="badge rounded-pill bg-success" th:text="${#lists.size(reboardEntity.voter)}"></span>
+                  <span class="badge rounded-pill bg-success" th:text="${#lists.size(reBoardEntity.voter)}"></span>
                 </a>
                 <a th:href="@{|/reboard/modify/${reBoardEntity.reboardIdx}|}" class="btn btn-sm btn-outline-secondary"
-                sec:authorize="isAuthenticated()" th:if="${reboardEntity.lawyer != null and #authentication.getPrincipal().
-                getLawyerName() == reboardEntity.lawyer.lawyerName}" th:text="수정"></a>
-                <a href="javascript:void(0);" th:data-uri="@{|/reboard/delete/${reboardEntity.reboardIdx}|}"
+                sec:authorize="isAuthenticated()" 
+                th:if="${reBoardEntity.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reBoardEntity.lawyer.lawyerName}" 
+                th:text="수정"></a>
+                <a href="javascript:void(0);" th:data-uri="@{|/reboard/delete/${reBoardEntity.reboardIdx}|}"
                 class="delete btn btn-sm btn-outline-secondary"
                 sec:authorize="isAuthenticated()"
-                th:if="${reboard.lawyer != null and #authentication.
-                getPrincipal().getLawyerName() == reboardEntity.lawyer.layerName}" th:text="삭제"></a>
+                th:if="${reBoardEntity.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reBoardEntity.lawyer.lawyerName}" 
+                th:text="삭제"></a>
               </div>
               <!-- 답변 작성 -->
               <form th:action="@{|/reboard/create/${boardEntity.boardIdx}|}" th:object="${reBoardForm}"| method="post" class="my-3">

@@ -53,7 +53,7 @@
                     <div class="grid">
                         <div class="card" th:each="iRank, st : ${rankI.value}" th:if="${st.index < 3}" th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
                             <div class="ranknum" 
-                                 th:class="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : 'ranknum'))}" th:text="${st.index + 1} + '위'">1위</div>
+                                 th:classappend="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : ''))}" th:text="${st.index + 1} + '위'">1위</div>
                             <div class="Cphoto"><img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}"></div>
                             <div class="name" th:text="${iRank[3]} + ' 변호사'">김민지 변호사</div>
                             <div class="sub" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150</div>

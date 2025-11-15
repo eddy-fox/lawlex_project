@@ -1,7 +1,5 @@
 package com.soldesk.team_project.controller;
 
-import java.util.zip.Inflater;
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,20 +8,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.AdminDTO;
 import com.soldesk.team_project.dto.AnswerDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
-import com.soldesk.team_project.entity.QuestionEntity;
 import com.soldesk.team_project.service.AdminService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.QuestionService;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -47,6 +42,7 @@ public class QuestionController {
     @GetMapping("/qnaList")
     public String qnaList(@RequestParam(value = "page", defaultValue = "1") int page,
                           @RequestParam(value = "mine", defaultValue = "false" ) boolean mine,
+                          @RequestParam(value = "search", required = false) String search,
                           @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                             Model model) {
 
@@ -56,16 +52,17 @@ public class QuestionController {
             Integer mIdx = loginUser.getMemberIdx();
             Integer lIdx = loginUser.getLawyerIdx();
             if(mine && mIdx!= null){ /* 일반회원이 확인 */
-                paging = questionService.getQnaPagingM(mIdx, page);
+                paging = questionService.getQnaPagingM(mIdx, page, search);
             }else if(mine && lIdx != null){ /* 변호사회원 확인 */
-                paging = questionService.getQnaPagingL(lIdx, page);
+                paging = questionService.getQnaPagingL(lIdx, page, search);
             }else {
-                paging = questionService.getQnaPaging(page);
+                paging = questionService.getQnaPaging(page, search);
             }
-        }else{ paging = questionService.getQnaPaging(page); }
+        }else{ paging = questionService.getQnaPaging(page, search); }
 
         model.addAttribute("qnaPaging", paging);
         model.addAttribute("mine", mine);
+        model.addAttribute("search", search);
        
         if(loginUser != null){
             model.addAttribute("loginUser", loginUser);
@@ -152,9 +149,9 @@ public class QuestionController {
 
         // 비밀글 조회 권환 확인
         int secret = infoQ.getQSecret();
-        int writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
+        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
 
-        if (secret == 1 && adminIdx == null && userIdx != writerIdx) {
+        if (secret == 1 && adminIdx == null && writerIdx != null && userIdx != null && !userIdx.equals(writerIdx)) {
             redirectAttributes.addFlashAttribute("alert", "비밀글은 작성자와 관리자만 열람할 수 있습니다.");
 
             return "redirect:/question/qnaList";

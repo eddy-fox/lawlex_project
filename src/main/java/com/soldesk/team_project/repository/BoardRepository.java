@@ -36,5 +36,8 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     Page<BoardEntity> findByInterestIdx(@Param("interestIdx") Integer interestIdx,
                                         @Param("keyword") String keyword,
                                         Pageable pageable);
+    
+    // 조회수 높은 순서로 조회 (상위 5개)
+    List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
                                         
 }

@@ -17,6 +17,8 @@ public class BoardDTO {
     private LocalDate boardCaseDate;
     private Integer boardViews;
     private Integer memberIdx;
-    private Integer interestIdx;
+    private Integer interest;
+
+    private String boardCategory;
 
 }
