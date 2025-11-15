@@ -69,6 +69,8 @@ public class NewsBoardController {
         model.addAttribute("videoList", videoList);
         model.addAttribute("columnList", columnList);
         model.addAttribute("noticeList", noticeList);
+        // 메인 페이지에서는 카테고리가 선택되지 않았음을 명시
+        model.addAttribute("categoryIdx", null);
 
         return "newsBoard/nMain";
     }

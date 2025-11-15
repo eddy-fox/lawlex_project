@@ -114,16 +114,40 @@
 
   function init(menu){
     if(!menu) return;
+    
+    // 메인 페이지(/newsBoard/main)에서는 normalize와 복원 로직을 건너뛰고 모든 링크를 side로 설정
+    var isMainPage = window.location.pathname === '/newsBoard/main';
+    
+    if(isMainPage){
+      // 메인 페이지에서는 모든 링크를 side로 설정하고, side-choice와 aria-current 제거
+      menu.querySelectorAll('a').forEach(function(link){
+        link.classList.remove('side-choice', 'is-active');
+        link.classList.add('side');
+        link.removeAttribute('aria-current');
+      });
+      return; // 메인 페이지에서는 여기서 종료
+    }
+    
     normalize(menu);
 
     var scope = menu.dataset.scope || 'side';
     var KEY   = 'side.clean.activeIndex.' + scope;
     var links = Array.from(menu.querySelectorAll('a'));
 
-    // 저장 복원
+    // 서버 사이드에서 이미 aria-current가 설정된 링크가 있으면 그것을 유지하고 localStorage 복원하지 않음
     try{
-      var saved = localStorage.getItem(KEY);
-      if(saved!==null && links[+saved]) setActive(menu, links[+saved]);
+      var hasActive = menu.querySelector('a[aria-current="page"]');
+      if(hasActive){
+        // 서버에서 설정한 active 링크가 있으면 그것을 유지하고 클래스 정리
+        hasActive.classList.remove('side');
+        if(!hasActive.classList.contains('side-choice')){
+          hasActive.classList.add('side-choice');
+        }
+      } else {
+        // aria-current가 없으면 localStorage에서 복원
+        var saved = localStorage.getItem(KEY);
+        if(saved!==null && links[+saved]) setActive(menu, links[+saved]);
+      }
     }catch(e){}
 
     // 클릭 토글

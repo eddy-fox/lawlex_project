@@ -1,7 +1,5 @@
 package com.soldesk.team_project.controller;
 
-import java.util.zip.Inflater;
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,20 +8,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.AdminDTO;
 import com.soldesk.team_project.dto.AnswerDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
-import com.soldesk.team_project.entity.QuestionEntity;
 import com.soldesk.team_project.service.AdminService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.QuestionService;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -105,28 +100,6 @@ public class QuestionController {
         return "redirect:/question/qnaList";
     }
 
-    @GetMapping("/qnaInfo")
-    public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model) {
-        QuestionDTO infoQ = questionService.getQ(qIdx);
-
-        
-
-        Integer mIdx = infoQ.getMemberIdx();
-        Integer lIdx = infoQ.getLawyerIdx();
-
-        if (lIdx != null) {
-            LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
-            infoQ.setInfoId(l.getLawyerId());
-            infoQ.setInfoName(l.getLawyerName());
-        }else if (mIdx != null) {
-            MemberDTO m = memberService.qMemberInquiry(mIdx);
-            infoQ.setInfoId(m.getMemberId());
-            infoQ.setInfoName(m.getMemberName());
-        }
-        model.addAttribute("infoQ", infoQ);
-        return "question/qnaInfo";
-    }
-
     // 문의글 상세
     @GetMapping("/qnaInfo")
     public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model, 
@@ -152,9 +125,9 @@ public class QuestionController {
 
         // 비밀글 조회 권환 확인
         int secret = infoQ.getQSecret();
-        int writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
+        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
 
-        if (secret == 1 && adminIdx == null && userIdx != writerIdx) {
+        if (secret == 1 && adminIdx == null && writerIdx != null && userIdx != null && !userIdx.equals(writerIdx)) {
             redirectAttributes.addFlashAttribute("alert", "비밀글은 작성자와 관리자만 열람할 수 있습니다.");
 
             return "redirect:/question/qnaList";
