@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.checkerframework.checker.units.qual.min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +58,7 @@ public class QuestionService {
         questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
         questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
-        questionEntity.setQuestionSecret(questionDTO.getQSecret());
+
 
         MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
         LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);

@@ -50,6 +50,9 @@ public class BoardEntity {
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
 
+    @Column(name = "board_category")
+    private String boardCategory;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;

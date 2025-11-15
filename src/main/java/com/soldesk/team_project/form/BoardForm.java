@@ -16,4 +16,8 @@ public class BoardForm {
     @NotEmpty(message = "내용은 필수 항목입니다.")
     private String boardContent;
     
+    private String boardCategory;
+    
+    private Integer interestIdx;
+    
 }
