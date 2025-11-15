@@ -136,12 +136,27 @@ public class QuestionService {
     }
     
     
-    /* 모두 문의 보기 */
+    /* 모든 문의 보기 */
     public Page<QuestionDTO> getQnaPaging(int page){
         int p = Math.max(page, 1) - 1;
         Pageable pageable = PageRequest.of(p, 10);
         return questionRepository.findAllByOrderByQuestionRegDateDescQuestionIdxDesc(pageable)
         .map(this::convertQuestionDTO);
+    }
+    /* 모든 문의 검색 */
+    public Page<QuestionDTO> getQnaPaging(int page, String search){
+        int p = Math.max(page, 1) - 1;
+        Pageable pageable = PageRequest.of(p, 10);
+        
+        Page<QuestionEntity> qPage;
+
+        if (search == null || search.trim().isEmpty()){
+            qPage = questionRepository.findAllByOrderByQuestionRegDateDescQuestionIdxDesc(pageable);
+        }else{
+            qPage = questionRepository.findByQuestionTitleContainingOrQuestionContentContainingOrderByQuestionRegDateDescQuestionIdxDesc(search, search, pageable);
+        }
+        
+        return qPage.map(this::convertQuestionDTO);
     }
 
     /* 일반 회원 자기문의 보기 */
@@ -151,15 +166,45 @@ public class QuestionService {
         return questionRepository.findByMemberIdxOrderByQuestionRegDateDescQuestionIdxDesc(mIdx, pageable)
         .map(this::convertQuestionDTO);
     }
-    /* 변호사 회원 자기문의 보기 */
+    /* 일반 회원 자기문의 검색 */
+    public Page<QuestionDTO> getQnaPagingM(Integer mIdx, int page, String search){
+        int p = Math.max(page,1)-1;
+        Pageable pageable = PageRequest.of(p,10);
+
+        Page<QuestionEntity> qPageM;
+
+        if(search == null || search.trim().isEmpty()){
+            qPageM = questionRepository.findByMemberIdxOrderByQuestionRegDateDescQuestionIdxDesc(mIdx, pageable);
+        }else {
+            qPageM = questionRepository.searchMemberQuestions(mIdx, search.trim(), pageable);
+        }
+
+        return qPageM.map(this::convertQuestionDTO);
+    }
+    /* 변호사회원 자기문의 보기 */
     public Page<QuestionDTO> getQnaPagingL(Integer lIdx, int page){
         int p = Math.max(page,1)-1;
         Pageable pageable = PageRequest.of(p,10);
         return questionRepository.findByLawyerIdxOrderByQuestionRegDateDescQuestionIdxDesc(lIdx, pageable)
         .map(this::convertQuestionDTO);
     }
+    /* 변호사회원 자기문의 검색 */
+    public Page<QuestionDTO> getQnaPagingL(Integer lIdx, int page, String search){
+        int p = Math.max(page,1)-1;
+        Pageable pageable = PageRequest.of(p,10);
 
-    
+        Page<QuestionEntity> qPageL;
+
+        if(search == null || search.trim().isEmpty()){
+            qPageL = questionRepository.findByLawyerIdxOrderByQuestionRegDateDescQuestionIdxDesc(lIdx, pageable);
+        }else {
+            qPageL = questionRepository.searchLawyerQuestions(lIdx, search, pageable);
+        }
+        
+        return qPageL.map(this::convertQuestionDTO);
+    }
+
+    /* 문의 글쓰기 */
     public void qnaWriting(QuestionDTO qnaWrite){
 
         if (qnaWrite.getQRegDate() == null) {
