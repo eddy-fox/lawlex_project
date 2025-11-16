@@ -7,7 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/cInfo.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-<body>
+<body th:attr="data-newsIdx=${board.newsIdx},
+              data-memberIdx=${loginMember != null ? loginMember.memberIdx : ''},
+              data-lawyerIdx=${loginLawyer != null ? loginLawyer.lawyerIdx : ''},
+              data-isAdmin=${loginAdmin != null and loginAdmin.adminRole == 'admin'}">
 <div class="include" th:replace="~{include/header :: header}"></div>
 
 <main class="page-cInfo">
@@ -67,31 +70,38 @@
 
         <!-- 버튼들 -->
         <div class="actions">
+            <!-- 작성자이거나 관리자(admin_role='admin')일 때 수정/삭제 버튼 표시 -->
             <a class="btn"
+               th:if="${canModifyOrDelete}"
                th:href="@{|/newsBoard/modify?newsIdx=${board.newsIdx}|}">수정</a>
 
-            <form th:action="@{/newsBoard/delete}" method="post" style="display:inline;">
+            <form th:if="${canModifyOrDelete}" 
+                  th:action="@{/newsBoard/delete}" 
+                  method="post" 
+                  style="display:inline;">
                 <input type="hidden" name="newsIdx" th:value="${board.newsIdx}">
                 <button class="btn" type="submit">삭제</button>
             </form>
 
+            <!-- 목록은 항상 표시 -->
             <a class="btn" th:href="@{/newsBoard/list(category=4)}">목록</a>
         </div>
 
-        <!-- 댓글 -->
-        <section class="cmt">
+        <!-- 댓글 (공지사항이 아닌 경우에만 표시) -->
+        <section class="cmt open" th:if="${canComment}" th:classappend="${loginMember == null and loginLawyer == null}">
             <div class="top">
                 <h3>댓글</h3>
-                <button class="submit" id="cToggle" type="button">댓글 적기</button>
+                <button class="submit" id="cToggle" type="button">닫기</button>
             </div>
 
             <div class="write">
-                <form action="@{/cln}">
                 <div class="row">
-                    <textarea class="textbox" id="cText" placeholder="내용 (Ctrl+Enter 등록)"></textarea>
-                    <button class="submit" id="cBtn" type="button">등록</button>
+                    <textarea class="textbox" id="cText" 
+                              th:placeholder="${loginMember == null and loginLawyer == null} ? '로그인 후 댓글을 남길 수 있습니다' : '내용 (Ctrl+Enter 등록)'"
+                              th:disabled="${loginMember == null and loginLawyer == null}"></textarea>
+                    <button class="submit" id="cBtn" type="button"
+                            th:disabled="${loginMember == null and loginLawyer == null}">등록</button>
                 </div>
-            </form>
             </div>
 
             <table class="list">

@@ -8,7 +8,13 @@
 
       function render(page){
         const start = (page - 1) * perPage, end = start + perPage;
-        rows.forEach((r,i) => r.style.display = (i >= start && i < end) ? 'grid' : 'none');
+        rows.forEach((r,i) => {
+          if (i >= start && i < end) {
+            r.style.display = ''; // CSS 파일의 display: grid 사용
+          } else {
+            r.style.display = 'none';
+          }
+        });
         draw(page);
       }
 
