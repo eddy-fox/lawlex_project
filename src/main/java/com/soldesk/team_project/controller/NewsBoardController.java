@@ -40,6 +40,7 @@ public class NewsBoardController {
     private final AdminRepository adminRepository;     // 세션→엔티티 변환용
     private final LawyerRepository lawyerRepository;   // 세션→엔티티 변환용
     private final FirebaseStorageService storageService;
+    private final com.soldesk.team_project.service.CommentService commentService;
 
     private static final int CATEGORY_NOTICE = 1;
     private static final int CATEGORY_NEWS   = 2;
@@ -132,8 +133,32 @@ public class NewsBoardController {
 
         model.addAttribute("board", board);
         model.addAttribute("imgUrl", imgUrl);
-        model.addAttribute("loginAdmin", getLoginAdmin(session));
-        model.addAttribute("loginLawyer", getLoginLawyer(session));
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        LawyerEntity loginLawyer = getLoginLawyer(session);
+        model.addAttribute("loginAdmin", loginAdmin);
+        model.addAttribute("loginLawyer", loginLawyer);
+        model.addAttribute("loginMember", getLoginMember(session));
+        
+        // 카테고리 정보 추가 (네비게이션 바에서 사용)
+        Integer categoryIdx = board.getCategory().getCategoryIdx();
+        model.addAttribute("categoryIdx", categoryIdx);
+        
+        // 작성자 확인 (칼럼은 변호사, 나머지는 관리자/작성자)
+        boolean isOwner = isOwner(board, session);
+        // 관리자 권한 확인 (admin_role이 'admin'인 관리자)
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("canModifyOrDelete", isOwner || isAdmin);
+        
+        // 공지사항이 아닌 경우에만 댓글 목록 추가
+        if (board.getCategory().getCategoryIdx() != CATEGORY_NOTICE) {
+            model.addAttribute("comments", commentService.getCommentsByNewsIdx(newsIdx));
+            model.addAttribute("canComment", true); // 댓글 작성 가능
+        } else {
+            model.addAttribute("canComment", false); // 공지사항은 댓글 불가
+        }
+        
         return (board.getCategory().getCategoryIdx() == 4) ? "newsBoard/cInfo" : "newsBoard/nInfo";
 }
 
@@ -394,6 +419,16 @@ public String writeSubmit(@ModelAttribute("news") NewsBoardDTO dto,
         }
         if (obj instanceof AdminSession as) {
             return adminRepository.findById(as.getAdminIdx()).orElse(null);
+        }
+        return null;
+    }
+
+    private com.soldesk.team_project.controller.MemberController.MemberSession getLoginMember(HttpSession session) {
+        Object obj = session.getAttribute("loginMember");
+        if (obj == null) return null;
+        
+        if (obj instanceof com.soldesk.team_project.controller.MemberController.MemberSession ms) {
+            return ms;
         }
         return null;
     }
