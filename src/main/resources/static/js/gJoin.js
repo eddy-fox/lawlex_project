@@ -148,7 +148,6 @@ privacyBtn.addEventListener("click", () => {
   const on = memberAgree.value === "Y";
   memberAgree.value = on ? "N" : "Y";
 
-  //  원본 디자인 호환: active 클래스로 토글
   privacyBtn.classList.toggle("active", !on);
   privacyBtn.setAttribute("aria-pressed", String(!on));
   privacyBtn.textContent = !on ? "개인 정보 수신 동의(동의됨)" : "개인 정보 수신 동의";

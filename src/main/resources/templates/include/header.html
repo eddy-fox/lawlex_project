@@ -19,7 +19,7 @@
                 <a th:href="@{/aAll}">개발용 모든 링크 모음</a>
                 <div> <!-- th:if="${loginMember != null}" 로그인 성공 -->
                     <div th:replace="~{include/chatIcon :: page-chatIcon}"></div>
-                    <a href="#">마이페이지</a>
+                    <a th:href="@{/member/mypage}">마이페이지</a>
                     <a href="#">로그아웃</a>
                     <a th:href="@{/admin/memberManagement}">관리자 페이지</a><!-- th:if="${loginMember.role == 'ADMIN'} 관리자로 로그인 한다면" -->
                 </div>

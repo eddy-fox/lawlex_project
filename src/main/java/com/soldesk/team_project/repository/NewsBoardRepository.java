@@ -28,6 +28,18 @@ public interface NewsBoardRepository extends JpaRepository<NewsBoardEntity, Inte
     List<NewsBoardEntity> findByCategoryCategoryIdxAndNewsActiveOrderByNewsIdxDesc(
         Integer categoryIdx,
         int newsActive
-);
+    );
+    
+    // 조회수 높은 순서로 조회 (카테고리별, 활성글만)
+    List<NewsBoardEntity> findTop5ByCategoryCategoryIdxAndNewsActiveOrderByNewsViewsDesc(
+        Integer categoryIdx,
+        int newsActive
+    );
+    
+    // 최신순 조회 (카테고리별, 활성글만)
+    List<NewsBoardEntity> findTop1ByCategoryCategoryIdxAndNewsActiveOrderByNewsRegDateDesc(
+        Integer categoryIdx,
+        int newsActive
+    );
         
 }

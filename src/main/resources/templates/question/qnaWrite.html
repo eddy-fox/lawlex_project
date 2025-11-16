@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문의작성하기</title>
+    <title>적성글 상세</title>
     <link rel="stylesheet" th:href="@{/css/qnaWrite.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
@@ -15,10 +15,12 @@
                 <form th:action="@{/question/qnaWrite}" th:object="${qnaWrite}" id="qnaForm" method="post">
                     <div class="form-group">
                         <div class="header-line">
-                            <!-- <input type="hidden" th:field="*{memberIdx}"> -->
+                            <input type="hidden"  th:field="*{memberIdx}">
+                            <input type="hidden"  th:field="*{lawyerIdx}">
+                            <input type="hidden" th:field="*{qRegDate}">
+                            <input type="hidden" name="qAnswer" value="0">
                             <label for="titleInput" class="form-label">제목</label>
                             <div class="checkbox-group in-header">
-                                <input type="hidden" name="qSecret" value="0">
                                 <input type="checkbox" id="secretCheck" class="checkbox-input" name="qSecret" th:field="*{qSecret}" value="1"/>
                                 <label for="secretCheck" class="checkbox-label">비밀글로 작성</label>
                             </div>

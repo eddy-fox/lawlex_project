@@ -11,4 +11,5 @@ public interface RankingRepository extends JpaRepository<LawyerEntity, Integer> 
     
     List<LawyerEntity> findAllByOrderByLawyerLikeDesc(Pageable pageable);
     List<LawyerEntity> findAllByOrderByLawyerAnswerCntDesc(Pageable pageable);
+    
 }

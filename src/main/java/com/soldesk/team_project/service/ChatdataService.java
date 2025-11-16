@@ -41,7 +41,12 @@ public class ChatdataService {
     private ChatAttachmentDTO toDto(ChatAttachmentEntity a) {
     ChatAttachmentDTO d = new ChatAttachmentDTO();
     d.setAttachmentId(a.getAttachmentId()); // DTO 필드명 확인!
-    d.setChatIdx(a.getChatData() != null ? a.getChatData().getChatIdx() : null);
+    try {
+        d.setChatIdx(a.getChatData() != null ? a.getChatData().getChatIdx() : null);
+    } catch (Exception ex) {
+        System.out.println("[DEBUG] ChatdataService.toDto(ChatAttachment) - error getting chatData: " + ex.getMessage());
+        d.setChatIdx(null);
+    }
     d.setFileUrl(a.getFileUrl());
     d.setFileName(a.getFileName());
     d.setContentType(a.getContentType());
@@ -53,6 +58,7 @@ public class ChatdataService {
 }
 
 private ChatdataDTO toDto(ChatdataEntity e) {
+    System.out.println("[DEBUG] ChatdataService.toDto - start, chatIdx: " + e.getChatIdx());
     ChatdataDTO d = new ChatdataDTO();
     d.setChatIdx(e.getChatIdx());
     d.setChatContent(e.getChatContent());
@@ -60,23 +66,36 @@ private ChatdataDTO toDto(ChatdataEntity e) {
     d.setSenderType(e.getSenderType());
     d.setSenderId(e.getSenderId());
     d.setChatActive(e.getChatActive());
-    d.setChatroomIdx(e.getChatroom() != null ? e.getChatroom().getChatroomIdx() : null);
+    try {
+        d.setChatroomIdx(e.getChatroom() != null ? e.getChatroom().getChatroomIdx() : null);
+    } catch (Exception ex) {
+        System.out.println("[DEBUG] ChatdataService.toDto - error getting chatroom: " + ex.getMessage());
+        ex.printStackTrace();
+        d.setChatroomIdx(null);
+    }
 
-    if (e.getAttachments() != null && !e.getAttachments().isEmpty()) {
-        List<ChatAttachmentDTO> list = e.getAttachments().stream()
-            .filter(a -> a.getActive() == null || a.getActive() == 1) // null도 표시로 간주
-            .sorted(
-                java.util.Comparator
-                    .comparing(ChatAttachmentEntity::getSortOrder, java.util.Comparator.nullsLast(Integer::compareTo))
-                    .thenComparing(ChatAttachmentEntity::getAttachmentId)
-            )
-            .map(this::toDto)
-            .collect(java.util.stream.Collectors.toList());
-        d.setAttachments(list);
-    } else {
-        // JDK 9+ : List.of();  JDK 8 : Collections.emptyList();
+    try {
+        if (e.getAttachments() != null && !e.getAttachments().isEmpty()) {
+            List<ChatAttachmentDTO> list = e.getAttachments().stream()
+                .filter(a -> a.getActive() == null || a.getActive() == 1) // null도 표시로 간주
+                .sorted(
+                    java.util.Comparator
+                        .comparing(ChatAttachmentEntity::getSortOrder, java.util.Comparator.nullsLast(Integer::compareTo))
+                        .thenComparing(ChatAttachmentEntity::getAttachmentId)
+                )
+                .map(this::toDto)
+                .collect(java.util.stream.Collectors.toList());
+            d.setAttachments(list);
+        } else {
+            // JDK 9+ : List.of();  JDK 8 : Collections.emptyList();
+            d.setAttachments(java.util.Collections.emptyList());
+        }
+    } catch (Exception ex) {
+        System.out.println("[DEBUG] ChatdataService.toDto - error getting attachments: " + ex.getMessage());
+        ex.printStackTrace();
         d.setAttachments(java.util.Collections.emptyList());
     }
+    System.out.println("[DEBUG] ChatdataService.toDto - completed, chatIdx: " + d.getChatIdx());
     return d;
 }
 
@@ -115,13 +134,17 @@ private String getExt(String original) {
                                    Integer senderId,
                                    String content,
                                    List<MultipartFile> files) throws Exception {
+        System.out.println("[DEBUG] ChatdataService.sendMessage - start, roomId: " + roomId + ", senderType: " + senderType + ", senderId: " + senderId);
 
         // 1) 방/권한/만료/상태 체크
         if (!chatroomService.canPostMessage(roomId, senderType, senderId)) {
+            System.out.println("[DEBUG] ChatdataService.sendMessage - canPostMessage returned false");
             throw new IllegalStateException("메시지를 보낼 수 없는 상태거나 권한이 없습니다.");
         }
+        System.out.println("[DEBUG] ChatdataService.sendMessage - canPostMessage passed");
 
         var room = chatroomRepo.findById(roomId).orElseThrow();
+        System.out.println("[DEBUG] ChatdataService.sendMessage - room found, state: " + room.getState());
 
         // 2) ChatdataEntity 생성
         ChatdataEntity msg = new ChatdataEntity();
@@ -133,39 +156,57 @@ private String getExt(String original) {
         msg.setChatActive(1);
 
         // 3) 먼저 메시지 저장(채번 필요)
-        chatdataRepo.save(msg);
+        chatdataRepo.saveAndFlush(msg);
+        System.out.println("[DEBUG] ChatdataService.sendMessage - saved msg, chatIdx: " + msg.getChatIdx());
+        
+        // 저장 후 다시 조회하여 모든 연관 관계를 로드
+        ChatdataEntity savedMsg = chatdataRepo.findById(msg.getChatIdx()).orElseThrow();
+        System.out.println("[DEBUG] ChatdataService.sendMessage - reloaded msg, chatIdx: " + savedMsg.getChatIdx());
 
         // 4) 첨부 저장 (옵션)
         List<ChatAttachmentEntity> savedAttachments = new ArrayList<>();
-if (files != null) {
-    int order = 0;
-    for (MultipartFile f : files) {
-        if (f == null || f.isEmpty()) continue;
+        if (files != null && files.size() > 0) {
+            System.out.println("[DEBUG] ChatdataService.sendMessage - processing " + files.size() + " files");
+            try {
+                int order = 0;
+                for (MultipartFile f : files) {
+                    if (f == null || f.isEmpty()) {
+                        System.out.println("[DEBUG] ChatdataService.sendMessage - skipping empty file");
+                        continue;
+                    }
 
-        // ✅ Firebase 업로드
-        String filename = nowUuidName(f.getOriginalFilename());
-        // 방별로 하위 폴더 분리 (원하면 roomId 빼고 "chatdata/"만 써도 됩니다)
-        String objectPath = "chatdata/" + roomId + "/" + filename;
+                    System.out.println("[DEBUG] ChatdataService.sendMessage - uploading file: " + f.getOriginalFilename());
+                    // ✅ Firebase 업로드
+                    String filename = nowUuidName(f.getOriginalFilename());
+                    // 방별로 하위 폴더 분리 (원하면 roomId 빼고 "chatdata/"만 써도 됩니다)
+                    String objectPath = "chatdata/" + roomId + "/" + filename;
 
-        var uploaded = storageService.upload(f, objectPath); // id & url 동시 생성
+                    var uploaded = storageService.upload(f, objectPath); // id & url 동시 생성
+                    System.out.println("[DEBUG] ChatdataService.sendMessage - file uploaded: " + uploaded.url());
 
-        ChatAttachmentEntity att = new ChatAttachmentEntity();
-        att.setChatData(msg);
-        att.setFileUrl(uploaded.url());        // ✅ 화면에서 바로 쓰는 전체 URL
-        att.setFileName(filename);             // 예: 2025...-abcd1234.jpg
-        att.setContentType(f.getContentType());
-        att.setFileSize((int) f.getSize());    // Entity가 Integer면 캐스팅
-        att.setSortOrder(order++);
-        att.setActive(1);
-        att.setCreatedAt(LocalDateTime.now());
+                    ChatAttachmentEntity att = new ChatAttachmentEntity();
+                    att.setChatData(savedMsg);
+                    att.setFileUrl(uploaded.url());        // ✅ 화면에서 바로 쓰는 전체 URL
+                    att.setFileName(filename);             // 예: 2025...-abcd1234.jpg
+                    att.setContentType(f.getContentType());
+                    att.setFileSize((int) f.getSize());    // Entity가 Integer면 캐스팅
+                    att.setSortOrder(order++);
+                    att.setActive(1);
+                    att.setCreatedAt(LocalDateTime.now());
 
-        attachRepo.save(att);
-        savedAttachments.add(att);
-    }
-    if (msg.getAttachments() != null) {
-        msg.getAttachments().addAll(savedAttachments);
-    }
-}
+                    attachRepo.save(att);
+                    savedAttachments.add(att);
+                    System.out.println("[DEBUG] ChatdataService.sendMessage - attachment saved, id: " + att.getAttachmentId());
+                }
+            } catch (Exception ex) {
+                System.out.println("[DEBUG] ChatdataService.sendMessage - error processing files: " + ex.getMessage());
+                ex.printStackTrace();
+                throw ex; // 파일 업로드 실패 시 예외 전파
+            }
+            // savedMsg를 다시 조회하면 attachments가 자동으로 로드됨
+        } else {
+            System.out.println("[DEBUG] ChatdataService.sendMessage - no files to process");
+        }
 
         // 5) 마지막 메시지 미리보기 구성
         String preview;
@@ -181,10 +222,21 @@ if (files != null) {
             preview = "(빈 메시지)";
         }
 
-        chatroomService.updateLastMessage(roomId, preview, msg.getChatRegDate());
+        chatroomService.updateLastMessage(roomId, preview, savedMsg.getChatRegDate());
+        System.out.println("[DEBUG] ChatdataService.sendMessage - updated lastMessage");
 
-        // 6) DTO 반환 (프론트가 바로 그리도록)
-        return toDto(msg);
+        // 6) 첨부 파일 저장 후 다시 조회하여 attachments 포함
+        if (!savedAttachments.isEmpty()) {
+            savedMsg = chatdataRepo.findById(savedMsg.getChatIdx()).orElseThrow();
+            System.out.println("[DEBUG] ChatdataService.sendMessage - reloaded msg with attachments, chatIdx: " + savedMsg.getChatIdx());
+        }
+
+        // 7) DTO 반환 (프론트가 바로 그리도록)
+        // 저장 후 다시 조회한 엔티티를 사용하여 Lazy Loading 문제 방지
+        System.out.println("[DEBUG] ChatdataService.sendMessage - calling toDto");
+        ChatdataDTO result = toDto(savedMsg);
+        System.out.println("[DEBUG] ChatdataService.sendMessage - toDto completed, chatIdx: " + result.getChatIdx());
+        return result;
     }
 
     /* ===================== 히스토리 로딩(커서 방식) ===================== */
@@ -214,6 +266,24 @@ if (files != null) {
                         roomId, 1, beforeId, pr);
         Collections.reverse(list);
         return list.stream().map(this::toDto).toList();
+    }
+
+    /**
+     * 읽은 시간 이전의 마지막 메시지의 chatIdx 반환
+     * (---여기까지 읽었습니다--- 마커 표시용)
+     */
+    @Transactional(readOnly = true)
+    public Integer findLastReadMessageChatIdx(Integer roomId, LocalDateTime readAt) {
+        System.out.println("[DEBUG] ChatdataService.findLastReadMessageChatIdx - roomId: " + roomId + ", readAt: " + readAt);
+        var messages = chatdataRepo.findLastReadMessages(roomId, readAt);
+        System.out.println("[DEBUG] ChatdataService.findLastReadMessageChatIdx - found " + messages.size() + " messages");
+        if (!messages.isEmpty()) {
+            Integer lastReadIdx = messages.get(0).getChatIdx();
+            System.out.println("[DEBUG] ChatdataService.findLastReadMessageChatIdx - lastReadChatIdx: " + lastReadIdx);
+            return lastReadIdx;
+        }
+        System.out.println("[DEBUG] ChatdataService.findLastReadMessageChatIdx - no messages found");
+        return null;
     }
 
     /* ===================== 소프트 삭제 ===================== */

@@ -38,3 +38,19 @@ out/
 
 # build.gradle 파일을 명시적으로 추적 대상에 포함 (예외 처리)
 !build.gradle
+
+### ML Model Files ###
+# 대용량 모델 파일은 GitHub에 포함하지 않음
+**/best_kobert_model.pt
+src/main/java/com/soldesk/team_project/python/models/*.pt
+src/main/java/com/soldesk/team_project/python/models/*.pkl
+src/main/java/com/soldesk/team_project/python/models/*.h5
+src/main/java/com/soldesk/team_project/python/models/*.joblib
+
+### Python Cache Files ###
+# Python 캐시 파일 제외
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python

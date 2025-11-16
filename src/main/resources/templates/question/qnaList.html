@@ -23,7 +23,11 @@
                         <input type="text" name="search" placeholder="검색">
                         <button type="button" class="btn-search">검색</button>
                     </form>
-                    <a class="btn" >내가 작성한 문의 보기</a>
+                    <a class="btn"
+                        th:if="${session.loginUser != null}"
+                        th:href="${mine} ? @{/question/qnaList(page=1, mine=false)} : @{/question/qnaList(page=1, mine=true)}"
+                        th:text="${mine} ? '전체 문의 보기' : '내가 작성한 문의 보기'">
+                    </a>
                 </div>
 
                 <table>
@@ -48,14 +52,24 @@
 
                         <tr th:each="qList : ${qnaPaging.content}">
                             <td class="num" th:text="${qList.qIdx}">1</td>
-                            <td class="title" th:if="${qList.qSecret == 1}">
-                                <a href="#">비밀글 입니다</a>
-                            </td>
-                            <td class="title" th:unless="${qList.qSecret == 1}">
-                                <a href="#" th:text="${qList.qTitle}"></a>
-                            </td>
-                            <td class="answer" th:if="${qList.qAnswer == 1}">✓</td>
-                            <td class="answer" th:unless="${qList.qAnswer == 1}">-</td>
+
+                            <td class="title" th:with="isSecret = ${qList.qSecret == 1 or (qList.qSecret == '1')},
+                                                        canSee = ${!isSecret 
+                                                                             or (myIdxM != null and myIdxM == qList.memberIdx)
+                                                                             or (myIdxL != null and qList.lawyerIdx != null and myIdxL == qList.lawyerIdx)}">
+
+                                <a th:if="${canSee}"
+                                   th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}"
+                                   th:text="${isSecret ? '🔒 [본인글] '+qList.qTitle : qList.qTitle}"></a>
+                                                                
+                                   <span th:if="${!canSee}" th:text="'🔒 비밀글 입니다'"></span>
+                                </td>
+                                <!--  <a th:if="${isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}" th:text="${'🔒'+qList.qTitle}"></a>
+                                 <a th:if="${isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}">🔒 비밀글 입니다</a>
+                                 <a th:if="${!isSecret}" th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}" th:text="${qList.qTitle}"></a> -->
+
+                            <td class="answer" th:text="${qList.qAnswer == 1 ? '✓' : '-'}">-</td>
+
                             <td class="date"><time th:text="${qList.qRegDate}">2025-12-24</time></td>
                         </tr>
                     
@@ -70,14 +84,14 @@
                               start=${block*10 + 1},
                               end=${T(java.lang.Math).min(total, start + 9)}">
 
-                    <a class="prev" th:href="@{/question/qnaList(page=${current - 1})}">&lt;</a>
+                    <a class="prev" th:href="@{/question/qnaList(page=${current - 1}, mine=${mine})}">&lt;</a>
                     <a class="page"
                         th:each="n : ${#numbers.sequence(start, end)}"
                         th:text="${n}"
-                        th:href="@{/question/qnaList(page=${n})}"
+                        th:href="@{/question/qnaList(page=${n}, mine=${mine})}"
                         th:classappend="${n == current} ? ' current'">
                     </a>
-                    <a class="next" th:href="@{/question/qnaList(page=${current + 1})}">&gt;</a>
+                    <a class="next" th:href="@{/question/qnaList(page=${current + 1}, mine=${mine})}">&gt;</a>
                 </nav>
 
 
@@ -91,6 +105,11 @@
     <div class="include" th:replace="~{include/footer :: footer}"></div>
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/qnaList.js}"></script>
+    <script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // qnaInfo에서 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </body>
 
 </html>

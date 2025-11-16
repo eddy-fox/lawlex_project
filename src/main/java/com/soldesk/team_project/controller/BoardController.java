@@ -1,6 +1,7 @@
 package com.soldesk.team_project.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.soldesk.team_project.form.BoardForm;
@@ -21,6 +23,7 @@ import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.MemberService;
+import com.soldesk.team_project.service.CategoryRecommendService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ public class BoardController {
     
     private final BoardService boardService;
     private final MemberService memberService;
+    private final CategoryRecommendService categoryRecommendService;
 
     @GetMapping("/list")
     public String list(Model model, 
@@ -59,7 +63,7 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
-        return "board/detail";
+        return "board/reBoard";
 
     }
 
@@ -71,6 +75,29 @@ public class BoardController {
 
     }
 
+    /**
+     * 제목을 기반으로 카테고리를 추천받는 API
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/api/recommend-category")
+    @ResponseBody
+    public java.util.Map<String, Object> recommendCategory(@RequestParam("title") String title) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        
+        if (title == null || title.trim().isEmpty()) {
+            result.put("success", false);
+            result.put("message", "제목을 입력해주세요.");
+            result.put("categories", new java.util.ArrayList<>());
+            return result;
+        }
+
+        List<String> categories = categoryRecommendService.recommendCategories(title.trim(), 5);
+        result.put("success", true);
+        result.put("categories", categories);
+        
+        return result;
+    }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult, Principal principal) {
@@ -79,7 +106,13 @@ public class BoardController {
             return "board/write";
         }
         MemberEntity memberEntity = this.memberService.getMember(principal.getName());
-        this.boardService.create(boardForm.getBoardTitle(), boardForm.getBoardContent(), memberEntity);
+        this.boardService.create(
+            boardForm.getBoardTitle(), 
+            boardForm.getBoardContent(), 
+            boardForm.getBoardCategory(),
+            boardForm.getInterestIdx(),
+            memberEntity
+        );
         return "redirect:/board/list";
 
     }

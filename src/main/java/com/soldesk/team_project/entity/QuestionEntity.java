@@ -1,6 +1,7 @@
 package com.soldesk.team_project.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,14 +11,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "question")
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionEntity {
@@ -37,7 +43,7 @@ public class QuestionEntity {
     private LocalDate questionRegDate;
     
     @Column(name = "q_secret")
-    private String questionSecret;
+    private Integer questionSecret;
     
     @Column(name = "q_answer")
     private Integer questionAnswer;
@@ -45,15 +51,21 @@ public class QuestionEntity {
     @Column(name = "q_active")
     private Integer questionActive;
 
-    @Column(name = "member_idx", insertable = false, updatable = false)
+    @Column(name = "member_idx")
     private Integer memberIdx;
 
-    @Column(name = "lawyer_idx", insertable = false, updatable = false)
+    @Column(name = "lawyer_idx")
     private Integer lawyerIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_idx")
+    @JoinColumn(name = "member_idx", insertable = false, updatable = false)
     private MemberEntity member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lawyer_idx", insertable = false, updatable = false)
+    private LawyerEntity lawyer; 
     
+    @OneToMany(mappedBy = "question")
+    private List<AnswerEntity> answer;
     
 }

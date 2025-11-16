@@ -3,6 +3,9 @@
       const rows = [...document.querySelectorAll('.page-nList .item')];
       const pagination = document.getElementById('pagination');
 
+      // pagination 요소가 없으면 실행하지 않음 (서버 사이드 페이지네이션 사용 시)
+      if(!pagination) return;
+
       function render(page){
         const start = (page - 1) * perPage, end = start + perPage;
         rows.forEach((r,i) => r.style.display = (i >= start && i < end) ? 'grid' : 'none');
@@ -10,6 +13,9 @@
       }
 
       function draw(current){
+        // pagination 요소가 없으면 실행하지 않음
+        if(!pagination) return;
+        
         const total = Math.ceil(rows.length / perPage);
         pagination.innerHTML = '';
 

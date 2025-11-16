@@ -11,6 +11,21 @@
     <!-- 헤더 -->
     <div class="include" th:replace="~{include/header :: header}"></div>
 
+    <!-- ✅ 로그인 상태별 마이페이지 진입 버튼 (추가) -->
+    <div class="wrap" style="display:flex; justify-content:flex-end; gap:8px; margin:12px 0;">
+      <a th:if="${session.loginUser != null}"
+         class="primary-btn"
+         th:href="@{/member/mypage}">
+        마이페이지
+      </a>
+      <a th:if="${session.loginUser == null}"
+         class="small-btn"
+         th:href="@{/member/login(need='mypage')}">
+        로그인하고 마이페이지
+      </a>
+    </div>
+    <!-- ✅ 여기까지 추가 -->
+
     <!-- 메인 -->
     <main class="page-adinfo">
 

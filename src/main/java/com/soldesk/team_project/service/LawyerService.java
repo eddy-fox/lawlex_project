@@ -81,6 +81,7 @@ public class LawyerService {
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
 
+
     // 태그 별 특정 변호사 검색
     public List<LawyerDTO> searchLawyers(String searchType, String keyword) {
         List<LawyerEntity> lawyerEntityList;
@@ -239,16 +240,24 @@ public class LawyerService {
         return memberDup || lawyerDup;
     }
 
+    
     // 유틸 
     private static String digits(String s) { return s == null ? null : s.replaceAll("\\D", ""); }
     private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
-
+    
     // 결과 DTO
     public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {}
-
+    
     // 로그인 아이디로 변호사 한 명 가져오기
     public LawyerEntity getLawyer(String lawyerId) {
-    return lawyerRepository.findByLawyerId(lawyerId)
-            .orElseThrow(() -> new DataNotFoundException("변호사를 찾을 수 없습니다."));
-}
+        return lawyerRepository.findByLawyerId(lawyerId)
+        .orElseThrow(() -> new DataNotFoundException("변호사를 찾을 수 없습니다."));
+    }
+
+    // 문의 상세 조회 필요한 id 와 name
+    public LawyerDTO qLawyerInquiry(Integer lawyerIdx){
+        LawyerEntity lawyerEntity = lawyerRepository.findById(lawyerIdx).orElse(null);
+        LawyerDTO lawyerDTO = convertLawyerDTO(lawyerEntity);
+        return lawyerDTO;
+    }
 }

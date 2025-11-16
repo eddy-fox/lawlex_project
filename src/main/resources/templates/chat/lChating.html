@@ -1,117 +1,169 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>변호사 채팅</title>
-    <link rel="stylesheet" th:href="@{/css/lChating.css}">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${room != null} ? '채팅방 #' + ${room.chatroomIdx} : '채팅방'">채팅방</title>
+  <link rel="stylesheet" th:href="@{/css/lChating.css}">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <script>
+    // Stomp 라이브러리 로드 확인
+    window.addEventListener('load', function() {
+      if (typeof Stomp === 'undefined') {
+        console.error('[DEBUG] Stomp library failed to load');
+      } else {
+        console.log('[DEBUG] Stomp library loaded successfully');
+      }
+    });
+  </script>
 </head>
 <body>
-<div class="include" th:replace="~{include/header :: header}"></div>
-
 <main class="page-lChating">
   <div class="container">
-    <section class="room" aria-label="채팅방">
+    <div class="room"
+         th:attr="data-room-id=${room != null ? room.chatroomIdx : 0},
+                  data-me-lawyer-id=${meLawyerIdx != null ? meLawyerIdx : 0}">
 
-      <!-- 상단: 상대 이름 + 남은시간 -->
+      <!-- ===== 상단 헤더 ===== -->
       <header class="head">
-        <img src="" class="pic" alt="프로필">
+        <div class="pic">
+          <!-- 일반회원 프로필 사진 / 없으면 이니셜 -->
+          <span th:text="${member != null and member.memberName != null and !member.memberName.isEmpty() ? member.memberName.substring(0, 1) : 'M'}">
+            M
+          </span>
+        </div>
+
         <div class="info">
-          <!-- 변호사 입장에서 상대는 member -->
-          <div class="name" th:text="${room != null} ? ${room.chatroomName} : '닉네임'">닉네임</div>
-          <div class="timewin"
-               th:if="${room != null and room.requestedAt != null}">
-            신청시각:
-            <span th:text="${#temporals.format(room.requestedAt, 'yyyy-MM-dd HH:mm')}"></span>
+          <div class="name"
+               th:text="${member != null and member.memberName != null and !member.memberName.isEmpty() ? member.memberName : '일반회원'}">
+            일반회원 이름
+          </div>
+          <div class="timewin" th:if="${room != null}">
+            상담 신청 시간
+            <span th:text="${#temporals.format(room.requestedAt, 'yyyy-MM-dd HH:mm')}">2025-01-01 12:00</span>
+            <span th:if="${room.durationMinutes != null}">
+              &nbsp;(~ 약 <span th:text="${room.durationMinutes}">60</span>분)
+            </span>
           </div>
         </div>
+
         <div class="badges">
-          <!-- 남은시간 표시용: JS가 갱신할 거라 span에 id만 주자 -->
-          <span class="remain" id="remainTime"
-                th:attr="data-expires-at=${room.expiresAt}"
-                >남은시간 --:--</span>
+          <!-- 남은 시간 -->
+          <span id="remainTime"
+                class="remain"
+                th:if="${room != null and room.expiresAt != null}"
+                th:attr="data-expires-at=${#temporals.format(room.expiresAt,'yyyy-MM-dd''T''HH:mm:ss')}">
+            남은시간 00:00
+          </span>
         </div>
       </header>
 
-      <!-- 메시지 영역 -->
-      <div class="msgs" id="msgs">
-        <!-- 서버에서 내려준 initBatch를 순서대로 렌더링 -->
-        <div th:each="msg : ${initBatch}">
-          <!-- 날짜칩은 JS로 올려도 되는데, 일단 여기선 말풍선만 -->
-          <div class="msg-row"
-               th:classappend="${msg.senderType} == 'LAWYER' ? ' user' : ' lawyer'">
-            <!-- 내가 보낸거면 시간 먼저 -->
-            <div class="meta"
-                 th:if="${msg.senderType} == 'LAWYER'"
-                 th:text="${#temporals.format(msg.chatRegDate, 'HH:mm')}">12:41</div>
+      <!-- ===== 메시지 영역 ===== -->
+      <div id="msgs" class="msgs">
+        <!-- 첫 번째 메시지가 마지막 읽은 메시지 이후인 경우 마커 표시 -->
+        <div th:if="${lastReadChatIdx != null and !#lists.isEmpty(initBatch) and initBatch[0].chatIdx > lastReadChatIdx}"
+             class="read-marker"
+             style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin-bottom: 8px;">
+          ---여기까지 읽었습니다---
+        </div>
 
-            <!-- 텍스트 -->
-            <div class="bubble" th:text="${msg.chatContent}">안녕하세요</div>
+        <!-- 초기 메시지 배치 렌더 -->
+        <div th:each="m, iterStat : ${initBatch}"
+             th:class="'msg-row ' + (${m.senderType} == 'LAWYER' ? 'lawyer' : 'user')">
 
-            <!-- 상대가 보낸거면 시간 뒤에 -->
-            <div class="meta"
-                 th:if="${msg.senderType} != 'LAWYER'"
-                 th:text="${#temporals.format(msg.chatRegDate, 'HH:mm')}">12:41</div>
+          <!-- 마지막 읽은 메시지 이후 마커 표시 (메시지 앞에) -->
+          <div th:if="${lastReadChatIdx != null and iterStat.index > 0 and initBatch[iterStat.index - 1].chatIdx == lastReadChatIdx}"
+               class="read-marker"
+               style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin-bottom: 8px;">
+            ---여기까지 읽었습니다---
+          </div>
 
-            <!-- 첨부가 있으면 밑에 그리도록 div 하나 더 -->
-            <div th:if="${msg.attachments != null and !msg.attachments.isEmpty()}"
-                 class="media" style="margin-top:6px;">
-              <a th:each="att : ${msg.attachments}"
-                 th:href="@{'/chat/attachment/' + ${att.attachmentId}}"
-                 target="_blank">
-                <img th:src="@{'/chat/attachment/' + ${att.attachmentId}}"
-                     alt="첨부파일">
-              </a>
-            </div>
+          <!-- 내가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간 -->
+          <div th:if="${m.chatContent != null}" class="bubble">
+            <div th:text="${m.chatContent}">메시지 내용</div>
+          </div>
+
+          <!-- 상대(일반회원)가 보낸 메시지 → 오른쪽, 시간 먼저 -->
+          <div th:if="${m.senderType == 'MEMBER'}" class="meta"
+               th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
+
+          <!-- 내가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간 -->
+          <div th:if="${m.senderType == 'LAWYER'}" class="meta"
+               th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
+
+          <!-- 첨부 이미지가 있을 때 -->
+          <div th:if="${m.attachments != null and !m.attachments.isEmpty()}"
+               class="media">
+            <a th:each="att : ${m.attachments}"
+               th:href="@{'/chat/attachment/' + ${att.attachmentId}}"
+               target="_blank">
+              <img th:src="@{'/chat/attachment/' + ${att.attachmentId}}"
+                   th:alt="${att.fileName != null ? att.fileName : '첨부파일'}">
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- 입력영역 -->
-      <div class="dock">
-        <div class="previews" id="previews" aria-live="polite"></div>
+      <!-- ===== 입력 영역 (로그인된 변호사만) ===== -->
+      <div class="dock" th:if="${meLawyerIdx != null}">
+        <!-- 이미지 미리보기 -->
+        <div id="previews" class="previews"></div>
+
         <div class="inputbar">
           <div class="toolbar">
-            <button class="icon-btn" id="btnUpload" title="사진 올리기" aria-label="사진 올리기">
-              <!-- svg 그대로 -->
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7a2 2 0 0 1 2-2h2.5l1-1h5l1 1H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z" fill="none" stroke="#5160a7" stroke-width="1.6" stroke-linejoin="round" />
-                <circle cx="12" cy="13" r="3" fill="none" stroke="#5160a7" stroke-width="1.6" />
-                <path d="M12 8v-3M10.5 6.5h3" stroke="#5160a7" stroke-width="1.6" stroke-linecap="round" />
-              </svg>
+            <button type="button" id="btnUpload" class="icon-btn" aria-label="이미지 첨부">
+              +
             </button>
-            <input type="file" id="fileUpload" class="sr-only" accept="image/*" multiple>
+            <input type="file" id="fileUpload" accept="image/*" multiple hidden>
           </div>
-          <textarea class="few" id="inputMsg" placeholder="메시지를 입력하세요"></textarea>
-          <button class="send" id="btnSend">보내기</button>
+
+          <textarea id="inputMsg" class="few"
+                    placeholder="메시지를 입력하세요"
+                    autocomplete="off"></textarea>
+
+          <button id="btnSend" type="button" class="send">전송</button>
         </div>
       </div>
 
-      <!-- 현재 방 정보 hidden 으로 내려주기 (JS에서 필요) -->
-      <input type="hidden" id="roomId" th:value="${room != null} ? ${room.chatroomIdx} : 0">
+      <!-- 비로그인/세션 만료 시 -->
+      <div class="dock" th:if="${meLawyerIdx == null}">
+        <div class="inputbar">
+          <textarea class="few" disabled>로그인이 필요합니다.</textarea>
+          <button class="send" type="button" disabled>전송</button>
+        </div>
+      </div>
+
+      <!-- ===== 숨겨진 값들: JS에서 사용 ===== -->
+      <input type="hidden" id="roomId"
+             th:value="${room != null ? room.chatroomIdx : 0}">
       <input type="hidden" id="senderType" value="LAWYER">
       <input type="hidden" id="senderId"
-             th:value="${#authentication?.principal?.lawyerIdx} ?: ${session.loginLawyer != null} ? ${session.loginLawyer.lawyerIdx} : 0" />
-             <!-- 위 줄은 네 세션 구조에 맞게 바꿔 -->
-
-    </section>
-  </div>
-
-  <!-- 이미지 뷰어는 그대로 -->
-  <aside class="viewer" id="viewer" aria-hidden="true" aria-label="이미지 뷰어">
-    <div class="stage"><img id="viewerImg" alt="원본 이미지" /></div>
-    <div class="ctrl">
-      <button type="button" id="btnFit">100%</button>
-      <button type="button" id="btnClose">닫기</button>
+             th:value="${meLawyerIdx != null ? meLawyerIdx : 0}">
+      <input type="hidden" id="expiresAt"
+             th:if="${room != null and room.expiresAt != null}"
+             th:value="${#temporals.format(room.expiresAt,'yyyy-MM-dd''T''HH:mm:ss')}">
     </div>
-    <button type="button" class="arrow prev" id="btnPrev" aria-label="이전">‹</button>
-    <button type="button" class="arrow next" id="btnNext" aria-label="다음">›</button>
-  </aside>
+
+    <!-- ===== 라이트박스 (이미지 클릭 확대) ===== -->
+    <div id="viewer" class="viewer" aria-hidden="true">
+      <div class="stage">
+        <img id="viewerImg" src="" alt="확대 이미지">
+      </div>
+      <div class="ctrl">
+        <button type="button" id="btnFit">100%</button>
+        <button type="button" id="btnClose">닫기</button>
+      </div>
+      <button type="button" id="btnPrev" class="arrow prev">&#10094;</button>
+      <button type="button" id="btnNext" class="arrow next">&#10095;</button>
+    </div>
+  </div>
 </main>
 
-<div class="include" th:replace="~{include/footer :: footer}"></div>
+<!-- 전역 JS (chatIcon, sideMenu, gChating/lChating 스크립트 포함) -->
 <script th:src="@{/js/js.js}"></script>
+<script th:src="@{/js/chatIcon.js}"></script>
 <script th:src="@{/js/lChating.js}"></script>
 </body>
 </html>

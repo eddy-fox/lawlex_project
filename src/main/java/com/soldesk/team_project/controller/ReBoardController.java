@@ -34,6 +34,7 @@ public class ReBoardController {
     private final BoardService boardService;
     private final ReBoardService reboardService;
     private final LawyerService lawyerService;
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
     public String createReboard(Model model,
@@ -103,6 +104,17 @@ public class ReBoardController {
         return String.format("redirect:/board/detail/%s",
                 reboardEntity.getBoard().getBoardIdx());
                 
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String reboardVote(Principal principal, @PathVariable("id") Integer id) {
+
+        ReBoardEntity reboard = this.reboardService.getReboard(id);
+        LawyerEntity lawyer = this.lawyerService.getLawyer(principal.getName());
+        this.reboardService.vote(reboard, lawyer);
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboard.getBoard().getBoardIdx(), reboard.getReboardIdx());
+        
     }
 
 }

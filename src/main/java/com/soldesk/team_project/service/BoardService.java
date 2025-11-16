@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.repository.BoardRepository;
+import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.InterestEntity;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final InterestRepository interestRepository;
 
     private Specification<ReBoardEntity> search(String kw) {
 
@@ -82,12 +85,23 @@ public class BoardService {
 
     }
 
-    public void create(String boardTitle, String boardContent, MemberEntity member) {
+    public void create(String boardTitle, String boardContent, String boardCategory, Integer interestIdx, MemberEntity member) {
 
         BoardEntity q = new BoardEntity();
         q.setBoardTitle(boardTitle);
         q.setBoardContent(boardContent);
+        q.setBoardCategory(boardCategory);
         q.setBoardRegDate(LocalDate.now());
+        q.setMember(member);
+        
+        // interestIdx가 있으면 InterestEntity 설정
+        if (interestIdx != null) {
+            Optional<InterestEntity> interest = interestRepository.findById(interestIdx);
+            if (interest.isPresent()) {
+                q.setInterest(interest.get());
+            }
+        }
+        
         this.boardRepository.save(q);
 
         // GPT 자동 답변 생성

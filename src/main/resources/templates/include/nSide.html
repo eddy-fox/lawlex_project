@@ -13,33 +13,37 @@
      th:fragment="nSide"
      data-scope="news"
      aria-label="소식 사이드"
-     th:with="cat=${param.category}">
+     th:with="cat=${categoryIdx != null ? categoryIdx : (param.category != null and param.category.size() > 0 ? param.category[0] : null)}">
 
     <!-- 공지사항 -->
     <a th:href="@{/newsBoard/list(category=1)}"
-       class="side-choice"
-       th:classappend="${cat != null and cat == 1} ? ' is-active'">
+       class="side"
+       th:classappend="${cat != null and cat == 1} ? ' is-active side-choice'"
+       th:attr="aria-current=${cat != null and cat == 1} ? 'page' : null">
        공지사항
     </a>
 
     <!-- NEWS -->
     <a th:href="@{/newsBoard/list(category=2)}"
        class="side"
-       th:classappend="${cat != null and cat == 2} ? ' is-active'">
+       th:classappend="${cat != null and cat == 2} ? ' is-active side-choice'"
+       th:attr="aria-current=${cat != null and cat == 2} ? 'page' : null">
        NEWS
     </a>
 
     <!-- 동영상 -->
     <a th:href="@{/newsBoard/list(category=3)}"
        class="side"
-       th:classappend="${cat != null and cat == 3} ? ' is-active'">
+       th:classappend="${cat != null and cat == 3} ? ' is-active side-choice'"
+       th:attr="aria-current=${cat != null and cat == 3} ? 'page' : null">
        동영상
     </a>
 
     <!-- 칼럼 -->
     <a th:href="@{/newsBoard/list(category=4)}"
        class="side"
-       th:classappend="${cat != null and cat == 4} ? ' is-active'">
+       th:classappend="${cat != null and cat == 4} ? ' is-active side-choice'"
+       th:attr="aria-current=${cat != null and cat == 4} ? 'page' : null">
        칼럼
     </a>
 </nav>
