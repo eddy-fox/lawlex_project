@@ -56,7 +56,7 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
 .page-index .tbl tbody tr:hover{background:#f8f9fa;}
 .page-index .tbl tbody tr:last-child td{border-bottom:none;}
 .page-index .cell-title{text-align:left;color:var(--ink);letter-spacing:-0.02em;}
-.page-index .badge{background:var(--navy);color:#fff;padding:4px 10px;border-radius:4px;font-size:12px;font-weight:500;line-height:1.3;display:inline-block;}
+.page-index .badge{background:var(--navy);color:#fff;padding:5px 10px;border-radius:4px;font-size:12px;font-weight:500;line-height:1.3;display:inline-block; box-sizing: border-box; width: 100px;}
 
 /* ===== 변호사 카드 ===== */
 .page-index .lawyer-wrap{background:#f8f9fa;}
