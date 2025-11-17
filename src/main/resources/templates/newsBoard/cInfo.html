@@ -19,14 +19,15 @@
     <!-- 드라이브 대표이미지 id -->
     <div class="wrap" th:with="driveId=${board.driveFileId}">
         <!-- 제목 -->
-        <h1 class="title" th:text="${board.newsTitle}">제목</h1>
+         <div class="tida">
+            <h1 class="title" th:text="${board.newsTitle}">제목</h1>
 
-        <!-- 날짜 -->
-        <p class="date"
-           th:text="${#temporals.format(board.newsRegDate, 'yyyy-MM-dd')}">
-            2025-10-31
-        </p>
-
+            <!-- 날짜 -->
+            <p class="date"
+            th:text="${#temporals.format(board.newsRegDate, 'yyyy-MM-dd')}">
+                2025-10-31
+            </p>    
+        </div>
         <!-- 작성자 영역 -->
         <div class="meta">
             <div class="left">
