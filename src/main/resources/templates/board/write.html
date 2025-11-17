@@ -19,7 +19,7 @@
 
           <div class="row">
             <label for="title" class="label">제목</label>
-            <input id="title" th:field="*{boardTitle}" class="input" type="text" placeholder="예) 음주운전으로 사고를 냈..." minlength="2" required>
+            <input id="title" th:field="*{boardTitle}" class="input" type="text"  minlength="2" required>
           </div>
 
           <div class="row">
@@ -41,7 +41,7 @@
 
           <div class="row" style="align-items:start">
             <label for="content" class="label">내용</label>
-            <textarea id="content" th:field="*{boardContent}" class="textarea" placeholder="00월 00일 운전하다가 어쩌구 저쩌구..." minlength="20" required></textarea>
+            <textarea id="content" th:field="*{boardContent}" class="textarea"  minlength="20" required></textarea>
           </div>
 
           <div class="row" style="align-items:start">

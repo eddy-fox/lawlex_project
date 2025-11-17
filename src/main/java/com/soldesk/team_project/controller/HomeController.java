@@ -2,6 +2,8 @@ package com.soldesk.team_project.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,8 +40,9 @@ public class HomeController {
         List<AdDTO> adList = adService.getAllAd();
         model.addAttribute("adList", adList);
 
-        // 상담글 조회수 높은 순서대로 5개
-        List<BoardEntity> topBoards = boardRepository.findTop5ByOrderByBoardViewsDesc();
+        // 상담글 조회수 높은 순서대로 5개 (활성 게시물만)
+        Pageable pageable = PageRequest.of(0, 5);
+        List<BoardEntity> topBoards = boardRepository.findTop5ActiveBoardsByOrderByBoardViewsDesc(pageable);
         model.addAttribute("topBoards", topBoards);
 
         // 동영상 조회수 높은 순서대로 2개

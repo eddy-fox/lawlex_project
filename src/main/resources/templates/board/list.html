@@ -6,7 +6,6 @@
     <title>상담게시판_리스트</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/list.css}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
@@ -60,7 +59,7 @@
             <div class="number" aria-label="페이지" th:if="${!paging.isEmpty()}">
 		          <ul class="pagination justify-content-center">
 			          <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-				          <a class="page-link" th:href="@{/board/list(page=${paging.number-1}, kw=${kw}, interestIdx=${interestIdx})}">
+				          <a class="page-link" th:data-page="${page}" th:href="@{/board/list(page=${paging.number-1}, kw=${kw}, interestIdx=${interestIdx})}">
 					          <span class="angle">이전</span>
 				          </a>
 			          </li>
@@ -68,11 +67,12 @@
 			          th:if="${page >= paging.number-5 and page <= paging.number+5}"
 			          th:classappend="${page == paging.number} ? 'active'" class="page-item">
 			  	        <a class="page-link"
+                  th:data-page="${page}"
                   th:href="@{/board/list(page=${page}, kw=${kw}, interestIdx=${interestIdx})}"
                   th:text="${page + 1}"></a>
 			          </li>
 			          <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-				          <a class="page-link" th:href="@{/board/list(page=${paging.number+1}, kw=${kw}, interestIdx=${interestIdx})}">
+				          <a class="page-link" th:data-page="${page}" th:href="@{/board/list(page=${paging.number+1}, kw=${kw}, interestIdx=${interestIdx})}">
 					          <span class="angle">다음</span>
 				          </a>
 			          </li>

@@ -13,7 +13,7 @@
     <div class="sideMenu" th:replace="~{include/bSide :: bSide}"></div>
     <div class="wrap">
       <div class="backdrop">
-        <form class="card">
+       
           <div class="inner">
             <h1 class="post-title" th:text="${boardEntity.boardTitle}"></h1>
             <div class="post-meta" th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></div>
@@ -22,48 +22,91 @@
             <div class="edit">
               <a class="link" th:href="@{|/board/modify/${boardEntity.boardIdx}|}"
               sec:authorize="isAuthenticated()" 
-              th:if="${boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx}" 
+              th:if="${(boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx) or (isAdmin != null and isAdmin)}" 
               th:text="수정"></a>
-              <a class="link" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.boardIdx}|}"
+              <a class="link delete" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.boardIdx}|}"
               sec:authorize="isAuthenticated()" 
-              th:if="${boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx}" 
+              th:if="${(boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx) or (isAdmin != null and isAdmin)}" 
               th:text="삭제"></a>
             </div>
 
-            <div class="ans" th:each="reBoardEntity : ${boardEntity.reboardList}">
-              <a th:id="|reBoardEntity_${reBoardEntity.reBoardIdx}|"></a>
-              <div class="card-body">
-                <div class="card-text" th:text="${reBoardEntity.reboardContent}"></div>
-                <div class="badge bg-light text-dark p-2 text-start">
-                  <div class="mb-2">
-                    <span th:if="${reBoardEntity.lawyer != null}" th:text="${reBoardEntity.lawyer.lawyerName}"></span>
-                  </div>
-                  <div th:text="${#temporals.format(reBoardEntity.reboardRegDate, 'yyyy-MM-dd')}"></div>
+            <!-- 답변 목록 섹션 -->
+            <div class="answers-section">
+              <div class="answers-header">
+                <div class="answers-header-left">
+                  <span class="answers-count" th:text="${boardEntity.reboardList != null ? (#lists.size(boardEntity.reboardList) + '개 답변') : '0개 답변'}"></span>
+                  <button type="button" class="btn-answer-toggle" id="answerToggleBtn"
+                          sec:authorize="isAuthenticated()" 
+                          th:if="${loginUser != null and loginUser.role == 'LAWYER' and loginUser.lawyerIdx != null}">
+                    답변 달기
+                  </button>
+                </div>
+                <div class="answers-sort">
+                  <select class="sort-select">
+                    <option>최적</option>
+                    <option>추천순</option>
+                  </select>
                 </div>
               </div>
-              <div class="my-3">
-                <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary" th:data-uri="@{|/reboard/vote/${reBoardEntity.reboardIdx}|}">도움됐어요
-                  <span class="badge rounded-pill bg-success" th:text="${#lists.size(reBoardEntity.voter)}"></span>
-                </a>
-                <a th:href="@{|/reboard/modify/${reBoardEntity.reboardIdx}|}" class="btn btn-sm btn-outline-secondary"
-                sec:authorize="isAuthenticated()" 
-                th:if="${reBoardEntity.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reBoardEntity.lawyer.lawyerName}" 
-                th:text="수정"></a>
-                <a href="javascript:void(0);" th:data-uri="@{|/reboard/delete/${reBoardEntity.reboardIdx}|}"
-                class="delete btn btn-sm btn-outline-secondary"
-                sec:authorize="isAuthenticated()"
-                th:if="${reBoardEntity.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reBoardEntity.lawyer.lawyerName}" 
-                th:text="삭제"></a>
+
+              <!-- 답변 작성 폼 (토글) -->
+              <div class="answer-form-wrapper" id="answerFormWrapper" style="display: none;"
+                   sec:authorize="isAuthenticated()" 
+                   th:if="${loginUser != null and loginUser.role == 'LAWYER' and loginUser.lawyerIdx != null}">
+                <div class="answer-avatar">
+                  <img th:if="${loginLawyer != null and loginLawyer.lawyerImgPath != null and loginLawyer.lawyerImgPath != ''}" 
+                       th:src="${loginLawyer.lawyerImgPath}" 
+                       alt="변호사 프로필"
+                       class="lawyer-profile-img-small">
+                  <span th:if="${loginLawyer == null or loginLawyer.lawyerImgPath == null or loginLawyer.lawyerImgPath == ''}">A</span>
+                </div>
+                <form th:action="@{|/reboard/create/${boardEntity.boardIdx}|}" th:object="${reBoardForm}" method="post" class="answer-form">
+                  <textarea th:field="*{reboardContent}" 
+                  class="answer-textarea" 
+                  placeholder="답변자님, 정보를 공유해 주세요." 
+                  rows="4"></textarea>
+                  <div class="answer-form-actions">
+                    <button type="submit" class="btn-answer-submit">답변</button>
+                    <button type="button" class="btn-answer-cancel" id="answerCancelBtn">취소</button>
+                  </div>
+                </form>
               </div>
-              <!-- 답변 작성 -->
-              <form th:action="@{|/reboard/create/${boardEntity.boardIdx}|}" th:object="${reBoardForm}"| method="post" class="my-3">
-                <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-                <textarea sec:authorize="isAnonymous()" disabled
-                th:field="*{reboardContent}" class="form-control" rows="10"></textarea>
-                <textarea sec:authorize="isAuthenticated()"
-                th:field="*{reboardContent}" class="form-control" rows="10"></textarea>
-                <input type="submit" value="답변 등록" class="btn btn-primary my-2">
-              </form>
+
+              <!-- 답변 리스트 -->
+              <div class="answers-list" th:if="${boardEntity.reboardList != null and !#lists.isEmpty(boardEntity.reboardList)}">
+                <div class="answer-item" th:each="reboard : ${boardEntity.reboardList}">
+                  <div class="answer-avatar-large">
+                    <img th:if="${(reboard.lawyer != null and reboard.lawyer.lawyerImgPath != null and reboard.lawyer.lawyerImgPath != '') or (reboard.lawyerIdx != null and reboard.lawyerIdx.lawyerImgPath != null and reboard.lawyerIdx.lawyerImgPath != '')}" 
+                         th:src="${reboard.lawyer != null ? reboard.lawyer.lawyerImgPath : (reboard.lawyerIdx != null ? reboard.lawyerIdx.lawyerImgPath : '')}" 
+                         alt="변호사 프로필"
+                         class="lawyer-profile-img">
+                    <span th:if="${(reboard.lawyer == null or reboard.lawyer.lawyerImgPath == null or reboard.lawyer.lawyerImgPath == '') and (reboard.lawyerIdx == null or reboard.lawyerIdx.lawyerImgPath == null or reboard.lawyerIdx.lawyerImgPath == '')}">A</span>
+                  </div>
+                  <div class="answer-content-wrapper">
+                    <div class="answer-header">
+                      <div class="answer-author">
+                        <span class="answer-author-name" 
+                              th:text="${(reboard.lawyer != null and reboard.lawyer.lawyerName != null) ? (reboard.lawyer.lawyerName + '변호사') : ((reboard.lawyerIdx != null and reboard.lawyerIdx.lawyerName != null) ? (reboard.lawyerIdx.lawyerName + '변호사') : '익명')}"></span>
+                        <span class="answer-date" th:if="${reboard.reboardRegDate != null}" th:text="${#temporals.format(reboard.reboardRegDate, 'yyyy-MM-dd')}"></span>
+                      </div>
+                    </div>
+                    <div class="answer-content" th:text="${reboard.reboardContent}"></div>
+                    <div class="answer-actions">
+                      <a href="javascript:void(0);" class="recommend-link" th:data-uri="@{|/reboard/vote/${reboard.reboardIdx}|}">
+                        도움됐어요
+                        <span class="recommend-count" th:text="${#lists.size(reboard.voter)}"></span>
+                      </a>
+                      <a th:href="@{|/reboard/modify/${reboard.reboardIdx}|}" 
+                         class="answer-reply-btn"
+                         sec:authorize="isAuthenticated()" 
+                         th:if="${reboard.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reboard.lawyer.lawyerName}">
+                        수정
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
               <!-- <article class="cmt">
                 <div class="cmt-head">
                   <div class="cmt-avatar"><img src="https://via.placeholder.com/72x96" alt="프로필"></div>
@@ -77,7 +120,7 @@
                     상담 답변은 사무장이 아닌 변호사가 직접 작성합니다.
                 </div>
               </article> -->
-            </div>
+
 
             <!-- <div class="note" id="replyBox">
               <div class="note-header">
@@ -98,7 +141,7 @@
             <div id="comments"></div>
 
           </div>
-        </form>
+   
       </div>
     </div>
   </main>

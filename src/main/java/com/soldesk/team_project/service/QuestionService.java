@@ -299,5 +299,27 @@ public class QuestionService {
         questionRepository.save(questionEntity);
     
     }
+
+    // 문의글 수정
+    @Transactional
+    public void modifyQuestion(QuestionDTO questionModify) {
+        QuestionEntity questionEntity = questionRepository.findById(questionModify.getQIdx()).orElse(null);
+        if (questionEntity != null) {
+            questionEntity.setQuestionTitle(questionModify.getQTitle());
+            questionEntity.setQuestionContent(questionModify.getQContent());
+            questionEntity.setQuestionSecret(questionModify.getQSecret());
+            questionRepository.save(questionEntity);
+        }
+    }
+
+    // 문의글 삭제 (소프트 삭제: q_active를 0으로 설정)
+    @Transactional
+    public void deleteQuestion(int qIdx) {
+        QuestionEntity questionEntity = questionRepository.findById(qIdx).orElse(null);
+        if (questionEntity != null) {
+            questionEntity.setQuestionActive(0);
+            questionRepository.save(questionEntity);
+        }
+    }
     
 }
