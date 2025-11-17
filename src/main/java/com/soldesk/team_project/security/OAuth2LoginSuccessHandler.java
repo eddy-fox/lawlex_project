@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,8 +37,15 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         } else {
             // 기존 사용자 → JWT 생성 후 메인 페이지로 리디렉트
             String token = jwtProvider.createToken(principal.getUser());
-            String redirectUrl = "http://localhost:8080/?token=" + token;
-            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+            
+            // JWT를 쿠키에 저장
+            Cookie cookie = new Cookie("jwtToken", token);
+            cookie.setPath("/");
+            cookie.setHttpOnly(false);
+            cookie.setMaxAge(60 * 60);
+            response.addCookie(cookie);
+
+            getRedirectStrategy().sendRedirect(request, response, "/");
         }
 
     }

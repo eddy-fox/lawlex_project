@@ -281,25 +281,6 @@ public class MemberService {
                 .map(this::convertMemberDTO)
                 .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
     }
-    
-
-    // OAuth2
-    @Transactional
-    public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
-        // FIX: interestIdx1만 저장(폼에서 하나만 받는 설계이므로)
-        MemberEntity memberEntity = MemberEntity.builder()
-                .memberId(tempUser.getEmail())
-                .memberPass("{noop}oauth2")
-                .memberName(tempUser.getName())
-                .memberEmail(tempUser.getEmail())
-                .memberPhone(digits(memberDTO.getMemberPhone()))
-                .memberIdnum(digits(memberDTO.getMemberIdnum()))
-                .interestIdx1(memberDTO.getInterestIdx1())
-                .memberActive(1)
-                .provider(tempUser.getProvider())
-                .build();
-        return memberRepository.save(memberEntity);
-    }
 
     // 아이디 찾기 member → lawyer 순서
     public String findId(String memberPhone, String memberIdnum) {
@@ -368,6 +349,13 @@ public class MemberService {
     public MemberEntity joinOAuthMember(TemporaryOauthDTO temp, MemberDTO joinMember) {
         MemberEntity memberEntity = convertMemberEntity(joinMember);
         memberEntity.setMemberId(temp.getProvider() + temp.getProviderId());
+        memberEntity.setMemberPass(temp.getProviderId() + temp.getEmail());
+        memberEntity.setMemberName(temp.getName());
+        memberEntity.setMemberEmail(temp.getEmail());
+        memberEntity.setMemberActive(1);
+        memberEntity.setMemberPoint(0);
+        memberEntity.setMemberProvider(temp.getProvider());
+        memberEntity.setMemberProviderId(temp.getProviderId());
 
         return memberRepository.save(memberEntity);
     }

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
@@ -395,6 +397,7 @@ public class MemberController {
         joinMember.setMemberName(temp.getName());
         
         model.addAttribute("joinMember", joinMember);
+        model.addAttribute("interests", interestRepository.findAll());
 
         return "member/gJoin-oauth";
     }
