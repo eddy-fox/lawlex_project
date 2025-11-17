@@ -1,348 +1,322 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LawLex홈페이지</title>
-    <link rel="stylesheet" th:href="@{/css/index.css}">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LawLex홈페이지</title>
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
+
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
-    <main class="page-index">
-      <section class="hero">
-        <div class="inner">
+  <main class="page-index">
+    <section class="hero">
+      <div class="inner">
 
-          <button class="nav-btn nav-prev" onclick="prevSlide()">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M12 4L6 10L12 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+        <button class="nav-btn nav-prev" onclick="prevSlide()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12 4L6 10L12 16" stroke="#000777" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
 
-          <!-- <div class="content" th:each="ad : ${adList}">
+        <!-- <div class="content" th:each="ad : ${adList}">
             <a th:href="@{/}"
           </div> -->
-          
-          <button class="nav-btn nav-next" onclick="nextSlide()">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
 
-          <div class="content" th:each="ad, iterStat : ${adList}"
-            th:id="'slide-' + ${iterStat.index}"
-            th:classappend="${iterStat.index == 0} ? ' active' : ''">
-            <a href="#" th:onclick="|adCount(${ad.adIdx})|">
-                <img th:src="${ad.adImgPath}" th:alt="${ad.adName}">
-            </a>
-          </div>
-          
-          <button class="nav-btn nav-next" onclick="nextSlide()">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </section>
+        <button class="nav-btn nav-next" onclick="nextSlide()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
 
-    <section>
-    <div class="wrap">
-        <h2 class="section-ttl"><span class="guest-only">현재 인기 많은 글</span><span class="logged-only">내 관심 카테고리 인기글</span></h2>
-        <div class="list-card">
-        <table class="tbl">
-            <thead>
-            <tr><th>#</th><th>분야</th><th>제목</th><th>조회</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="board, iterStat : ${topBoards}">
-                <td th:text="${iterStat.count}"></td>
-                <td><span class="badge" th:text="${board.interest != null ? board.interest.interestName : '기타'}"></span></td>
-                <td class="cell-title">
-                    <a th:href="@{/board/detail/{id}(id=${board.boardIdx})}" th:text="${board.boardTitle}"></a>
-                </td>
-                <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="content" th:each="ad, iterStat : ${adList}" th:id="'slide-' + ${iterStat.index}"
+          th:classappend="${iterStat.index == 0} ? ' active' : ''">
+          <a class="aLink" href="#" th:onclick="|adCount(${ad.adIdx})|">
+            <img th:src="${ad.adImgPath}" th:alt="${ad.adName}">
+          </a>
         </div>
-    </div>
+
+        <button class="nav-btn nav-next" onclick="nextSlide()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M8 4L14 10L8 16" stroke="#000777" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
     </section>
 
     <section>
-    <div class="wrap">
+      <div class="wrap">
+        <h2 class="section-ttl"><span class="guest-only">현재 인기 많은 글</span><span class="logged-only">내 관심 카테고리 인기글</span>
+        </h2>
+        <div class="list-card">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>분야</th>
+                <th>제목</th>
+                <th>조회</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="board, iterStat : ${topBoards}">
+                <td th:text="${iterStat.count}"></td>
+                <td><span class="badge" th:text="${board.interest != null ? board.interest.interestName : '기타'}"></span>
+                </td>
+                <td class="cell-title">
+                  <a class="aLink" th:href="@{/board/detail/{id}(id=${board.boardIdx})}"
+                    th:text="${board.boardTitle}"></a>
+                </td>
+                <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
         <h2 class="section-ttl">지금 바로 상담 가능한 변호사</h2>
-        <div class="lawyer-grid">
-
-        <div class="lawyer-card">
-            <div class="lawyer-head">서울<span class="lawyer-name"> 홍길동 변호사</span></div>
-            <div class="lawyer-exp">경력 6년</div>
-            <div class="lawyer-stats">
-            <div class="lawyer-row">
-                <svg class="lawyer-ic" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L10 6H15L11 9L12.5 14L8 11L3.5 14L5 9L1 6H6L8 1Z" fill="#ff4444"/>
-                </svg><span>평점 5.0</span>
+        <div class="group">
+          <form th:action="@{/chat/request}" method="post">
+          <div class="card">
+            <div class="lImg"><img th:src="@{/img/test.png}" alt=""></div>
+            <div class="name"><b>서울</b>|<b>김한수</b></div>
+            <div class="interest">분야</div>
+            <div class="time">
+              <label>
+                <input type="radio" name="durationMinutes" value="30">
+                30분
+              </label>
+              <label>
+                <input type="radio" name="durationMinutes" value="60">
+                60분
+              </label>
             </div>
-            <div class="lawyer-row">
-                <svg class="lawyer-ic" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="4" width="12" height="10" stroke="#000777" stroke-width="1.5" fill="none"/>
-                <path d="M5 2V6M11 2V6" stroke="#000777" stroke-width="1.5"/>
-                </svg><span>상담 12회</span>
-            </div>
-            </div>
-            <button class="lawyer-btn">상담 신청</button>
+            <a class="cardBtn" href="">신청하기</a>
+          </div>
+        </form>
         </div>
 
-        <div class="lawyer-card featured">
-            <div class="lawyer-head">서울<span class="lawyer-name"> 김민준 변호사</span></div>
-            <div class="lawyer-exp">경력 10년 / 형사·성범죄</div>
-            <div class="lawyer-stats">
-            <div class="lawyer-row">
-                <svg class="lawyer-ic" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L10 6H15L11 9L12.5 14L8 11L3.5 14L5 9L1 6H6L8 1Z" fill="#fff"/>
-                </svg><span>평점 4.9</span>
-            </div>
-            <div class="lawyer-row">
-                <svg class="lawyer-ic" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="4" width="12" height="10" stroke="#fff" stroke-width="1.5" fill="none"/>
-                <path d="M5 2V6M11 2V6" stroke="#fff" stroke-width="1.5"/>
-                </svg><span>상담 45회</span>
-            </div>
-            </div>
-            <button class="lawyer-btn">상담 신청</button>
-        </div>
-
-        <div class="lawyer-card">
-            <div class="lawyer-head">부산<span class="lawyer-name"> 이서현 변호사</span></div>
-            <div class="lawyer-exp">경력 9년 / 부동산·채권</div>
-            <div class="lawyer-stats">
-            <div class="lawyer-row">
-                <svg class="lawyer-ic" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L10 6H15L11 9L12.5 14L8 11L3.5 14L5 9L1 6H6L8 1Z" fill="#ff4444"/>
-                </svg><span>평점 5.0</span>
-            </div>
-            <div class="lawyer-row">
-                <svg class="lawyer-ic" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="4" width="12" height="10" stroke="#000777" stroke-width="1.5" fill="none"/>
-                <path d="M5 2V6M11 2V6" stroke="#000777" stroke-width="1.5"/>
-                </svg><span>상담 31회</span>
-            </div>
-            </div>
-            <button class="lawyer-btn">상담 신청</button>
-        </div>
-
-        </div>
-    </div>
+      </div>
     </section>
 
     <section class="lawyer-wrap">
-    <div class="wrap">
+      <div class="wrap">
         <h2 class="section-ttl">알아두면 좋을 법률정보</h2>
         <div class="legal-grid">
 
-        <!-- 조회수 높은 동영상 2개 -->
-        <div class="legal-card" th:each="video, iterStat : ${topVideos}">
+          <!-- 조회수 높은 동영상 2개 -->
+          <div class="legal-card" th:each="video, iterStat : ${topVideos}">
             <div class="legal-img">
-            <img th:if="${video.videoId != null}"
-                 th:src="'https://img.youtube.com/vi/' + ${video.videoId} + '/hqdefault.jpg'"
-                 alt="video thumbnail"
-                 style="width:100%;height:100%;object-fit:cover;display:block;">
-            <img th:if="${video.videoId == null and video.newsImgPath != null}"
-                 th:src="${video.newsImgPath}"
-                 alt="video image"
-                 style="width:100%;height:100%;object-fit:cover;display:block;">
-            <div th:if="${video.videoId == null and video.newsImgPath == null}" style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;">이미지 없음</div>
-            <div class="legal-badge">HOT</div>
+              <img th:if="${video.videoId != null}"
+                th:src="'https://img.youtube.com/vi/' + ${video.videoId} + '/hqdefault.jpg'" alt="video thumbnail"
+                style="width:100%;height:100%;object-fit:cover;display:block;">
+              <img th:if="${video.videoId == null and video.newsImgPath != null}" th:src="${video.newsImgPath}"
+                alt="video image" style="width:100%;height:100%;object-fit:cover;display:block;">
+              <div th:if="${video.videoId == null and video.newsImgPath == null}"
+                style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;">
+                이미지 없음</div>
+              <div class="legal-badge">HOT</div>
             </div>
             <div class="legal-body">
-            <h3 class="legal-ttl">
-                <a th:href="@{/newsBoard/detail(newsIdx=${video.newsIdx})}" th:text="${video.newsTitle}"></a>
-            </h3>
-            <div class="legal-meta">
+              <h3 class="legal-ttl">
+                <a class="aLink" th:href="@{/newsBoard/detail(newsIdx=${video.newsIdx})}"
+                  th:text="${video.newsTitle}"></a>
+              </h3>
+              <div class="legal-meta">
                 <svg class="legal-ic" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none"/>
-                <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5"/>
+                  <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none" />
+                  <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5" />
                 </svg>
                 <span th:text="${#temporals.format(video.newsRegDate, 'yyyy.MM')}"></span>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
-        <!-- 최신 동영상 1개 -->
-        <div class="legal-card" th:if="${latestVideo != null && !latestVideo.isEmpty()}" th:each="video : ${latestVideo}">
+          <!-- 최신 동영상 1개 -->
+          <div class="legal-card" th:if="${latestVideo != null && !latestVideo.isEmpty()}"
+            th:each="video : ${latestVideo}">
             <div class="legal-img">
-            <img th:if="${video.videoId != null}"
-                 th:src="'https://img.youtube.com/vi/' + ${video.videoId} + '/hqdefault.jpg'"
-                 alt="video thumbnail"
-                 style="width:100%;height:100%;object-fit:cover;display:block;">
-            <img th:if="${video.videoId == null and video.newsImgPath != null}"
-                 th:src="${video.newsImgPath}"
-                 alt="video image"
-                 style="width:100%;height:100%;object-fit:cover;display:block;">
-            <div th:if="${video.videoId == null and video.newsImgPath == null}" style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;">이미지 없음</div>
-            <div class="legal-badge new">NEW</div>
+              <img th:if="${video.videoId != null}"
+                th:src="'https://img.youtube.com/vi/' + ${video.videoId} + '/hqdefault.jpg'" alt="video thumbnail"
+                style="width:100%;height:100%;object-fit:cover;display:block;">
+              <img th:if="${video.videoId == null and video.newsImgPath != null}" th:src="${video.newsImgPath}"
+                alt="video image" style="width:100%;height:100%;object-fit:cover;display:block;">
+              <div th:if="${video.videoId == null and video.newsImgPath == null}"
+                style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;">
+                이미지 없음</div>
+              <div class="legal-badge new">NEW</div>
             </div>
             <div class="legal-body">
-            <h3 class="legal-ttl">
+              <h3 class="legal-ttl">
                 <a th:href="@{/newsBoard/detail(newsIdx=${video.newsIdx})}" th:text="${video.newsTitle}"></a>
-            </h3>
-            <div class="legal-meta">
+              </h3>
+              <div class="legal-meta">
                 <svg class="legal-ic" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none"/>
-                <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5"/>
+                  <circle cx="7" cy="7" r="6" stroke="#999" stroke-width="1.5" fill="none" />
+                  <path d="M7 3V7L10 9" stroke="#999" stroke-width="1.5" />
                 </svg>
                 <span th:text="${#temporals.format(video.newsRegDate, 'yyyy.MM')}"></span>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
         </div>
-    </div>
+      </div>
     </section>
 
     <section>
-    <div class="wrap">
+      <div class="wrap">
         <div class="news-head">
-        <div class="news-left">
+          <div class="news-left">
             <div class="news-tabs">
-            <span class="tab active" data-tab="popular">실시간 인기 뉴스</span>
-            <span class="tab-sep">|</span>
-            <span class="tab" data-tab="latest">최신뉴스</span>
+              <span class="tab active" data-tab="popular">실시간 인기 뉴스</span>
+              <span class="tab-sep">|</span>
+              <span class="tab" data-tab="latest">최신뉴스</span>
             </div>
-        </div>
+          </div>
         </div>
 
         <div class="news-list" id="news-popular">
-        <div class="news-item" th:each="news, iterStat : ${popularNews}">
+          <div class="news-item" th:each="news, iterStat : ${popularNews}">
             <div class="rank" th:text="${iterStat.count}"></div>
             <div class="text">
-                <a th:href="@{/newsBoard/detail(newsIdx=${news.newsIdx})}" th:text="${news.newsTitle}"></a>
+              <a class="aLink" th:href="@{/newsBoard/detail(newsIdx=${news.newsIdx})}" th:text="${news.newsTitle}"></a>
             </div>
-        </div>
+          </div>
         </div>
 
         <div class="news-list" id="news-latest" style="display: none;">
-        <div class="news-item" th:each="news, iterStat : ${latestNews}">
+          <div class="news-item" th:each="news, iterStat : ${latestNews}">
             <div class="rank" th:text="${iterStat.count}"></div>
             <div class="text">
-                <a th:href="@{/newsBoard/detail(newsIdx=${news.newsIdx})}" th:text="${news.newsTitle}"></a>
+              <a class="aLink" th:href="@{/newsBoard/detail(newsIdx=${news.newsIdx})}" th:text="${news.newsTitle}"></a>
             </div>
+          </div>
         </div>
-        </div>
-    </div>
+      </div>
     </section>
-    </main>
-    <div class="include" th:replace="~{include/footer :: footer}"></div>
-    
-<script>
-  // 광고 슬라이드
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.content');
-  const totalSlides = slides.length;
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
 
-  function showSlide(index) {
-    if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
-    slides.forEach((slide, i) => {
-      if (i === index) {
-        slide.classList.add('active');
+  <script>
+    // 광고 슬라이드
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.content');
+    const totalSlides = slides.length;
+
+    function showSlide(index) {
+      if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
+      slides.forEach((slide, i) => {
+        if (i === index) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+    }
+
+    function nextSlide() {
+      if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
+      currentSlide = (currentSlide + 1) % totalSlides;
+      showSlide(currentSlide);
+    }
+    function prevSlide() {
+      if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      showSlide(currentSlide);
+    }
+
+    if (totalSlides > 0) {
+      setInterval(nextSlide, 10000);
+      document.addEventListener("DOMContentLoaded", () => showSlide(0));
+    }
+
+    // 변호사 페이지 이동 + 조회수 증가
+    function adCount(adIdx, lawyerIdx) {
+      fetch('/admin/adCount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adIdx: adIdx })
+      })
+        .then(response => {
+          if (response.ok) {
+            // DB에서 adViews 증가 성공 시 변호사 페이지로 이동
+            window.location.href = `/lawyer/myPage?lawyerIdx=${lawyerIdx}`;
+          } else {
+            console.error('조회수 증가 실패');
+          }
+        })
+        .catch(err => console.error('에러 발생:', err));
+    }
+
+    // 뉴스 탭 전환 (인라인 스크립트로 직접 처리)
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('탭 전환 스크립트 로드됨');
+
+      const tabs = document.querySelectorAll('.news-tabs .tab');
+      const popularNews = document.getElementById('news-popular');
+      const latestNews = document.getElementById('news-latest');
+
+      console.log('탭 개수:', tabs.length);
+      console.log('인기 뉴스 요소:', popularNews);
+      console.log('최신 뉴스 요소:', latestNews);
+
+      if (tabs.length > 0 && popularNews && latestNews) {
+        tabs.forEach(function (tab, index) {
+          console.log('탭 ' + index + '에 이벤트 리스너 추가:', tab.getAttribute('data-tab'));
+
+          tab.addEventListener('click', function (e) {
+            console.log('탭 클릭됨:', this.getAttribute('data-tab'));
+            e.preventDefault();
+            e.stopPropagation();
+
+            const tabName = this.getAttribute('data-tab');
+            if (!tabName) {
+              console.log('탭 이름이 없음');
+              return;
+            }
+
+            // 모든 탭에서 active 클래스 제거
+            tabs.forEach(function (el) {
+              el.classList.remove('active');
+            });
+
+            // 클릭한 탭에 active 클래스 추가
+            this.classList.add('active');
+            console.log('active 클래스 추가됨');
+
+            // 뉴스 리스트 표시/숨김
+            if (tabName === 'popular') {
+              popularNews.style.display = 'block';
+              latestNews.style.display = 'none';
+              console.log('인기 뉴스 표시');
+            } else if (tabName === 'latest') {
+              popularNews.style.display = 'none';
+              latestNews.style.display = 'block';
+              console.log('최신 뉴스 표시');
+            }
+          });
+        });
       } else {
-        slide.classList.remove('active');
+        console.error('탭 또는 뉴스 요소를 찾을 수 없음');
+        console.log('탭:', tabs);
+        console.log('인기 뉴스:', popularNews);
+        console.log('최신 뉴스:', latestNews);
       }
     });
-  }
+  </script>
 
-  function nextSlide() {
-    if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
-    currentSlide = (currentSlide + 1) % totalSlides;
-    showSlide(currentSlide);
-  }
-  function prevSlide() {
-    if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    showSlide(currentSlide);
-  }
-
-  if (totalSlides > 0) {
-    setInterval(nextSlide, 10000);
-    document.addEventListener("DOMContentLoaded", () => showSlide(0));
-  }
-
-  // 변호사 페이지 이동 + 조회수 증가
-  function adCount(adIdx, lawyerIdx) {
-  fetch('/admin/adCount', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ adIdx: adIdx })
-  })
-  .then(response => {
-    if (response.ok) {
-      // DB에서 adViews 증가 성공 시 변호사 페이지로 이동
-      window.location.href = `/lawyer/myPage?lawyerIdx=${lawyerIdx}`;
-    } else {
-      console.error('조회수 증가 실패');
-    }
-  })
-  .catch(err => console.error('에러 발생:', err));
-}
-
-  // 뉴스 탭 전환 (인라인 스크립트로 직접 처리)
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('탭 전환 스크립트 로드됨');
-    
-    const tabs = document.querySelectorAll('.news-tabs .tab');
-    const popularNews = document.getElementById('news-popular');
-    const latestNews = document.getElementById('news-latest');
-    
-    console.log('탭 개수:', tabs.length);
-    console.log('인기 뉴스 요소:', popularNews);
-    console.log('최신 뉴스 요소:', latestNews);
-    
-    if (tabs.length > 0 && popularNews && latestNews) {
-      tabs.forEach(function(tab, index) {
-        console.log('탭 ' + index + '에 이벤트 리스너 추가:', tab.getAttribute('data-tab'));
-        
-        tab.addEventListener('click', function(e) {
-          console.log('탭 클릭됨:', this.getAttribute('data-tab'));
-          e.preventDefault();
-          e.stopPropagation();
-          
-          const tabName = this.getAttribute('data-tab');
-          if (!tabName) {
-            console.log('탭 이름이 없음');
-            return;
-          }
-          
-          // 모든 탭에서 active 클래스 제거
-          tabs.forEach(function(el) {
-            el.classList.remove('active');
-          });
-          
-          // 클릭한 탭에 active 클래스 추가
-          this.classList.add('active');
-          console.log('active 클래스 추가됨');
-          
-          // 뉴스 리스트 표시/숨김
-          if (tabName === 'popular') {
-            popularNews.style.display = 'block';
-            latestNews.style.display = 'none';
-            console.log('인기 뉴스 표시');
-          } else if (tabName === 'latest') {
-            popularNews.style.display = 'none';
-            latestNews.style.display = 'block';
-            console.log('최신 뉴스 표시');
-          }
-        });
-      });
-    } else {
-      console.error('탭 또는 뉴스 요소를 찾을 수 없음');
-      console.log('탭:', tabs);
-      console.log('인기 뉴스:', popularNews);
-      console.log('최신 뉴스:', latestNews);
-    }
-  });
-</script>
-
-    <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/chatIcon.js}"></script>
-    <script th:src="@{/js/index.js}"></script>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
+  <script th:src="@{/js/index.js}"></script>
 </body>
+
 </html>
