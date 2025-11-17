@@ -267,6 +267,7 @@ public class QuestionService {
         
         // 답변 저장
         AnswerEntity answerEntity = convertAnswerEntity(answerWrite);
+        answerEntity.setAnswerActive(1);
         answerRepository.save(answerEntity);
 
         // 답변 여부 변경
