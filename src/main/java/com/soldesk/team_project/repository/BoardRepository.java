@@ -25,18 +25,26 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     from BoardEntity q
     left join q.member m
     where
-        lower(q.boardTitle)   like lower(concat('%', :kw, '%'))
-        or lower(q.boardContent) like lower(concat('%', :kw, '%'))
-        or (m.memberId is not null and lower(m.memberId) like lower(concat('%', :kw, '%')))
+        (q.boardActive = 1 or q.boardActive is null)
+        and (
+            lower(q.boardTitle)   like lower(concat('%', :kw, '%'))
+            or lower(q.boardContent) like lower(concat('%', :kw, '%'))
+            or (m.memberId is not null and lower(m.memberId) like lower(concat('%', :kw, '%')))
+        )
     """)
     Page<BoardEntity> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
     
-    @Query("SELECT b FROM BoardEntity b WHERE (:interestIdx IS NULL OR b.interest.interestIdx = :interestIdx) " + 
-           "AND (:keyword IS NULL OR b.boardTitle LIKE %:keyword%)")
+    @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) " +
+           "AND (:interestIdx IS NULL OR b.interest.interestIdx = :interestIdx) " + 
+           "AND (:keyword IS NULL OR LOWER(b.boardTitle) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<BoardEntity> findByInterestIdx(@Param("interestIdx") Integer interestIdx,
                                         @Param("keyword") String keyword,
                                         Pageable pageable);
     
+    // 조회수 높은 순서로 조회 (상위 5개, 활성 게시물만)
+    @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) ORDER BY b.boardViews DESC")
+    List<BoardEntity> findTop5ActiveBoardsByOrderByBoardViewsDesc(Pageable pageable);
+                                        
     // 조회수 높은 순서로 조회 (상위 5개)
     List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
 

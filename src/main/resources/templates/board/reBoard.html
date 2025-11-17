@@ -22,11 +22,11 @@
             <div class="edit">
               <a class="link" th:href="@{|/board/modify/${boardEntity.boardIdx}|}"
               sec:authorize="isAuthenticated()" 
-              th:if="${boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx}" 
+              th:if="${(boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx) or (isAdmin != null and isAdmin)}" 
               th:text="수정"></a>
-              <a class="link" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.boardIdx}|}"
+              <a class="link delete" href="javascript:void(0);" th:data-uri="@{|/board/delete/${boardEntity.boardIdx}|}"
               sec:authorize="isAuthenticated()" 
-              th:if="${boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx}" 
+              th:if="${(boardEntity.member != null and #authentication != null and #authentication.principal != null and #authentication.principal.memberIdx != null and #authentication.principal.memberIdx == boardEntity.member.memberIdx) or (isAdmin != null and isAdmin)}" 
               th:text="삭제"></a>
             </div>
 

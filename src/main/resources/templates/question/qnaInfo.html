@@ -71,6 +71,10 @@
                 </div>
 
                 <div class="actions">
+                    <a class="btn btn-submit" th:href="@{/question/qnaModify(qIdx=${infoQ.qIdx})}" 
+                       th:if="${isOwner != null and isOwner}">수정</a>
+                    <a class="btn btn-delete" th:href="@{/question/qnaDelete(qIdx=${infoQ.qIdx})}" 
+                       th:if="${isOwner != null and isOwner or (isAdmin != null and isAdmin)}">삭제</a>
                     <a class="btn btn-submit"
                         th:href="@{/question/qnaList}">목록</a>
                 </div>

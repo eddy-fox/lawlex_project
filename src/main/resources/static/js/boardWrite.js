@@ -1,22 +1,59 @@
 (function(){
-  const MAX_FILES = 10;
+  console.log('boardWrite.js 스크립트 로드됨');
+  
+  // DOM이 로드된 후 실행
+  if (document.readyState === 'loading') {
+    console.log('DOM 로딩 중, DOMContentLoaded 대기');
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    console.log('DOM 이미 로드됨, 즉시 실행');
+    init();
+  }
 
-  const form = document.getElementById('writeForm');
-  const title = document.getElementById('title');
-  const content = document.getElementById('content');
-  const submitBtn = document.getElementById('submitBtn');
+  function init() {
+    console.log('init() 함수 실행 시작');
+    const MAX_FILES = 10;
 
-  const uploadBtn = document.getElementById('uploadBtn');
-  const drop = document.getElementById('drop');
-  const fileInput = document.getElementById('file');
-  const thumbs = document.getElementById('thumbs');
-  const count = document.getElementById('count');
-  const maxSpan = document.getElementById('max');
+    const form = document.getElementById('writeForm');
+    const title = document.getElementById('title');
+    const content = document.getElementById('content');
+    const submitBtn = document.getElementById('submitBtn');
 
-  maxSpan.textContent = MAX_FILES;
+    console.log('요소 찾기:', {form: !!form, title: !!title, content: !!content, submitBtn: !!submitBtn});
+
+    if (!form || !title || !content || !submitBtn) {
+      console.error('필수 요소를 찾을 수 없습니다:', {form, title, content, submitBtn});
+      return;
+    }
+    
+    console.log('모든 필수 요소 찾음, 초기화 진행');
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    const drop = document.getElementById('drop');
+    const fileInput = document.getElementById('file');
+    const thumbs = document.getElementById('thumbs');
+    const count = document.getElementById('count');
+    const maxSpan = document.getElementById('max');
+
+    if (maxSpan) {
+      maxSpan.textContent = MAX_FILES;
+    }
 
   function validate(){
-    const ok = title.value.trim().length >= 2 && content.value.trim().length >= 20;
+    const titleOk = title.value.trim().length >= 2;
+    const contentOk = content.value.trim().length >= 20;
+    const categoryInput = document.getElementById('boardCategory');
+    const categoryOk = categoryInput && categoryInput.value.trim().length > 0;
+    const ok = titleOk && contentOk && categoryOk;
+    
+    // 디버깅용
+    console.log('Validation:', {
+      title: title.value.trim().length,
+      content: content.value.trim().length,
+      category: categoryInput ? categoryInput.value : 'null',
+      ok: ok
+    });
+    
     submitBtn.disabled = !ok;
   }
   title.addEventListener('input', validate);
@@ -27,7 +64,7 @@
     }
   });
 
-  // 추천 카테고리 영역 이벤트 리스너
+  // 추천 카테고리 영역 이벤트 리스너 (이벤트 위임 사용)
   const recommendedChips = document.getElementById('recommendedChips');
   if(recommendedChips) {
     recommendedChips.addEventListener('change', (e)=>{
@@ -41,6 +78,15 @@
         });
         e.target.closest('.chip').classList.toggle('active', e.target.checked);
         updateSelectedCategory();
+      }
+    });
+    
+    // 클릭 이벤트도 추가 (체크박스 클릭 감지)
+    recommendedChips.addEventListener('click', (e)=>{
+      if(e.target && e.target.type === 'checkbox'){
+        setTimeout(() => {
+          updateSelectedCategory();
+        }, 0);
       }
     });
   }
@@ -120,11 +166,19 @@
     const category = selected.length > 0 ? selected[0] : '';
     const categoryIdx = getCategoryIdx(category);
     
-    document.getElementById('boardCategory').value = category;
+    const categoryInput = document.getElementById('boardCategory');
+    if(categoryInput) {
+      categoryInput.value = category;
+    }
     const interestIdxInput = document.getElementById('interestIdx');
     if(interestIdxInput) {
       interestIdxInput.value = categoryIdx || '';
     }
+    
+    console.log('카테고리 업데이트:', category, categoryIdx);
+    
+    // 카테고리 선택 시 validate 호출
+    validate();
   }
 
   // 카테고리 추천 기능
@@ -171,11 +225,17 @@
       label.className = 'chip';
       label.style.backgroundColor = '#eff6ff';
       label.style.borderColor = '#3b82f6';
-      label.innerHTML = `<input type="checkbox" value="${escapeHtml(category)}"> ${escapeHtml(category)}`;
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = category;
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(' ' + category));
       chipsContainer.appendChild(label);
     });
     
     container.style.display = 'block';
+    // 카테고리 표시 후 validate 호출
+    validate();
   }
 
   function hideRecommendedCategories() {
@@ -259,6 +319,7 @@
     // 실제 제출은 서버에서 처리
   });
 
-  validate();
-  updateCounter();
+    validate();
+    updateCounter();
+  }
 })();
