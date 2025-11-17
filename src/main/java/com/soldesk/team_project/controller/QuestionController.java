@@ -172,10 +172,14 @@ public class QuestionController {
         model.addAttribute("infoQ", infoQ);
 
         // 답변받을 템플릿 전달
-        if (infoQ.getQAnswer() == 1) {
-            AnswerDTO questionAnswer = questionService.getAnswerToQIdx(infoQ.getQIdx());
+        AnswerDTO questionAnswer = null;
+        if (infoQ.getQAnswer() != null && infoQ.getQAnswer() == 1) {
+            questionAnswer = questionService.getAnswerToQIdx(infoQ.getQIdx());
+        }
+        
+        if (questionAnswer != null) {
             model.addAttribute("questionAnswer", questionAnswer);
-        } else {
+        } else if (adminIdx != null) {
             AnswerDTO answerWrite = new AnswerDTO();
             answerWrite.setQIdx(infoQ.getQIdx());
             answerWrite.setAdminIdx(adminIdx);
