@@ -9,6 +9,23 @@
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
+
+<div class="wrap" style="display:flex; justify-content:flex-end; gap:8px; margin:12px 0;">
+  <button th:if="${session.loginUser != null}"
+          id="btnMypage"
+          class="primary-btn"
+          type="button"
+          data-url="/member/mypage">
+    마이페이지
+  </button>
+
+  <a th:if="${session.loginUser == null}"
+     class="small-btn"
+     th:href="@{/member/login(need='mypage')}">
+    로그인하고 마이페이지
+  </a>
+</div>
+
     <main class="page-index">
       <section class="hero">
         <div class="inner">
@@ -266,7 +283,7 @@
     document.addEventListener("DOMContentLoaded", () => showSlide(0));
   }
 
-  // 변호사 페이지 이동 + 조회수 증가
+  // 변호사 페이지 이동 + 조회수 증가 (원래 코드 그대로 유지)
   function adCount(adIdx, lawyerIdx) {
   fetch('/admin/adCount', {
     method: 'POST',
@@ -338,6 +355,20 @@
       console.log('인기 뉴스:', popularNews);
       console.log('최신 뉴스:', latestNews);
     }
+  });
+</script>
+
+<!-- ✅ 추가: 마이페이지 버튼 강제 이동 (다른 코드에 영향 없음) -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('btnMypage');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var url = btn.getAttribute('data-url') || '/member/mypage';
+      window.location.assign(url); // 절대경로로 확실히 이동
+    }, { capture: true });
   });
 </script>
 

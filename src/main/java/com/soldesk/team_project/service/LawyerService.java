@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.LawyerDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.UserMasterEntity;
 import com.soldesk.team_project.repository.InterestRepository;
@@ -18,11 +19,18 @@ import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.UserMasterRepository;
 import com.soldesk.team_project.util.FileStorageService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
+
+import java.util.NoSuchElementException;
+
+
 
 
 @Service
@@ -38,6 +46,7 @@ public class LawyerService {
     
     private final MemberRepository memberRepository;
 
+    
 
     private LawyerDTO convertLawyerDTO (LawyerEntity lawyerEntity) {
         LawyerDTO lawyerDTO = new LawyerDTO();
@@ -119,6 +128,30 @@ public class LawyerService {
         return lawyerEntityList.stream()
             .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
     }
+
+    // 세션에서 로그인된 유저 가져오기
+    // 서비스 내부에서 세션의 loginUser(UserMasterDTO) 꺼내기
+    private UserMasterDTO currentLoginUserOrThrow() {
+        ServletRequestAttributes attrs =
+            (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attrs.getRequest().getSession(false);
+        if (session == null) throw new IllegalStateException("로그인이 필요합니다.");
+        Object obj = session.getAttribute("loginUser");
+        if (obj instanceof UserMasterDTO u) return u;
+        throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
+}
+
+    // 세션의 로그인 유저가 변호사일 때, 그 프로필 DTO 반환
+    @Transactional(readOnly = true)
+    public LawyerDTO getSessionLawyer() {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"LAWYER".equalsIgnoreCase(login.getRole())) {
+            throw new IllegalStateException("변호사만 접근 가능합니다.");
+    }
+    var le = lawyerRepository.findById(login.getLawyerIdx())
+            .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
+    return convertLawyerDTO(le);
+}
 
     // 변호사 회원가입
     @Transactional
