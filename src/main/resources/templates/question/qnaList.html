@@ -55,12 +55,13 @@
 
                             <td class="title" th:with="isSecret = ${qList.qSecret == 1 or (qList.qSecret == '1')},
                                                         canSee = ${!isSecret 
+                                                                             or (adminIdx != null)
                                                                              or (myIdxM != null and myIdxM == qList.memberIdx)
                                                                              or (myIdxL != null and qList.lawyerIdx != null and myIdxL == qList.lawyerIdx)}">
 
                                 <a th:if="${canSee}"
                                    th:href="@{/question/qnaInfo(qIdx=${qList.qIdx})}"
-                                   th:text="${isSecret ? '🔒 [본인글] '+qList.qTitle : qList.qTitle}"></a>
+                                   th:text="${isSecret ? (adminIdx != null ? '🔒 ' + qList.qTitle : '🔒 [본인글] '+qList.qTitle) : qList.qTitle}"></a>
                                                                 
                                    <span th:if="${!canSee}" th:text="'🔒 비밀글 입니다'"></span>
                                 </td>

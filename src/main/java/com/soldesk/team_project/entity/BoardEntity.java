@@ -46,6 +46,9 @@ public class BoardEntity {
     @Column(name = "board_views")
     private Integer boardViews;
 
+    @Column(name = "board_active")
+    private Integer boardActive;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;

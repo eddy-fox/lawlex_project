@@ -69,6 +69,12 @@
     padding: 14px
   }
 
+  .top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px
+  }
+
   .btn {
     height: 34px;
     padding: 0 14px;
