@@ -213,9 +213,6 @@ public class BoardService {
         
         this.boardRepository.save(q);
 
-        // GPT 자동 답변 생성
-        reboardService.gptAutoReboard(q);
-
     }
 
     public void modify(BoardEntity boardEntity, String boardTitle, String boardContent) {

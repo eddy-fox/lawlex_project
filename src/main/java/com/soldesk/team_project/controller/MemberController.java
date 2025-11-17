@@ -89,9 +89,9 @@ public class MemberController {
     }
 
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum,
-                                  Model model,
+    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model,
                                   @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+                                    
         Integer memberIdx = loginUser.getMemberIdx();
         String memberIdxStr = String.valueOf(memberIdx);
         List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
