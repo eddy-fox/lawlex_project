@@ -212,8 +212,8 @@ public class BoardService {
         
         this.boardRepository.save(q);
 
-        // GPT 자동 답변 생성
-        // reboardService.gptAutoReboard(q);
+         //GPT 자동 답변 생성
+         //this.reboardService.gptAutoReboard(q);
 
     }
 
