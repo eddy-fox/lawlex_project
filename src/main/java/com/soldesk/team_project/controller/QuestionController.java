@@ -42,6 +42,7 @@ public class QuestionController {
     @GetMapping("/qnaList")
     public String qnaList(@RequestParam(value = "page", defaultValue = "1") int page,
                           @RequestParam(value = "mine", defaultValue = "false" ) boolean mine,
+                          @RequestParam(value = "search", required = false) String search,
                           @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                             Model model) {
 
@@ -51,16 +52,17 @@ public class QuestionController {
             Integer mIdx = loginUser.getMemberIdx();
             Integer lIdx = loginUser.getLawyerIdx();
             if(mine && mIdx!= null){ /* 일반회원이 확인 */
-                paging = questionService.getQnaPagingM(mIdx, page);
+                paging = questionService.getQnaPagingM(mIdx, page, search);
             }else if(mine && lIdx != null){ /* 변호사회원 확인 */
-                paging = questionService.getQnaPagingL(lIdx, page);
+                paging = questionService.getQnaPagingL(lIdx, page, search);
             }else {
-                paging = questionService.getQnaPaging(page);
+                paging = questionService.getQnaPaging(page, search);
             }
-        }else{ paging = questionService.getQnaPaging(page); }
+        }else{ paging = questionService.getQnaPaging(page, search); }
 
         model.addAttribute("qnaPaging", paging);
         model.addAttribute("mine", mine);
+        model.addAttribute("search", search);
        
         if(loginUser != null){
             model.addAttribute("loginUser", loginUser);
@@ -99,6 +101,28 @@ public class QuestionController {
         System.out.println("\n"+ qnaWrite.toString() + "\n");
         return "redirect:/question/qnaList";
     }
+
+/*     @GetMapping("/qnaInfo")
+    public String qnaInfo(@RequestParam("qIdx") int qIdx, Model model) {
+        QuestionDTO infoQ = questionService.getQ(qIdx);
+
+        
+
+        Integer mIdx = infoQ.getMemberIdx();
+        Integer lIdx = infoQ.getLawyerIdx();
+
+        if (lIdx != null) {
+            LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
+            infoQ.setInfoId(l.getLawyerId());
+            infoQ.setInfoName(l.getLawyerName());
+        }else if (mIdx != null) {
+            MemberDTO m = memberService.qMemberInquiry(mIdx);
+            infoQ.setInfoId(m.getMemberId());
+            infoQ.setInfoName(m.getMemberName());
+        }
+        model.addAttribute("infoQ", infoQ);
+        return "question/qnaInfo";
+    } */
 
     // 문의글 상세
     @GetMapping("/qnaInfo")
@@ -148,10 +172,14 @@ public class QuestionController {
         model.addAttribute("infoQ", infoQ);
 
         // 답변받을 템플릿 전달
-        if (infoQ.getQAnswer() == 1) {
-            AnswerDTO questionAnswer = questionService.getAnswerToQIdx(infoQ.getQIdx());
+        AnswerDTO questionAnswer = null;
+        if (infoQ.getQAnswer() != null && infoQ.getQAnswer() == 1) {
+            questionAnswer = questionService.getAnswerToQIdx(infoQ.getQIdx());
+        }
+        
+        if (questionAnswer != null) {
             model.addAttribute("questionAnswer", questionAnswer);
-        } else {
+        } else if (adminIdx != null) {
             AnswerDTO answerWrite = new AnswerDTO();
             answerWrite.setQIdx(infoQ.getQIdx());
             answerWrite.setAdminIdx(adminIdx);

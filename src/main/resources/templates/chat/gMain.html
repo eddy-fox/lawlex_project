@@ -96,5 +96,17 @@
 
 <script th:src="@{/js/js.js}"></script>
 <script th:src="@{/js/chatIcon.js}"></script>
+<script th:if="${successMessage != null}" th:inline="javascript">
+  (function() {
+    var message = decodeURIComponent(/*[[${successMessage}]]*/ '');
+    if (message) {
+      alert(message);
+      // URL에서 success 파라미터 제거 (뒤로가기 시 alert가 다시 뜨지 않도록)
+      var url = new URL(window.location.href);
+      url.searchParams.delete('success');
+      window.history.replaceState({}, '', url);
+    }
+  })();
+</script>
 </body>
 </html>

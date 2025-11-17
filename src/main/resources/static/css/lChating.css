@@ -21,17 +21,17 @@
 .page-lChating .msg-row.lawyer{ justify-content:flex-start; }
 .page-lChating .msg-row.user{ justify-content:flex-end; }
 
-/* 받는 쪽(상대) */
-.page-lChating .lawyer .bubble{ background:#f3f6ff; border:1px solid #c7d2fe; color:var(--ink); }
-/* 내가 보내는 쪽(하양) */
-.page-lChating .user .bubble{ background:#ffffff; border:1px solid #e2e8f0; color:#0f172a; }
+/* 받는 쪽(상대 - 일반회원이 보낸 메시지) */
+.page-lChating .msg-row.lawyer .bubble{ background:#f3f6ff; border:1px solid #c7d2fe; color:var(--ink); }
+/* 내가 보내는 쪽(변호사가 보낸 메시지 - 하양) */
+.page-lChating .msg-row.user .bubble{ background:#ffffff; border:1px solid #e2e8f0; color:#0f172a; }
 
 .page-lChating .bubble{ max-width:min(70%,520px); padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.45; position:relative; }
 .page-lChating .meta{ font-size:11px; color:#64748b; margin:0 6px; white-space:nowrap; }
-.page-lChating .user .meta{ order:-1; }
+.page-lChating .msg-row.user .meta{ order:-1; }
 
 /* 이미지 전송: 버블 없이 타일 */
-.page-lChating .media{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-width:min(70%,520px); }
+.page-lChating .media{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; max-width:min(70%,520px); margin:0; flex-shrink:0; }
 .page-lChating .media img{ width:100%; height:180px; object-fit:cover; border-radius:12px; border:none; background:transparent; cursor:zoom-in; }
 
 /* 입력 영역 */

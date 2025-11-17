@@ -60,6 +60,11 @@
                th:each="room : ${activeRooms}">
             <div class="client">
               <input type="text" th:value="${room.chatroomName}" readonly>
+              <span th:if="${room.unreadCount != null and room.unreadCount > 0}" 
+                    class="unread-badge-lawyer"
+                    th:text="${room.unreadCount > 99 ? '99+' : room.unreadCount}">
+                0
+              </span>
             </div>
             <div class="preview"
                  th:text="${room.lastMessage != null ? room.lastMessage : '최근 메시지가 없습니다.'}">
@@ -84,7 +89,10 @@
             <div class="client">
               <input type="text" th:value="${room.chatroomName}" readonly>
             </div>
-            <div class="preview" th:text="${room.state}"></div>
+            <div class="preview"
+                 th:text="${room.lastMessage != null ? room.lastMessage : '최근 메시지가 없습니다.'}">
+              내용미리보기
+            </div>
             <div class="actions">
               <a class="btn ghost open-chat-popup" 
                  th:href="@{/chat/room(roomId=${room.chatroomIdx})}"

@@ -257,23 +257,31 @@
   const totalSlides = slides.length;
 
   function showSlide(index) {
+    if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
     slides.forEach((slide, i) => {
-      slide.style.display = i === index ? 'block' : 'none';
+      if (i === index) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
     });
   }
 
   function nextSlide() {
+    if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
     currentSlide = (currentSlide + 1) % totalSlides;
     showSlide(currentSlide);
   }
   function prevSlide() {
+    if (totalSlides === 0) return; // 광고가 없으면 실행하지 않음
     currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
     showSlide(currentSlide);
   }
 
-  setInterval(nextSlide, 10000);
-
-  document.addEventListener("DOMContentLoaded", () => showSlide(0));
+  if (totalSlides > 0) {
+    setInterval(nextSlide, 10000);
+    document.addEventListener("DOMContentLoaded", () => showSlide(0));
+  }
 
   // 변호사 페이지 이동 + 조회수 증가 (원래 코드 그대로 유지)
   function adCount(adIdx, lawyerIdx) {

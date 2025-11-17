@@ -7,7 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/nInfo.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-<body>
+<body th:attr="data-newsIdx=${board.newsIdx},
+              data-memberIdx=${loginMember != null ? loginMember.memberIdx : ''},
+              data-lawyerIdx=${loginLawyer != null ? loginLawyer.lawyerIdx : ''},
+              data-isAdmin=${loginAdmin != null and loginAdmin.adminRole == 'admin'}">
 <div class="include" th:replace="~{include/header :: header}"></div>
 
 <main class="page-nInfo">
@@ -22,8 +25,10 @@
          ">
 
         <!-- 제목/날짜/작성자/조회수 -->
-        <h1 class="title" th:text="${board.newsTitle}">제목</h1>
-        <p class="date" th:text="${#temporals.format(board.newsRegDate, 'yyyy-MM-dd')}">2025-10-31</p>
+        <div class="tida">
+            <h1 class="title" th:text="${board.newsTitle}">제목</h1>
+            <p class="date" th:text="${#temporals.format(board.newsRegDate, 'yyyy-MM-dd')}">2025-10-31</p>
+        </div>
 
         <div class="meta">
             <div class="left">
@@ -79,18 +84,19 @@
      th:with="
         cat=${board.category.categoryIdx},
         isAdminWriter=${loginAdmin != null and board.admin != null and loginAdmin.adminIdx == board.admin.adminIdx},
-        isLawyerWriter=${loginLawyer != null and board.lawyer != null and loginLawyer.lawyerIdx == board.lawyer.lawyerIdx}
+        isLawyerWriter=${loginLawyer != null and board.lawyer != null and loginLawyer.lawyerIdx == board.lawyer.lawyerIdx},
+        isAdmin=${loginAdmin != null and loginAdmin.adminRole == 'admin'}
      ">
 
-    <!-- 관리자/작성자일 때 수정 -->
+    <!-- 작성자이거나 관리자(admin_role='admin')일 때 수정 -->
     <a class="btn"
-       th:if="${isAdminWriter or isLawyerWriter}"
+       th:if="${isAdminWriter or isLawyerWriter or isAdmin}"
        th:href="@{/newsBoard/modify(newsIdx=${board.newsIdx})}">
         수정
     </a>
 
-    <!-- 관리자/작성자일 때 삭제 -->
-    <form th:if="${isAdminWriter or isLawyerWriter}"
+    <!-- 작성자이거나 관리자(admin_role='admin')일 때 삭제 -->
+    <form th:if="${isAdminWriter or isLawyerWriter or isAdmin}"
           th:action="@{/newsBoard/delete}"
           method="post"
           style="display:inline;">
@@ -105,17 +111,20 @@
     </a>
 </div>
 
-        <!-- 댓글은 네가 나중에 붙일 수 있게 기본 구조만 유지 -->
-        <section class="cmt">
+        <!-- 댓글 (공지사항이 아닌 경우에만 표시) -->
+        <section class="cmt open" th:if="${canComment}" th:classappend="${loginMember == null and loginLawyer == null}">
             <div class="top">
                 <h3>댓글</h3>
-                <button class="submit" id="cToggle" type="button">댓글 적기</button>
+                <button class="submit" id="cToggle" type="button">닫기</button>
             </div>
 
             <div class="write">
                 <div class="row">
-                    <textarea id="cText" placeholder="내용 (Ctrl+Enter 등록)"></textarea>
-                    <button class="submit" id="cBtn" type="button">등록</button>
+                    <textarea id="cText" 
+                              th:placeholder="${loginMember == null and loginLawyer == null} ? '로그인 후 댓글을 남길 수 있습니다' : '내용 (Ctrl+Enter 등록)'"
+                              th:disabled="${loginMember == null and loginLawyer == null}"></textarea>
+                    <button class="submit" id="cBtn" type="button"
+                            th:disabled="${loginMember == null and loginLawyer == null}">등록</button>
                 </div>
             </div>
 

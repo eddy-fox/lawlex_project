@@ -30,7 +30,7 @@ public class InterestEntity {
     private String interestName;
 
     @OneToMany(mappedBy = "interest")
-    private java.util.List<LawyerEntity> lawyers;
+    private List<LawyerEntity> lawyers;
      
     @OneToMany(mappedBy = "interest")
     private List<MemberInterestEntity> memberInterests = new ArrayList<>();

@@ -29,7 +29,7 @@ public class HomeController {
     private static final int CATEGORY_COLUMN = 4; // 칼럼
     private static final int NEWS_ACTIVE = 1;     // 활성글
     
-    @GetMapping("/")
+    @GetMapping({"/", "/member", "/member/"})
     public String home(Model model) {
         // 만료된 광고 비활성화
         adService.refreshActiveAds();

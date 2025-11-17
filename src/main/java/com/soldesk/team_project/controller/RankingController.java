@@ -1,6 +1,7 @@
 package com.soldesk.team_project.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,14 @@ public class RankingController {
 
     // 랭킹 페이지
     @GetMapping("/ranking")
-    public String ranking(@RequestParam(defaultValue = "like") String pick,Model model) {
+    public String ranking(@RequestParam(value = "pick", defaultValue = "like") String pick, Model model) {
         List<LawyerDTO> rankingList = rankingService.getRankingList(pick);
-        model.addAttribute("rankingList", rankingList);
+
+        Map<String, List<Object[]>> rankingMap = rankingService.getInterestAnswerRanking();
+        
         model.addAttribute("pick", pick);
+        model.addAttribute("rankingList", rankingList);
+        model.addAttribute("rankingMap", rankingMap);
         return "rank/ranking";
     }
 }

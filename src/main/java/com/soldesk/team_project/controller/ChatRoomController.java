@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,7 @@ public class ChatRoomController {
     private final CalendarService calendarService;
     private final LawyerRepository lawyerRepo;
     private final MemberRepository memberRepo;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/")
     public String chatGate(
@@ -181,6 +183,18 @@ public String room(@RequestParam("roomId") Integer roomId,
     public ResponseEntity<?> markRead(@RequestParam("roomId") Integer roomId,
                                       @RequestParam("who") String who) {
         chatroomService.touchReadAt(roomId, who);
+        
+        // 뱃지 업데이트 신호 전송
+        var room = chatroomService.getRoom(roomId);
+        if (room != null) {
+            if (room.getMemberIdx() != null) {
+                messagingTemplate.convertAndSend("/topic/badge/member/" + room.getMemberIdx(), "update");
+            }
+            if (room.getLawyerIdx() != null) {
+                messagingTemplate.convertAndSend("/topic/badge/lawyer/" + room.getLawyerIdx(), "update");
+            }
+        }
+        
         return ResponseEntity.ok().build();
     }
 
@@ -188,6 +202,33 @@ public String room(@RequestParam("roomId") Integer roomId,
     public String deactivate(@RequestParam("roomId") Integer roomId) {
         chatroomService.deactivate(roomId);
         return "redirect:/";
+    }
+
+    @PostMapping("/room/end")
+    @ResponseBody
+    public ResponseEntity<?> endChat(@RequestParam("roomId") Integer roomId,
+                                     @RequestParam("who") String who) {
+        try {
+            chatroomService.endChat(roomId, who);
+            
+            // 뱃지 업데이트 신호 전송
+            var room = chatroomService.getRoom(roomId);
+            if (room != null) {
+                if (room.getMemberIdx() != null) {
+                    messagingTemplate.convertAndSend("/topic/badge/member/" + room.getMemberIdx(), "update");
+                }
+                if (room.getLawyerIdx() != null) {
+                    messagingTemplate.convertAndSend("/topic/badge/lawyer/" + room.getLawyerIdx(), "update");
+                }
+                
+                // 채팅방 상태 변경 신호 전송 (변호사 측에서 textarea 비활성화를 위해)
+                messagingTemplate.convertAndSend("/topic/room/" + roomId + "/status", Map.of("state", "EXPIRED"));
+            }
+            
+            return ResponseEntity.ok().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     /* ===================== 커서 기반 히스토리 API ===================== */
@@ -206,6 +247,7 @@ public String room(@RequestParam("roomId") Integer roomId,
     @GetMapping("/member")
     public String memberMain(@RequestParam(name = "dow", required = false) Integer dow,
                              @RequestParam(name = "duration", defaultValue = "60") int duration,
+                             @RequestParam(name = "success", required = false) String successMessage,
                              Model model,
                              @SessionAttribute(value = "loginMember", required = false) Object loginMember,
                              HttpServletResponse resp) throws Exception {
@@ -224,6 +266,9 @@ public String room(@RequestParam("roomId") Integer roomId,
         model.addAttribute("selectedDow", dow);
         model.addAttribute("duration", duration);
         model.addAttribute("lawyers", calendarService.listLawyersForDayAsMap(dow));
+        if (successMessage != null && !successMessage.isEmpty()) {
+            model.addAttribute("successMessage", successMessage);
+        }
         return "chat/gMain";
     }
 
@@ -252,8 +297,9 @@ public String room(@RequestParam("roomId") Integer roomId,
         chatroomService.requestChat(memberIdx, lawyerIdx, durationMinutes, pointCost);
 
         // 변호사가 수락하기 전까지는 채팅방 접근 불가하므로 메인 페이지로 리다이렉트
+        // alert로 표시하기 위해 파라미터로 메시지 전달
         String message = URLEncoder.encode("상담 신청이 완료되었습니다. 변호사의 수락을 기다려주세요.", StandardCharsets.UTF_8);
-        return "redirect:/chat/member?message=" + message;
+        return "redirect:/chat/member?success=" + message;
     }
 
    @GetMapping("/api/member/rooms")
@@ -330,6 +376,18 @@ public String room(@RequestParam("roomId") Integer roomId,
             return null;
         }
         chatroomService.accept(roomId, lawyerIdx);
+        
+        // 뱃지 업데이트 신호 전송
+        var room = chatroomService.getRoom(roomId);
+        if (room != null) {
+            if (room.getMemberIdx() != null) {
+                messagingTemplate.convertAndSend("/topic/badge/member/" + room.getMemberIdx(), "update");
+            }
+            if (room.getLawyerIdx() != null) {
+                messagingTemplate.convertAndSend("/topic/badge/lawyer/" + room.getLawyerIdx(), "update");
+            }
+        }
+        
         return "redirect:/chat/lawyer";
     }
 

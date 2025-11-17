@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>header</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
->>>>>>> 1fe09b7528522ff843706e6fe7dc544619f5d49f
 </head>
 <body>
 
@@ -16,15 +15,21 @@
                 <h1 class="logo-text">LawLex</h1>
             </a>
             <div class="inout">
-                <a th:href="@{/aAll}">개발용 모든 링크 모음</a>
-                <div> <!-- th:if="${loginMember != null}" 로그인 성공 -->
+                <!-- 로그인 전: 로그인 링크만 -->
+                <div th:if="${session.loginMember == null and session.loginLawyer == null and session.loginAdmin == null}">
+                    <a th:href="@{/member/login}">로그인</a>
+                </div>
+                
+                <!-- 로그인 후 (일반회원/변호사): 마이페이지, chaticon만 -->
+                <div th:if="${(session.loginMember != null or session.loginLawyer != null) and session.loginAdmin == null}">
                     <div th:replace="~{include/chatIcon :: page-chatIcon}"></div>
                     <a th:href="@{/member/mypage}">마이페이지</a>
-                    <a href="#">로그아웃</a>
-                    <a th:href="@{/admin/memberManagement}">관리자 페이지</a><!-- th:if="${loginMember.role == 'ADMIN'} 관리자로 로그인 한다면" -->
                 </div>
-                <div> <!-- th:unless=$"loginMember != null" 로그인 실패 로그아웃 상태 -->
-                    <a th:href="@{/member/login}">로그인</a>
+                
+                <!-- 관리자 로그인 후: 관리자페이지, 로그아웃만 -->
+                <div th:if="${session.loginAdmin != null}">
+                    <a th:href="@{/admin/memberManagement}">관리자 페이지</a>
+                    <a th:href="@{/member/logout}">로그아웃</a>
                 </div>
             </div>
         </div>

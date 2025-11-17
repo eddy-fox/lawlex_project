@@ -27,6 +27,7 @@ public class ChatroomService {
     private final ChatdataRepository chatdataRepo; // (옵션) 뱃지 계산 등에 사용 가능
     private final MemberRepository memberRepo;
     private final LawyerRepository lawyerRepo;
+    private final PurchaseService purchaseService;
 
     /* ===================== DTO 변환 ===================== */
 
@@ -57,6 +58,7 @@ public class ChatroomService {
 
         d.setMemberIdx(e.getMember() != null ? e.getMember().getMemberIdx() : null);
         d.setLawyerIdx(e.getLawyer() != null ? e.getLawyer().getLawyerIdx() : null);
+        d.setLawyerImgPath(e.getLawyer() != null ? e.getLawyer().getLawyerImgPath() : null);
 
         d.setUnreadCount(null); // 필요 시 chatdataRepo로 계산해서 세팅
         return d;
@@ -104,6 +106,25 @@ public class ChatroomService {
             if ("PENDING".equalsIgnoreCase(st) || "ACTIVE".equalsIgnoreCase(st)) {
                 return convertDTO(existing);
             }
+            // 만료되었거나 종료된 채팅방이 있는 경우 재활성화
+            // 기존 채팅방을 재사용하여 unique constraint 위반 방지
+            existing.setChatroomName(member.getMemberName() + " - " + lawyer.getLawyerName());
+            existing.setChatroomActive(1);
+            existing.setMemberDeleted(0);
+            existing.setLawyerDeleted(0);
+            existing.setState("PENDING");
+            existing.setRequestedAt(LocalDateTime.now());
+            existing.setAcceptedAt(null);
+            existing.setExpiresAt(null);
+            existing.setDurationMinutes(durationMinutes);
+            existing.setPointCost(pointCost);
+            existing.setLastMessage(null);
+            existing.setLastMessageAt(null);
+            existing.setMemberReadAt(null);
+            existing.setLawyerReadAt(null);
+            
+            chatroomRepo.save(existing);
+            return convertDTO(existing);
         }
 
         // 신규 방 생성
@@ -144,10 +165,19 @@ public class ChatroomService {
 
         chatroomRepo.save(e);
 
-        // 포인트 차감 로직이 있다면 여기서:
-        // Integer memberIdx = e.getMember().getMemberIdx();
-        // int pointCost = e.getPointCost();
-        // purchaseService.minusPoint(memberIdx, pointCost);
+        // 포인트 차감 로직
+        if (e.getMember() != null && e.getPointCost() != null && e.getPointCost() > 0) {
+            Integer memberIdx = e.getMember().getMemberIdx();
+            int pointCost = e.getPointCost();
+            try {
+                purchaseService.usePoint(memberIdx, pointCost);
+                System.out.println("[DEBUG] Point deducted: memberIdx=" + memberIdx + ", amount=" + pointCost);
+            } catch (IllegalStateException ex) {
+                // 포인트 부족 시 예외 처리
+                System.err.println("[ERROR] Point deduction failed: " + ex.getMessage());
+                throw new IllegalStateException("포인트가 부족하여 상담을 수락할 수 없습니다.");
+            }
+        }
     }
 
     @Transactional
@@ -170,6 +200,21 @@ public class ChatroomService {
         chatroomRepo.save(e);
     }
 
+    @Transactional
+    public void endChat(Integer roomId, String who) {
+        ChatroomEntity e = chatroomRepo.findById(roomId).orElseThrow();
+        String currentState = getOrDefault(e.getState(), "PENDING");
+        
+        // ACTIVE 상태인 경우에만 종료 가능
+        if ("ACTIVE".equalsIgnoreCase(currentState)) {
+            e.setState("EXPIRED");
+            e.setChatroomActive(0);
+            chatroomRepo.save(e);
+        } else {
+            throw new IllegalStateException("종료할 수 없는 상태입니다.");
+        }
+    }
+
     /* ===================== 읽음 처리 ===================== */
 
     @Transactional
@@ -188,11 +233,25 @@ public class ChatroomService {
     @Transactional(readOnly = true)
     public boolean canPostMessage(Integer roomId, String senderType, Integer senderId) {
         ChatroomEntity e = chatroomRepo.findById(roomId).orElse(null);
-        if (e == null) return false;
+        if (e == null) {
+            System.out.println("[DEBUG] canPostMessage - room not found: " + roomId);
+            return false;
+        }
 
-        // ACTIVE 상태 && 시간 만료 전
-        if (!"ACTIVE".equalsIgnoreCase(getOrDefault(e.getState(), "PENDING"))) return false;
-        if (e.getExpiresAt() != null && LocalDateTime.now().isAfter(e.getExpiresAt())) return false;
+        String state = getOrDefault(e.getState(), "PENDING");
+        System.out.println("[DEBUG] canPostMessage - roomId: " + roomId + ", state: " + state + ", senderType: " + senderType + ", senderId: " + senderId);
+
+        // ACTIVE 상태만 허용 (PENDING 상태에서는 메시지 전송 불가)
+        if (!"ACTIVE".equalsIgnoreCase(state)) {
+            System.out.println("[DEBUG] canPostMessage - invalid state (must be ACTIVE): " + state);
+            return false;
+        }
+
+        // 만료 시간 체크
+        if (e.getExpiresAt() != null && LocalDateTime.now().isAfter(e.getExpiresAt())) {
+            System.out.println("[DEBUG] canPostMessage - room expired: " + e.getExpiresAt());
+            return false;
+        }
 
         boolean isMember = "MEMBER".equalsIgnoreCase(senderType)
                 && e.getMember() != null
@@ -200,6 +259,14 @@ public class ChatroomService {
         boolean isLawyer = "LAWYER".equalsIgnoreCase(senderType)
                 && e.getLawyer() != null
                 && e.getLawyer().getLawyerIdx().equals(senderId);
+
+        System.out.println("[DEBUG] canPostMessage - isMember: " + isMember + ", isLawyer: " + isLawyer);
+        if (e.getMember() != null) {
+            System.out.println("[DEBUG] canPostMessage - room memberIdx: " + e.getMember().getMemberIdx());
+        }
+        if (e.getLawyer() != null) {
+            System.out.println("[DEBUG] canPostMessage - room lawyerIdx: " + e.getLawyer().getLawyerIdx());
+        }
 
         return isMember || isLawyer;
     }
@@ -269,7 +336,18 @@ public class ChatroomService {
                 }
                 return keep;
             })
-            .map(this::convertDTO)
+            .map(e -> {
+                ChatRoomDTO dto = convertDTO(e);
+                // 일반회원용: 변호사 이름만 표시 (예: "강대권변호사")
+                if (e.getLawyer() != null && e.getLawyer().getLawyerName() != null) {
+                    String lawyerName = e.getLawyer().getLawyerName();
+                    dto.setChatroomName(lawyerName + "변호사");
+                }
+                // 읽지 않은 메시지 수 계산 (일반회원용: 변호사가 보낸 메시지)
+                long unreadCount = chatdataRepo.countUnreadMessagesForMemberByRoom(e.getChatroomIdx());
+                dto.setUnreadCount((int) unreadCount);
+                return dto;
+            })
             .sorted((a, b) -> {
                 // lastMessageAt이 있으면 그것으로, 없으면 acceptedAt 또는 requestedAt으로 정렬
                 LocalDateTime aTime = a.getLastMessageAt() != null ? a.getLastMessageAt() 
@@ -332,11 +410,18 @@ public class ChatroomService {
         } else if ("EXPIRED".equalsIgnoreCase(state) || "ENDED".equalsIgnoreCase(state)) {
             // 종료된 방 조회: EXPIRED, DECLINED, CANCELLED 상태 + 만료된 ACTIVE 방
             List<String> endedStates = List.of("EXPIRED", "DECLINED", "CANCELLED");
-            List<ChatroomEntity> endedList = chatroomRepo
+            
+            // chatroomActive = 1인 종료된 방 조회
+            List<ChatroomEntity> endedListActive = chatroomRepo
                 .findByMemberMemberIdxAndStateInAndChatroomActiveOrderByLastMessageAtDesc(
                     memberIdx, endedStates, 1, pr);
             
-            System.out.println("[DEBUG] Found " + endedList.size() + " rooms with ended states: " + endedStates);
+            // chatroomActive = 0인 종료된 방도 조회 (일찍 종료한 방 포함)
+            List<ChatroomEntity> endedListInactive = chatroomRepo
+                .findByMemberMemberIdxAndStateInAndChatroomActiveOrderByLastMessageAtDesc(
+                    memberIdx, endedStates, 0, pr);
+            
+            System.out.println("[DEBUG] Found " + endedListActive.size() + " active ended rooms and " + endedListInactive.size() + " inactive ended rooms");
             
             // 만료된 ACTIVE 방도 찾기
             List<ChatroomEntity> activeList = chatroomRepo
@@ -359,10 +444,28 @@ public class ChatroomService {
                 System.out.println("[DEBUG] Updated " + expiredActiveRooms.size() + " expired ACTIVE rooms to EXPIRED");
             }
             
-            // 종료된 방과 만료된 ACTIVE 방 합치기
-            list = new java.util.ArrayList<>(endedList);
-            list.addAll(expiredActiveRooms);
-            System.out.println("[DEBUG] Total ended rooms: " + list.size() + " (ended states: " + endedList.size() + ", expired ACTIVE: " + expiredActiveRooms.size() + ")");
+            // 종료된 방과 만료된 ACTIVE 방 합치기 (중복 제거)
+            java.util.Set<Integer> roomIds = new java.util.HashSet<>();
+            list = new java.util.ArrayList<>();
+            for (ChatroomEntity e : endedListActive) {
+                if (!roomIds.contains(e.getChatroomIdx())) {
+                    list.add(e);
+                    roomIds.add(e.getChatroomIdx());
+                }
+            }
+            for (ChatroomEntity e : endedListInactive) {
+                if (!roomIds.contains(e.getChatroomIdx())) {
+                    list.add(e);
+                    roomIds.add(e.getChatroomIdx());
+                }
+            }
+            for (ChatroomEntity e : expiredActiveRooms) {
+                if (!roomIds.contains(e.getChatroomIdx())) {
+                    list.add(e);
+                    roomIds.add(e.getChatroomIdx());
+                }
+            }
+            System.out.println("[DEBUG] Total ended rooms: " + list.size() + " (active ended: " + endedListActive.size() + ", inactive ended: " + endedListInactive.size() + ", expired ACTIVE: " + expiredActiveRooms.size() + ")");
         } else {
             list = chatroomRepo
                 .findByMemberMemberIdxAndStateAndChatroomActiveOrderByLastMessageAtDesc(
@@ -372,7 +475,18 @@ public class ChatroomService {
         // memberDeleted 필터링 및 정렬
         return list.stream()
             .filter(e -> e.getMemberDeleted() == null || e.getMemberDeleted() == 0)
-            .map(this::convertDTO)
+            .map(e -> {
+                ChatRoomDTO dto = convertDTO(e);
+                // 일반회원용: 변호사 이름만 표시 (예: "강대권변호사")
+                if (e.getLawyer() != null && e.getLawyer().getLawyerName() != null) {
+                    String lawyerName = e.getLawyer().getLawyerName();
+                    dto.setChatroomName(lawyerName + "변호사");
+                }
+                // 읽지 않은 메시지 수 계산 (일반회원용: 변호사가 보낸 메시지)
+                long unreadCount = chatdataRepo.countUnreadMessagesForMemberByRoom(e.getChatroomIdx());
+                dto.setUnreadCount((int) unreadCount);
+                return dto;
+            })
             .sorted((a, b) -> {
                 LocalDateTime aTime = a.getLastMessageAt() != null ? a.getLastMessageAt() 
                     : (a.getAcceptedAt() != null ? a.getAcceptedAt() : a.getRequestedAt());
@@ -391,13 +505,9 @@ public class ChatroomService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> getMemberRoomBadges(Integer memberIdx) {
-        int pending = chatroomRepo
-            .countByMemberMemberIdxAndStateAndChatroomActive(memberIdx, "PENDING", 1);
-        int active  = chatroomRepo
-            .countByMemberMemberIdxAndStateAndChatroomActive(memberIdx, "ACTIVE", 1);
-
-        Integer unread = 0; // 필요 시 chatdataRepo로 계산
-        return Map.of("pending", pending, "active", active, "unread", unread);
+        // 일반회원: 읽지 않은 메시지 수만 (대기중 방 제외)
+        long unread = chatdataRepo.countUnreadMessagesForMember(memberIdx);
+        return Map.of("pending", 0, "active", 0, "unread", (int) unread);
     }
 
     /* ===================== 목록/배지: 변호사 ===================== */
@@ -408,7 +518,19 @@ public class ChatroomService {
         List<ChatroomEntity> list = chatroomRepo
             .findByLawyerLawyerIdxAndStateAndChatroomActiveOrderByLastMessageAtDesc(
                 lawyerIdx, state.toUpperCase(), 1, pr);
-        return list.stream().map(this::convertDTO).toList();
+        return list.stream()
+            .map(e -> {
+                ChatRoomDTO dto = convertDTO(e);
+                // 변호사용: 일반회원 이름만 표시
+                if (e.getMember() != null && e.getMember().getMemberName() != null) {
+                    dto.setChatroomName(e.getMember().getMemberName());
+                }
+                // 읽지 않은 메시지 수 계산 (변호사용: 일반회원이 보낸 메시지)
+                long unreadCount = chatdataRepo.countUnreadMessagesForLawyerByRoom(e.getChatroomIdx());
+                dto.setUnreadCount((int) unreadCount);
+                return dto;
+            })
+            .toList();
     }
 
     @Transactional(readOnly = true)
@@ -417,18 +539,28 @@ public class ChatroomService {
         List<ChatroomEntity> list = chatroomRepo
             .findByLawyerLawyerIdxAndStateInAndChatroomActiveOrderByLastMessageAtDesc(
                 lawyerIdx, states, 1, pr);
-        return list.stream().map(this::convertDTO).toList();
+        return list.stream()
+            .map(e -> {
+                ChatRoomDTO dto = convertDTO(e);
+                // 변호사용: 일반회원 이름만 표시
+                if (e.getMember() != null && e.getMember().getMemberName() != null) {
+                    dto.setChatroomName(e.getMember().getMemberName());
+                }
+                // 읽지 않은 메시지 수 계산 (변호사용: 일반회원이 보낸 메시지)
+                long unreadCount = chatdataRepo.countUnreadMessagesForLawyerByRoom(e.getChatroomIdx());
+                dto.setUnreadCount((int) unreadCount);
+                return dto;
+            })
+            .toList();
     }
 
     @Transactional(readOnly = true)
     public Map<String, Object> getLawyerRoomBadges(Integer lawyerIdx) {
+        // 변호사: 대기중 방 수 + 읽지 않은 메시지 수
         int pending = chatroomRepo
             .countByLawyerLawyerIdxAndStateAndChatroomActive(lawyerIdx, "PENDING", 1);
-        int active  = chatroomRepo
-            .countByLawyerLawyerIdxAndStateAndChatroomActive(lawyerIdx, "ACTIVE", 1);
-
-        Integer unread = 0; // 필요 시 chatdataRepo로 계산
-        return Map.of("pending", pending, "active", active, "unread", unread);
+        long unread = chatdataRepo.countUnreadMessagesForLawyer(lawyerIdx);
+        return Map.of("pending", pending, "active", 0, "unread", (int) unread);
     }
 
     /* ===================== 참여자 체크 ===================== */
