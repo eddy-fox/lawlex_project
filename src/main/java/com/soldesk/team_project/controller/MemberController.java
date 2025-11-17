@@ -203,11 +203,7 @@ public class MemberController {
         if (lOpt.isPresent()) {
             LawyerEntity l = lOpt.get();
 
-            // 🔒 미승인(0) 또는 null이면 로그인 불가
-            if (l.getLawyerAuth() == null || l.getLawyerAuth() != 1) {
-                return "redirect:/member/login?error=pending"; // "승인 대기 중" 처리
-            }
-
+            // 비밀번호 확인
             if (!passwordMatches(rawPw, l.getLawyerPass())) {
                 return "redirect:/member/login?error=badpw";
             }

@@ -47,6 +47,7 @@ public class BoardController {
     private final CategoryRecommendService categoryRecommendService;
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
+    private final com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
 
     @GetMapping("/list")
     public String list(Model model, 
@@ -71,18 +72,27 @@ public class BoardController {
 
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id, ReBoardForm reboardForm,
-                         HttpSession session) {
+                         HttpSession session,
+                         @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        ReBoardEntity reboard = this.reboardService.getReboardByBoardIdx(id);
         model.addAttribute("boardEntity", boardEntity);
+        
+        // 로그인 사용자 정보 추가
+        model.addAttribute("loginUser", loginUser);
+        
+        // 로그인한 변호사 정보 추가 (프로필 사진용)
+        if (loginUser != null && loginUser.getRole() != null && "LAWYER".equals(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+            lawyerRepository.findById(loginUser.getLawyerIdx()).ifPresent(lawyer -> {
+                model.addAttribute("loginLawyer", lawyer);
+            });
+        }
         
         // 관리자 권한 확인
         AdminEntity loginAdmin = getLoginAdmin(session);
         boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
         model.addAttribute("isAdmin", isAdmin);
         
-        model.addAttribute("reboard", reboard);
         return "board/reBoard";
 
     }

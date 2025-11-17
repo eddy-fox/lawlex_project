@@ -15,6 +15,49 @@
       };
     });
   });
+
+  // 답변 달기 버튼 토글 기능
+  (function() {
+    // DOM이 완전히 로드된 후 실행
+    function initAnswerToggle() {
+      const answerToggleBtn = document.getElementById('answerToggleBtn');
+      const answerFormWrapper = document.getElementById('answerFormWrapper');
+      const answerCancelBtn = document.getElementById('answerCancelBtn');
+      const answerTextarea = document.querySelector('.answer-textarea');
+
+      if (answerToggleBtn && answerFormWrapper) {
+        answerToggleBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const currentDisplay = window.getComputedStyle(answerFormWrapper).display;
+          if (currentDisplay === 'none' || answerFormWrapper.style.display === 'none') {
+            answerFormWrapper.style.display = 'flex';
+            if (answerTextarea) {
+              setTimeout(() => answerTextarea.focus(), 100);
+            }
+          } else {
+            answerFormWrapper.style.display = 'none';
+          }
+        });
+
+        if (answerCancelBtn) {
+          answerCancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            answerFormWrapper.style.display = 'none';
+            if (answerTextarea) {
+              answerTextarea.value = '';
+            }
+          });
+        }
+      }
+    }
+
+    // DOM 로드 완료 후 실행
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAnswerToggle);
+    } else {
+      initAnswerToggle();
+    }
+  })();
   
   (function(){
     const openBtn = document.getElementById('open');
