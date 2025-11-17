@@ -14,91 +14,97 @@
     <section class="center-card">
       <div class="head">
         <h1 class="title">회원가입</h1>
-        <!-- 서버 에러 플래시 메시지 -->
-        <p class="alert error" th:if="${error}" th:text="${error}">에러 메시지</p>
       </div>
 
-      <!-- 실제 서버 제출용: /member/api/join/normal -->
-      <form id="gJoinForm" class="form" th:action="@{/member/api/join/normal}" method="post">
-        <!-- 아이디 -->
+      <!-- 가입 폼 -->
+      <form id="joinForm" class="form" th:action="@{/member/join/normal}" method="post" novalidate>
+        <!-- ✅ CSRF (있을 때만 렌더) -->
+        <th:block th:if="${_csrf != null}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        </th:block>
+
+        <!-- 아이디 + 중복확인 -->
         <div class="field">
+          <label for="memberId" class="sr-only">아이디</label>
           <div class="inline">
-            <input class="input" id="memberId" name="memberId" type="text" placeholder="아이디" autocomplete="username" required>
+            <input id="memberId" name="memberId" class="input" type="text" placeholder="아이디" autocomplete="username" required>
             <button class="pill" type="button" id="dupBtn">중복확인</button>
           </div>
-          <small id="idHelp" class="help"></small>
+          <small id="dupMsg" class="help"></small>
         </div>
 
         <!-- 비밀번호 -->
         <div class="field">
-          <input class="input" id="memberPass" name="memberPass" type="password" placeholder="비밀번호" autocomplete="new-password" required>
+          <label for="memberPass" class="sr-only">비밀번호</label>
+          <input id="memberPass" name="memberPass" class="input" type="password" placeholder="비밀번호" autocomplete="new-password" required>
         </div>
 
-        <!-- 비밀번호 확인 -->
+        <!-- 비밀번호 확인 (서버 전송 X) -->
         <div class="field">
-          <input class="input" id="memberPass2" name="memberPass2" type="password" placeholder="비밀번호 확인" autocomplete="new-password" required>
-          <small id="passHelp" class="help"></small>
+          <label for="passConfirm" class="sr-only">비밀번호 확인</label>
+          <input id="passConfirm" class="input" type="password" placeholder="비밀번호 확인" autocomplete="new-password" required>
+          <small id="pwMsg" class="help"></small>
         </div>
 
-        <!-- 닉네임 -->
+        <!-- 닉네임 / 이메일 -->
         <div class="field">
-          <input class="input" id="memberNickname" name="memberNickname" type="text" placeholder="닉네임" required>
+          <label for="memberNickname" class="sr-only">닉네임</label>
+          <input id="memberNickname" name="memberNickname" class="input" type="text" placeholder="닉네임" required>
+        </div>
+        <div class="field">
+          <label for="memberEmail" class="sr-only">이메일</label>
+          <input id="memberEmail" name="memberEmail" class="input" type="email" placeholder="이메일" autocomplete="email" required>
+          <small id="emailMsg" class="help"></small>
         </div>
 
-        <!-- 이메일 -->
+        <!-- 전화번호 / 생년월일(주민번호 앞자리) -->
         <div class="field">
-          <input class="input" id="memberEmail" name="memberEmail" type="email" placeholder="이메일" autocomplete="email" required>
+          <label for="memberPhone" class="sr-only">전화번호</label>
+          <input id="memberPhone" name="memberPhone" class="input" type="tel" placeholder="전화번호(예: 010-1234-5678)" inputmode="numeric" required>
+          <small id="phoneMsg" class="help"></small>
+        </div>
+        <div class="field">
+          <label for="memberIdnum" class="sr-only">생년월일</label>
+          <input id="memberIdnum" name="memberIdnum" class="input" type="text" placeholder="생년월일(예: 990101)" inputmode="numeric" required>
+          <small id="birthMsg" class="help"></small>
         </div>
 
-        <!-- 전화번호 -->
+        <!-- 관심 분야 3개 (Interest 테이블 값 사용) -->
         <div class="field">
-          <input class="input" id="memberPhone" name="memberPhone" type="tel" placeholder="전화번호" inputmode="numeric" required>
-        </div>
-
-        <!-- 생년월일(= memberIdnum) -->
-        <div class="field">
-          <!-- date를 쓰되 서버에서는 digits()로 숫자만 사용 -->
-          <input class="input" id="memberIdnum" name="memberIdnum" type="date" placeholder="생년월일" required>
-        </div>
-
-        <!-- 관심분야 3개 -->
-        <div class="field">
-          <div class="inline" style="gap:.5rem; width:100%;">
-            <select class="input" id="interestIdx1" name="interestIdx1" required style="flex:1;">
-              <option value="">관심 분야 1</option>
+          <div class="inline">
+            <select id="interest1" name="interestIdx1" class="input" required>
+              <option value="" disabled selected>관심 분야 1</option>
               <option th:each="it : ${interests}"
-                      th:value="${it.interest_idx}"
-                      th:text="${it.interest_name}">형사</option>
+                      th:value="${it.interestIdx}"
+                      th:text="${it.interestName}">형사</option>
             </select>
-            <select class="input" id="interestIdx2" name="interestIdx2" required style="flex:1;">
-              <option value="">관심 분야 2</option>
+            <select id="interest2" name="interestIdx2" class="input" required>
+              <option value="" disabled selected>관심 분야 2</option>
               <option th:each="it : ${interests}"
-                      th:value="${it.interest_idx}"
-                      th:text="${it.interest_name}">민사</option>
+                      th:value="${it.interestIdx}"
+                      th:text="${it.interestName}">민사</option>
             </select>
-            <select class="input" id="interestIdx3" name="interestIdx3" required style="flex:1;">
-              <option value="">관심 분야 3</option>
+            <select id="interest3" name="interestIdx3" class="input" required>
+              <option value="" disabled selected>관심 분야 3</option>
               <option th:each="it : ${interests}"
-                      th:value="${it.interest_idx}"
-                      th:text="${it.interest_name}">가사</option>
+                      th:value="${it.interestIdx}"
+                      th:text="${it.interestName}">가사</option>
             </select>
           </div>
-          <small id="interestHelp" class="help"></small>
+          <small id="interestMsg" class="help"></small>
         </div>
 
-        <!-- 개인정보 수신 동의 -->
+        <!-- 개인정보 수신 동의 토글 -->
         <div class="field">
           <div class="agree-area">
             <input type="hidden" id="memberAgree" name="memberAgree" value="N">
             <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
           </div>
-          <small id="privacyHelp" class="help"></small>
+          <small id="agreeMsg" class="help"></small>
         </div>
 
         <div class="divider"></div>
-
         <button class="primary-btn" type="submit" id="submitBtn">회원가입</button>
-        <small id="submitHelp" class="help"></small>
       </form>
     </section>
   </main>

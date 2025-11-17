@@ -28,7 +28,7 @@ public class ReBoardService {
         ReBoardEntity reboard = new ReBoardEntity();
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
-        reboard.setBoard(board);
+        reboard.setBoardEntity(board);
         reboard.setLawyer(lawyer);
         this.reboardRepository.save(reboard);
         return reboard;
@@ -43,6 +43,12 @@ public class ReBoardService {
         } else {
             throw new DataNotFoundException("reboard not found");
         }
+
+    }
+
+    public ReBoardEntity getReboardByBoardIdx(Integer boardIdx) {
+
+        return this.reboardRepository.findByBoardEntityBoardIdx(boardIdx).orElse(null);
 
     }
 

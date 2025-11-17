@@ -45,10 +45,8 @@ public class ReBoardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
-    private BoardEntity boardIdx;
+    private BoardEntity boardEntity;
 
-    @ManyToOne
-    private BoardEntity board;
 
     @ManyToMany
     Set<LawyerEntity> voter;

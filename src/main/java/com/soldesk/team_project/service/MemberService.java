@@ -12,15 +12,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
+import com.soldesk.team_project.entity.InterestEntity;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 
-import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.entity.LawyerEntity;
+
+import java.util.NoSuchElementException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 @Service
 @RequiredArgsConstructor
@@ -155,19 +163,23 @@ public class MemberService {
         return memberDup || lawyerDup;
     }
 
-    // 일반 회원가입 (항상 BCrypt 저장) 
+    // 일반 회원가입 (항상 BCrypt 저장)
     @Transactional
     public void joinNormal(MemberDTO dto) {
+        // 중복 체크
         if (isUserIdDuplicate(dto.getMemberId())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
+        // 관심분야 검증(서로 달라야 함)
         validateDistinctInterests(dto);
 
+        // 비번 인코딩
         String enc = passwordEncoder.encode(dto.getMemberPass());
 
+        // DB 하위호환: interest_idx(단일) NOT NULL 대응 → interestIdx1 값으로 채워 저장
         MemberEntity me = MemberEntity.builder()
                 .memberId(dto.getMemberId())
-                .memberPass(enc) // 항상 해시 저장
+                .memberPass(enc)
                 .memberName(dto.getMemberName())
                 .memberEmail(dto.getMemberEmail())
                 .memberPhone(digits(dto.getMemberPhone()))
@@ -175,6 +187,9 @@ public class MemberService {
                 .memberNickname(dto.getMemberNickname())
                 .memberAgree(dto.getMemberAgree())
                 .memberActive(1)
+                // 호환 컬럼
+                .interestIdx(dto.getInterestIdx1())
+                // 새 3필드
                 .interestIdx1(dto.getInterestIdx1())
                 .interestIdx2(dto.getInterestIdx2())
                 .interestIdx3(dto.getInterestIdx3())
@@ -182,6 +197,7 @@ public class MemberService {
 
         memberRepository.save(me);
     }
+
 
     // 일반회원 프로필 수정 세션의 memberIdx로 검증
     @Transactional
@@ -226,6 +242,32 @@ public class MemberService {
         // 컨트롤러에서 쓰는 반환 타입 유지
         return new MemberUpdateResult(me.getMemberId(), me);
     }
+
+    // 세션에서 로그인된 유저 가져오기
+
+    //  서비스 내부에서 세션의 loginUser(UserMasterDTO) 꺼내기
+    private UserMasterDTO currentLoginUserOrThrow() {
+        ServletRequestAttributes attrs =
+            (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attrs.getRequest().getSession(false);
+        if (session == null) throw new IllegalStateException("로그인이 필요합니다.");
+        Object obj = session.getAttribute("loginUser");
+        if (obj instanceof UserMasterDTO u) return u;
+        throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
+    }
+
+    // 세션의 로그인 유저가 일반회원일 때, 그 프로필 DTO 반환
+    @Transactional(readOnly = true)
+    public MemberDTO getSessionMember() {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"MEMBER".equalsIgnoreCase(login.getRole())) {
+            throw new IllegalStateException("일반회원만 접근 가능합니다.");
+        }
+        return memberRepository.findById(login.getMemberIdx())
+                .map(this::convertMemberDTO)
+                .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
+    }
+    
 
     // OAuth2
     @Transactional
@@ -313,5 +355,76 @@ public class MemberService {
         MemberDTO memberDTO = convertMemberDTO(memberEntity);
         return memberDTO;
     }
-    
+
+    /* ===================== [ADD] gmodify 전용 메서드들 ===================== */
+
+    // gmodify에서 관심분야 3개를 모두 채운 DTO 반환
+    private MemberDTO convertMemberDTOFull(MemberEntity e) {
+        MemberDTO d = new MemberDTO();
+        d.setMemberIdx(e.getMemberIdx());
+        d.setMemberId(e.getMemberId());
+        d.setMemberPass(e.getMemberPass());
+        d.setMemberName(e.getMemberName());
+        d.setMemberIdnum(e.getMemberIdnum());
+        d.setMemberEmail(e.getMemberEmail());
+        d.setMemberPhone(e.getMemberPhone());
+        d.setMemberAgree(e.getMemberAgree());
+        d.setMemberNickname(e.getMemberNickname());
+        d.setMemberActive(e.getMemberActive());
+        d.setInterestIdx1(e.getInterestIdx1());
+        d.setInterestIdx2(e.getInterestIdx2());
+        d.setInterestIdx3(e.getInterestIdx3());
+        return d;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDTO loadProfileForModify() {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"MEMBER".equalsIgnoreCase(login.getRole())) {
+            throw new IllegalStateException("일반회원만 접근 가능합니다.");
+        }
+        MemberEntity me = memberRepository.findById(login.getMemberIdx())
+                .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
+        return convertMemberDTOFull(me);
+    }
+
+    @Transactional
+    public MemberUpdateResult updateProfileForCurrent(MemberDTO dto, String newPassword, String confirmPassword) {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"MEMBER".equalsIgnoreCase(login.getRole())) {
+            throw new IllegalStateException("일반회원만 접근 가능합니다.");
+        }
+        return updateMemberProfile(dto, newPassword, confirmPassword, null, login.getMemberIdx());
+    }
+
+    @Transactional
+    public String changePasswordWithVerificationForCurrent(String memberPhone, String memberIdnum,
+                                                           String newPassword, String confirmPassword) {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"MEMBER".equalsIgnoreCase(login.getRole())) {
+            return "FAIL";
+        }
+        return resetPassword(login.getUserId(), memberPhone, memberIdnum, newPassword, confirmPassword);
+    }
+
+    @Transactional
+    public boolean deactivateWithVerificationForCurrent(String memberPhone, String memberIdnum) {
+        UserMasterDTO login = currentLoginUserOrThrow();
+        if (login.getRole() == null || !"MEMBER".equalsIgnoreCase(login.getRole())) {
+            return false;
+        }
+        String phone = digits(memberPhone);
+        String idnum = digits(memberIdnum);
+
+        MemberEntity me = memberRepository.findById(login.getMemberIdx())
+                .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
+
+        boolean verified = Objects.equals(phone, me.getMemberPhone())
+                        && Objects.equals(idnum, me.getMemberIdnum());
+        if (!verified) return false;
+
+        me.setMemberActive(0); // 소프트 삭제
+        memberRepository.save(me);
+        return true;
+    }
 }

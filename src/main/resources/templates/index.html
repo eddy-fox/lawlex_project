@@ -314,9 +314,22 @@
     });
   </script>
 
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/chatIcon.js}"></script>
-  <script th:src="@{/js/index.js}"></script>
-</body>
+<!-- ✅ 추가: 마이페이지 버튼 강제 이동 (다른 코드에 영향 없음) -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('btnMypage');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var url = btn.getAttribute('data-url') || '/member/mypage';
+      window.location.assign(url); // 절대경로로 확실히 이동
+    }, { capture: true });
+  });
+</script>
 
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/chatIcon.js}"></script>
+    <script th:src="@{/js/index.js}"></script>
+</body>
 </html>
