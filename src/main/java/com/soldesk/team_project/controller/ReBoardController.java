@@ -51,7 +51,7 @@ public class ReBoardController {
             return "question_detail";
         }
         ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboardContent(), lawyerEntity);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
 
@@ -86,7 +86,7 @@ public class ReBoardController {
         }
         this.reboardService.modify(reboardEntity, reboardForm.getReboardContent());
         return String.format("redirect:/board/detail/%s#reboard_%s",
-                reboardEntity.getBoard().getBoardIdx(),
+                reboardEntity.getBoardEntity().getBoardIdx(),
                 reboardEntity.getReboardIdx());
 
     }
@@ -102,7 +102,7 @@ public class ReBoardController {
         }
         this.reboardService.delete(reboardEntity);
         return String.format("redirect:/board/detail/%s",
-                reboardEntity.getBoard().getBoardIdx());
+                reboardEntity.getBoardEntity().getBoardIdx());
                 
     }
 
@@ -113,7 +113,7 @@ public class ReBoardController {
         ReBoardEntity reboard = this.reboardService.getReboard(id);
         LawyerEntity lawyer = this.lawyerService.getLawyer(principal.getName());
         this.reboardService.vote(reboard, lawyer);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboard.getBoard().getBoardIdx(), reboard.getReboardIdx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboard.getBoardEntity().getBoardIdx(), reboard.getReboardIdx());
         
     }
 

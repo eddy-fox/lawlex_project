@@ -21,8 +21,10 @@ import com.soldesk.team_project.form.BoardForm;
 import com.soldesk.team_project.form.ReBoardForm;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.MemberService;
+import com.soldesk.team_project.service.ReBoardService;
 import com.soldesk.team_project.service.CategoryRecommendService;
 
 import jakarta.validation.Valid;
@@ -35,6 +37,7 @@ public class BoardController {
     
     private final BoardService boardService;
     private final MemberService memberService;
+    private final ReBoardService reboardService;
     private final CategoryRecommendService categoryRecommendService;
 
     @GetMapping("/list")
@@ -62,7 +65,9 @@ public class BoardController {
     public String detail(Model model, @PathVariable("id") Integer id, ReBoardForm reboardForm) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
+        ReBoardEntity reboard = this.reboardService.getReboardByBoardIdx(id);
         model.addAttribute("boardEntity", boardEntity);
+        model.addAttribute("reboard", reboard);
         return "board/reBoard";
 
     }
