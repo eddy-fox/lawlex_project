@@ -23,8 +23,10 @@ import com.soldesk.team_project.form.ReBoardForm;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.MemberService;
+import com.soldesk.team_project.service.ReBoardService;
 import com.soldesk.team_project.service.CategoryRecommendService;
 import com.soldesk.team_project.repository.AdminRepository;
 import com.soldesk.team_project.repository.MemberRepository;
@@ -41,6 +43,7 @@ public class BoardController {
     
     private final BoardService boardService;
     private final MemberService memberService;
+    private final ReBoardService reboardService;
     private final CategoryRecommendService categoryRecommendService;
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
@@ -71,6 +74,7 @@ public class BoardController {
                          HttpSession session) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
+        ReBoardEntity reboard = this.reboardService.getReboardByBoardIdx(id);
         model.addAttribute("boardEntity", boardEntity);
         
         // 관리자 권한 확인
@@ -78,6 +82,7 @@ public class BoardController {
         boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
         model.addAttribute("isAdmin", isAdmin);
         
+        model.addAttribute("reboard", reboard);
         return "board/reBoard";
 
     }

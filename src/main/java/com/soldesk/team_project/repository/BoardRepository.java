@@ -45,4 +45,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) ORDER BY b.boardViews DESC")
     List<BoardEntity> findTop5ActiveBoardsByOrderByBoardViewsDesc(Pageable pageable);
                                         
+    // 조회수 높은 순서로 조회 (상위 5개)
+    List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
+
+
+           
 }
