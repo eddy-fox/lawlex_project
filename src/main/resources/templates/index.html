@@ -10,21 +10,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 
-<div class="wrap" style="display:flex; justify-content:flex-end; gap:8px; margin:12px 0;">
-  <button th:if="${session.loginUser != null}"
-          id="btnMypage"
-          class="primary-btn"
-          type="button"
-          data-url="/member/mypage">
-    마이페이지
-  </button>
 
-  <a th:if="${session.loginUser == null}"
-     class="small-btn"
-     th:href="@{/member/login(need='mypage')}">
-    로그인하고 마이페이지
-  </a>
-</div>
 
     <main class="page-index">
       <section class="hero">
