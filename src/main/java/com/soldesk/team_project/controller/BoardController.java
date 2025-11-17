@@ -63,9 +63,16 @@ public class BoardController {
        
         paging = this.boardService.getListByInterest(page, kw, interestIdx);
    
+        // 페이징 범위 계산 (10개씩 표시)
+        int currentBlock = page / 10;
+        int startPage = currentBlock * 10;
+        int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+        
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
         model.addAttribute("interestIdx", interestIdx);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         return "board/list";
 
     }
