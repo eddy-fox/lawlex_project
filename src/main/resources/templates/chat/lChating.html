@@ -24,7 +24,8 @@
   <div class="container">
     <div class="room"
          th:attr="data-room-id=${room != null ? room.chatroomIdx : 0},
-                  data-me-lawyer-id=${meLawyerIdx != null ? meLawyerIdx : 0}">
+                  data-me-lawyer-id=${meLawyerIdx != null ? meLawyerIdx : 0},
+                  data-room-state=${room != null ? room.state : ''}">
 
       <!-- ===== 상단 헤더 ===== -->
       <header class="head">
@@ -64,46 +65,48 @@
       <div id="msgs" class="msgs">
         <!-- 첫 번째 메시지가 마지막 읽은 메시지 이후인 경우 마커 표시 -->
         <div th:if="${lastReadChatIdx != null and !#lists.isEmpty(initBatch) and initBatch[0].chatIdx > lastReadChatIdx}"
-             class="read-marker"
-             style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin-bottom: 8px;">
+             class="read-marker-row"
+             style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin: 8px 0;">
           ---여기까지 읽었습니다---
         </div>
 
         <!-- 초기 메시지 배치 렌더 -->
-        <div th:each="m, iterStat : ${initBatch}"
-             th:class="'msg-row ' + (${m.senderType} == 'LAWYER' ? 'lawyer' : 'user')">
-
-          <!-- 마지막 읽은 메시지 이후 마커 표시 (메시지 앞에) -->
+        <th:block th:each="m, iterStat : ${initBatch}">
+          <!-- 마지막 읽은 메시지 이후 마커 표시 (메시지 앞에, 별도 row로) -->
           <div th:if="${lastReadChatIdx != null and iterStat.index > 0 and initBatch[iterStat.index - 1].chatIdx == lastReadChatIdx}"
-               class="read-marker"
-               style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin-bottom: 8px;">
+               class="read-marker-row"
+               style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin: 8px 0;">
             ---여기까지 읽었습니다---
           </div>
 
-          <!-- 내가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간 -->
+          <div th:class="'msg-row ' + (${m.senderType} == 'LAWYER' ? 'user' : 'lawyer')"
+               th:attr="data-chat-idx=${m.chatIdx}">
+
+          <!-- 내가 보낸 메시지(LAWYER) → 오른쪽, 시간 먼저 -->
+          <div th:if="${m.senderType == 'LAWYER'}" class="meta"
+               th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
+
           <div th:if="${m.chatContent != null}" class="bubble">
             <div th:text="${m.chatContent}">메시지 내용</div>
           </div>
 
-          <!-- 상대(일반회원)가 보낸 메시지 → 오른쪽, 시간 먼저 -->
-          <div th:if="${m.senderType == 'MEMBER'}" class="meta"
-               th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
-
-          <!-- 내가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간 -->
-          <div th:if="${m.senderType == 'LAWYER'}" class="meta"
-               th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
-
-          <!-- 첨부 이미지가 있을 때 -->
+          <!-- 첨부 이미지가 있을 때 (텍스트와 같은 위치에 배치) -->
           <div th:if="${m.attachments != null and !m.attachments.isEmpty()}"
                class="media">
             <a th:each="att : ${m.attachments}"
-               th:href="@{'/chat/attachment/' + ${att.attachmentId}}"
+               th:if="${att.fileUrl != null}"
+               th:href="${att.fileUrl}"
                target="_blank">
-              <img th:src="@{'/chat/attachment/' + ${att.attachmentId}}"
+              <img th:src="${att.fileUrl}"
                    th:alt="${att.fileName != null ? att.fileName : '첨부파일'}">
             </a>
           </div>
-        </div>
+
+          <!-- 상대(일반회원)가 보낸 메시지 → 왼쪽, 말풍선 뒤에 시간 -->
+          <div th:if="${m.senderType == 'MEMBER'}" class="meta"
+               th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
+          </div>
+        </th:block>
       </div>
 
       <!-- ===== 입력 영역 (로그인된 변호사만) ===== -->

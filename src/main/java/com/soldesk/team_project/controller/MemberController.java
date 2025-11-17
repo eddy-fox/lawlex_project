@@ -62,9 +62,8 @@ public class MemberController {
 
     private final JwtProvider jwtProvider;
 
-    // /member 또는 /member/ 요청 시 메인
-    @GetMapping({"", "/"})
-    public String memberRoot() { return "index"; }
+    // /member 또는 /member/ 요청 시 메인 (HomeController가 처리)
+    // HomeController에 /member 매핑 추가됨
 
     // -------------------- 포인트 --------------------
     @GetMapping("/point")

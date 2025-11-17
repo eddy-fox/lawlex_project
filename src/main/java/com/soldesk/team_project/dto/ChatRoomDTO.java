@@ -30,5 +30,6 @@ public class ChatRoomDTO {
 
     private Integer memberIdx;
     private Integer lawyerIdx;
+    private String lawyerImgPath;  // 변호사 프로필 사진 경로
 
 }

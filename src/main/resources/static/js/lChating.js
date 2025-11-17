@@ -36,6 +36,9 @@
 
   // 웹소켓(STOMP)
   var stompClient = null;
+  
+  // 이미 표시된 메시지 ID 추적
+  var displayedChatIds = new Set();
 
   // ====== 유틸 ======
   function uid() {
@@ -84,6 +87,15 @@
           var body = JSON.parse(message.body);
           console.log('[DEBUG] Received message:', body);
           appendMessageDom(body);
+        });
+        
+        // 채팅방 상태 변경 구독 (채팅 종료 시 textarea 비활성화)
+        stompClient.subscribe('/topic/room/' + roomId + '/status', function (message) {
+          var body = JSON.parse(message.body);
+          console.log('[DEBUG] Room status changed:', body);
+          if (body.state === 'EXPIRED' || body.state === 'CANCELLED') {
+            disableChatInput();
+          }
         });
       }, function(error) {
         console.error('[DEBUG] WebSocket connection error:', error);
@@ -148,17 +160,28 @@
       console.error('[DEBUG] msgs element not found');
       return;
     }
+    // 중복 방지: 이미 표시된 메시지는 추가하지 않음
+    if (msg.chatIdx && displayedChatIds.has(msg.chatIdx)) {
+      console.log('[DEBUG] Message already displayed, skipping:', msg.chatIdx);
+      return;
+    }
+    if (msg.chatIdx) {
+      displayedChatIds.add(msg.chatIdx);
+    }
     console.log('[DEBUG] appendMessageDom called with:', msg);
     // 변호사 화면 기준:
-    // 내가 보낸(LAWYER) → 왼쪽 .lawyer
-    // 일반회원이 보낸(MEMBER) → 오른쪽 .user
+    // 내가 보낸(LAWYER) → 오른쪽 .user (하얀색)
+    // 일반회원이 보낸(MEMBER) → 왼쪽 .lawyer (파란색)
     var isMe = msg.senderType && msg.senderType.toUpperCase() === 'LAWYER';
+    console.log('[DEBUG] lChating - senderType:', msg.senderType, 'isMe:', isMe);
 
     var row = document.createElement('div');
-    row.className = 'msg-row ' + (isMe ? 'lawyer' : 'user');
+    var rowClass = 'msg-row ' + (isMe ? 'user' : 'lawyer');
+    row.className = rowClass;
+    console.log('[DEBUG] lChating - row class:', rowClass);
 
-    // 일반회원이 보낸 메시지(MEMBER) → 오른쪽, 시간 먼저
-    if (!isMe) {
+    // 내가 보낸 메시지(LAWYER) → 오른쪽, 시간 먼저
+    if (isMe) {
       var meta1 = document.createElement('div');
       meta1.className = 'meta';
       meta1.textContent = formatTime(msg.chatRegDate);
@@ -175,29 +198,30 @@
       row.appendChild(bubble);
     }
 
-    // 변호사가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간
-    if (isMe) {
-      var meta2 = document.createElement('div');
-      meta2.className = 'meta';
-      meta2.textContent = formatTime(msg.chatRegDate);
-      row.appendChild(meta2);
-    }
-
-    // 첨부 이미지
+    // 첨부 이미지 (텍스트와 같은 위치에 배치)
     if (msg.attachments && msg.attachments.length > 0) {
       var media = document.createElement('div');
       media.className = 'media';
       msg.attachments.forEach(function (att) {
+        if (!att.fileUrl) return; // fileUrl이 없으면 스킵
         var a = document.createElement('a');
-        a.href = '/chat/attachment/' + att.attachmentId;
+        a.href = att.fileUrl;
         a.target = '_blank';
         var im = document.createElement('img');
-        im.src = '/chat/attachment/' + att.attachmentId;
+        im.src = att.fileUrl;
         im.alt = att.fileName || '첨부';
         a.appendChild(im);
         media.appendChild(a);
       });
       row.appendChild(media);
+    }
+
+    // 일반회원이 보낸 메시지(MEMBER) → 왼쪽, 말풍선 뒤에 시간
+    if (!isMe) {
+      var meta2 = document.createElement('div');
+      meta2.className = 'meta';
+      meta2.textContent = formatTime(msg.chatRegDate);
+      row.appendChild(meta2);
     }
 
     msgs.appendChild(row);
@@ -244,16 +268,12 @@
       })
       .then(function (dto) {
         console.log('[DEBUG] Message sent, received DTO:', dto);
-        // 서버에 저장된 최종 DTO를 화면에 반영
+        // 서버에서 이미 WebSocket으로 브로드캐스트하므로 여기서는 DOM에만 추가
+        // (WebSocket 구독을 통해 다른 사용자에게도 전달됨)
         appendMessageDom(dto);
         // 입력창/미리보기 초기화
         input.value = '';
         clearPreviews();
-
-        // 다른 참여자에게도 websocket으로 쏘고 싶으면 여기서
-        if (stompClient && stompClient.connected) {
-          stompClient.send('/app/chat/' + roomId, {}, JSON.stringify(dto));
-        }
       })
       .catch(function (err) {
         console.error('[DEBUG] Message send error:', err);
@@ -400,6 +420,53 @@
   } else {
     console.error('[DEBUG] No roomId found, cannot connect WebSocket');
   }
+  
+  // 페이지 로드 시 이미 표시된 메시지들의 chatIdx를 Set에 추가
+  if (msgs) {
+    var existingRows = msgs.querySelectorAll('.msg-row[data-chat-idx]');
+    existingRows.forEach(function(row) {
+      var chatIdx = row.getAttribute('data-chat-idx');
+      if (chatIdx) {
+        displayedChatIds.add(parseInt(chatIdx));
+      }
+    });
+  }
+
+  // 채팅방 열 때 읽음 처리 (변호사용)
+  if (roomId && senderType === 'LAWYER') {
+    fetch('/chat/room/read?roomId=' + roomId + '&who=LAWYER', {
+      method: 'POST'
+    }).catch(function(err) {
+      console.error('[DEBUG] Failed to mark as read:', err);
+    });
+  }
+
+  // 채팅 종료 시 textarea 비활성화 함수
+  function disableChatInput() {
+    if (input) {
+      input.disabled = true;
+      input.placeholder = '채팅이 종료되었습니다.';
+    }
+    if (sendBtn) {
+      sendBtn.disabled = true;
+    }
+    if (upBtn) {
+      upBtn.disabled = true;
+    }
+    if (fileInput) {
+      fileInput.disabled = true;
+    }
+  }
+
+  // 페이지 로드 시 채팅방 상태 확인 (변호사 측에서 채팅이 이미 종료된 경우)
+  var roomStateEl = document.querySelector('[data-room-state]');
+  if (roomStateEl) {
+    var roomState = roomStateEl.getAttribute('data-room-state');
+    if (roomState === 'EXPIRED' || roomState === 'CANCELLED') {
+      disableChatInput();
+    }
+  }
+
   startRemainTimer();
   scrollBottom();
 })();

@@ -1,5 +1,7 @@
 // chatIcon 스크립트
 (function () {
+  var stompClient = null; // WebSocket 클라이언트 전역 변수
+  
   function initChatIcon() {
     var root = document.querySelector('.page-chatIcon');
     if (!root) {
@@ -29,6 +31,26 @@
       return 'end';
     }
 
+    // 날짜 형식 변환: "yyyy-MM-dd HH:mm" 형식으로 변환
+    function formatDateTime(dateTimeStr) {
+      if (!dateTimeStr) return '';
+      try {
+        // ISO 형식 (2025-01-01T12:34:56) 또는 다른 형식 파싱
+        var date = new Date(dateTimeStr);
+        if (isNaN(date.getTime())) return dateTimeStr; // 파싱 실패 시 원본 반환
+        
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        var hours = String(date.getHours()).padStart(2, '0');
+        var minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+      } catch (e) {
+        return dateTimeStr; // 오류 시 원본 반환
+      }
+    }
+
     // 리스트 비우고 다시 그리기
     function renderRooms(rooms) {
       if (!list) return;
@@ -44,33 +66,52 @@
       }
 
       rooms.forEach(function (room) {
-        console.log('[DEBUG] Rendering room:', room.chatroomIdx, 'state:', room.state);
+        console.log('[DEBUG] Rendering room:', room.chatroomIdx, 'state:', room.state, 'unreadCount:', room.unreadCount);
         var st = toStatus(room.state);
         var item = document.createElement('div');
         item.className = 'item';
         item.setAttribute('role', 'listitem');
         item.dataset.status = st;
         item.dataset.roomId = room.chatroomIdx;
-        item.dataset.unread = 'false'; // 서버에서 안 줘서 일단 false
+        var unreadCount = room.unreadCount || 0;
+        item.dataset.unread = unreadCount > 0 ? 'true' : 'false';
 
+        // 읽지 않은 메시지 수 뱃지 HTML
+        var unreadBadge = '';
+        if (unreadCount > 0) {
+          var badgeText = unreadCount > 99 ? '99+' : String(unreadCount);
+          unreadBadge = '<span class="unread-badge">' + badgeText + '</span>';
+        }
+
+        // 변호사 프로필 사진 URL (없으면 기본 이미지)
+        var profileImgSrc = room.lawyerImgPath || '/img/testavatar.png';
+        
         item.innerHTML =
           '<div class="pico">' +
-            '<img src="/img/testavatar.png" alt="프로필">' +
+            '<img src="' + profileImgSrc + '" alt="프로필">' +
+            unreadBadge +
           '</div>' +
           '<a class="meta">' +
             '<div class="row">' +
               '<b>' + (room.chatroomName || '상담방') + '</b>' +
-              '<span class="stamp">' + (room.lastMessageAt || '') + '</span>' +
+              '<span class="stamp">' + formatDateTime(room.lastMessageAt) + '</span>' +
             '</div>' +
             '<div class="preview">' + (room.lastMessage || '') + '</div>' +
           '</a>' +
           '<span class="label ' + st + '">' +
-            (st === 'live' ? '상담중' : st === 'wait' ? '대기중' : '상담종료') +
+            (st === 'live' ? '상담중' : st === 'wait' ? '대기중' : (room.state && room.state.toUpperCase() === 'DECLINED' ? '상담불가' : '상담종료')) +
           '</span>';
 
         item.addEventListener('click', function (e) {
           e.preventDefault();
           e.stopPropagation();
+          
+          // DECLINED 상태인 경우 alert만 표시하고 채팅방 열지 않음
+          if (room.state && room.state.toUpperCase() === 'DECLINED') {
+            alert('변호사 사정으로 인해 현재 채팅이 불가합니다.');
+            return;
+          }
+          
           var url = '/chat/room?roomId=' + room.chatroomIdx;
           var popup = window.open(
             url,
@@ -88,6 +129,59 @@
       });
 
       updateCounts(rooms);
+    }
+
+    // 뱃지 업데이트 함수
+    function updateBadge() {
+      if (role === 'MEMBER') {
+        fetch('/chat/api/member/rooms/badge')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data) return;
+            // 일반회원: 읽지 않은 메시지 수만 (대기중 방 제외)
+            var count = (data.unread || 0);
+            if (badge) {
+              if (count > 0) {
+                badge.textContent = count;
+                badge.hidden = false;
+              } else {
+                badge.hidden = true;
+              }
+            }
+          })
+          .catch(function (err) { 
+            console.error('[DEBUG] Badge update error:', err);
+          });
+      } else if (role === 'LAWYER') {
+        // 변호사: 대기중 방 수 + 읽지 않은 메시지 수
+        console.log('[DEBUG] Updating badge for lawyer');
+        fetch('/chat/api/lawyer/badge')
+          .then(function (r) { 
+            console.log('[DEBUG] Lawyer badge API response status:', r.status, r.ok);
+            return r.ok ? r.json() : null; 
+          })
+          .then(function (data) {
+            console.log('[DEBUG] Lawyer badge data:', data);
+            if (!data) return;
+            var count = (data.pending || 0) + (data.unread || 0);
+            console.log('[DEBUG] Lawyer badge count:', count, '(pending:', data.pending, ', unread:', data.unread, ')');
+            if (badge) {
+              if (count > 0) {
+                badge.textContent = count;
+                badge.hidden = false;
+                console.log('[DEBUG] Badge displayed:', count);
+              } else {
+                badge.hidden = true;
+                console.log('[DEBUG] Badge hidden (count is 0)');
+              }
+            } else {
+              console.error('[DEBUG] Badge element not found');
+            }
+          })
+          .catch(function (err) { 
+            console.error('[DEBUG] Badge update error:', err);
+          });
+      }
     }
 
     // 탭 숫자 갱신
@@ -158,33 +252,52 @@
             endedRooms.forEach(function (room) {
               var roomIdStr = String(room.chatroomIdx);
               if (!existingRoomIds.includes(roomIdStr)) {
-                console.log('[DEBUG] Adding expired room:', room.chatroomIdx, room.state);
+                console.log('[DEBUG] Adding expired room:', room.chatroomIdx, room.state, 'unreadCount:', room.unreadCount);
                 var st = toStatus(room.state);
                 var item = document.createElement('div');
                 item.className = 'item';
                 item.setAttribute('role', 'listitem');
                 item.dataset.status = st;
                 item.dataset.roomId = room.chatroomIdx;
-                item.dataset.unread = 'false';
+                var unreadCount = room.unreadCount || 0;
+                item.dataset.unread = unreadCount > 0 ? 'true' : 'false';
+
+                // 읽지 않은 메시지 수 뱃지 HTML
+                var unreadBadge = '';
+                if (unreadCount > 0) {
+                  var badgeText = unreadCount > 99 ? '99+' : String(unreadCount);
+                  unreadBadge = '<span class="unread-badge">' + badgeText + '</span>';
+                }
+
+                // 변호사 프로필 사진 URL (없으면 기본 이미지)
+                var profileImgSrc = room.lawyerImgPath || '/img/testavatar.png';
 
                 item.innerHTML =
                   '<div class="pico">' +
-                    '<img src="/img/testavatar.png" alt="프로필">' +
+                    '<img src="' + profileImgSrc + '" alt="프로필">' +
+                    unreadBadge +
                   '</div>' +
                   '<a class="meta">' +
                     '<div class="row">' +
                       '<b>' + (room.chatroomName || '상담방') + '</b>' +
-                      '<span class="stamp">' + (room.lastMessageAt || '') + '</span>' +
+                      '<span class="stamp">' + formatDateTime(room.lastMessageAt) + '</span>' +
                     '</div>' +
                     '<div class="preview">' + (room.lastMessage || '') + '</div>' +
                   '</a>' +
                   '<span class="label ' + st + '">' +
-                    (st === 'live' ? '상담중' : st === 'wait' ? '대기중' : '상담종료') +
+                    (st === 'live' ? '상담중' : st === 'wait' ? '대기중' : (room.state && room.state.toUpperCase() === 'DECLINED' ? '상담불가' : '상담종료')) +
                   '</span>';
 
                 item.addEventListener('click', function (e) {
                   e.preventDefault();
                   e.stopPropagation();
+                  
+                  // DECLINED 상태인 경우 alert만 표시하고 채팅방 열지 않음
+                  if (room.state && room.state.toUpperCase() === 'DECLINED') {
+                    alert('변호사 사정으로 인해 현재 채팅이 불가합니다.');
+                    return;
+                  }
+                  
                   var url = '/chat/room?roomId=' + room.chatroomIdx;
                   var popup = window.open(
                     url,
@@ -265,6 +378,8 @@
             });
             renderRooms(allRooms);
             applyFilter(root.getAttribute('data-view') || 'all');
+            // 뱃지 갱신
+            updateBadge();
           })
           .catch(function (err) { console.error('[DEBUG] Auto-refresh error:', err); });
         }, 5000); // 5초마다 갱신
@@ -306,6 +421,8 @@
       var willOpen = panel ? panel.hidden : false;
       togglePanel(willOpen);
       if (willOpen && panel) {
+        // 뱃지 갱신
+        updateBadge();
         console.log('[DEBUG] Fetching rooms from /chat/api/member/rooms?state=ONGOING');
         // 진행중 방과 종료된 방을 모두 로드
         Promise.all([
@@ -341,6 +458,8 @@
           console.log('[DEBUG] Total rooms after merge:', allRooms.length);
           renderRooms(allRooms);
           applyFilter('all');
+          // 뱃지 다시 갱신
+          updateBadge();
         })
         .catch(function (err) { 
           console.error('[DEBUG] Fetch error:', err);
@@ -348,33 +467,60 @@
       }
     });
 
-    // 처음에 뱃지 숫자만 채우기
-    if (role === 'MEMBER') {
-      fetch('/chat/api/member/rooms/badge')
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (data) {
-          if (!data) return;
-          var count = (data.unread || 0) + (data.pending || 0);
-          if (count > 0 && badge) {
-            badge.textContent = count;
-            badge.hidden = false;
+    // WebSocket 연결하여 실시간 뱃지 업데이트
+    function connectBadgeWebSocket() {
+      if (typeof SockJS === 'undefined' || typeof Stomp === 'undefined') {
+        console.log('[DEBUG] WebSocket libraries not loaded, skipping badge WebSocket');
+        return;
+      }
+      
+      // memberIdx 또는 lawyerIdx 가져오기
+      var memberIdEl = document.getElementById('memberIdx');
+      var lawyerIdEl = document.getElementById('lawyerIdx');
+      var memberIdx = memberIdEl ? memberIdEl.value : null;
+      var lawyerIdx = lawyerIdEl ? lawyerIdEl.value : null;
+      
+      if (!memberIdx && !lawyerIdx) {
+        console.log('[DEBUG] No memberIdx or lawyerIdx found, skipping badge WebSocket');
+        return;
+      }
+      
+      try {
+        var socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+        stompClient.connect({}, function () {
+          console.log('[DEBUG] Badge WebSocket connected');
+          
+          if (role === 'MEMBER' && memberIdx) {
+            // 일반회원: 자신의 뱃지 업데이트 채널 구독 (사용자별 고유 토픽)
+            stompClient.subscribe('/topic/badge/member/' + memberIdx, function (msg) {
+              console.log('[DEBUG] Badge update received via WebSocket for member:', memberIdx);
+              updateBadge();
+            });
+          } else if (role === 'LAWYER' && lawyerIdx) {
+            // 변호사: 자신의 뱃지 업데이트 채널 구독
+            stompClient.subscribe('/topic/badge/lawyer/' + lawyerIdx, function (msg) {
+              console.log('[DEBUG] Badge update received via WebSocket for lawyer:', lawyerIdx);
+              updateBadge();
+            });
           }
-        })
-        .catch(function () {});
-    } else if (role === 'LAWYER') {
-      // 변호사는 대기중(PENDING)만 뱃지로
-      fetch('/chat/api/lawyer/badge')
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (data) {
-          if (!data) return;
-          var count = (data.pending || 0);
-          if (count > 0 && badge) {
-            badge.textContent = count;
-            badge.hidden = false;
-          }
-        })
-        .catch(function () {});
+        }, function(error) {
+          console.error('[DEBUG] Badge WebSocket connection error:', error);
+        });
+      } catch (e) {
+        console.error('[DEBUG] Badge WebSocket setup error:', e);
+      }
     }
+
+    // 처음에 뱃지 숫자 채우기
+    updateBadge();
+
+    // WebSocket 연결
+    connectBadgeWebSocket();
+
+    // 주기적으로 뱃지 갱신 (30초마다)
+    var badgeInterval = setInterval(updateBadge, 30000);
   }
 
   // DOM이 로드된 후 실행
