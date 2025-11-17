@@ -64,6 +64,14 @@
                 th:attr="data-expires-at=${#temporals.format(room.expiresAt,'yyyy-MM-dd''T''HH:mm:ss')}">
             남은시간 00:00
           </span>
+          <!-- 채팅 종료 버튼 (ACTIVE 상태일 때만 표시) -->
+          <button id="endChatBtn" 
+                  class="end-chat-btn"
+                  th:if="${room != null and room.state == 'ACTIVE'}"
+                  th:attr="data-room-id=${room.chatroomIdx}, data-who='MEMBER'"
+                  style="margin-left: 8px; padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            채팅 종료
+          </button>
         </div>
       </header>
 
@@ -73,21 +81,22 @@
 
         <!-- 첫 번째 메시지가 마지막 읽은 메시지 이후인 경우 마커 표시 -->
         <div th:if="${lastReadChatIdx != null and !#lists.isEmpty(initBatch) and initBatch[0].chatIdx > lastReadChatIdx}"
-             class="read-marker"
-             style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin-bottom: 8px;">
+             class="read-marker-row"
+             style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin: 8px 0;">
           ---여기까지 읽었습니다---
         </div>
 
         <!-- 초기 메시지 배치 렌더 -->
-        <div th:each="m, iterStat : ${initBatch}"
-             th:class="'msg-row ' + (${m.senderType} == 'MEMBER' ? 'user' : 'lawyer')">
-
-          <!-- 마지막 읽은 메시지 이후 마커 표시 (메시지 앞에) -->
+        <th:block th:each="m, iterStat : ${initBatch}">
+          <!-- 마지막 읽은 메시지 이후 마커 표시 (메시지 앞에, 별도 row로) -->
           <div th:if="${lastReadChatIdx != null and iterStat.index > 0 and initBatch[iterStat.index - 1].chatIdx == lastReadChatIdx}"
-               class="read-marker"
-               style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin-bottom: 8px;">
+               class="read-marker-row"
+               style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin: 8px 0;">
             ---여기까지 읽었습니다---
           </div>
+
+          <div th:class="'msg-row ' + (${m.senderType} == 'MEMBER' ? 'user' : 'lawyer')"
+               th:attr="data-chat-idx=${m.chatIdx}">
 
           <!-- 내가 보낸 메시지(MEMBER) → 오른쪽, 시간 먼저 -->
           <div th:if="${m.senderType == 'MEMBER'}" class="meta"
@@ -112,7 +121,8 @@
           <!-- 상대(변호사)가 보낸 메시지 → 왼쪽, 말풍선 뒤에 시간 -->
           <div th:if="${m.senderType != 'MEMBER'}" class="meta"
                th:text="${#temporals.format(m.chatRegDate,'HH:mm')}">12:34</div>
-        </div>
+          </div>
+        </th:block>
       </div>
 
       <!-- ===== 입력 영역 (로그인된 회원만) ===== -->

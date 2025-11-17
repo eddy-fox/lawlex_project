@@ -34,6 +34,7 @@
 
   var pendingFiles = [];
   var stompClient = null;
+  var displayedChatIds = new Set(); // 이미 표시된 메시지 ID 추적
 
   function scrollBottom() {
     if (!msgs) return;
@@ -131,6 +132,14 @@
       console.error('[DEBUG] msgs element not found');
       return;
     }
+    // 중복 방지: 이미 표시된 메시지는 추가하지 않음
+    if (dto.chatIdx && displayedChatIds.has(dto.chatIdx)) {
+      console.log('[DEBUG] Message already displayed, skipping:', dto.chatIdx);
+      return;
+    }
+    if (dto.chatIdx) {
+      displayedChatIds.add(dto.chatIdx);
+    }
     console.log('[DEBUG] appendMessageDom called with:', dto);
     // 일반회원 화면 기준:
     // 내가 보낸(MEMBER) → 오른쪽 .user
@@ -218,13 +227,11 @@
       })
       .then(function (dto) {
         console.log('[DEBUG] Message sent, received DTO:', dto);
+        // 서버에서 이미 WebSocket으로 브로드캐스트하므로 여기서는 DOM에만 추가
+        // (WebSocket 구독을 통해 다른 사용자에게도 전달됨)
         appendMessageDom(dto);
         input.value = '';
         clearPreviews();
-
-        if (stompClient && stompClient.connected) {
-          stompClient.send('/app/chat/' + roomId, {}, JSON.stringify(dto));
-        }
       })
       .catch(function (err) {
         console.error('[DEBUG] Message send error:', err);
@@ -345,6 +352,67 @@
           .forEach(addPreview);
         fileInput.value = '';
       }
+    });
+  }
+
+  // 페이지 로드 시 이미 표시된 메시지들의 chatIdx를 Set에 추가
+  if (msgs) {
+    var existingRows = msgs.querySelectorAll('.msg-row[data-chat-idx]');
+    existingRows.forEach(function(row) {
+      var chatIdx = row.getAttribute('data-chat-idx');
+      if (chatIdx) {
+        displayedChatIds.add(parseInt(chatIdx));
+      }
+    });
+  }
+
+  // 채팅방 열 때 읽음 처리
+  if (roomId && senderType === 'MEMBER') {
+    fetch('/chat/room/read?roomId=' + roomId + '&who=MEMBER', {
+      method: 'POST'
+    }).catch(function(err) {
+      console.error('[DEBUG] Failed to mark as read:', err);
+    });
+  }
+
+  // 채팅 종료 버튼 이벤트
+  var endChatBtn = scope.querySelector('#endChatBtn');
+  if (endChatBtn) {
+    endChatBtn.addEventListener('click', function() {
+      var roomId = endChatBtn.getAttribute('data-room-id');
+      var who = endChatBtn.getAttribute('data-who');
+      
+      if (!confirm('채팅을 종료하시겠습니까?')) {
+        return;
+      }
+      
+      var formData = new FormData();
+      formData.append('roomId', roomId);
+      formData.append('who', who);
+      
+      fetch('/chat/room/end', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(res) {
+        if (res.ok) {
+          alert('채팅이 종료되었습니다.');
+          // 팝업 창인 경우 닫기, 아니면 리다이렉트
+          if (window.opener) {
+            window.close();
+          } else {
+            window.location.href = '/chat/member';
+          }
+        } else {
+          return res.text().then(function(text) {
+            throw new Error(text || '채팅 종료에 실패했습니다.');
+          });
+        }
+      })
+      .catch(function(err) {
+        console.error('[DEBUG] Failed to end chat:', err);
+        alert(err.message || '채팅 종료에 실패했습니다.');
+      });
     });
   }
 
