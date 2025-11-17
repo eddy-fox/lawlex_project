@@ -15,9 +15,9 @@ body{background:var(--paper);color:var(--ink);font-family:'Gooorm Sans',-apple-s
   border-bottom:1px solid var(--navy);
   padding:30px 0px;
 }
-
+.page-nInfo .tida {display: flex; justify-content: space-between; align-items: flex-end;}
 .page-nInfo .title{font-size:35px;font-weight:700;margin:0 10px;}
-.page-nInfo .date{font-size:15px;color:var(--muted);margin:0 0 18px;}
+.page-nInfo .date{box-sizing: border-box; width: 80px; font-size:15px;color:var(--muted);}
 
 
 .page-nInfo .meta{display:flex;justify-content:space-between;align-items:flex-end;margin:0 0 24px;}
@@ -35,10 +35,10 @@ body{background:var(--paper);color:var(--ink);font-family:'Gooorm Sans',-apple-s
 
 
 .page-nInfo .article{font-size:16px;line-height:1.6;}
-.page-nInfo .article .para{margin:12px 0;}
+.page-nInfo .article .para{margin:15px 0; white-space: pre-line;}
 
 .page-nInfo .actions{display:flex;gap:10px;justify-content:flex-end;margin:20px 0;}
-.page-nInfo .btn{height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--navy);font-weight:700;cursor:pointer;transition:all .2s ease;}
+.page-nInfo .btn{padding:5px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;color: var(--ink); font-weight:700;cursor:pointer;transition:all .2s ease;}
 .page-nInfo .btn:hover{background:var(--navy);color:#fff;}
 
 /* 댓글 */

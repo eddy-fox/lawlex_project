@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ public class ChatMessageController {
 
     private final ChatroomService chatroomService; // 권한/상태 체크
     private final ChatdataService chatDataService; // 실제 저장
+    private final SimpMessagingTemplate messagingTemplate; // WebSocket 브로드캐스트
 
     /** 클라이언트: fetch('/chat/messages', { method:'POST', body: FormData(...) }) */
     @PostMapping(value = "/messages", consumes = "multipart/form-data")
@@ -97,6 +99,26 @@ public class ChatMessageController {
             System.out.println("[DEBUG] ChatMessageController.postMessage - calling chatDataService.sendMessage");
             ChatdataDTO saved = chatDataService.sendMessage(roomId, senderType, senderId, content, fileList);
             System.out.println("[DEBUG] ChatMessageController.postMessage - success, chatIdx: " + (saved != null ? saved.getChatIdx() : "null"));
+            
+            // WebSocket으로 모든 구독자에게 브로드캐스트
+            if (saved != null) {
+                System.out.println("[DEBUG] ChatMessageController.postMessage - broadcasting to /topic/chat/" + roomId);
+                messagingTemplate.convertAndSend("/topic/chat/" + roomId, saved);
+                
+                // 뱃지 업데이트 신호 전송 (방의 참여자들에게)
+                var room = chatroomService.getRoom(roomId);
+                if (room != null) {
+                    // 일반회원에게 뱃지 업데이트 신호 (사용자별 고유 토픽 사용)
+                    if (room.getMemberIdx() != null) {
+                        messagingTemplate.convertAndSend("/topic/badge/member/" + room.getMemberIdx(), "update");
+                    }
+                    // 변호사에게 뱃지 업데이트 신호
+                    if (room.getLawyerIdx() != null) {
+                        messagingTemplate.convertAndSend("/topic/badge/lawyer/" + room.getLawyerIdx(), "update");
+                    }
+                }
+            }
+            
             return ResponseEntity.ok(saved);
         } catch (IllegalStateException e) {
             System.out.println("[DEBUG] ChatMessageController.postMessage - IllegalStateException: " + e.getMessage());

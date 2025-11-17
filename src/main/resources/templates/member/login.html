@@ -17,6 +17,9 @@
 
       <!-- 컨트롤러와 맞춤 -->
       <form class="login-form" th:action="@{/member/login}" method="post" novalidate>
+        <!-- 🔽 추가: 로그인 GET 쿼리의 need 값을 POST로 함께 보냄 -->
+        <input type="hidden" name="need" th:value="${need}">
+        
         <div class="form-group">
           <input class="input"
                  id="username"

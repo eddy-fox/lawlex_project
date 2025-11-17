@@ -31,7 +31,7 @@
 .page-gChating .user .meta{ order:-1; }
 
 /* 이미지 전송: 버블 없이 타일 */
-.page-gChating .media{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-width:min(70%,520px); }
+.page-gChating .media{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; max-width:min(70%,520px); margin:0; flex-shrink:0; }
 .page-gChating .media img{ width:100%; height:180px; object-fit:cover; border-radius:12px; border:none; background:transparent; cursor:zoom-in; }
 
 /* 입력 영역 */

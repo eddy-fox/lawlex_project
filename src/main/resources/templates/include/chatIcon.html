@@ -19,6 +19,14 @@
     <span class="badge" id="chatBadge" hidden>0</span>
   </button>
 
+  <!-- 숨겨진 값들: JS에서 사용 -->
+  <input type="hidden" id="memberIdx"
+         th:if="${session.loginMember != null}"
+         th:value="${session.loginMember.memberIdx}">
+  <input type="hidden" id="lawyerIdx"
+         th:if="${session.loginLawyer != null}"
+         th:value="${session.loginLawyer.lawyerIdx}">
+
   <!-- 회원일 때만 나오는 패널 -->
   <section class="panel"
            id="chatPanel"
