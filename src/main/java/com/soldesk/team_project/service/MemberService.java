@@ -50,25 +50,34 @@ public class MemberService {
         memberDTO.setMemberAgree(memberEntity.getMemberAgree());
         memberDTO.setMemberNickname(memberEntity.getMemberNickname());
         memberDTO.setMemberActive(memberEntity.getMemberActive());
+        memberDTO.setMemberPoint(memberEntity.getMemberPoint());
+        memberDTO.setMemberProvider(memberEntity.getMemberProvider());
+        memberDTO.setMemberProviderId(memberEntity.getMemberProviderId());
         memberDTO.setInterestIdx1(memberEntity.getInterestIdx()); // 기존 로직 유지
         return memberDTO;
     }
 
-    // private MemberEntity convertMemberEntity (MemberDTO memberDTO) {
-    //     MemberEntity memberEntity = new MemberEntity();
-    //     memberEntity.setMemberIdx(memberDTO.getMemberIdx());
-    //     memberEntity.setMemberId(memberDTO.getMemberId());
-    //     memberEntity.setMemberPass(memberDTO.getMemberPass());
-    //     memberEntity.setMemberName(memberDTO.getMemberName());
-    //     memberEntity.setMemberIdnum(memberDTO.getMemberIdnum());
-    //     memberEntity.setMemberEmail(memberDTO.getMemberEmail());
-    //     memberEntity.setMemberPhone(memberDTO.getMemberPhone());
-    //     memberEntity.setMemberAgree(memberDTO.getMemberAgree());
-    //     memberEntity.setMemberNickname(memberDTO.getMemberNickname());
-    //     InterestEntity interestEntity = interestRepository.findById(memberDTO.getInterestIdx()).orElse(null);
-    //     memberEntity.setMemberInterest(interestEntity);
-    //     return memberEntity;
-    // }
+    private MemberEntity convertMemberEntity (MemberDTO memberDTO) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberIdx(memberDTO.getMemberIdx());
+        memberEntity.setMemberId(memberDTO.getMemberId());
+        memberEntity.setMemberPass(memberDTO.getMemberPass());
+        memberEntity.setMemberName(memberDTO.getMemberName());
+        memberEntity.setMemberIdnum(memberDTO.getMemberIdnum());
+        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
+        memberEntity.setMemberPhone(memberDTO.getMemberPhone());
+        memberEntity.setMemberAgree(memberDTO.getMemberAgree());
+        memberEntity.setMemberNickname(memberDTO.getMemberNickname());
+        memberEntity.setMemberActive(memberDTO.getMemberActive());
+        memberEntity.setMemberPoint(memberDTO.getMemberPoint());
+        memberEntity.setMemberProvider(memberDTO.getMemberProvider());
+        memberEntity.setMemberProviderId(memberDTO.getMemberProviderId());
+        memberEntity.setInterestIdx1(memberDTO.getInterestIdx1());
+
+        // InterestEntity interestEntity = interestRepository.findById(memberDTO.getInterestIdx1()).orElse(null);
+
+        return memberEntity;
+    }
 
 
     // 전체 회원 조회
@@ -233,24 +242,6 @@ public class MemberService {
         return new MemberUpdateResult(me.getMemberId(), me);
     }
 
-    // OAuth2
-    @Transactional
-    public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
-        // FIX: interestIdx1만 저장(폼에서 하나만 받는 설계이므로)
-        MemberEntity memberEntity = MemberEntity.builder()
-                .memberId(tempUser.getEmail())
-                .memberPass("{noop}oauth2")
-                .memberName(tempUser.getName())
-                .memberEmail(tempUser.getEmail())
-                .memberPhone(digits(memberDTO.getMemberPhone()))
-                .memberIdnum(digits(memberDTO.getMemberIdnum()))
-                .interestIdx1(memberDTO.getInterestIdx1())
-                .memberActive(1)
-                .provider(tempUser.getProvider())
-                .build();
-        return memberRepository.save(memberEntity);
-    }
-
     // 아이디 찾기 member → lawyer 순서
     public String findId(String memberPhone, String memberIdnum) {
         String phone = digits(memberPhone);
@@ -312,6 +303,15 @@ public class MemberService {
 
     // ====== 결과 DTO ======
     public record MemberUpdateResult(String newUserId, MemberEntity member) {}
+
+    // OAuth2 일반 회원가입
+    @Transactional
+    public MemberEntity joinOAuthMember(TemporaryOauthDTO temp, MemberDTO joinMember) {
+        MemberEntity memberEntity = convertMemberEntity(joinMember);
+        memberEntity.setMemberId(temp.getProvider() + temp.getProviderId());
+
+        return memberRepository.save(memberEntity);
+    }
 
     // 문의 상세 조회 필요한 id 와 name
     public MemberDTO qMemberInquiry(Integer memberIdx){

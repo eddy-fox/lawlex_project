@@ -29,13 +29,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         // OAuth2 로그인 완료 후 Principal 가져오기
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        HttpSession session = request.getSession();
 
-        TemporaryOauthDTO temp = (session != null) ? (TemporaryOauthDTO) session.getAttribute("tempOauth") : null;
-
-        if (temp != null) {
+        if (principal.getUser() instanceof TemporaryOauthDTO) {
             // 신규 사용자 → 회원 유형 선택 페이지로 리디렉트
-            getRedirectStrategy().sendRedirect(request, response, "/member/loginChoice");
+            getRedirectStrategy().sendRedirect(request, response, "/member/joinType-oauth");
         } else {
             // 기존 사용자 → JWT 생성 후 메인 페이지로 리디렉트
             String token = jwtProvider.createToken(principal.getUser());

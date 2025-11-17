@@ -71,11 +71,11 @@ public class MemberEntity implements UserBase{
     @Column(name = "member_active", columnDefinition = "TINYINT(1) DEFAULT 1")
     private Integer memberActive = 1;
 
-    @Column(name = "provider")
-    private String provider; // ex: "google"
+    @Column(name = "member_provider")
+    private String memberProvider; // ex: "google"
 
-    @Column(name = "provider_id")
-    private String providerId; // ex: 구글 sub 값
+    @Column(name = "member_provider_id")
+    private String memberProviderId; // ex: 구글 sub 값
 
     @Column(name = "interest_idx1")
     private Integer interestIdx1;
