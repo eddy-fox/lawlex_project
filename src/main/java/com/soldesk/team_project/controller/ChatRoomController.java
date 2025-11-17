@@ -16,8 +16,6 @@ import com.soldesk.team_project.dto.ChatRoomDTO;
 import com.soldesk.team_project.dto.ChatdataDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
-import com.soldesk.team_project.entity.LawyerEntity;
-import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.service.ChatroomService;

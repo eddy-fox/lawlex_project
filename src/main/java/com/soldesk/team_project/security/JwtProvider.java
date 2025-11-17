@@ -6,7 +6,6 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.soldesk.team_project.entity.MemberEntity;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

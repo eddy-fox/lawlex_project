@@ -2,7 +2,6 @@ package com.soldesk.team_project.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,7 +20,6 @@ import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
-import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;

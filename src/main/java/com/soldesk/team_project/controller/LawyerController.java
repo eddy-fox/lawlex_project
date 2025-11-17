@@ -1,13 +1,11 @@
 package com.soldesk.team_project.controller;
 
 import com.soldesk.team_project.dto.LawyerDTO;
-import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 // import com.soldesk.team_project.controller.MemberController.SessionUser;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

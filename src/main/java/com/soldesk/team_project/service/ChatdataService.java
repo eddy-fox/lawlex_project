@@ -5,21 +5,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.soldesk.team_project.dto.ChatAttachmentDTO;
-import com.soldesk.team_project.dto.ChatRoomDTO;
 import com.soldesk.team_project.dto.ChatdataDTO;
 import com.soldesk.team_project.entity.ChatAttachmentEntity;
 import com.soldesk.team_project.entity.ChatdataEntity;
 import com.soldesk.team_project.repository.ChatattachmentRepository;
 import com.soldesk.team_project.repository.ChatdataRepository;
 import com.soldesk.team_project.repository.ChatroomRepository;
-import com.soldesk.team_project.service.FirebaseStorageService;
 
 
 import lombok.RequiredArgsConstructor;
