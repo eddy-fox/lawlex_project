@@ -15,16 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.soldesk.team_project.form.BoardForm;
 import com.soldesk.team_project.form.ReBoardForm;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.MemberService;
+import com.soldesk.team_project.service.ReBoardService;
 import com.soldesk.team_project.service.CategoryRecommendService;
+import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.dto.UserMasterDTO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +43,11 @@ public class BoardController {
     
     private final BoardService boardService;
     private final MemberService memberService;
+    private final ReBoardService reboardService;
     private final CategoryRecommendService categoryRecommendService;
+    private final AdminRepository adminRepository;
+    private final MemberRepository memberRepository;
+    private final com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
 
     @GetMapping("/list")
     public String list(Model model, 
@@ -59,10 +71,28 @@ public class BoardController {
     }
 
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, ReBoardForm reboardForm) {
+    public String detail(Model model, @PathVariable("id") Integer id, ReBoardForm reboardForm,
+                         HttpSession session,
+                         @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
+        
+        // 로그인 사용자 정보 추가
+        model.addAttribute("loginUser", loginUser);
+        
+        // 로그인한 변호사 정보 추가 (프로필 사진용)
+        if (loginUser != null && loginUser.getRole() != null && "LAWYER".equals(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+            lawyerRepository.findById(loginUser.getLawyerIdx()).ifPresent(lawyer -> {
+                model.addAttribute("loginLawyer", lawyer);
+            });
+        }
+        
+        // 관리자 권한 확인
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        model.addAttribute("isAdmin", isAdmin);
+        
         return "board/reBoard";
 
     }
@@ -100,12 +130,22 @@ public class BoardController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
-    public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult, Principal principal) {
+    public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult,
+                             @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                             HttpSession session) {
 
         if(bindingResult.hasErrors()) {
             return "board/write";
         }
-        MemberEntity memberEntity = this.memberService.getMember(principal.getName());
+        
+        // 세션에서 사용자 정보 가져오기
+        if (loginUser == null || loginUser.getMemberIdx() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+        
+        MemberEntity memberEntity = memberRepository.findById(loginUser.getMemberIdx())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+        
         this.boardService.create(
             boardForm.getBoardTitle(), 
             boardForm.getBoardContent(), 
@@ -113,22 +153,72 @@ public class BoardController {
             boardForm.getInterestIdx(),
             memberEntity
         );
-        return "redirect:/board/list";
+        
+        // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
+        // 카테고리로부터 interestIdx 자동 결정
+        Integer interestIdx = boardForm.getInterestIdx();
+        if (interestIdx == null || interestIdx <= 0) {
+            interestIdx = boardService.getInterestIdxFromCategory(boardForm.getBoardCategory());
+        }
+        return "redirect:/board/list?interestIdx=" + interestIdx;
 
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify/{id}")
+    public String boardModifyForm(BoardForm boardForm, Principal principal, 
+                                  @PathVariable("id") Integer id, HttpSession session) {
+        
+        BoardEntity boardEntity = this.boardService.getBoardEntity(id);
+        
+        // 관리자 권한 확인
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        
+        // 작성자 확인 (Principal이 있을 때만)
+        boolean isOwner = false;
+        if (principal != null && boardEntity.getMember() != null) {
+            isOwner = boardEntity.getMember().getMemberId().equals(principal.getName());
+        }
+        
+        if(!isOwner && !isAdmin) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
+        }
+        
+        boardForm.setBoardTitle(boardEntity.getBoardTitle());
+        boardForm.setBoardContent(boardEntity.getBoardContent());
+        boardForm.setBoardCategory(boardEntity.getBoardCategory());
+        if (boardEntity.getInterest() != null) {
+            boardForm.setInterestIdx(boardEntity.getInterest().getInterestIdx());
+        }
+        
+        return "board/write";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String boardModify(@Valid BoardForm boardForm, BindingResult bindingResult,
-    Principal principal, @PathVariable("id") Integer id) {
+    Principal principal, @PathVariable("id") Integer id, HttpSession session) {
         
         if(bindingResult.hasErrors()) {
             return "board/write";
         }
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
+        
+        // 관리자 권한 확인
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        
+        // 작성자 확인 (Principal이 있을 때만)
+        boolean isOwner = false;
+        if (principal != null && boardEntity.getMember() != null) {
+            isOwner = boardEntity.getMember().getMemberId().equals(principal.getName());
+        }
+        
+        if(!isOwner && !isAdmin) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
+        
         this.boardService.modify(boardEntity, boardForm.getBoardTitle(), boardForm.getBoardContent());
         return String.format("redirect:/board/detail/%s", id);
 
@@ -136,15 +226,41 @@ public class BoardController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
-    public String boardDelete(Principal principal, @PathVariable("id") Integer id) {
+    public String boardDelete(Principal principal, @PathVariable("id") Integer id, HttpSession session) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
-        if(!boardEntity.getMember().getMemberId().equals(principal.getName())) {
+        
+        // 관리자 권한 확인
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        
+        // 작성자 확인 (Principal이 있을 때만)
+        boolean isOwner = false;
+        if (principal != null && boardEntity.getMember() != null) {
+            isOwner = boardEntity.getMember().getMemberId().equals(principal.getName());
+        }
+        
+        if(!isOwner && !isAdmin) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
+        
         this.boardService.delete(boardEntity);
-        return "redirect:/";
+        return "redirect:/board/list";
 
+    }
+
+    /* ================ 세션 → 엔티티 변환 헬퍼 ================ */
+    private AdminEntity getLoginAdmin(HttpSession session) {
+        Object obj = session.getAttribute("loginAdmin");
+        if (obj == null) return null;
+
+        if (obj instanceof AdminEntity ae) {
+            return ae;
+        }
+        if (obj instanceof com.soldesk.team_project.controller.MemberController.AdminSession as) {
+            return adminRepository.findById(as.getAdminIdx()).orElse(null);
+        }
+        return null;
     }
 
 }

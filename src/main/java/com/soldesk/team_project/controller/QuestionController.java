@@ -72,6 +72,10 @@ public class QuestionController {
             if(loginUser.getLawyerIdx() != null) {
                 model.addAttribute("myIdxL", loginUser.getLawyerIdx());
             }
+            // 관리자 정보 추가 (비밀글 접근용)
+            if(loginUser.getAdminIdx() != null){
+                model.addAttribute("adminIdx", loginUser.getAdminIdx());
+            }
         }
 
         return "question/qnaList";
@@ -137,6 +141,7 @@ public class QuestionController {
         Integer userIdx = null;
 
         // 로그인 되어 있을 때만 세션 정보 가져오기
+        boolean isAdmin = false;
         if (loginUser != null) {
             adminIdx = loginUser.getAdminIdx();
             userIdx = loginUser.getMemberIdx() != null ? loginUser.getMemberIdx() : loginUser.getLawyerIdx();
@@ -144,12 +149,20 @@ public class QuestionController {
             if (adminIdx != null) {
                 AdminDTO admin = adminService.searchSessionAdmin(adminIdx);
                 model.addAttribute("admin", admin);
+                
+                // 관리자 권한 확인 (admin_role이 'admin'인 관리자)
+                isAdmin = admin != null && "admin".equalsIgnoreCase(admin.getAdminRole());
             }
         }
+        
+        // 작성자 확인
+        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
+        boolean isOwner = userIdx != null && writerIdx != null && userIdx.equals(writerIdx);
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isAdmin", isAdmin);
 
         // 비밀글 조회 권환 확인
         int secret = infoQ.getQSecret();
-        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
 
         if (secret == 1 && adminIdx == null && writerIdx != null && userIdx != null && !userIdx.equals(writerIdx)) {
             redirectAttributes.addFlashAttribute("alert", "비밀글은 작성자와 관리자만 열람할 수 있습니다.");
@@ -259,6 +272,107 @@ public class QuestionController {
         redirectAttributes.addAttribute("qIdx", qIdx);
 
         return "redirect:/question/qnaInfo";
+    }
+
+    // 문의글 수정 폼
+    @GetMapping("/qnaModify")
+    public String qnaModifyForm(@RequestParam("qIdx") Integer qIdx, Model model, 
+                                 @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                                 RedirectAttributes redirectAttributes) {
+        
+        QuestionDTO infoQ = questionService.getQ(qIdx);
+        if (infoQ == null) {
+            redirectAttributes.addFlashAttribute("alert", "문의글을 찾을 수 없습니다.");
+            return "redirect:/question/qnaList";
+        }
+        
+        Integer userIdx = null;
+        if (loginUser != null) {
+            userIdx = loginUser.getMemberIdx() != null ? loginUser.getMemberIdx() : loginUser.getLawyerIdx();
+        }
+        
+        // 작성자만 수정 가능 (관리자는 수정 불가)
+        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
+        boolean isOwner = userIdx != null && writerIdx != null && userIdx.equals(writerIdx);
+        
+        if (!isOwner) {
+            redirectAttributes.addFlashAttribute("alert", "수정 권한이 없습니다.");
+            redirectAttributes.addAttribute("qIdx", qIdx);
+            return "redirect:/question/qnaInfo";
+        }
+        
+        model.addAttribute("qnaModify", infoQ);
+        return "question/qnaWrite"; // 수정 폼은 작성 폼과 동일하게 사용
+    }
+    
+    // 문의글 수정 처리
+    @PostMapping("/qnaModify")
+    public String qnaModifySubmit(@ModelAttribute("qnaModify") QuestionDTO qnaModify,
+                                  @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                                  RedirectAttributes redirectAttributes) {
+        
+        Integer userIdx = null;
+        if (loginUser != null) {
+            userIdx = loginUser.getMemberIdx() != null ? loginUser.getMemberIdx() : loginUser.getLawyerIdx();
+        }
+        
+        QuestionDTO infoQ = questionService.getQ(qnaModify.getQIdx());
+        
+        // 작성자만 수정 가능 (관리자는 수정 불가)
+        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
+        boolean isOwner = userIdx != null && writerIdx != null && userIdx.equals(writerIdx);
+        
+        if (!isOwner) {
+            redirectAttributes.addFlashAttribute("alert", "수정 권한이 없습니다.");
+            redirectAttributes.addAttribute("qIdx", qnaModify.getQIdx());
+            return "redirect:/question/qnaInfo";
+        }
+        
+        questionService.modifyQuestion(qnaModify);
+        redirectAttributes.addAttribute("qIdx", qnaModify.getQIdx());
+        return "redirect:/question/qnaInfo";
+    }
+    
+    // 문의글 삭제 (작성자 또는 관리자 가능, 비밀글 포함)
+    @GetMapping("/qnaDelete")
+    public String qnaDelete(@RequestParam("qIdx") Integer qIdx,
+                            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                            RedirectAttributes redirectAttributes) {
+        
+        QuestionDTO infoQ = questionService.getQ(qIdx);
+        if (infoQ == null) {
+            redirectAttributes.addFlashAttribute("alert", "문의글을 찾을 수 없습니다.");
+            return "redirect:/question/qnaList";
+        }
+        
+        Integer adminIdx = null;
+        Integer userIdx = null;
+        if (loginUser != null) {
+            adminIdx = loginUser.getAdminIdx();
+            userIdx = loginUser.getMemberIdx() != null ? loginUser.getMemberIdx() : loginUser.getLawyerIdx();
+        }
+        
+        // 작성자 확인
+        Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
+        boolean isOwner = userIdx != null && writerIdx != null && userIdx.equals(writerIdx);
+        
+        // 관리자 권한 확인 (admin_role이 'admin'인 관리자)
+        boolean isAdmin = false;
+        if (adminIdx != null) {
+            AdminDTO admin = adminService.searchSessionAdmin(adminIdx);
+            isAdmin = admin != null && "admin".equalsIgnoreCase(admin.getAdminRole());
+        }
+        
+        if (!isOwner && !isAdmin) {
+            redirectAttributes.addFlashAttribute("alert", "삭제 권한이 없습니다.");
+            redirectAttributes.addAttribute("qIdx", qIdx);
+            return "redirect:/question/qnaInfo";
+        }
+        
+        // 소프트 삭제 (q_active를 0으로 설정)
+        questionService.deleteQuestion(qIdx);
+        redirectAttributes.addFlashAttribute("alert", "문의글이 삭제되었습니다.");
+        return "redirect:/question/qnaList";
     }
 
 }

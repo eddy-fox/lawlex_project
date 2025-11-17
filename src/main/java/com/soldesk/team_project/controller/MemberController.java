@@ -17,10 +17,16 @@ import com.soldesk.team_project.dto.ProductDTO;
 import com.soldesk.team_project.dto.PurchaseDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
+import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.InterestRepository;
+import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
@@ -28,10 +34,12 @@ import lombok.RequiredArgsConstructor;
 import com.soldesk.team_project.repository.*;
 import com.soldesk.team_project.security.JwtProvider;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 
@@ -60,12 +68,12 @@ public class MemberController {
     // -------------------- 포인트 --------------------
     @GetMapping("/point")
     public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
-        
+
         // 세션에서 회원 가져오기
         Integer memberIdx = loginUser.getMemberIdx();
         MemberDTO member = memberService.searchSessionMember(memberIdx);
         model.addAttribute("member", member);
-                
+
         // 포인트 구매 상품
         List<ProductDTO> productList = purchaseService.getBuyPointProduct();
         model.addAttribute("productList", productList);
@@ -138,15 +146,13 @@ public class MemberController {
         return result;
     }
 
-
-
     // 로그인 / 로그아웃
     @GetMapping("/login")
     public String loginForm(@RequestParam(name = "need", required = false) String need,
-        Model model) {  if (need != null) {
-        model.addAttribute("need", need);
+                            Model model) {
+        if (need != null) model.addAttribute("need", need);
+        return "member/login";
     }
-    return "member/login"; }
 
     /**
      * 유저마스터 테이블 없이 로그인:
@@ -155,10 +161,12 @@ public class MemberController {
      * - 있으면 비번 하이브리드(BCrypt/평문) 매칭
      *   * 틀리면 /member/login?error=badpw
      *   * 맞으면 UserMasterDTO 구성하여 세션(loginUser)에 저장 + 각 역할 세션도 저장
+     *   * need=mypage 로 들어오면 로그인 직후 /member/mypage 로 이동
      */
     @PostMapping("/login")
     public String loginSubmit(@RequestParam("memberId") String userId,
                               @RequestParam("memberPass") String rawPw,
+                              @RequestParam(name = "need", required = false) String need,
                               HttpSession session) {
 
         // 1) MEMBER
@@ -189,13 +197,15 @@ public class MemberController {
             session.removeAttribute("loginAdmin");
 
             session.setMaxInactiveInterval(60 * 60);
-            return "redirect:/member";
+            return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
         }
 
         // 2) LAWYER
         var lOpt = lawyerRepository.findByLawyerId(userId);
         if (lOpt.isPresent()) {
             LawyerEntity l = lOpt.get();
+
+            // 비밀번호 확인
             if (!passwordMatches(rawPw, l.getLawyerPass())) {
                 return "redirect:/member/login?error=badpw";
             }
@@ -216,7 +226,7 @@ public class MemberController {
             session.removeAttribute("loginAdmin");
 
             session.setMaxInactiveInterval(60 * 60);
-            return "redirect:/member";
+            return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
         }
 
         // 3) ADMIN
@@ -243,25 +253,62 @@ public class MemberController {
             session.removeAttribute("loginLawyer");
 
             session.setMaxInactiveInterval(60 * 60);
-            return "redirect:/member";
+            return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
         }
 
         // 전부 없음
         return "redirect:/member/login?error=nouser";
     }
 
+    // 일반회원가입 처리
+    @PostMapping(value = "/join/normal", produces = "text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> joinNormalSubmit(@ModelAttribute MemberDTO dto) {
+        try {
+            // 필수 클라이언트 검증이 있어도 서버에서 한 번 더 안전장치
+            if (dto.getMemberAgree() == null || !"Y".equalsIgnoreCase(dto.getMemberAgree())) {
+                return ResponseEntity.badRequest().body("개인정보 수신동의(Y)가 필요합니다.");
+            }
+            // 관심 분야 3개 모두 선택 + 서로 달라야 함
+            Integer i1 = dto.getInterestIdx1(), i2 = dto.getInterestIdx2(), i3 = dto.getInterestIdx3();
+            if (i1 == null || i2 == null || i3 == null) {
+                return ResponseEntity.badRequest().body("관심 분야 3개를 모두 선택해주세요.");
+            }
+            if (i1.equals(i2) || i1.equals(i3) || i2.equals(i3)) {
+                return ResponseEntity.badRequest().body("관심 분야는 서로 다른 항목으로 선택해주세요.");
+            }
+
+            // 실제 가입 처리
+            memberService.joinNormal(dto);
+
+            // fetch로 받는 쪽에서 redirected 처리할 수 있게 302로 로그인으로 보냄
+            return ResponseEntity.status(302)
+                    .header("Location", "/member/login?joined=true")
+                    .body("OK");
+        } catch (IllegalArgumentException e) {
+            // 서비스에서 던진 구체 메시지 그대로 내려줌
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+        }
+    }
+
     @PostMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/member/login";
-    }
+        }
 
     // 회원가입/마이페이지/수정
     @GetMapping("/join/type")
     public String joinType() { return "member/loginChoice"; }
 
     @GetMapping({"/join/normal", "/joinNormal"})
-    public String joinNormalForm() { return "member/gjoin"; }
+    public String joinNormalForm(Model model){
+        model.addAttribute("interests", interestRepository.findAll());
+        return "member/gjoin";
+    }
 
     @GetMapping({"/join/lawyer", "/lawyer/join"})
     public String joinLawyerForm() { return "member/ljoin"; }
@@ -315,12 +362,13 @@ public class MemberController {
         return memberService.resetPassword(memberId, memberPhone, memberIdnum, newPassword, confirmPassword);
     }
 
-    //컨트롤 아이디중복확인 멤버 + 변호사
-    @GetMapping(value="/api/checkId", produces="text/plain;charset=UTF-8")
+    // 컨트롤 아이디중복확인 멤버
+    @GetMapping(value = "/api/checkId", produces = "text/plain;charset=UTF-8")
     @ResponseBody
-    public String checkId(@RequestParam String memberId){
+    public String checkId(@RequestParam("memberId") String memberId) {
         return memberService.isUserIdDuplicate(memberId) ? "DUP" : "OK";
     }
+    
 
     // OAuth
     @GetMapping("/oauth2/additional-info")
@@ -359,7 +407,7 @@ public class MemberController {
         response.getWriter().write(jsonResponse);
     }
 
-    // 세션 DTO들 
+    // =================== 세션 DTO들 ===================
 
     @Data
     public static class MemberSession {
@@ -409,7 +457,7 @@ public class MemberController {
         }
     }
 
-    // 비밀번호 암호화 + 1234~~  가능하게
+    // 비밀번호 암호화 + 평문(예: 1234) 허용
     private boolean passwordMatches(String raw, String db) {
         if (db == null) return false;
         db = db.trim();
@@ -419,4 +467,111 @@ public class MemberController {
         boolean isBcrypt = db.startsWith("$2a$") || db.startsWith("$2b$") || db.startsWith("$2y$");
         return isBcrypt ? passwordEncoder.matches(raw, db) : raw.equals(db);
     }
+
+    /* ===================== [ADD] gmodify용 공통 모델 & 프로필/비번/탈퇴 API ===================== */
+
+    // gmodify 템플릿에서 사용할 현재 회원 프로필
+    @ModelAttribute("m")
+    public MemberDTO exposeMemberForModify(
+            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+        try {
+            if (loginUser != null && "MEMBER".equalsIgnoreCase(loginUser.getRole())) {
+                return memberService.loadProfileForModify();
+            }
+        } catch (Exception ignore) {}
+        return null;
+    }
+
+    // gmodify에서 노출할 관심분야 리스트
+    @ModelAttribute("interests")
+    public List<InterestEntity> exposeInterests() {
+        return interestRepository.findAll();
+    }
+
+    // 프로필(닉네임/이메일/관심분야 3개 + 선택적 비번변경) 저장
+    @PostMapping(value="/api/profile", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> updateProfileForMember(
+            @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
+            @ModelAttribute MemberDTO form,
+            @RequestParam(value="newPassword", required=false) String newPassword,
+            @RequestParam(value="confirmPassword", required=false) String confirmPassword) {
+
+        if (loginUser == null || !"MEMBER".equalsIgnoreCase(loginUser.getRole())) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        try {
+            var result = memberService.updateProfileForCurrent(form, newPassword, confirmPassword);
+            return ResponseEntity.ok("OK");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("SERVER_ERROR");
+        }
+    }
+
+    // 비밀번호 변경(전화번호+생년월일 검증)
+    @PostMapping(value="/api/changePassword", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> changePasswordWithVerification(
+            @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
+            @RequestParam("memberPhone") String memberPhone,
+            @RequestParam("memberIdnum")  String memberIdnum,
+            @RequestParam("newPassword")  String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword) {
+
+        if (loginUser == null || !"MEMBER".equalsIgnoreCase(loginUser.getRole())) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String res = memberService.changePasswordWithVerificationForCurrent(memberPhone, memberIdnum, newPassword, confirmPassword);
+        return switch (res) {
+            case "OK"       -> ResponseEntity.ok("OK");
+            case "MISMATCH" -> ResponseEntity.badRequest().body("비밀번호 확인이 일치하지 않습니다.");
+            default         -> ResponseEntity.badRequest().body("본인 확인에 실패했습니다.");
+        };
+    }
+
+    // 회원 탈퇴(전화번호+생년월일 검증)
+    @PostMapping(value="/api/deactivate", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> deactivateMember(
+            @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
+            HttpSession session,
+            @RequestParam("memberPhone") String memberPhone,
+            @RequestParam("memberIdnum")  String memberIdnum) {
+
+        if (loginUser == null || !"MEMBER".equalsIgnoreCase(loginUser.getRole())) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        try {
+            boolean ok = memberService.deactivateWithVerificationForCurrent(memberPhone, memberIdnum);
+            if (ok) {
+                session.invalidate();
+                return ResponseEntity.ok("OK");
+            }
+            return ResponseEntity.badRequest().body("본인 확인에 실패했습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("SERVER_ERROR");
+        }
+    }
 }
+
+/*유저 마스터 dto에 저장된 세션 가져오는 코드
+
+// 컨트롤러 예시
+@GetMapping("/mypage")
+public String mypage(Model model) {
+    // 일반회원 화면일 때
+    MemberDTO me = memberService.getSessionMember();
+    model.addAttribute("member", me);
+    return "member/ginfo";
+}
+
+// 다른 서비스 예시
+public void doSomethingForCurrentLawyer() {
+    LawyerDTO me = lawyerService.getSessionLawyer();
+    // ... 로직 ...
+}
+*/
