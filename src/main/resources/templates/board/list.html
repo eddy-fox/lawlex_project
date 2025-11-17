@@ -63,13 +63,13 @@
 					          <span class="angle">이전</span>
 				          </a>
 			          </li>
-			          <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
-			          th:if="${page >= paging.number-5 and page <= paging.number+5}"
-			          th:classappend="${page == paging.number} ? 'active'" class="page-item">
+			          <!-- 최대 10개 페이지 번호만 표시 (0~9, 10~19, 20~29 ...) -->
+			          <li th:each="pageNum: ${#numbers.sequence(startPage, endPage)}"
+			              th:classappend="${pageNum == paging.number} ? 'active'" class="page-item">
 			  	        <a class="page-link"
-                  th:data-page="${page}"
-                  th:href="@{/board/list(page=${page}, kw=${kw}, interestIdx=${interestIdx})}"
-                  th:text="${page + 1}"></a>
+                  th:data-page="${pageNum}"
+                  th:href="@{/board/list(page=${pageNum}, kw=${kw}, interestIdx=${interestIdx})}"
+                  th:text="${pageNum + 1}"></a>
 			          </li>
 			          <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
 				          <a class="page-link" th:data-page="${page}" th:href="@{/board/list(page=${paging.number+1}, kw=${kw}, interestIdx=${interestIdx})}">
