@@ -201,6 +201,7 @@ public class MemberService {
                 .memberNickname(dto.getMemberNickname())
                 .memberAgree(dto.getMemberAgree())
                 .memberActive(1)
+                .memberProvider("local")
                 // 호환 컬럼
                 .interestIdx(dto.getInterestIdx1())
                 // 새 3필드

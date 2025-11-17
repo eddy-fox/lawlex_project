@@ -36,6 +36,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final InterestRepository interestRepository;
+    private final ReBoardService reboardService;
 
     private Specification<ReBoardEntity> search(String kw) {
 
@@ -105,7 +106,7 @@ public class BoardService {
         this.boardRepository.save(q);
 
         // GPT 자동 답변 생성
-        // reboardService.gptAutoReboard(q);
+        reboardService.gptAutoReboard(q);
 
     }
 

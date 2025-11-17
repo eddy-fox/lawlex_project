@@ -50,8 +50,7 @@
           <div class="pane">
             <div class="pane-title">
               <span>포인트</span>
-              <!-- 포인트는 이후 서비스 연동 시 동적으로 치환 -->
-              <span class="strong-num">100 P</span>
+              <span class="strong-num" th:text="${m.memberPoint}">100 P</span>
             </div>
             <div class="pill-row">
               <a class="pill-btn" th:href="@{/member/point}">결제하기</a>

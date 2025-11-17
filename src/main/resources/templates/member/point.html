@@ -54,7 +54,7 @@
             <div class="radio-row">
                 동의합니까?
               <label for="agree" class="radio-square">
-                <input type="checkbox" id="agree" name="agree" value="yes">네 ✔</input>
+                <input type="checkbox" id="agree" name="agree" value="yes"></input>
               </label>
             </div>
             <button type="submit" class="btn">결제하기</button>
@@ -64,13 +64,14 @@
 
     <!-- 이용 내역 -->
       <section>
+        <form class="container">
         <div class="tabs">
           <div id="pointHistory" onclick="point()" class="tab active">포인트 이용 내역</div>
           <div class="tab divider">|</div>
           <div id="paymentHistory" onclick="payment()" class="tab">결제 내역</div>
         </div>
     
-      <!-- 포인트 이용 내역 -->    
+      <!-- 포인트 이용 내역 -->          
       <div id="point" name="point" class="history">
         <div class="scroll">
           <table>
@@ -115,6 +116,7 @@
           </table>
         </div>
       </div>
+      </form>
 
       </section>
     </main>
