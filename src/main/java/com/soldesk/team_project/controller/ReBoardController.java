@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
-import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.form.ReBoardForm;
 import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.LawyerService;
-import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.ReBoardService;
 
 import jakarta.validation.Valid;

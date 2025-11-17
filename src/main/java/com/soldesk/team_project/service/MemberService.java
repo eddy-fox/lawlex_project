@@ -1,9 +1,7 @@
 package com.soldesk.team_project.service;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,18 +12,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
-import com.soldesk.team_project.entity.InterestEntity;
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
-import com.soldesk.team_project.entity.MemberInterestEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
-import com.soldesk.team_project.repository.UserMasterRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import com.soldesk.team_project.entity.UserMasterEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 
 @Service
