@@ -25,7 +25,7 @@ public class RankingController {
 
     // 랭킹 페이지
     @GetMapping("/ranking")
-    public String ranking(@RequestParam(defaultValue = "like") String pick,Model model) {
+    public String ranking(@RequestParam(value = "pick", defaultValue = "like") String pick, Model model) {
         List<LawyerDTO> rankingList = rankingService.getRankingList(pick);
 
         Map<String, List<Object[]>> rankingMap = rankingService.getInterestAnswerRanking();

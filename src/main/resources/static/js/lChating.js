@@ -175,29 +175,30 @@
       row.appendChild(bubble);
     }
 
+    // 첨부 이미지 (텍스트와 같은 위치에 배치)
+    if (msg.attachments && msg.attachments.length > 0) {
+      var media = document.createElement('div');
+      media.className = 'media';
+      msg.attachments.forEach(function (att) {
+        if (!att.fileUrl) return; // fileUrl이 없으면 스킵
+        var a = document.createElement('a');
+        a.href = att.fileUrl;
+        a.target = '_blank';
+        var im = document.createElement('img');
+        im.src = att.fileUrl;
+        im.alt = att.fileName || '첨부';
+        a.appendChild(im);
+        media.appendChild(a);
+      });
+      row.appendChild(media);
+    }
+
     // 변호사가 보낸 메시지(LAWYER) → 왼쪽, 말풍선 뒤에 시간
     if (isMe) {
       var meta2 = document.createElement('div');
       meta2.className = 'meta';
       meta2.textContent = formatTime(msg.chatRegDate);
       row.appendChild(meta2);
-    }
-
-    // 첨부 이미지
-    if (msg.attachments && msg.attachments.length > 0) {
-      var media = document.createElement('div');
-      media.className = 'media';
-      msg.attachments.forEach(function (att) {
-        var a = document.createElement('a');
-        a.href = '/chat/attachment/' + att.attachmentId;
-        a.target = '_blank';
-        var im = document.createElement('img');
-        im.src = '/chat/attachment/' + att.attachmentId;
-        im.alt = att.fileName || '첨부';
-        a.appendChild(im);
-        media.appendChild(a);
-      });
-      row.appendChild(media);
     }
 
     msgs.appendChild(row);
