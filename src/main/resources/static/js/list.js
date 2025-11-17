@@ -4,7 +4,8 @@ Array.from(page_elements).forEach(function(element) {
     e.preventDefault();
     const page = this.dataset.page;
     const kw = document.getElementById('kw') ? document.getElementById('kw').value : '';
-    const interestIdx = document.getElementById('interestIdx') ? document.getElementById('intersetIdx').value : '';
+    const interestHidden = document.getElementById('interestIdx');
+    const interestIdx = interestHidden ? interestHidden.value : '';
     console.log('CLICK PAGE -> page:', page, 'kw:', kw, 'interestIdx:', interestIdx);
     document.getElementById('page').value = page;
     document.getElementById('searchForm').submit();

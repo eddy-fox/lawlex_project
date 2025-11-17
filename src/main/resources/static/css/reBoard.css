@@ -251,3 +251,259 @@
       padding: 0 14px
     }
   }
+
+  /* =========================== */
+/* 게시글, 답변, 작성폼 스타일 */
+/* =========================== */
+
+/* 게시글 본문 */
+.inner {
+    padding: 22px;
+}
+
+.post-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.post-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+.card-text {
+    font-size: 16px;
+    line-height: 1.8;
+    white-space: pre-line;
+    margin-bottom: 30px;
+}
+
+/* 수정/삭제 버튼 */
+.edit {
+    margin-bottom: 30px;
+}
+
+.edit .link {
+    margin-right: 12px;
+    font-size: 14px;
+    color: var(--navy);
+}
+
+/* 답변 영역 */
+.answer-block {
+    background: var(--chip);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow);
+}
+
+.answer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.answer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.lawyer-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+.answer-date {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.recommend-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 8px;
+    background: #e8eefc;
+    border: 1px solid #a9bdf4;
+    cursor: pointer;
+}
+
+.recommend-btn:hover {
+    background: #dce7ff;
+}
+
+.answer-content {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-top: 12px;
+}
+
+/* 답변 작성 폼 */
+.my-3 {
+    margin-top: 40px;
+    width: 100%;
+}
+
+.my-3 .form-control,
+.my-3 textarea {
+    width: 100%;
+    font-size: 15px;
+    line-height: 1.6;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    resize: vertical;
+}
+
+.my-3 input[type="submit"] {
+    padding: 10px 22px;
+    border-radius: 10px;
+    background: var(--navy);
+    border: 1px solid var(--navy);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.my-3 input[type="submit"]:hover {
+    background: var(--navy-700);
+    border-color: var(--navy-700);
+}
+
+/* 전체 레이아웃 */
+.page-reBoard .wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.page-reBoard .backdrop {
+    width: 900px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 게시글 기본 스타일 */
+.inner {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.post-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.post-meta {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.card-text {
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+/* 수정/삭제 버튼 */
+.edit {
+    margin-bottom: 40px;
+}
+
+.edit .link {
+    margin-right: 15px;
+    color: #4876ef;
+}
+
+/* ▽▽▽ 답변 영역 스타일 ▽▽▽ */
+.answer-block {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    border-left: 6px solid #4f80ff;
+}
+
+.answer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.answer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.lawyer-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.answer-date {
+    font-size: 13px;
+    color: #777;
+}
+
+.recommend-btn {
+    padding: 8px 15px;
+    background: #e8eefc;
+    border: 1px solid #a9bdf4;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.recommend-btn:hover {
+    background: #dce7ff;
+}
+
+/* 답변 내용 */
+.answer-content {
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* ▽▽▽ 답변 작성 폼 ▽▽▽ */
+.my-3 {
+    margin-top: 40px;
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    resize: vertical;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    border: none;
+    background: #4f80ff;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #3b6af2;
+}
+

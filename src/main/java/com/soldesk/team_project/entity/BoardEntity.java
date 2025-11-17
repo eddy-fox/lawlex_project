@@ -57,7 +57,7 @@ public class BoardEntity {
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE)
     private List<ReBoardEntity> reboardList;
 
 }
