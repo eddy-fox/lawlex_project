@@ -16,8 +16,13 @@ import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.PointDTO;
 import com.soldesk.team_project.dto.ProductDTO;
 import com.soldesk.team_project.dto.PurchaseDTO;
+import com.soldesk.team_project.dto.ReboardDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
+// ↓ 내가 쓴 글 / 댓글용 DTO
+import com.soldesk.team_project.dto.BoardDTO;
+import com.soldesk.team_project.dto.CommentDTO;
+
 import com.soldesk.team_project.repository.AdminRepository;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
@@ -164,102 +169,113 @@ public class MemberController {
      *   * 맞으면 UserMasterDTO 구성하여 세션(loginUser)에 저장 + 각 역할 세션도 저장
      *   * need=mypage 로 들어오면 로그인 직후 /member/mypage 로 이동
      */
+
     @PostMapping("/login")
     public String loginSubmit(@RequestParam("memberId") String userId,
-                              @RequestParam("memberPass") String rawPw,
-                              @RequestParam(name = "need", required = false) String need,
-                              HttpSession session) {
+                          @RequestParam("memberPass") String rawPw,
+                          @RequestParam(name = "need", required = false) String need,
+                          HttpSession session) {
 
-        // 1) MEMBER
-        var mOpt = memberRepository.findByMemberId(userId);
-        if (mOpt.isPresent()) {
-            MemberEntity m = mOpt.get();
-            if (!passwordMatches(rawPw, m.getMemberPass())) {
-                return "redirect:/member/login?error=badpw";
-            }
-            // loginUser: UserMasterDTO로 세션 저장
-            UserMasterDTO um = new UserMasterDTO();
-            um.setUserId(m.getMemberId());
-            um.setRole("MEMBER");
-            um.setMemberIdx(m.getMemberIdx());
-            um.setLawyerIdx(null);
-            um.setAdminIdx(null);
-            session.setAttribute("loginUser", um);
-            System.out.println("✅ 세션 저장 성공! 로그인 사용자 ID: " + um.getUserId());
+    // 1) MEMBER
+    var mOpt = memberRepository.findByMemberId(userId);
+    if (mOpt.isPresent()) {
+        MemberEntity m = mOpt.get();
 
-            // loginMember: 상세 세션
-            MemberSession ms = new MemberSession(
-                    m.getMemberIdx(), m.getMemberId(), m.getMemberName(),
-                    m.getMemberEmail(), m.getMemberPhone(), m.getMemberNickname(),
-                    m.getInterestIdx1(), m.getInterestIdx2(), m.getInterestIdx3()
-            );
-            session.setAttribute("loginMember", ms);
-            session.removeAttribute("loginLawyer");
-            session.removeAttribute("loginAdmin");
-
-            session.setMaxInactiveInterval(60 * 60);
-            return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
+        // 🔹 탈퇴(비활성) 회원이면 로그인 차단
+        if (m.getMemberActive() != null && m.getMemberActive() == 0) {
+            return "redirect:/member/login?error=deactivated";
         }
 
-        // 2) LAWYER
-        var lOpt = lawyerRepository.findByLawyerId(userId);
-        if (lOpt.isPresent()) {
-            LawyerEntity l = lOpt.get();
-
-            // 비밀번호 확인
-            if (!passwordMatches(rawPw, l.getLawyerPass())) {
-                return "redirect:/member/login?error=badpw";
-            }
-            UserMasterDTO um = new UserMasterDTO();
-            um.setUserId(l.getLawyerId());
-            um.setRole("LAWYER");
-            um.setMemberIdx(null);
-            um.setLawyerIdx(l.getLawyerIdx());
-            um.setAdminIdx(null);
-            session.setAttribute("loginUser", um);
-
-            LawyerSession ls = new LawyerSession(
-                    l.getLawyerIdx(), l.getLawyerId(), l.getLawyerName(),
-                    l.getLawyerEmail(), l.getLawyerPhone(), l.getInterestIdx()
-            );
-            session.setAttribute("loginLawyer", ls);
-            session.removeAttribute("loginMember");
-            session.removeAttribute("loginAdmin");
-
-            session.setMaxInactiveInterval(60 * 60);
-            return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
+        if (!passwordMatches(rawPw, m.getMemberPass())) {
+            return "redirect:/member/login?error=badpw";
         }
 
-        // 3) ADMIN
-        var aOpt = adminRepository.findByAdminId(userId);
-        if (aOpt.isPresent()) {
-            AdminEntity a = aOpt.get();
-            if (!passwordMatches(rawPw, a.getAdminPass())) {
-                return "redirect:/member/login?error=badpw";
-            }
-            UserMasterDTO um = new UserMasterDTO();
-            um.setUserId(a.getAdminId());
-            um.setRole("ADMIN");
-            um.setMemberIdx(null);
-            um.setLawyerIdx(null);
-            um.setAdminIdx(a.getAdminIdx());
-            session.setAttribute("loginUser", um);
+        UserMasterDTO um = new UserMasterDTO();
+        um.setUserId(m.getMemberId());
+        um.setRole("MEMBER");
+        um.setMemberIdx(m.getMemberIdx());
+        um.setLawyerIdx(null);
+        um.setAdminIdx(null);
+        session.setAttribute("loginUser", um);
+        System.out.println("✅ 세션 저장 성공! 로그인 사용자 ID: " + um.getUserId());
 
-            AdminSession as = new AdminSession(
-                    a.getAdminIdx(), a.getAdminId(), a.getAdminName(),
-                    a.getAdminEmail(), a.getAdminPhone(), a.getAdminRole()
-            );
-            session.setAttribute("loginAdmin", as);
-            session.removeAttribute("loginMember");
-            session.removeAttribute("loginLawyer");
+        MemberSession ms = new MemberSession(
+                m.getMemberIdx(), m.getMemberId(), m.getMemberName(),
+                m.getMemberEmail(), m.getMemberPhone(), m.getMemberNickname(),
+                m.getInterestIdx1(), m.getInterestIdx2(), m.getInterestIdx3()
+        );
+        session.setAttribute("loginMember", ms);
+        session.removeAttribute("loginLawyer");
+        session.removeAttribute("loginAdmin");
 
-            session.setMaxInactiveInterval(60 * 60);
-            return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
-        }
-
-        // 전부 없음
-        return "redirect:/member/login?error=nouser";
+        session.setMaxInactiveInterval(60 * 60);
+        return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
     }
+
+    // 2) LAWYER
+    var lOpt = lawyerRepository.findByLawyerId(userId);
+    if (lOpt.isPresent()) {
+        LawyerEntity l = lOpt.get();
+
+        // 필요하면 여기에도 lawyerActive 체크 추가 가능
+        // if (l.getLawyerActive() != null && l.getLawyerActive() == 0) {
+        //     return "redirect:/member/login?error=deactivated";
+        // }
+
+        if (!passwordMatches(rawPw, l.getLawyerPass())) {
+            return "redirect:/member/login?error=badpw";
+        }
+        UserMasterDTO um = new UserMasterDTO();
+        um.setUserId(l.getLawyerId());
+        um.setRole("LAWYER");
+        um.setMemberIdx(null);
+        um.setLawyerIdx(l.getLawyerIdx());
+        um.setAdminIdx(null);
+        session.setAttribute("loginUser", um);
+
+        LawyerSession ls = new LawyerSession(
+                l.getLawyerIdx(), l.getLawyerId(), l.getLawyerName(),
+                l.getLawyerEmail(), l.getLawyerPhone(), l.getInterestIdx()
+        );
+        session.setAttribute("loginLawyer", ls);
+        session.removeAttribute("loginMember");
+        session.removeAttribute("loginAdmin");
+
+        session.setMaxInactiveInterval(60 * 60);
+        return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
+    }
+
+    // 3) ADMIN
+    var aOpt = adminRepository.findByAdminId(userId);
+    if (aOpt.isPresent()) {
+        AdminEntity a = aOpt.get();
+
+        if (!passwordMatches(rawPw, a.getAdminPass())) {
+            return "redirect:/member/login?error=badpw";
+        }
+        UserMasterDTO um = new UserMasterDTO();
+        um.setUserId(a.getAdminId());
+        um.setRole("ADMIN");
+        um.setMemberIdx(null);
+        um.setLawyerIdx(null);
+        um.setAdminIdx(a.getAdminIdx());
+        session.setAttribute("loginUser", um);
+
+        AdminSession as = new AdminSession(
+                a.getAdminIdx(), a.getAdminId(), a.getAdminName(),
+                a.getAdminEmail(), a.getAdminPhone(), a.getAdminRole()
+        );
+        session.setAttribute("loginAdmin", as);
+        session.removeAttribute("loginMember");
+        session.removeAttribute("loginLawyer");
+
+        session.setMaxInactiveInterval(60 * 60);
+        return "mypage".equalsIgnoreCase(need) ? "redirect:/member/mypage" : "redirect:/member";
+    }
+
+    // 전부 없음
+    return "redirect:/member/login?error=nouser";
+}
 
     // 일반회원가입 처리
     @PostMapping(value = "/join/normal", produces = "text/plain;charset=UTF-8")
@@ -331,16 +347,48 @@ public class MemberController {
 
     @GetMapping("/mypage")
     public String mypage(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
-                         Model model) {
-        if (loginUser == null) return "redirect:/member/login";
-        model.addAttribute("loginUser", loginUser);
-        return switch (loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase()) {
-            case "MEMBER" -> "member/ginfo";
-            case "LAWYER" -> "member/linfo";
-            case "ADMIN"  -> "admin/ainfo";
-            default -> "redirect:/member/login";
-        };
+                     Model model) {
+    if (loginUser == null) return "redirect:/member/login";
+    model.addAttribute("loginUser", loginUser);
+
+    String role = loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase();
+
+    if ("MEMBER".equals(role)) {
+        // 프로필
+        MemberDTO me = memberService.getSessionMember();
+        model.addAttribute("member", me);
+
+        // 내가 쓴 글 / 댓글 (memberIdx 기준)
+        Integer memberIdx = loginUser.getMemberIdx();
+        List<BoardDTO> myBoards   = memberService.getMyBoards(memberIdx);
+        List<CommentDTO> myComments = memberService.getMyComments(memberIdx);
+
+        model.addAttribute("myBoards", myBoards);
+        model.addAttribute("myComments", myComments);
+
+        return "member/ginfo";
+
+    } else if ("LAWYER".equals(role)) {
+
+        // 🔹 세션 기반 변호사 프로필
+        LawyerDTO me = lawyerService.getSessionLawyer();
+        model.addAttribute("lawyer", me);
+
+        // 🔹 변호사가 쓴 리보드 5개 (lawyerIdx 기준)
+        Integer lawyerIdx = loginUser.getLawyerIdx();
+        List<ReboardDTO> myReboards = lawyerService.getMyReboardsForLawyer(lawyerIdx);
+        model.addAttribute("myReboards", myReboards);
+
+        return "member/linfo";
+
+    } else if ("ADMIN".equals(role)) {
+
+        return "admin/ainfo";
+
+    } else {
+        return "redirect:/member/login";
     }
+}
 
     // 공통 API
     // 아이디 찾기
@@ -469,9 +517,9 @@ public class MemberController {
         return isBcrypt ? passwordEncoder.matches(raw, db) : raw.equals(db);
     }
 
-    /* ===================== [ADD] gmodify용 공통 모델 & 프로필/비번/탈퇴 API ===================== */
 
-    // gmodify 템플릿에서 사용할 현재 회원 프로필
+
+    // 현재 회원 프로필
     @ModelAttribute("m")
     public MemberDTO exposeMemberForModify(
             @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {

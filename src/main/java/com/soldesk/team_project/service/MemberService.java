@@ -13,22 +13,26 @@ import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
+import com.soldesk.team_project.dto.BoardDTO;
+import com.soldesk.team_project.dto.CommentDTO;
 import com.soldesk.team_project.entity.InterestEntity;
-// import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.BoardEntity;
+import com.soldesk.team_project.entity.CommentEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.repository.BoardRepository;
+import com.soldesk.team_project.repository.CommentRepository;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import com.soldesk.team_project.entity.LawyerEntity;
 
 import java.util.NoSuchElementException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +41,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final InterestRepository interestRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final LawyerRepository lawyerRepository;
+
+    // [ADD] 게시글/댓글용 리포지토리
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     private MemberDTO convertMemberDTO (MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
@@ -55,23 +62,6 @@ public class MemberService {
         memberDTO.setInterestIdx1(memberEntity.getInterestIdx()); // 기존 로직 유지
         return memberDTO;
     }
-
-    // private MemberEntity convertMemberEntity (MemberDTO memberDTO) {
-    //     MemberEntity memberEntity = new MemberEntity();
-    //     memberEntity.setMemberIdx(memberDTO.getMemberIdx());
-    //     memberEntity.setMemberId(memberDTO.getMemberId());
-    //     memberEntity.setMemberPass(memberDTO.getMemberPass());
-    //     memberEntity.setMemberName(memberDTO.getMemberName());
-    //     memberEntity.setMemberIdnum(memberDTO.getMemberIdnum());
-    //     memberEntity.setMemberEmail(memberDTO.getMemberEmail());
-    //     memberEntity.setMemberPhone(memberDTO.getMemberPhone());
-    //     memberEntity.setMemberAgree(memberDTO.getMemberAgree());
-    //     memberEntity.setMemberNickname(memberDTO.getMemberNickname());
-    //     InterestEntity interestEntity = interestRepository.findById(memberDTO.getInterestIdx()).orElse(null);
-    //     memberEntity.setMemberInterest(interestEntity);
-    //     return memberEntity;
-    // }
-
 
     // 전체 회원 조회
     public List<MemberDTO> getAllMember() {
@@ -130,7 +120,6 @@ public class MemberService {
     public MemberDTO searchSessionMember(int memberIdx) {
         MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
         MemberDTO memberDTO = convertMemberDTO(memberEntity);
-
         return memberDTO;
     }
 
@@ -143,7 +132,6 @@ public class MemberService {
             throw new DataNotFoundException("member not found");
         }
     }
-
 
     // 공통 유틸 
     private static String digits(String s) { return s == null ? null : s.replaceAll("\\D", ""); }
@@ -166,17 +154,13 @@ public class MemberService {
     // 일반 회원가입 (항상 BCrypt 저장)
     @Transactional
     public void joinNormal(MemberDTO dto) {
-        // 중복 체크
         if (isUserIdDuplicate(dto.getMemberId())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
-        // 관심분야 검증(서로 달라야 함)
         validateDistinctInterests(dto);
 
-        // 비번 인코딩
         String enc = passwordEncoder.encode(dto.getMemberPass());
 
-        // DB 하위호환: interest_idx(단일) NOT NULL 대응 → interestIdx1 값으로 채워 저장
         MemberEntity me = MemberEntity.builder()
                 .memberId(dto.getMemberId())
                 .memberPass(enc)
@@ -187,9 +171,7 @@ public class MemberService {
                 .memberNickname(dto.getMemberNickname())
                 .memberAgree(dto.getMemberAgree())
                 .memberActive(1)
-                // 호환 컬럼
                 .interestIdx(dto.getInterestIdx1())
-                // 새 3필드
                 .interestIdx1(dto.getInterestIdx1())
                 .interestIdx2(dto.getInterestIdx2())
                 .interestIdx3(dto.getInterestIdx3())
@@ -198,14 +180,13 @@ public class MemberService {
         memberRepository.save(me);
     }
 
-
     // 일반회원 프로필 수정 세션의 memberIdx로 검증
     @Transactional
     public MemberUpdateResult updateMemberProfile(
             MemberDTO dto,
             String newPassword,
             String confirmPassword,
-            Long ignoredUserIdx,   // 기존 시그니처 유지 (사용 안 함)
+            Long ignoredUserIdx,
             Integer memberIdx
     ) {
         if (memberIdx == null) throw new IllegalArgumentException("본인만 수정할 수 있습니다.");
@@ -213,7 +194,6 @@ public class MemberService {
         MemberEntity me = memberRepository.findById(memberIdx)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
-        // 아이디 변경
         if (notBlank(dto.getMemberId()) && !dto.getMemberId().equals(me.getMemberId())) {
             if (isUserIdDuplicate(dto.getMemberId())) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
@@ -221,7 +201,6 @@ public class MemberService {
             me.setMemberId(dto.getMemberId());
         }
 
-        // 비밀번호 변경(있으면 무조건 해시 저장)
         if (notBlank(newPassword) || notBlank(confirmPassword)) {
             if (!notBlank(newPassword) || !newPassword.equals(confirmPassword)) {
                 throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
@@ -229,7 +208,6 @@ public class MemberService {
             me.setMemberPass(passwordEncoder.encode(newPassword));
         }
 
-        // 관심분야 중복 금지 체크 + 프로필 갱신
         validateDistinctInterests(dto);
         if (dto.getMemberNickname() != null) me.setMemberNickname(dto.getMemberNickname());
         if (dto.getMemberEmail() != null)    me.setMemberEmail(dto.getMemberEmail());
@@ -239,13 +217,10 @@ public class MemberService {
 
         memberRepository.save(me);
 
-        // 컨트롤러에서 쓰는 반환 타입 유지
         return new MemberUpdateResult(me.getMemberId(), me);
     }
 
-    // 세션에서 로그인된 유저 가져오기
-
-    //  서비스 내부에서 세션의 loginUser(UserMasterDTO) 꺼내기
+    // 서비스 내부에서 세션의 loginUser(UserMasterDTO) 꺼내기
     private UserMasterDTO currentLoginUserOrThrow() {
         ServletRequestAttributes attrs =
             (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -267,12 +242,10 @@ public class MemberService {
                 .map(this::convertMemberDTO)
                 .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
     }
-    
 
     // OAuth2
     @Transactional
     public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
-        // FIX: interestIdx1만 저장(폼에서 하나만 받는 설계이므로)
         MemberEntity memberEntity = MemberEntity.builder()
                 .memberId(tempUser.getEmail())
                 .memberPass("{noop}oauth2")
@@ -292,13 +265,11 @@ public class MemberService {
         String phone = digits(memberPhone);
         String idnum = digits(memberIdnum);
 
-        // 1) 일반회원
         var memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(phone, idnum);
         if (memOpt.isPresent()) {
             return memOpt.get().getMemberId();
         }
 
-        // 2) 변호사
         var lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phone, idnum);
         if (lawOpt.isPresent()) {
             return lawOpt.get().getLawyerId();
@@ -319,7 +290,6 @@ public class MemberService {
         String phone = digits(memberPhone);
         String idnum = digits(memberIdnum);
 
-        // 1) MEMBER 우선
         Optional<MemberEntity> mOpt = memberRepository.findByMemberId(memberId);
         if (mOpt.isPresent()) {
             MemberEntity me = mOpt.get();
@@ -331,7 +301,6 @@ public class MemberService {
             return "OK";
         }
 
-        // 2) LAWYER
         Optional<LawyerEntity> lOpt = lawyerRepository.findByLawyerId(memberId);
         if (lOpt.isPresent()) {
             LawyerEntity le = lOpt.get();
@@ -346,7 +315,6 @@ public class MemberService {
         return "FAIL";
     }
 
-    // ====== 결과 DTO ======
     public record MemberUpdateResult(String newUserId, MemberEntity member) {}
 
     // 문의 상세 조회 필요한 id 와 name
@@ -355,8 +323,6 @@ public class MemberService {
         MemberDTO memberDTO = convertMemberDTO(memberEntity);
         return memberDTO;
     }
-
-    /* ===================== [ADD] gmodify 전용 메서드들 ===================== */
 
     // gmodify에서 관심분야 3개를 모두 채운 DTO 반환
     private MemberDTO convertMemberDTOFull(MemberEntity e) {
@@ -423,8 +389,53 @@ public class MemberService {
                         && Objects.equals(idnum, me.getMemberIdnum());
         if (!verified) return false;
 
-        me.setMemberActive(0); // 소프트 삭제
+        me.setMemberActive(0);
         memberRepository.save(me);
         return true;
+    }
+
+    // ===== 내가 쓴 글 / 댓글 =====
+
+    @Transactional(readOnly = true)
+    public List<BoardDTO> getMyBoards(Integer memberIdx) {
+        if (memberIdx == null) return java.util.Collections.emptyList();
+
+        return boardRepository
+                .findTop5ByMemberMemberIdxAndBoardActiveOrderByBoardRegDateDesc(memberIdx, 1)
+                .stream()
+                .map(this::toBoardDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentDTO> getMyComments(Integer memberIdx) {
+        if (memberIdx == null) return java.util.Collections.emptyList();
+
+        return commentRepository
+                .findTop5ByMemberIdxAndCommentActiveOrderByCommentRegDateDesc(memberIdx, 1)
+                .stream()
+                .map(this::toCommentDTO)
+                .toList();
+    }
+
+    private BoardDTO toBoardDTO(BoardEntity e) {
+        BoardDTO d = new BoardDTO();
+        d.setBoardIdx(e.getBoardIdx());
+        d.setBoardTitle(e.getBoardTitle());
+        d.setBoardRegDate(e.getBoardRegDate());
+        d.setBoardViews(e.getBoardViews());
+        return d;
+    }
+
+    private CommentDTO toCommentDTO(CommentEntity e) {
+        CommentDTO d = new CommentDTO();
+        d.setCommentIdx(e.getCommentIdx());
+        d.setCommentContent(e.getCommentContent());
+        d.setCommentRegDate(e.getCommentRegDate());
+        d.setNewsIdx(e.getNewsIdx());
+        d.setMemberIdx(e.getMemberIdx());
+        d.setLawyerIdx(e.getLawyerIdx());
+        d.setCommentActive(e.getCommentActive());
+        return d;
     }
 }

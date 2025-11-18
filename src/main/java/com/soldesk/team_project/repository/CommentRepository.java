@@ -37,5 +37,9 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
            "WHERE c.commentIdx = :commentIdx")
     CommentEntity findByIdWithMemberAndLawyer(@Param("commentIdx") Integer commentIdx);
     
+    // 로그인한 회원이 쓴 최근 5개 댓글 (활성 댓글만)
+    List<CommentEntity> findTop5ByMemberIdxAndCommentActiveOrderByCommentRegDateDesc(
+        Integer memberIdx,
+        Integer commentActive
+);
 }
-

@@ -10,4 +10,6 @@ public interface ReBoardRepository extends JpaRepository<ReBoardEntity, Integer>
     
     Optional<ReBoardEntity> findByBoardEntityBoardIdx(Integer boardIdx);
 
+    // 변호사 idx 기준으로 최신 5개
+    List<ReboardEntity> findTop5ByLawyerIdxOrderByReboardRegDateDesc(Integer lawyerIdx);
 }

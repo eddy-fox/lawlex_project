@@ -4,31 +4,21 @@ import java.util.List;
 
 import com.soldesk.team_project.security.UserBase;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.Builder.Default;
 
-@Getter 
-@Setter 
+@Getter
+@Setter
 @Builder
 @Entity
 @Table(name = "lawyer")
-
 @NoArgsConstructor
 @AllArgsConstructor
-public class LawyerEntity implements UserBase{
+public class LawyerEntity implements UserBase {
 
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lawyer_idx")
     private Integer lawyerIdx;
 
@@ -47,9 +37,11 @@ public class LawyerEntity implements UserBase{
     @Column(name = "lawyer_email")
     private String lawyerEmail;
 
+    // 휴대폰 번호
     @Column(name = "lawyer_phone")
     private String lawyerPhone;
 
+    // 동의 여부 ("1" / "0" 등 문자열)
     @Column(name = "lawyer_agree")
     private String lawyerAgree;
 
@@ -59,34 +51,38 @@ public class LawyerEntity implements UserBase{
     @Column(name = "lawyer_auth")
     private Integer lawyerAuth;
 
+    // 사무실 주소
     @Column(name = "lawyer_address")
     private String lawyerAddress;
 
+    // 사업장 전화번호
     @Column(name = "lawyer_tel")
     private String lawyerTel;
 
     @Column(name = "lawyer_img_path")
     private String lawyerImgPath;
 
+    // 한 줄 소개
     @Column(name = "lawyer_comment")
     private String lawyerComment;
-   
+
     @Default
     @Column(name = "lawyer_like", columnDefinition = "TINYINT(0) DEFAULT 0")
     private Integer lawyerLike = 0;
+
     @Default
     @Column(name = "lawyer_answer_cnt", columnDefinition = "TINYINT(0) DEFAULT 0")
     private Integer lawyerAnswerCnt = 0;
+
     @Default
     @Column(name = "lawyer_active", columnDefinition = "TINYINT(1) DEFAULT 1")
     private Integer lawyerActive = 1;
-    
-    @Column(name = "interest_idx", insertable = false, updatable = false)
+
+    @Column(name = "interest_idx", nullable = false)
     private Integer interestIdx;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_idx")
+    @JoinColumn(name = "interest_idx", insertable = false, updatable = false)
     private InterestEntity interest;
 
     @OneToMany(mappedBy = "lawyer")

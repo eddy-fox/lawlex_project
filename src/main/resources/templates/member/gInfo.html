@@ -20,13 +20,12 @@
 
           <div class="info">
             <div class="nickname">
-              <!-- 닉네임 -->
-              <div class="name" th:text="${m != null ? m.memberNickname : '닉네임사용자'}">닉네임사용자</div>
+              <div class="name"
+                   th:text="${m != null ? m.memberNickname : '닉네임사용자'}">닉네임사용자</div>
               <div class="tag">일반 회원</div>
             </div>
 
             <div class="meta-line">
-              <!-- 아이디 / 전화 / 이메일 (세션에 있는 필드만 사용) -->
               <span th:text="${m != null ? m.memberId : 'user001'}">user001</span>
               <span th:text="${m != null ? m.memberPhone : '010-1234-5678'}">010-1234-5678</span>
               <span th:text="${m != null ? m.memberEmail : 'user@example.com'}">user@example.com</span>
@@ -36,13 +35,13 @@
           <div class="actions-top">
             <a class="btn ghost" th:href="@{/member/gmodify}" role="button">정보수정</a>
 
-            <!-- 로그아웃: POST /member/logout (CSRF 포함, 스타일 영향 없게 숨김 폼 + 버튼) -->
             <form id="logoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
               <th:block th:if="${_csrf != null}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
               </th:block>
             </form>
-            <button class="btn ghost" type="button" onclick="document.getElementById('logoutForm').submit()">로그아웃</button>
+            <button class="btn ghost" type="button"
+                    onclick="document.getElementById('logoutForm').submit()">로그아웃</button>
           </div>
         </div>
 
@@ -50,7 +49,6 @@
           <div class="pane">
             <div class="pane-title">
               <span>포인트</span>
-              <!-- 포인트는 이후 서비스 연동 시 동적으로 치환 -->
               <span class="strong-num">100 P</span>
             </div>
             <div class="pill-row">
@@ -73,6 +71,7 @@
         </div>
       </section>
 
+      <!-- 내가 쓴 글 -->
       <section class="list-card">
         <div class="list-title">
           <span>내가 쓴 글</span>
@@ -80,18 +79,25 @@
         </div>
 
         <div class="item-list">
-          <!-- 이후 게시판 연동 전까지는 더미 유지 -->
-          <div class="row-item">
-            <div class="row-main">정보통신망법 침입 및 명예훼손 대응방법</div>
-            <div class="row-sub">2025-09-29 · 조회 12</div>
-          </div>
-          <div class="row-item">
-            <div class="row-main">폭행사건 합의 시 처리 절차</div>
-            <div class="row-sub">2025-09-24 · 조회 3</div>
+          <a class="row-item"
+             th:each="b : ${myBoards}"
+             th:href="@{/board/detail(boardIdx=${b.boardIdx})}">
+            <div class="row-main" th:text="${b.boardTitle}">
+              정보통신망법 침입 및 명예훼손 대응방법
+            </div>
+            <div class="row-sub"
+                 th:text="|${#temporals.format(b.boardRegDate, 'yyyy-MM-dd')} · 조회 ${b.boardViews}|">
+              2025-09-29 · 조회 12
+            </div>
+          </a>
+
+          <div class="row-item" th:if="${#lists.isEmpty(myBoards)}">
+            <div class="row-main">작성한 게시글이 없습니다.</div>
           </div>
         </div>
       </section>
 
+      <!-- 내가 쓴 댓글 -->
       <section class="list-card">
         <div class="list-title">
           <span>내가 쓴 댓글</span>
@@ -99,13 +105,20 @@
         </div>
 
         <div class="item-list">
-          <div class="row-item">
-            <div class="row-main">“상담 정말 도움됐습니다 감사합니다.”</div>
-            <div class="row-sub">2025-09-29 21:14</div>
-          </div>
-          <div class="row-item">
-            <div class="row-main">“이 부분 형사처벌 세게 나올까요?”</div>
-            <div class="row-sub">2025-09-24 10:22</div>
+          <a class="row-item"
+             th:each="c : ${myComments}"
+             th:href="@{/news/detail(newsIdx=${c.newsIdx})}">
+            <div class="row-main" th:text="${c.commentContent}">
+              “상담 정말 도움됐습니다 감사합니다.”
+            </div>
+            <div class="row-sub"
+                 th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd HH:mm')}">
+              2025-09-29 21:14
+            </div>
+          </a>
+
+          <div class="row-item" th:if="${#lists.isEmpty(myComments)}">
+            <div class="row-main">작성한 댓글이 없습니다.</div>
           </div>
         </div>
       </section>
