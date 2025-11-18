@@ -91,10 +91,6 @@ public class BoardService {
                         reboard.getLawyer().getLawyerName(); // Lazy 로딩 강제 실행
                         reboard.getLawyer().getLawyerImgPath(); // 이미지 경로도 로드
                     }
-                    if (reboard.getLawyerIdx() != null) {
-                        reboard.getLawyerIdx().getLawyerName(); // Lazy 로딩 강제 실행
-                        reboard.getLawyerIdx().getLawyerImgPath(); // 이미지 경로도 로드
-                    }
                 });
             }
             return board;
@@ -184,7 +180,7 @@ public class BoardService {
         return 1; // 기본값
     }
 
-    public void create(String boardTitle, String boardContent, String boardCategory, Integer interestIdx, MemberEntity member) {
+    public BoardEntity create(String boardTitle, String boardContent, String boardCategory, Integer interestIdx, MemberEntity member) {
 
         BoardEntity q = new BoardEntity();
         q.setBoardTitle(boardTitle);
@@ -210,10 +206,8 @@ public class BoardService {
                 q.setInterest(defaultInterest.get());
             }
         }
-        
-        this.boardRepository.save(q);
 
- 
+        return boardRepository.save(q);
     }
 
     public void modify(BoardEntity boardEntity, String boardTitle, String boardContent) {

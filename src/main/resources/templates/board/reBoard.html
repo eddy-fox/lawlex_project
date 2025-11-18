@@ -75,7 +75,7 @@
               <!-- 답변 리스트 (로그인 필요) -->
               <div class="answers-list-wrapper" th:classappend="${loginUser == null ? 'login-required' : ''}">
                 <!-- 비로그인 오버레이 -->
-                <div class="answers-overlay" sec:authorize="isAnonymous()">
+                <div class="answers-overlay" th:if="${loginUser == null}">
                   <div class="overlay-content">
                     <p class="overlay-message">로그인 후에 답변 확인이 가능합니다</p>
                     <a th:href="@{/member/login}" class="overlay-login-btn">로그인하기</a>
@@ -95,14 +95,30 @@
                   <div class="answer-content-wrapper">
                     <div class="answer-header">
                       <div class="answer-author">
+                        <!-- GPT 답변인 경우: 변호사 붙이지 않음 -->
                         <span class="answer-author-name" 
-                              th:text="${(reboard.lawyer != null and reboard.lawyer.lawyerName != null) ? (reboard.lawyer.lawyerName + '변호사') : ((reboard.lawyerIdx != null and reboard.lawyerIdx.lawyerName != null) ? (reboard.lawyerIdx.lawyerName + '변호사') : '익명')}"></span>
+                              th:if="${reboard.lawyer != null and reboard.lawyer.lawyerIdx == 205}"
+                              th:text="${reboard.lawyer.lawyerName != null ? reboard.lawyer.lawyerName : 'AI 법률상담'}"></span>
+                        
+                        <!-- 일반 변호사 답변인 경우: 변호사 붙임 -->
+                        <span class="answer-author-name" 
+                              th:if="${reboard.lawyer == null or reboard.lawyer.lawyerIdx != 205}"
+                              th:text="${reboard.lawyer != null and reboard.lawyer.lawyerName != null ? (reboard.lawyer.lawyerName + ' 변호사') : '익명'}"></span>
                         <span class="answer-date" th:if="${reboard.reboardRegDate != null}" th:text="${#temporals.format(reboard.reboardRegDate, 'yyyy-MM-dd')}"></span>
                       </div>
                     </div>
+                    <!-- GPT 답변 경고 문구 -->
+                    <div class="gpt-disclaimer" 
+                        th:if="${reboard.lawyer != null and reboard.lawyer.lawyerIdx == 205}">
+                      <strong>이 답변은 AI가 생성한 참고용 정보이며 법률적 정확성이 보장되지 않습니다. 실제 행동이나 의사결정에 활용하기 전에 반드시 전문가의 확인을 받으시기 바랍니다.</strong>
+                    </div>
                     <div class="answer-content" th:text="${reboard.reboardContent}"></div>
                     <div class="answer-actions">
-                      <a href="javascript:void(0);" class="recommend-link" th:data-uri="@{|/reboard/vote/${reboard.reboardIdx}|}">
+                      <!-- 일반 변호사 답변만 추천 버튼 표시 -->
+                      <a href="javascript:void(0);" 
+                        class="recommend-link" 
+                        th:if="${reboard.lawyer == null or reboard.lawyer.lawyerIdx != 205}"
+                        th:data-uri="@{|/reboard/vote/${reboard.reboardIdx}|}">
                         도움됐어요
                         <span class="recommend-count" th:text="${#lists.size(reboard.voter)}"></span>
                       </a>
@@ -157,6 +173,8 @@
     </div>
   </main>
     <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/reBoard.js}"></script>   
 </body>
 </html>

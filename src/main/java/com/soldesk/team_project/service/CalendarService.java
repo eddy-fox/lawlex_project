@@ -238,6 +238,8 @@ public List<Map<String, Object>> listLawyersForDayAsMap(int weekday) {
         m.put("lawyerIdx",  lawyer.getLawyerIdx());
         m.put("imgPath",    lawyer.getLawyerImgPath());
         m.put("name",       lawyer.getLawyerName());
+        m.put("address",    lawyer.getLawyerAddress());
+        m.put("interestName", lawyer.getInterest() != null ? lawyer.getInterest().getInterestName() : null);
         m.put("timeRange",  first != null
                 ? first.getCalendarStartTime() + " ~ " + first.getCalendarEndTime()
                 : "상시");
@@ -278,6 +280,26 @@ public List<Map<String, Object>> listLawyersForDayAsMap(int weekday) {
     result.addAll(unavailable);
     return result;
 }
+
+    /**
+     * 메인페이지용: 오늘 지금 상담 가능한 변호사만 반환 (최대 5개)
+     * - canRequestNow가 true인 변호사만 필터링
+     * - 시작 시간 순으로 정렬
+     */
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getAvailableLawyersNow() {
+        int todayDow = todayDow0to6();
+        var allLawyers = listLawyersForDayAsMap(todayDow);
+        
+        // canRequestNow가 true인 것만 필터링
+        return allLawyers.stream()
+                .filter(lawyer -> {
+                    Boolean canRequestNow = (Boolean) lawyer.get("canRequestNow");
+                    return canRequestNow != null && canRequestNow;
+                })
+                .limit(5) // 최대 5개
+                .collect(Collectors.toList());
+    }
 
 
 }

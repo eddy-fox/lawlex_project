@@ -51,7 +51,9 @@
 
     <section>
       <div class="wrap">
-        <h2 class="section-ttl"><span class="guest-only">현재 인기 많은 글</span><span class="logged-only">내 관심 카테고리 인기글</span>
+        <h2 class="section-ttl" th:with="user=${session.loginUser}">
+          <span th:if="${user == null}">현재 인기 많은 글</span>
+          <span th:if="${user != null}">내 관심 카테고리 인기글</span>
         </h2>
         <div class="list-card">
           <table class="tbl">
@@ -84,24 +86,46 @@
       <div class="wrap">
         <h2 class="section-ttl">지금 바로 상담 가능한 변호사</h2>
         <div class="group">
-          <form action="">
-          <div class="card">
-            <div class="lImg"><img th:src="@{/img/test.png}" alt=""></div>
-            <div class="name"><b>서울</b>|<b>김한수</b></div>
-            <div class="interest">분야</div>
-            <div class="time">
-              <label>
-                <input type="radio" name="durationMinutes" value="30">
-                30분
-              </label>
-              <label>
-                <input type="radio" name="durationMinutes" value="60">
-                60분
-              </label>
+          <div class="card" th:each="lawyer : ${availableLawyers}">
+            <div class="lImg">
+              <img th:if="${lawyer.imgPath != null}" th:src="${lawyer.imgPath}" alt="변호사 사진">
+              <img th:if="${lawyer.imgPath == null}" th:src="@{/img/test.png}" alt="">
             </div>
-            <a class="cardBtn" href="">신청하기</a>
+            <div class="name">
+              <b th:if="${lawyer.address != null and #strings.contains(lawyer.address, ' ')}" 
+                 th:text="${#strings.substring(lawyer.address, 0, #strings.indexOf(lawyer.address, ' '))}">서울</b>
+              <b th:if="${lawyer.address != null and !#strings.contains(lawyer.address, ' ')}" 
+                 th:text="${lawyer.address}">서울</b>
+              <b th:if="${lawyer.address == null}">지역</b>
+              <b>|</b>
+              <b th:text="${lawyer.name}">변호사명</b>
+            </div>
+            <div class="interest" th:text="${lawyer.interestName != null ? lawyer.interestName : '분야'}">분야</div>
+            <form th:action="@{/chat/request}" method="post">
+              <input type="hidden" name="lawyerIdx" th:value="${lawyer.lawyerIdx}">
+              <div class="time">
+                <label>
+                  <input type="radio" name="durationMinutes" value="30"
+                         th:disabled="${lawyer.can30 == null or !lawyer.can30}"
+                         th:checked="${lawyer.can30 != null and lawyer.can30}">
+                  30분
+                </label>
+                <label>
+                  <input type="radio" name="durationMinutes" value="60"
+                         th:disabled="${lawyer.can60 == null or !lawyer.can60}"
+                         th:checked="${(lawyer.can60 != null and lawyer.can60) and (lawyer.can30 == null or !lawyer.can30)}">
+                  60분
+                </label>
+              </div>
+              <button type="submit" class="cardBtn"
+                      th:disabled="${lawyer.canRequestNow == null or !lawyer.canRequestNow}">신청하기</button>
+              <input type="hidden" th:if="${_csrf != null}"
+                     th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
           </div>
-        </form>
+          <p class="empty" th:if="${#lists.isEmpty(availableLawyers)}" style="text-align: center; padding: 20px;">
+            지금 상담 가능한 변호사가 없습니다.
+          </p>
         </div>
 
       </div>

@@ -79,17 +79,11 @@
       <div id="msgs" class="msgs">
         <!-- 날짜 칩 / 필요하면 요일별로 group 해서 붙여도 됨 -->
 
-        <!-- 첫 번째 메시지가 마지막 읽은 메시지 이후인 경우 마커 표시 -->
-        <div th:if="${lastReadChatIdx != null and !#lists.isEmpty(initBatch) and initBatch[0].chatIdx > lastReadChatIdx}"
-             class="read-marker-row"
-             style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin: 8px 0;">
-          ---여기까지 읽었습니다---
-        </div>
-
         <!-- 초기 메시지 배치 렌더 -->
         <th:block th:each="m, iterStat : ${initBatch}">
           <!-- 마지막 읽은 메시지 이후 마커 표시 (메시지 앞에, 별도 row로) -->
-          <div th:if="${lastReadChatIdx != null and iterStat.index > 0 and initBatch[iterStat.index - 1].chatIdx == lastReadChatIdx}"
+          <!-- 조건: lastReadChatIdx가 null이 아니고, 현재 메시지가 마지막 읽은 메시지보다 크고, 이전 메시지가 마지막 읽은 메시지보다 작거나 같을 때 -->
+          <div th:if="${lastReadChatIdx != null and m.chatIdx > lastReadChatIdx and (iterStat.index == 0 or initBatch[iterStat.index - 1].chatIdx <= lastReadChatIdx)}"
                class="read-marker-row"
                style="width: 100%; text-align: center; padding: 8px 0; color: #64748b; font-size: 12px; border-top: 1px solid #e5e7eb; margin: 8px 0;">
             ---여기까지 읽었습니다---
@@ -132,17 +126,20 @@
 
         <div class="inputbar">
           <div class="toolbar">
-            <button type="button" id="btnUpload" class="icon-btn" aria-label="이미지 첨부">
+            <button type="button" id="btnUpload" class="icon-btn" aria-label="이미지 첨부"
+                    th:disabled="${room != null and room.state != 'ACTIVE'}">
               +
             </button>
             <input type="file" id="fileUpload" accept="image/*" multiple hidden>
           </div>
 
           <textarea id="inputMsg" class="few"
-                    placeholder="메시지를 입력하세요"
+                    th:placeholder="${room != null and room.state != 'ACTIVE' ? '상담이 종료되었습니다' : '메시지를 입력하세요'}"
+                    th:disabled="${room != null and room.state != 'ACTIVE'}"
                     autocomplete="off"></textarea>
 
-          <button id="btnSend" type="button" class="send">전송</button>
+          <button id="btnSend" type="button" class="send"
+                  th:disabled="${room != null and room.state != 'ACTIVE'}">전송</button>
         </div>
       </div>
 
@@ -163,6 +160,9 @@
       <input type="hidden" id="expiresAt"
              th:if="${room != null and room.expiresAt != null}"
              th:value="${#temporals.format(room.expiresAt,'yyyy-MM-dd''T''HH:mm:ss')}">
+      <input type="hidden" id="roomState"
+             th:if="${room != null}"
+             th:value="${room.state}">
     </div>
 
     <!-- ===== 라이트박스 (이미지 클릭 확대) ===== -->

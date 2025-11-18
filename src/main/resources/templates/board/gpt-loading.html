@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>GPT 답변 생성 중...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            font-family: Arial, sans-serif;
+        }
+        
+        .loading-container {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeInScale 0.3s ease-out;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 20px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <div class="loading-text">
+            GPT가 답변을 작성 중입니다<span class="loading-dots"></span>
+        </div>
+        <div class="loading-subtext">잠시만 기다려주세요</div>
+    </div>
+    
+    <script th:inline="javascript">
+        
+        const boardIdx = /*[[${boardIdx}]]*/ 0;
+        const redirectUrl = /*[[${redirectUrl}]]*/ '/board/list';
+        
+        console.log("boardIdx:", boardIdx);
+        console.log("redirectUrl:", redirectUrl);
+        
+        // 2초마다 GPT 답변 생성 여부 확인
+        const checkInterval = setInterval(function() {
+            console.log("GPT 답변 확인 중...");
+            
+            fetch('/board/api/check-gpt-answer?boardIdx=' + boardIdx)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("응답 데이터:", data);
+                    if (data.answerExists) {
+                        console.log("답변 생성 완료! 리다이렉트합니다.");
+                        clearInterval(checkInterval);
+                        window.location.href = redirectUrl;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking GPT answer:', error);
+                });
+        }, 2000);
+        
+        // 최대 30초 후에는 무조건 이동
+        setTimeout(function() {
+            console.log("30초 경과, 강제 이동");
+            clearInterval(checkInterval);
+            window.location.href = redirectUrl;
+        }, 30000);
+    </script>
+</body>
+</html>

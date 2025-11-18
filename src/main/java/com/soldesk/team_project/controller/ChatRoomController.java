@@ -129,6 +129,17 @@ public String room(@RequestParam("roomId") Integer roomId,
         return null;
     }
 
+    // 채팅방 열 때 즉시 읽음 처리 (마커 표시를 위해)
+    if (mId != null) {
+        chatroomService.touchReadAt(roomId, "MEMBER");
+        // 읽음 처리 후 room 정보 다시 가져오기
+        room = chatroomService.getRoom(roomId);
+    } else if (lId != null) {
+        chatroomService.touchReadAt(roomId, "LAWYER");
+        // 읽음 처리 후 room 정보 다시 가져오기
+        room = chatroomService.getRoom(roomId);
+    }
+
     List<ChatdataDTO> initBatch = chatDataService.loadLatestBatch(roomId, size);
     model.addAttribute("room", room);
     model.addAttribute("initBatch", initBatch);
@@ -246,6 +257,7 @@ public String room(@RequestParam("roomId") Integer roomId,
     public String memberMain(@RequestParam(name = "dow", required = false) Integer dow,
                              @RequestParam(name = "duration", defaultValue = "60") int duration,
                              @RequestParam(name = "success", required = false) String successMessage,
+                             @RequestParam(name = "error", required = false) String errorMessage,
                              Model model,
                              @SessionAttribute(value = "loginMember", required = false) Object loginMember,
                              HttpServletResponse resp) throws Exception {
@@ -266,6 +278,9 @@ public String room(@RequestParam("roomId") Integer roomId,
         model.addAttribute("lawyers", calendarService.listLawyersForDayAsMap(dow));
         if (successMessage != null && !successMessage.isEmpty()) {
             model.addAttribute("successMessage", successMessage);
+        }
+        if (errorMessage != null && !errorMessage.isEmpty()) {
+            model.addAttribute("errorMessage", errorMessage);
         }
         return "chat/gMain";
     }
@@ -292,7 +307,25 @@ public String room(@RequestParam("roomId") Integer roomId,
         }
 
         final int pointCost = (durationMinutes == 30) ? 100 : 200;
-        chatroomService.requestChat(memberIdx, lawyerIdx, durationMinutes, pointCost);
+        
+        // 포인트 부족 체크
+        var memberEntity = memberRepo.findById(memberIdx).orElse(null);
+        if (memberEntity == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "회원 정보를 찾을 수 없습니다.");
+            return null;
+        }
+        int currentPoint = memberEntity.getMemberPoint() != null ? memberEntity.getMemberPoint() : 0;
+        if (currentPoint < pointCost) {
+            String errorMessage = URLEncoder.encode("포인트가 부족합니다.", StandardCharsets.UTF_8);
+            return "redirect:/chat/member?error=" + errorMessage;
+        }
+
+        ChatRoomDTO newRoom = chatroomService.requestChat(memberIdx, lawyerIdx, durationMinutes, pointCost);
+
+        // 뱃지 업데이트 신호 전송 (변호사에게 대기중 상담 알림)
+        if (newRoom != null && newRoom.getLawyerIdx() != null) {
+            messagingTemplate.convertAndSend("/topic/badge/lawyer/" + newRoom.getLawyerIdx(), "update");
+        }
 
         // 변호사가 수락하기 전까지는 채팅방 접근 불가하므로 메인 페이지로 리다이렉트
         // alert로 표시하기 위해 파라미터로 메시지 전달
@@ -399,6 +432,18 @@ public String room(@RequestParam("roomId") Integer roomId,
             return null;
         }
         chatroomService.decline(roomId, lawyerIdx);
+        
+        // 뱃지 업데이트 신호 전송
+        var room = chatroomService.getRoom(roomId);
+        if (room != null) {
+            if (room.getMemberIdx() != null) {
+                messagingTemplate.convertAndSend("/topic/badge/member/" + room.getMemberIdx(), "update");
+            }
+            if (room.getLawyerIdx() != null) {
+                messagingTemplate.convertAndSend("/topic/badge/lawyer/" + room.getLawyerIdx(), "update");
+            }
+        }
+        
         return "redirect:/chat/lawyer";
     }
 
