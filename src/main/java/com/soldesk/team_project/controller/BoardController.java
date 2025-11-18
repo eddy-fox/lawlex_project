@@ -1,7 +1,9 @@
 package com.soldesk.team_project.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -139,7 +141,9 @@ public class BoardController {
     @PostMapping("/create")
     public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult,
                              @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
-                             HttpSession session) {
+                             HttpSession session, Model model) {
+
+        System.out.println("========== 게시글 작성 시작 ==========");
 
         if(bindingResult.hasErrors()) {
             return "board/write";
@@ -153,7 +157,7 @@ public class BoardController {
         MemberEntity memberEntity = memberRepository.findById(loginUser.getMemberIdx())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
         
-        this.boardService.create(
+        BoardEntity writeBoard = this.boardService.create(
             boardForm.getBoardTitle(), 
             boardForm.getBoardContent(), 
             boardForm.getBoardCategory(),
@@ -162,12 +166,7 @@ public class BoardController {
         );
         
         // GPT 자동 답변 생성
-        // String title = boardForm.getBoardTitle();
-        // int interest = boardForm.getInterestIdx();
-        // String category = boardService.getInterestName(interest);
-        // String content = boardForm.getBoardContent();
-        // reboardService.gptAutoReboard(title, category, content);
-        // 리턴값 리다이렉트 새로 만들어서 바로 gpt 자동답변 달리는 매서드를 추가
+        reboardService.gptAutoReboard(writeBoard);
 
         // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
         // 카테고리로부터 interestIdx 자동 결정
@@ -175,8 +174,34 @@ public class BoardController {
         if (interestIdx == null || interestIdx <= 0) {
             interestIdx = boardService.getInterestIdxFromCategory(boardForm.getBoardCategory());
         }
-        return "redirect:/board/list?interestIdx=" + interestIdx;
-
+        
+        // gpt 답변 대기 알림창 스크립트 설정
+        model.addAttribute("boardIdx", writeBoard.getBoardIdx());
+        model.addAttribute("redirectUrl", "/board/list?interestIdx=" + interestIdx);
+        
+        return "board/gpt-loading";
+    }
+    @GetMapping("/api/check-gpt-answer")
+    @ResponseBody
+    public Map<String, Object> checkGptAnswer(@RequestParam("boardIdx") Integer boardIdx) {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            // 해당 게시글의 답변이 존재하는지 확인
+            ReBoardEntity reboard = reboardService.getReboardByBoardIdx(boardIdx);
+            
+            if (reboard != null && reboard.getReboardActive() == 1) {
+                result.put("answerExists", true);
+                result.put("reboardIdx", reboard.getReboardIdx());
+            } else {
+                result.put("answerExists", false);
+            }
+        } catch (Exception e) {
+            result.put("answerExists", false);
+            result.put("error", e.getMessage());
+        }
+        
+        return result;
     }
 
     @PreAuthorize("isAuthenticated()")

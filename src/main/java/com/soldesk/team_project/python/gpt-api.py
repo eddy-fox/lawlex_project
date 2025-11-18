@@ -10,16 +10,16 @@ import openai
 
 # API 키 불러오기
 def load_api_key():
-    props_path = r"C:\secrets\lawlex-openApi.properties"
+    props_path = r"C:\secrets\lawlex_openApi.properties"
     if not os.path.exists(props_path):
         raise FileNotFoundError(f"API 키 파일을 찾을 수 없습니다: {props_path}")
     
     with open(props_path, "r", encoding="utf-8") as f:
         for line in f:
-            if line.startswith("OPENAI_API_KEY="):
+            if line.startswith("open.api-key"):
                 return line.strip().split("=", 1)[1]
             
-    raise ValueError("lawlex-openApi.properties에 OPENAI_API_KEY 항목이 없습니다.")
+    raise ValueError("lawlex_openApi.properties에 open.api-key 항목이 없습니다.")
 
 api_key = load_api_key()
 client = openai.OpenAI(api_key = api_key)
@@ -29,7 +29,8 @@ def return_answer(question_title, question_category, question_content):
     
     system_prompt = """사용자가 법률 자문을 구하려고 합니다.
     분야에 대한 대한민국의 법률 및 제목과 질문에 대한 판례를 바탕으로 답변하세요.
-    사용자에게 추가적인 정보를 요구하거나 후속 질문에 대한 추천은 하지않고, 주어진 정보에 대한 답변만 해주세요."""
+    사용자에게 추가적인 정보를 요구하거나 후속 질문에 대한 추천은 하지않고, 주어진 정보에 대한 답변만 해주세요.
+    답변은 두 문단으로, 너무 길지 않게 해주세요."""
 
     user_question = "제목: " + question_title + "\n분야: " + question_category + "\n질문: " + question_content
 

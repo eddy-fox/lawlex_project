@@ -101,6 +101,9 @@ public class LawyerEntity implements UserBase{
     @OneToMany(mappedBy = "lawyer")
     private List<QuestionEntity> question;
 
+    @OneToMany(mappedBy = "lawyer")
+    private List<ReBoardEntity> reboard;
+
     // Oauth2User용 메서드
     @Override
     public Integer getIdx() {
