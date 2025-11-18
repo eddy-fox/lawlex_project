@@ -10,11 +10,17 @@ import org.springframework.stereotype.Service;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
+import com.soldesk.team_project.dto.ReboardDTO;
+
 import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
+
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.UserMasterRepository;
+import com.soldesk.team_project.repository.ReBoardRepository;
+
 import com.soldesk.team_project.util.FileStorageService;
 
 import jakarta.servlet.http.HttpSession;
@@ -36,6 +42,8 @@ public class LawyerService {
     private final UserMasterRepository userMasterRepository;
     private final InterestRepository interestRepository;
     private final MemberRepository memberRepository;
+
+    private final ReBoardRepository reBoardRepository;
 
     private LawyerDTO convertLawyerDTO(LawyerEntity lawyerEntity) {
         LawyerDTO lawyerDTO = new LawyerDTO();
@@ -204,41 +212,41 @@ public class LawyerService {
     @Transactional
     public void joinLawyer(LawyerDTO dto, MultipartFile certImage) {
 
-    // 1) 아이디 중복 체크 (멤버/변호사 모두 포함)
-    if (isUserIdDuplicate(dto.getLawyerId())) {
-        throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        // 1) 아이디 중복 체크 (멤버/변호사 모두 포함)
+        if (isUserIdDuplicate(dto.getLawyerId())) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        }
+
+        // 2) 비밀번호 필수 + 암호화
+        if (!notBlank(dto.getLawyerPass())) {
+            throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+        }
+        String encPass = passwordEncoder.encode(dto.getLawyerPass());
+
+        Integer interest = dto.getInterestIdx();
+        if (interest == null) {
+            interest = 1;
+        }
+
+        LawyerEntity le = LawyerEntity.builder()
+                .lawyerId(dto.getLawyerId())
+                .lawyerPass(encPass)
+                .lawyerName(dto.getLawyerName())
+                .lawyerIdnum(digits(dto.getLawyerIdnum()))
+                .lawyerEmail(dto.getLawyerEmail())
+                .lawyerPhone(digits(dto.getLawyerPhone()))   // 휴대폰
+                .lawyerTel(digits(dto.getLawyerTel()))       // 사무실 전화
+                .lawyerAddress(dto.getLawyerAddress())
+                .lawyerNickname(dto.getLawyerNickname())
+                .interestIdx(interest)
+                .lawyerComment(dto.getLawyerComment())       // 한줄소개
+                .lawyerAgree("1")                          
+                .lawyerActive(1)
+                .lawyerAuth(1)
+                .build();
+
+        lawyerRepository.save(le);
     }
-
-    // 2) 비밀번호 필수 + 암호화
-    if (!notBlank(dto.getLawyerPass())) {
-        throw new IllegalArgumentException("비밀번호를 입력해주세요.");
-    }
-    String encPass = passwordEncoder.encode(dto.getLawyerPass());
-
-    Integer interest = dto.getInterestIdx();
-    if (interest == null) {
-        interest = 1;    
-    }
-
-    LawyerEntity le = LawyerEntity.builder()
-            .lawyerId(dto.getLawyerId())
-            .lawyerPass(encPass)
-            .lawyerName(dto.getLawyerName())
-            .lawyerIdnum(digits(dto.getLawyerIdnum()))
-            .lawyerEmail(dto.getLawyerEmail())
-            .lawyerPhone(digits(dto.getLawyerPhone()))   // 휴대폰
-            .lawyerTel(digits(dto.getLawyerTel()))       // 사무실 전화
-            .lawyerAddress(dto.getLawyerAddress())
-            .lawyerNickname(dto.getLawyerNickname())
-            .interestIdx(interest)
-            .lawyerComment(dto.getLawyerComment())       // 한줄소개
-            .lawyerAgree("1")                          
-            .lawyerActive(1)
-            .lawyerAuth(1)
-            .build();
-
-    lawyerRepository.save(le);
-}
 
 
 
@@ -323,4 +331,46 @@ public class LawyerService {
         LawyerEntity lawyerEntity = lawyerRepository.findById(lawyerIdx).orElse(null);
         return convertLawyerDTO(lawyerEntity);
     }
+
+    // 변호사 리보드(내가 쓴 글) 조회
+    @Transactional(readOnly = true)
+    public List<ReboardDTO> getMyReboardsForLawyer(Integer lawyerIdx) {
+        if (lawyerIdx == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        return reBoardRepository
+                .findTop5ByLawyerIdxOrderByReboardRegDateDesc(lawyerIdx)
+                .stream()
+                .map(this::convertReboardDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ReBoardEntity -> ReboardDTO 변환
+    private ReboardDTO convertReboardDTO(ReBoardEntity entity) {
+        if (entity == null) return null;
+
+    ReboardDTO dto = new ReboardDTO();
+    dto.setReboardIdx(entity.getReboardIdx());
+    dto.setReboardTitle(entity.getReboardTitle());
+    dto.setReboardContent(entity.getReboardContent());
+    dto.setReboardRegDate(entity.getReboardRegDate());
+
+    // BoardEntity → boardIdx (PK) 꺼내서 넣기
+    if (entity.getBoardEntity() != null) {
+        dto.setBoardIdx(entity.getBoardEntity().getBoardIdx());
+    } else {
+        dto.setBoardIdx(null);
+    }
+
+    // LawyerEntity → lawyerIdx (PK) 꺼내서 넣기
+    if (entity.getLawyerIdx() != null) {
+        dto.setLawyerIdx(entity.getLawyerIdx().getLawyerIdx());
+    } else {
+        dto.setLawyerIdx(null);
+    }
+
+    return dto;
+}
+
 }
