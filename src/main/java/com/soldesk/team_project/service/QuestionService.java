@@ -47,6 +47,14 @@ public class QuestionService {
         questionDTO.setQActive(questionEntity.getQuestionActive());
         questionDTO.setMemberIdx(questionEntity.getMemberIdx());
         questionDTO.setLawyerIdx(questionEntity.getLawyerIdx());
+
+        if (questionEntity.getMember() != null) {
+            questionDTO.setMemberId(questionEntity.getMember().getMemberId());
+        }
+        if (questionEntity.getLawyer() != null) {
+            questionDTO.setLawyerId(questionEntity.getLawyer().getLawyerId());
+        }
+
         return questionDTO;
     }
 
@@ -58,7 +66,6 @@ public class QuestionService {
         questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
         questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
-
 
         MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
         LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);

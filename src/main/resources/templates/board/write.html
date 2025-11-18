@@ -70,5 +70,10 @@
 </main>  
   <div class="include" th:replace="~{include/footer :: footer}"></div>
 <script th:src="@{/js/boardWrite.js}"></script>  
+<script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </body>
 </html>

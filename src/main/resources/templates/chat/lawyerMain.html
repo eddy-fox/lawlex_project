@@ -188,5 +188,10 @@
 
   <!-- 네가 따로 쓰는 js 있으면 마지막에 -->
   <script th:src="@{/js/lawyerMain.js}"></script>
+  <script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </body>
 </html>

@@ -57,11 +57,13 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                                     .getRequest().getSession();
             session.setAttribute("tempOauth", temp);
 
-            return new PrincipalDetails(temp, oAuth2User.getAttributes());
+            return new PrincipalDetails(temp, oAuth2User.getAttributes(), null);
         } else if (memberUser.isPresent() && lawyerUser.isEmpty()){
-            return new PrincipalDetails(memberUser.get(), oAuth2User.getAttributes());
+            String ml = "member";
+            return new PrincipalDetails(memberUser.get(), oAuth2User.getAttributes(), ml);
         } else {
-            return new PrincipalDetails(lawyerUser.get(), oAuth2User.getAttributes());
+            String ml = "lawyer";
+            return new PrincipalDetails(lawyerUser.get(), oAuth2User.getAttributes(), ml);
         }
     }
 }

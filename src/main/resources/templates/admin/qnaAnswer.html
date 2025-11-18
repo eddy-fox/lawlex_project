@@ -57,5 +57,9 @@
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/qnaAnswer.js}"></script>
 </body>
-
+<script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </html>

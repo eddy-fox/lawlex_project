@@ -124,4 +124,9 @@ public class LawyerEntity implements UserBase{
     public Integer isActive() {
         return this.lawyerActive;
     }
+
+    @Override
+    public String getUserType() {
+        return "lawyer";
+    }
 }

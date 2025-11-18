@@ -381,8 +381,7 @@ public class MemberController {
     }
 
     @GetMapping("/joinMember-oauth")
-    public String OAuth2JoinMemberForm(
-        HttpSession session, Model model, 
+    public String OAuth2JoinMemberForm(HttpSession session, Model model, 
         RedirectAttributes redirectAttributes) {
 
         TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
@@ -415,8 +414,36 @@ public class MemberController {
     }
 
     @GetMapping("/joinLawyer-oauth")
-    public String OAuth2JoinLawyer() {
+    public String OAuth2JoinLawyerForm(HttpSession session, Model model, 
+        RedirectAttributes redirectAttributes) {
+
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
+    
+        if (temp == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/member/login";
+        }
+    
+        LawyerDTO joinLawyer = new LawyerDTO();
+        joinLawyer.setLawyerEmail(temp.getEmail());
+        joinLawyer.setLawyerName(temp.getName());
+        
+        model.addAttribute("joinLawyer", joinLawyer);
+        model.addAttribute("interests", interestRepository.findAll());
+
         return "member/lJoin-oauth";
+    }
+    @PostMapping("/joinLawyer-oauth")
+    public String OAuth2JoinLawyerSubmit(HttpSession session,
+        @ModelAttribute("joinLawyer") LawyerDTO joinLawyer) {
+
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
+
+        lawyerService.joinOAuthLawyer(temp, joinLawyer);
+
+        session.removeAttribute("tempOauth");
+            
+        return "redirect:/member/login";
     }
 
     // =================== 세션 DTO들 ===================

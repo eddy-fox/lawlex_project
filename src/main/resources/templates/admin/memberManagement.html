@@ -61,18 +61,7 @@
                 </tr>
               </thead>
               <tbody id="tbody-user">
-                <tr onclick="location.href='#'" style="cursor: pointer;">
-                    <td>0</td>
-                    <td>임의</td>
-                    <td>하드코딩</td>
-                    <td>일반회원</td>
-                    <td>900101</td>
-                    <td>hong123@naver.com</td>
-                    <td>010-1234-5678</td>
-                    <td>Y</td>
-                    <td>이혼, 상속</td>
-                </tr>
-                <tr onclick="location.href='#'" style="cursor: pointer;" th:each="member : ${memberList}">
+                <tr th:onclick="|location.href='/member/mypage?memberIdx=' + ${member.memberIdx}|" style="cursor: pointer;" th:each="member : ${memberList}">
                     <td><span th:text="${member.memberIdx}"></span></td>
                     <td><span th:text="${member.memberId}"></span></td>
                     <td><span th:text="${member.memberName}"></span></td>
@@ -106,4 +95,9 @@
         window.location.href = /*[[@{/admin/lawyerManagement}]]*/ '/admin/lawyerManagement';
     }
 </script>
+<script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </html>

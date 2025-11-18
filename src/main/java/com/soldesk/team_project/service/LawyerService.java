@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.checkerframework.checker.units.qual.t;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.LawyerDTO;
+import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
+import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
@@ -68,6 +71,31 @@ public class LawyerService {
         lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
 
         return lawyerDTO;
+    }
+
+    private LawyerEntity convertLawyerEntity (LawyerDTO lawyerDTO) {
+        LawyerEntity lawyerEntity = new LawyerEntity();
+        lawyerEntity.setLawyerIdx(lawyerDTO.getLawyerIdx());
+        lawyerEntity.setLawyerId(lawyerDTO.getLawyerId());
+        lawyerEntity.setLawyerPass(lawyerDTO.getLawyerPass());
+        lawyerEntity.setLawyerName(lawyerDTO.getLawyerName());
+        lawyerEntity.setLawyerIdnum(lawyerDTO.getLawyerIdnum());
+        lawyerEntity.setLawyerEmail(lawyerDTO.getLawyerEmail());
+        lawyerEntity.setLawyerPhone(lawyerDTO.getLawyerPhone());
+        lawyerEntity.setLawyerAgree(lawyerDTO.getLawyerAgree());
+        lawyerEntity.setLawyerNickname(lawyerDTO.getLawyerNickname());
+        lawyerEntity.setLawyerAuth(lawyerDTO.getLawyerAuth());
+        lawyerEntity.setLawyerAddress(lawyerDTO.getLawyerAddress());
+        lawyerEntity.setLawyerTel(lawyerDTO.getLawyerTel());
+        lawyerEntity.setLawyerImgPath(lawyerDTO.getLawyerImgPath());
+        lawyerEntity.setLawyerComment(lawyerDTO.getLawyerComment());
+        lawyerEntity.setLawyerLike(lawyerDTO.getLawyerLike());
+        lawyerEntity.setLawyerAnswerCnt(lawyerDTO.getLawyerAnswerCnt());
+        
+        InterestEntity interestEntity = interestRepository.findById(lawyerDTO.getInterestIdx()).orElse(null);
+        lawyerEntity.setInterest(interestEntity);
+
+        return lawyerEntity;
     }
 
     // 전체 변호사 조회
@@ -245,6 +273,21 @@ public class LawyerService {
     // 결과 DTO
     public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {}
     
+    // OAuth2 변호사 회원가입
+    @Transactional
+    public LawyerEntity joinOAuthLawyer(TemporaryOauthDTO temp, LawyerDTO joinLawyer) {
+        LawyerEntity lawyerEntity = convertLawyerEntity(joinLawyer);
+        lawyerEntity.setLawyerId(temp.getProvider() + temp.getProviderId());
+        lawyerEntity.setLawyerPass(temp.getProviderId() + temp.getEmail());
+        lawyerEntity.setLawyerName(temp.getName());
+        lawyerEntity.setLawyerEmail(temp.getEmail());
+        lawyerEntity.setLawyerActive(1);
+        lawyerEntity.setLawyerProvider(temp.getProvider());
+        lawyerEntity.setLawyerProviderId(temp.getProviderId());
+
+        return lawyerRepository.save(lawyerEntity);
+    }
+
     // 로그인 아이디로 변호사 한 명 가져오기
     public LawyerEntity getLawyer(String lawyerId) {
         return lawyerRepository.findByLawyerId(lawyerId)
