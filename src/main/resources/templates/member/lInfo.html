@@ -10,6 +10,7 @@
 <body>
 <div class="include" th:replace="~{include/header :: header}"></div>
 
+<!-- 세션에 저장된 로그인 변호사(간단 정보)는 l, 컨트롤러에서 넘긴 LawyerDTO는 lawyer -->
 <main class="page-lInfo" th:with="l=${session.loginLawyer}">
     <div class="container">
         <h1>마이페이지</h1>
@@ -24,7 +25,7 @@
 
                 <div class="info">
                     <div class="nickname">
-                        <!-- 닉네임/이름 -->
+                        <!-- 닉네임/이름 : 세션의 loginLawyer(l) 기준 -->
                         <div class="name"
                              th:text="${l != null ? l.lawyerName : '변호사이름'}">
                             변호사이름
@@ -39,11 +40,9 @@
                         <span th:text="${l != null ? l.lawyerEmail : 'lawyer@example.com'}">lawyer@example.com</span>
                     </div>
 
-                    <!-- 한 줄 소개 / comment (LawyerDTO에서 가져옴, 없으면 기본 문구) -->
+                    <!-- 한 줄 소개 / comment (LawyerDTO: lawyer 기준, 없으면 기본 문구) -->
                     <p class="comment"
-                       th:text="${lawyer != null && lawyer.lawyerComment != null} ?
-                                ${lawyer.lawyerComment} :
-                                '의뢰인의 입장에서 끝까지 함께 하겠습니다.'">
+                       th:text="${(lawyer != null and lawyer.lawyerComment != null) ? lawyer.lawyerComment : '의뢰인의 입장에서 끝까지 함께 하겠습니다.'}">
                         의뢰인의 입장에서 끝까지 함께 하겠습니다.
                     </p>
 
@@ -52,27 +51,21 @@
                         <div class="meta-item">
                             <span class="label">관심분야</span>
                             <span class="value"
-                                  th:text="${lawyer != null && lawyer.interestName != null} ?
-                                           ${lawyer.interestName} :
-                                           '형사 · 민사'">
+                                  th:text="${(lawyer != null and lawyer.interestName != null) ? lawyer.interestName : '형사 · 민사'}">
                                 형사 · 민사
                             </span>
                         </div>
                         <div class="meta-item">
                             <span class="label">랭킹</span>
                             <span class="value"
-                                  th:text="${lawyer != null && lawyer.lawyerRank != null} ?
-                                           ${lawyer.lawyerRank} :
-                                           'TOP 10'}">
+                                  th:text="${(lawyer != null and lawyer.lawyerRank != null) ? lawyer.lawyerRank : 'TOP 10'}">
                                 TOP 10
                             </span>
                         </div>
                         <div class="meta-item">
                             <span class="label">좋아요</span>
                             <span class="value"
-                                  th:text="${lawyer != null && lawyer.lawyerLike != null} ?
-                                           ${lawyer.lawyerLike} :
-                                           0">
+                                  th:text="${(lawyer != null and lawyer.lawyerLike != null) ? lawyer.lawyerLike : 0}">
                                 0
                             </span>
                         </div>
@@ -98,7 +91,7 @@
             </div>
         </section>
 
-        <!-- 내가 쓴 글 -->
+        <!-- 내가 쓴 글 (ReboardDTO 기준) -->
         <section class="list-card">
             <div class="list-title">
                 <span>내가 쓴 글</span>
@@ -107,33 +100,33 @@
             </div>
 
             <div class="item-list">
-                <!-- 변호사가 쓴 글 리스트 (model에 myBoards 있을 때) -->
+                <!-- 변호사가 쓴 리보드 리스트 : myReboards (ReboardDTO 리스트) -->
                 <a class="row-item"
-                   th:if="${myBoards != null}"
-                   th:each="b : ${myBoards}"
-                   th:href="@{/board/detail(boardIdx=${b.boardIdx})}">
-                    <div class="row-main" th:text="${b.boardTitle}">
+                   th:each="r : ${myReboards}"
+                   th:href="@{/board/detail(boardIdx=${r.boardIdx})}">
+                    <div class="row-main" th:text="${r.reboardTitle}">
                         게시글 제목
                     </div>
                     <div class="row-sub"
-                         th:text="|${#temporals.format(b.boardRegDate, 'yyyy-MM-dd')} · 조회 ${b.boardViews}|">
-                        2025-11-18 · 조회 0
+                         th:text="${#temporals.format(r.reboardRegDate, 'yyyy-MM-dd')}">
+                        2025-11-18
                     </div>
                 </a>
 
-                <!-- 글이 없거나 myBoards가 비어 있을 때 -->
+                <!-- 글이 없거나 myReboards가 비어 있을 때 -->
                 <div class="row-item"
-                     th:if="${myBoards == null or #lists.isEmpty(myBoards)}">
+                     th:if="${myReboards == null or #lists.isEmpty(myReboards)}">
                     <div class="row-main">작성한 게시글이 없습니다.</div>
                 </div>
             </div>
         </section>
 
     </div>
-  </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/chatIcon.js}"></script>
-  <script th:src="@{/js/lInfo.js}"></script>
+</main>
+
+<div class="include" th:replace="~{include/footer :: footer}"></div>
+<script th:src="@{/js/js.js}"></script>
+<script th:src="@{/js/chatIcon.js}"></script>
+<script th:src="@{/js/lInfo.js}"></script>
 </body>
 </html>
