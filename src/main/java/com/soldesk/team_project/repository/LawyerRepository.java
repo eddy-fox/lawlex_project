@@ -41,6 +41,9 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     
     boolean existsByLawyerId(String lawyerId);
 
+    // gpt 자동답변을 위한 idx검색
+    LawyerEntity findByLawyerIdx(Integer lawyerIdx);
+
     // Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
 
 } 

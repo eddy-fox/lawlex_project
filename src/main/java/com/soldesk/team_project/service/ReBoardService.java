@@ -3,6 +3,7 @@ package com.soldesk.team_project.service;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class ReBoardService {
         reboard.setReboardRegDate(LocalDate.now());
         reboard.setBoardEntity(board);
         reboard.setLawyer(lawyer);
+        reboard.setReboardActive(1);
         this.reboardRepository.save(reboard);
         return reboard;
 
@@ -61,7 +63,8 @@ public class ReBoardService {
 
     public void delete(ReBoardEntity reboard) {
 
-        this.reboardRepository.delete(reboard);
+        reboard.setReboardActive(0);
+        this.reboardRepository.save(reboard);
 
     }
 
@@ -75,6 +78,7 @@ public class ReBoardService {
     }
 
     // GPT 자동 답변 생성
+    @Async
     @Transactional
     public void gptAutoReboard(BoardEntity boardEntity) {
 
@@ -83,22 +87,23 @@ public class ReBoardService {
             String answer = pythonService.runPython(
                 "gpt-api.py",
                 boardEntity.getBoardTitle(),
-                // boardEntity.getInterest().getInterestName(),
+                boardEntity.getInterest().getInterestName(),
                 boardEntity.getBoardContent()
             );
 
             // 답변 게시글 생성            
             ReBoardEntity reboardEntity = new ReBoardEntity();
-            reboardEntity.setReboardIdx(boardEntity.getBoardIdx());
-            reboardEntity.setReboardTitle("GPT가 작성한 답변입니다.");
             reboardEntity.setReboardContent(answer);
+            reboardEntity.setReboardActive(1);
+            reboardEntity.setBoardEntity(boardEntity);
+            LawyerEntity lawyer = lawyerRepository.findByLawyerIdx(205);
+            reboardEntity.setLawyer(lawyer);
 
             reboardRepository.save(reboardEntity);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
     

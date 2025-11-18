@@ -15,5 +15,6 @@ public class ReboardDTO {
     private LocalDate reboardRegDate;
     private Integer boardIdx;
     private Integer lawyerIdx;
+    private Integer reboardActive;
     
 }
