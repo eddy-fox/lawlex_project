@@ -70,6 +70,12 @@ public class LawyerEntity implements UserBase{
 
     @Column(name = "lawyer_comment")
     private String lawyerComment;
+
+    @Column(name = "lawyer_provider")
+    private String lawyerProvider; // ex: "google"
+
+    @Column(name = "lawyer_provider_id")
+    private String lawyerProviderId; // ex: 구글 sub 값
    
     @Default
     @Column(name = "lawyer_like", columnDefinition = "TINYINT(0) DEFAULT 0")

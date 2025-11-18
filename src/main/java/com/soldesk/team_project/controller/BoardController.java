@@ -161,6 +161,14 @@ public class BoardController {
             memberEntity
         );
         
+        // GPT 자동 답변 생성
+        // String title = boardForm.getBoardTitle();
+        // int interest = boardForm.getInterestIdx();
+        // String category = boardService.getInterestName(interest);
+        // String content = boardForm.getBoardContent();
+        // reboardService.gptAutoReboard(title, category, content);
+        // 리턴값 리다이렉트 새로 만들어서 바로 gpt 자동답변 달리는 매서드를 추가
+
         // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
         // 카테고리로부터 interestIdx 자동 결정
         Integer interestIdx = boardForm.getInterestIdx();

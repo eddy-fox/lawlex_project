@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일반회원가입</title>
+  <link rel="stylesheet" th:href="@{/css/gJoin.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+
+  <main class="page-gJoin">
+    <section class="center-card">
+      <div class="head">
+        <h1 class="title">회원가입</h1>
+      </div>
+
+      <!-- 가입 폼 -->
+      <form id="gJoinForm" class="form" th:action="@{/member/joinMember-oauth}" method="post" th:object="${joinMember}" enctype="multipart/form-data">
+        <!-- ✅ CSRF (있을 때만 렌더) -->
+        <th:block th:if="${_csrf != null}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        </th:block>
+      
+        <!-- 이름 -->
+        <div class="field">
+          <label for="memberName" class="sr-only">이름</label>
+          <input class="input" type="text" th:text="${joinMember.memberName}" id="memberName" readonly>
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="field">
+          <label for="memberNickname" class="sr-only">닉네임</label>
+          <input id="memberNickname" name="memberNickname" class="input" type="text" placeholder="닉네임" th:field="*{memberNickname}" required>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="field">
+          <label for="memberEmail" class="sr-only">이메일</label>
+          <input class="input" id="memberEmail" name="memberEmail" type="email" autocomplete="email" th:text="${joinMember.memberEmail}" readonly>
+        </div>
+
+        <!-- 전화번호 / 생년월일(주민번호 앞자리) -->
+        <div class="field">
+          <label for="memberPhone" class="sr-only">전화번호</label>
+          <input id="memberPhone" name="memberPhone" class="input" type="tel" placeholder="전화번호(예: 010-1234-5678)" inputmode="numeric" th:field="*{memberPhone}" required>
+          <small id="phoneMsg" class="help"></small>
+        </div>
+        <div class="field">
+          <label for="memberIdnum" class="sr-only">생년월일</label>
+          <input id="memberIdnum" name="memberIdnum" class="input" type="text" placeholder="생년월일(예: 990101)" inputmode="numeric" th:field="*{memberIdnum}" required>
+          <small id="birthMsg" class="help"></small>
+        </div>
+
+        <!-- 관심 분야 3개 (Interest 테이블 값 사용) -->
+        <div class="field">
+          <div class="inline">
+            <select id="interest1" name="interestIdx1" th:field="*{interestIdx1}" class="input" required>
+              <option value="" disabled selected>관심 분야 1</option>
+              <option th:each="it : ${interests}"
+                      th:value="${it.interestIdx}"
+                      th:text="${it.interestName}">형사</option>
+            </select>
+            <select id="interest2" name="interestIdx2" th:field="*{interestIdx2}" class="input" required>
+              <option value="" disabled selected>관심 분야 2</option>
+              <option th:each="it : ${interests}"
+                      th:value="${it.interestIdx}"
+                      th:text="${it.interestName}">민사</option>
+            </select>
+            <select id="interest3" name="interestIdx3" th:field="*{interestIdx2}" class="input" required>
+              <option value="" disabled selected>관심 분야 3</option>
+              <option th:each="it : ${interests}"
+                      th:value="${it.interestIdx}"
+                      th:text="${it.interestName}">가사</option>
+            </select>
+          </div>
+          <small id="interestMsg" class="help"></small>
+        </div>
+        
+        <!-- 개인정보 수신 동의 토글 -->
+        <div class="field">
+          <div class="agree-area">
+            <input type="hidden" id="memberAgree" name="memberAgree" th:field="*{memberAgree}" value="N">
+            <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
+          </div>
+          <small id="agreeMsg" class="help"></small>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="primary-btn" type="submit" id="submitBtn">회원가입</button>
+        <small id="submitHelp" class="help"></small>
+      </form>
+    </section>
+  </main>
+
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/gJoin.js}"></script>
+</body>
+</html>

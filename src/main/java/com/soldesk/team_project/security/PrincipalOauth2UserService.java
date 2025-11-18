@@ -43,8 +43,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        Optional<MemberEntity> memberUser = memberRepository.findByMemberEmailAndMemberActive(email, 1);
-        Optional<LawyerEntity> lawyerUser = lawyerRepository.findByLawyerEmailAndLawyerActive(email, 1);
+        Optional<MemberEntity> memberUser = memberRepository.findByMemberProviderAndMemberProviderId(provider, providerId);
+        Optional<LawyerEntity> lawyerUser = lawyerRepository.findByLawyerProviderAndLawyerProviderId(provider, providerId);
 
          if (memberUser.isEmpty() && lawyerUser.isEmpty()) {
             TemporaryOauthDTO temp = new TemporaryOauthDTO(email, name, provider, providerId);
@@ -57,7 +57,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                                     .getRequest().getSession();
             session.setAttribute("tempOauth", temp);
 
-            return new PrincipalDetails(null, oAuth2User.getAttributes());
+            return new PrincipalDetails(temp, oAuth2User.getAttributes());
         } else if (memberUser.isPresent() && lawyerUser.isEmpty()){
             return new PrincipalDetails(memberUser.get(), oAuth2User.getAttributes());
         } else {
