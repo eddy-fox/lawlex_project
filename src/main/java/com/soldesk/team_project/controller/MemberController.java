@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
@@ -91,9 +93,9 @@ public class MemberController {
     }
 
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum,
-                                  Model model,
+    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model,
                                   @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+                                    
         Integer memberIdx = loginUser.getMemberIdx();
         String memberIdxStr = String.valueOf(memberIdx);
         List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
@@ -372,41 +374,49 @@ public class MemberController {
     }
     
 
-    // OAuth
-    @GetMapping("/oauth2/additional-info")
-    public String showAdditionalInfoForm() {
-        return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
+    // OAuth로 회원가입
+    @GetMapping("/joinType-oauth")
+    public String OAuth2JoinChoice() {
+        return "member/loginChoice-oauth";
     }
 
-    @PostMapping("/oauth2/complete")
-    public void saveAdditionalInfo(@ModelAttribute("member123") MemberDTO memberDTO,
-                                   HttpSession session, HttpServletResponse response) throws IOException {
-        TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
-        if (tempUser == null) {
-            response.sendRedirect("/member/login");
-            return;
+    @GetMapping("/joinMember-oauth")
+    public String OAuth2JoinMemberForm(
+        HttpSession session, Model model, 
+        RedirectAttributes redirectAttributes) {
+
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
+    
+        if (temp == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/member/login";
         }
-        MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
-        session.removeAttribute("oauth2TempUser");
-        String token = jwtProvider.createToken(savedUser);
+    
+        MemberDTO joinMember = new MemberDTO();
+        joinMember.setMemberEmail(temp.getEmail());
+        joinMember.setMemberName(temp.getName());
+        
+        model.addAttribute("joinMember", joinMember);
+        model.addAttribute("interests", interestRepository.findAll());
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("status", HttpServletResponse.SC_OK);
-        responseMap.put("message", "Login successful");
+        return "member/gJoin-oauth";
+    }
+    @PostMapping("/joinMember-oauth")
+    public String OAuth2JoinMemberSubmit(HttpSession session,
+        @ModelAttribute("joinMember") MemberDTO joinMember) {
 
-        Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("email", savedUser.getMemberEmail());
-        dataMap.put("name", savedUser.getMemberName());
-        dataMap.put("token", token);
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
 
-        responseMap.put("data", dataMap);
+        memberService.joinOAuthMember(temp, joinMember);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseMap);
+        session.removeAttribute("tempOauth");
+            
+        return "redirect:/member/login";
+    }
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
+    @GetMapping("/joinLawyer-oauth")
+    public String OAuth2JoinLawyer() {
+        return "member/lJoin-oauth";
     }
 
     // =================== 세션 DTO들 ===================

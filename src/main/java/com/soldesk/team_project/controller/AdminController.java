@@ -185,13 +185,13 @@ public class AdminController {
         String desiredName = adRegistration.getAdImgPath();
 
         if (imageFile != null && !imageFile.isEmpty()) {
-        String filename   = nowUuidName(imageFile.getOriginalFilename());
-        String objectPath = "ad/" + filename;  // ✅ 광고는 ad 폴더에
+            String filename   = nowUuidName(imageFile.getOriginalFilename());
+            String objectPath = "ad/" + filename;  // ✅ 광고는 ad 폴더에
 
-        var uploaded = storageService.upload(imageFile, objectPath);
-        // 정책: adImgPath 에 "풀 URL" 저장
-        adRegistration.setAdImgPath(uploaded.url());
-    }
+            var uploaded = storageService.upload(imageFile, objectPath);
+            // 정책: adImgPath 에 "풀 URL" 저장
+            adRegistration.setAdImgPath(uploaded.url());
+        }
 
         // 광고 등록 처리
         adService.registProcess(adRegistration);
@@ -238,7 +238,6 @@ public class AdminController {
     }
         
         adService.modifyProcess(modifyAd);
-        
 
         return "redirect:/admin/adInfo?adIdx=" + modifyAd.getAdIdx();
     }
