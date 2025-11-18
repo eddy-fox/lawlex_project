@@ -56,7 +56,7 @@ public class SecurityConfig {
                     "/member/join/**",
                     "/member/api/**","/member/popup/**",
                     "/oauth2/**"
-                ).permitAll()
+                ).permitAll().requestMatchers("/reboard/vote/**").authenticated()
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form.disable())

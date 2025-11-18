@@ -4,11 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
@@ -44,5 +49,10 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     boolean existsByLawyerId(String lawyerId);
 
     // Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE LawyerEntity l SET l.lawyerLike = l.lawyerLike + 1 WHERE l.id = :lawyerId")
+    int incrementLawyerLike(@Param("lawyerId") Integer lawyerId);
 
 } 

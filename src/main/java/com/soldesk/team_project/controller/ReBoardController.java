@@ -1,6 +1,8 @@
 package com.soldesk.team_project.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,17 +12,22 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.form.ReBoardForm;
+import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.repository.ReBoardRepository;
 import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.ReBoardService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +40,10 @@ public class ReBoardController {
 
     private final BoardService boardService;
     private final ReBoardService reboardService;
+    private final MemberService memberService;
     private final LawyerService lawyerService;
+    private final ReBoardRepository reboardRepository;
+    private final LawyerRepository lawyerRepository;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
@@ -51,7 +61,7 @@ public class ReBoardController {
             return "question_detail";
         }
         ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboardContent(), lawyerEntity);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
+        return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoard().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
 
@@ -86,7 +96,7 @@ public class ReBoardController {
         }
         this.reboardService.modify(reboardEntity, reboardForm.getReboardContent());
         return String.format("redirect:/board/detail/%s#reboard_%s",
-                reboardEntity.getBoardEntity().getBoardIdx(),
+                reboardEntity.getBoard().getBoardIdx(),
                 reboardEntity.getReboardIdx());
 
     }
@@ -102,18 +112,21 @@ public class ReBoardController {
         }
         this.reboardService.delete(reboardEntity);
         return String.format("redirect:/board/detail/%s",
-                reboardEntity.getBoardEntity().getBoardIdx());
+                reboardEntity.getBoard().getBoardIdx());
                 
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/vote/{id}")
-    public String reboardVote(Principal principal, @PathVariable("id") Integer id) {
+    public String reboardVote(HttpSession session, @PathVariable("id") Integer id) {
 
         ReBoardEntity reboard = this.reboardService.getReboard(id);
-        LawyerEntity lawyer = this.lawyerService.getLawyer(principal.getName());
-        this.reboardService.vote(reboard, lawyer);
-        return String.format("redirect:/board/detail/%s#reboard_%s", reboard.getBoardEntity().getBoardIdx(), reboard.getReboardIdx());
+        MemberEntity member = (MemberEntity) session.getAttribute("loginMember");
+        if(member == null) {
+            return "redirect:/member/login";
+        }
+        this.reboardService.vote(reboard, member);
+        return String.format("redirect:/board/detail/%sreboard_%s", reboard.getBoard().getBoardIdx(), reboard.getReboardIdx());
         
     }
 

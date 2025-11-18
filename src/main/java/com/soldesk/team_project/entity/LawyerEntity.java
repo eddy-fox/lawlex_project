@@ -29,7 +29,8 @@ import lombok.Builder.Default;
 public class LawyerEntity implements UserBase{
 
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lawyer_idx")
     private Integer lawyerIdx;
 

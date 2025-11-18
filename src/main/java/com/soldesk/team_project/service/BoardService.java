@@ -90,9 +90,9 @@ public class BoardService {
                         reboard.getLawyer().getLawyerName(); // Lazy 로딩 강제 실행
                         reboard.getLawyer().getLawyerImgPath(); // 이미지 경로도 로드
                     }
-                    if (reboard.getLawyerIdx() != null) {
-                        reboard.getLawyerIdx().getLawyerName(); // Lazy 로딩 강제 실행
-                        reboard.getLawyerIdx().getLawyerImgPath(); // 이미지 경로도 로드
+                    if (reboard.getLawyer() != null) {
+                        reboard.getLawyer().getLawyerName(); // Lazy 로딩 강제 실행
+                        reboard.getLawyer().getLawyerImgPath(); // 이미지 경로도 로드
                     }
                 });
             }

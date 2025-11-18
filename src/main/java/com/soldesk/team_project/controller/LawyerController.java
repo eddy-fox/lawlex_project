@@ -9,6 +9,10 @@ import com.soldesk.team_project.service.MemberService;
 // import com.soldesk.team_project.controller.MemberController.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -94,4 +98,15 @@ public class LawyerController {
     public String checkId(@RequestParam String lawyerId) {
         return memberService.isUserIdDuplicate(lawyerId) ? "DUP" : "OK";
     }
+
+    @PostMapping("/{id}/like")
+    public Map<String, Object> likeLawyer(@PathVariable("id") Integer id) {
+        
+        int updatedLikeCount = lawyerService.likeLawyer(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("lawyerLike", updatedLikeCount);
+        return response;
+        
+    }
+
 }

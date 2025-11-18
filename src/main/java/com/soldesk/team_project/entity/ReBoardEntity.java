@@ -38,23 +38,24 @@ public class ReBoardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyerIdx;
-
-    @ManyToOne
     private LawyerEntity lawyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
-    private BoardEntity boardEntity;
-
+    private BoardEntity board;
 
     @ManyToMany
-    Set<LawyerEntity> voter;
+    Set<MemberEntity> voter;
 
     @ManyToOne
     @JoinColumn(name = "member_idx")
-    private MemberEntity memberIdx;
+    private MemberEntity member;
 
     private LocalDate modifyDate;
+
+    public ReBoardEntity orElseThrow(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
+    }
 
 }

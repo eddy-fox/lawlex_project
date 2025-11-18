@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.ReBoardRepository;
@@ -28,7 +29,7 @@ public class ReBoardService {
         ReBoardEntity reboard = new ReBoardEntity();
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
-        reboard.setBoardEntity(board);
+        reboard.setBoard(board);
         reboard.setLawyer(lawyer);
         this.reboardRepository.save(reboard);
         return reboard;
@@ -48,7 +49,7 @@ public class ReBoardService {
 
     public ReBoardEntity getReboardByBoardIdx(Integer boardIdx) {
 
-        return this.reboardRepository.findByBoardEntityBoardIdx(boardIdx).orElse(null);
+        return this.reboardRepository.findByBoardBoardIdx(boardIdx).orElse(null);
 
     }
 
@@ -62,15 +63,6 @@ public class ReBoardService {
     public void delete(ReBoardEntity reboard) {
 
         this.reboardRepository.delete(reboard);
-
-    }
-
-    public void vote(ReBoardEntity reboard, LawyerEntity lawyer) {
-
-        reboard.getVoter().add(lawyer);
-        lawyer.setLawyerLike(lawyer.getLawyerLike() + 1);
-        this.reboardRepository.save(reboard);
-        this.lawyerRepository.save(lawyer);
 
     }
 
@@ -99,7 +91,13 @@ public class ReBoardService {
             e.printStackTrace();
         }
 
+    }
 
+    public void vote(ReBoardEntity reboard, MemberEntity member) {
+
+        reboard.getVoter().add(member);
+        this.reboardRepository.save(reboard);
+        
     }
     
 }

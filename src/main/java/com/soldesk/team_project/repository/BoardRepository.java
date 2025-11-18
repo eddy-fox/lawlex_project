@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 
 import com.soldesk.team_project.entity.BoardEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     
@@ -47,7 +48,5 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
                                         
     // 조회수 높은 순서로 조회 (상위 5개)
     List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
-
-
-           
+   
 }

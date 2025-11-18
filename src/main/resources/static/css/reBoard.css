@@ -815,3 +815,7 @@
     }
 }
 
+.disabled {
+    color: gray;
+    cursor: default;
+}
