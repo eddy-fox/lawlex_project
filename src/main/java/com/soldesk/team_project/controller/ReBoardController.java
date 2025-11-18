@@ -92,12 +92,24 @@ public class ReBoardController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
     public String reboardDelete(Principal principal,
-                                @PathVariable("id") Integer id) {
+                                @PathVariable("id") Integer id,
+                                jakarta.servlet.http.HttpSession session) {
 
         ReBoardEntity reboardEntity = this.reboardService.getReboard(id);
-        if(!reboardEntity.getLawyer().getLawyerId().equals(principal.getName())) {
+        
+        // 관리자 권한 확인
+        com.soldesk.team_project.entity.AdminEntity loginAdmin = 
+            (com.soldesk.team_project.entity.AdminEntity) session.getAttribute("loginAdmin");
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        
+        // 작성자이거나 관리자만 삭제 가능
+        boolean canDelete = reboardEntity.getLawyer() != null && 
+                           reboardEntity.getLawyer().getLawyerId().equals(principal.getName());
+        
+        if(!canDelete && !isAdmin) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
+        
         this.reboardService.delete(reboardEntity);
         return String.format("redirect:/board/detail/%s",
                 reboardEntity.getBoardEntity().getBoardIdx());

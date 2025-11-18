@@ -39,8 +39,8 @@
           <div class="payment">
             <div class="opt-grid">
               <input type="hidden" name="selectedProduct" id="selectedProduct">
-              <div th:each="product : ${productList}">
-                <div data-product="${product.productIdx}" class="opt point-option">
+              <div class="pick" th:each="product : ${productList}">
+                <div th:data-product="${product.productIdx}" class="opt point-option">
                     <div th:text="${product.productContent}" class="tag"></div>
                     <div th:text="${product.productPrice}" class="price"></div>
                 </div>
@@ -48,7 +48,7 @@
             </div>
           </div>
 
-          <aside class="side">
+          <aside class="side-grid">
             <div class="label">결제 주의사항</div>
             <div class="ask">이러한 사항이 있음으로 동의합니까?</div>
             <div class="radio-row">
@@ -77,10 +77,10 @@
           <table>
             <thead>
               <tr>
-                <th style="width:22%">일시</th>
+                <th style="width:15%">일시</th>
                 <th style="width:15%">구분</th>
-                <th style="width:13%">변동 포인트</th>
-                <th style="width:15%">내역</th>
+                <th style="width:15%">변동 포인트</th>
+                <th style="width:auto">내역</th>
               </tr>
             </thead>
             <tbody>
@@ -101,9 +101,9 @@
           <table>
             <thead>
               <tr>
-                <th style="width:22%">일시</th>
+                <th style="width:15%">일시</th>
                 <th style="width:15%">충전 금액</th>
-                <th style="width:13%">포인트</th>
+                <th style="width:15%">포인트</th>
               </tr>
             </thead>
             <tbody>
@@ -125,52 +125,7 @@
     <div class="include" th:replace="~{include/footer :: footer}"></div>
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/chatIcon.js}"></script>
+    <script th:src="@{/js/point.js}"></script>
+    
 </body>
-
-<script>
-    // 탭 활성 토글
-    document.querySelectorAll('.tabs .tab').forEach(tab=>{
-        tab.addEventListener('click',()=>{
-            if(tab.classList.contains('divider')) return;
-            document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
-            tab.classList.add('active');
-        });
-    });
-    function point() {
-        document.getElementById('point').style.display = 'block';
-        document.getElementById('payment').style.display = 'none';
-    }
-    function payment() {
-        document.getElementById('point').style.display = 'none';
-        document.getElementById('payment').style.display = 'block';
-    }
-
-    const options = document.querySelectorAll('.point-option');
-    const productInput = document.getElementById('selectedProduct');
-
-    // 포인트 선택
-    options.forEach(opt => {
-        opt.addEventListener('click', () => {
-            options.forEach(o => o.classList.remove('selected'));
-            opt.classList.add('selected');
-            productInput.value = opt.dataset.product;
-        });
-    });
-
-    // 첫번째 포인트 선택
-    window.addEventListener('DOMContentLoaded', () => {
-        options[0].classList.add('selected');
-        productInput.value = options[0].dataset.product;
-    });
-
-    // 동의 체크박스 확인
-    document.getElementById('payment-form').addEventListener('submit', function(e) {
-        const agree = document.getElementById('agree');
-        if (!agree.checked) {
-            alert("결제 주의사항에 동의해주세요.");
-            e.preventDefault();
-            return;
-        }
-    });
-</script>
 </html>

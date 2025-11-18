@@ -48,9 +48,14 @@ body {
   justify-content: center;
 }
 
+/* 뉴스게시판 메인 사이드메뉴 위치 조정 */
+.page-nMain .sideMenu {
+  padding-top: 40px;
+}
+
 .page-nMain .wrap {
   width: min(950px, 94%);
-  margin: 100px 0px;
+  margin: 20px 0px;
 }
 
 .section{

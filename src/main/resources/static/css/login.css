@@ -67,10 +67,21 @@
 }
   .page-login .social-btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.12)}
   .page-login .social-btn:active{transform:scale(.96)}
-.page-login .social-btn:focus-visible{
-  outline:none;
-  box-shadow:0 0 0 2px rgba(0,7,119,0.3);
+  .page-login .social-btn:focus-visible{
+    outline:none;
+    border:1px solid var(--brand);
+    box-shadow:0 0 0 2px rgba(0,7,119,0.3); }
+  .page-login .naver-btn{background:#03C75A;border-color:transparent}
+  .page-login .social-btn svg{width:22px;height:22px}
+
+  .login-error-box {
+  margin-bottom: 8px;
 }
+
+.login-error-box .field-error {
+  text-align: center;
+}
+
  .page-login .social-btn .logoImg{
   width: 50px;
   height: 50px;

@@ -10,7 +10,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 
-  <!-- ✅ 로그인 상태별 마이페이지 진입 버튼 (추가) -->
+  <!-- 로그인 상태별 마이페이지 진입 버튼 -->
   <div class="wrap" style="display:flex; justify-content:flex-end; gap:8px; margin:12px 0;">
     <a th:if="${session.loginUser != null}"
        class="primary-btn"
@@ -23,51 +23,159 @@
       로그인하고 마이페이지
     </a>
   </div>
-  <!-- ✅ 여기까지 추가 -->
 
   <main class="page-lJoin">
     <section class="center-card">
-      <div class="head"><h1 class="title">회원가입</h1></div>
+      <div class="head">
+        <h1 class="title">변호사 회원가입</h1>
+      </div>
 
+      <!-- 변호사 회원가입 폼 -->
       <form id="lawyerJoinForm" class="form"
-            th:action="@{/member/join/lawyer}" method="post"
-            enctype="multipart/form-data" novalidate>
+            th:action="@{/lawyer/join}"
+            method="post"
+            enctype="multipart/form-data"
+            novalidate>
 
+        <!-- CSRF -->
         <th:block th:if="${_csrf != null}">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         </th:block>
 
-        <!-- 아이디 + 중복확인 -->
+        <!-- 1. 아이디 + 중복확인 (맨 위) -->
         <div class="field">
           <div class="inline">
-            <input id="lawyerId" name="lawyerId" class="input" type="text"
-                   placeholder="아이디" autocomplete="username" required>
+            <input id="lawyerId"
+                   name="lawyerId"
+                   class="input"
+                   type="text"
+                   placeholder="아이디"
+                   autocomplete="username"
+                   required>
             <button class="pill" type="button" id="dupBtn">중복확인</button>
           </div>
           <small id="dupMsg" class="help"></small>
         </div>
 
-        <!-- 비밀번호 / 확인 -->
-        <div class="field"><input id="lawyerPass" name="lawyerPass" class="input" type="password" placeholder="비밀번호" required></div>
+        <!-- 2. 비밀번호 / 비밀번호 확인 -->
         <div class="field">
-          <input id="passConfirm" class="input" type="password" placeholder="비밀번호 확인" required>
+          <input id="lawyerPass"
+                 name="lawyerPass"
+                 class="input"
+                 type="password"
+                 placeholder="비밀번호"
+                 autocomplete="new-password"
+                 required>
+        </div>
+        <div class="field">
+          <input id="passConfirm"
+                 class="input"
+                 type="password"
+                 placeholder="비밀번호 확인"
+                 autocomplete="new-password"
+                 required>
           <small id="pwMsg" class="help"></small>
         </div>
 
-        <!-- 닉네임/이메일/주소/전화/생년월일 -->
-        <div class="field"><input id="lawyerName" name="lawyerName" class="input" type="text" placeholder="닉네임" required></div>
-        <div class="field"><input id="lawyerEmail" name="lawyerEmail" class="input" type="email" placeholder="이메일" required></div>
-        <div class="field"><input id="lawyerAddress" name="lawyerAddress" class="input" type="text" placeholder="사무실 주소"></div>
-        <div class="field"><input id="lawyerPhone" name="lawyerPhone" class="input" type="tel" placeholder="전화번호(예: 010-1234-5678)" inputmode="numeric" required></div>
-        <div class="field"><input id="lawyerIdnum" name="lawyerIdnum" class="input" type="text" placeholder="생년월일(예: 990101)" inputmode="numeric" required></div>
+        <!-- 3. 이름 (아이디 아래로 내림) -->
+        <div class="field">
+          <input id="lawyerName"
+                 name="lawyerName"
+                 class="input"
+                 type="text"
+                 placeholder="이름"
+                 required>
+        </div>
+
+        <!-- 4. 등록번호 (이름 아래로 내림) -->
+        <div class="field">
+          <input id="lawyerIdnum"
+                 name="lawyerIdnum"
+                 class="input"
+                 type="text"
+                 placeholder="등록번호"
+                 inputmode="numeric"
+                 required>
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="field">
+          <input id="lawyerNickname"
+                 name="lawyerNickname"
+                 class="input"
+                 type="text"
+                 placeholder="닉네임"
+                 required>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="field">
+          <input id="lawyerEmail"
+                 name="lawyerEmail"
+                 class="input"
+                 type="email"
+                 placeholder="이메일"
+                 autocomplete="email"
+                 required>
+        </div>
+
+        <!-- 사무실 주소 -->
+        <div class="field">
+          <input id="lawyerAddress"
+                 name="lawyerAddress"
+                 class="input"
+                 type="text"
+                 placeholder="사무실 주소">
+        </div>
+
+        <!-- 휴대폰 번호 -->
+        <div class="field">
+          <input id="lawyerPhone"
+                 name="lawyerPhone"
+                 class="input"
+                 type="tel"
+                 placeholder="휴대폰 번호 (예: 010-1234-5678)"
+                 inputmode="numeric"
+                 required>
+        </div>
+
+        <!-- 사무실(사업장) 전화번호 -->
+        <div class="field">
+          <input id="lawyerTel"
+                 name="lawyerTel"
+                 class="input"
+                 type="tel"
+                 placeholder="사무실 전화번호 (선택)"
+                 inputmode="numeric">
+        </div>
+
+        <!-- 관심 분야 (1개 선택) -->
+        <div class="field">
+          <select id="interestIdx"
+                  name="interestIdx"
+                  class="input"
+                  required>
+            <option value="" disabled selected>전문 분야 선택</option>
+            <option th:each="it : ${interests}"
+                    th:value="${it.interestIdx}"
+                    th:text="${it.interestName}">
+              형사
+            </option>
+          </select>
+        </div>
 
         <!-- 한줄소개 + 상담 가능 요일/시간 -->
         <div class="field">
           <div class="inline align-start">
-            <label class="photo">사진</label>
+            <label class="photo">상담 안내</label>
             <div class="flex-1">
-              <input id="lawyerIntro" name="lawyerIntro" class="input" type="text" placeholder="한줄소개">
-              <label>상담 가능 요일 및 시간대</label>
+              <!-- 한줄소개: lawyerComment 로 name 지정 -->
+              <input id="lawyerIntro"
+                     name="lawyerComment"
+                     class="input"
+                     type="text"
+                     placeholder="한줄소개 (선택)">
+              <label style="display:block; margin-top:8px;">상담 가능 요일 및 시간대 (선택)</label>
               <div class="days">
                 <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
                 <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
@@ -77,40 +185,46 @@
                 <input type="checkbox" id="sat" value="토"><label for="sat">토</label>
                 <input type="checkbox" id="sun" value="일"><label for="sun">일</label>
               </div>
-              <div class="inline">
+              <div class="inline" style="margin-top:4px;">
                 <input id="timeStart" class="input" type="time" style="flex:1">
                 <span style="margin:0 6px">~</span>
                 <input id="timeEnd" class="input" type="time" style="flex:1">
               </div>
-              <button type="button" class="small-btn" id="addTime">추가</button>
+              <button type="button" class="small-btn" id="addTime" style="margin-top:6px;">추가</button>
               <div id="selectedList" class="selected-list"></div>
             </div>
           </div>
         </div>
 
-        <!-- 업로드 + 동의 -->
+        <!-- 등록증 업로드 + 동의 -->
         <div class="field">
           <div class="agree-area">
             <div class="left">
-              <input id="idImage" name="idImage" type="file" accept="image/*" style="display:none" />
-              <button type="button" class="small-btn" id="idPickBtn">신분증 업로드</button>
-
-              <input id="certImage" name="certImage" type="file" accept="image/*" style="display:none" />
+              <!-- 신분증 업로드 제거, 등록증만 유지 -->
+              <input id="certImage"
+                     name="certImage"
+                     type="file"
+                     accept="image/*"
+                     style="display:none" />
               <button type="button" class="small-btn" id="certPickBtn">등록증 업로드</button>
             </div>
             <div class="right">
+              <!-- 화면에서는 Y/N로 토글하지만 DB 저장은 서비스에서 1로 처리 -->
               <input type="hidden" id="lawyerAgree" name="lawyerAgree" value="N">
               <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
             </div>
           </div>
 
           <div class="inline align-start" style="margin-top:8px">
-            <div class="flex-1"><div id="idImagePreview" class="thumb"></div></div>
-            <div class="flex-1"><div id="certImagePreview" class="thumb"></div></div>
+            <div class="flex-1">
+              <div id="certImagePreview" class="thumb"></div>
+            </div>
           </div>
-          <small id="fileMsg" class="help">신분증과 등록증 이미지를 모두 첨부해야 합니다.</small>
+          <small id="fileMsg" class="help">등록증 이미지를 첨부해주세요.</small>
+          <small id="agreeMsg" class="help"></small>
         </div>
 
+        <!-- 상담 가능 시간 JSON (선택값 서버로 전달용) -->
         <input type="hidden" id="availabilityJson" name="availabilityJson" value="[]">
 
         <div class="divider"></div>

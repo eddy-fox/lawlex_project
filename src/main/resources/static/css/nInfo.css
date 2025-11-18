@@ -38,8 +38,23 @@ body{background:var(--paper);color:var(--ink);font-family:'Gooorm Sans',-apple-s
 .page-nInfo .article .para{margin:15px 0; white-space: pre-line;}
 
 .page-nInfo .actions{display:flex;gap:10px;justify-content:flex-end;margin:20px 0;}
-.page-nInfo .btn{box-sizing: border-box; padding:3px 15px;border-radius:10px;border:1px solid var(--line);background:#fff;color: var(--ink); font-weight:700;cursor:pointer;transition:all .2s ease;}
-.page-nInfo .btn:hover{background:var(--navy);color:#fff;}
+.page-nInfo .btn{
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-nInfo .btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
 
 /* 댓글 */
 .page-nInfo .cmt{margin-top:26px;}

@@ -14,6 +14,7 @@ public class ReboardDTO {
     private String reboardContent;
     private LocalDate reboardRegDate;
     private Integer boardIdx;
+    private String boardTitle;  // 원글 제목
     private Integer lawyerIdx;
     private Integer reboardActive;
     

@@ -5,7 +5,6 @@
   const body=document.getElementById('cBody');
   const text=document.getElementById('cText');
   const btn=document.getElementById('cBtn');
-  const toggle=document.getElementById('cToggle');
   
   // newsIdx 가져오기 (HTML에서 data 속성 또는 URL에서)
   const newsIdxFromData = document.body.dataset.newsidx || document.body.getAttribute('data-newsIdx');
@@ -35,24 +34,7 @@
     return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
   }
   
-  function openBox(){
-    if(!cmt.classList.contains('open')){
-      cmt.classList.add('open');
-      toggle.textContent='닫기';
-      if(isLoggedIn){
-        setTimeout(()=>text.focus(),0);
-      }
-    }
-  }
-  
-  function closeBox(){
-    if(cmt.classList.contains('open')){
-      cmt.classList.remove('open');
-      toggle.textContent='댓글 적기';
-    }
-  }
-  
-  // 초기 상태: 기본적으로 열려있음 (이미 HTML에서 open 클래스로 설정됨)
+  // 댓글 섹션은 항상 열려있음 (버튼 제거됨)
   
   // 댓글 목록 불러오기
   function loadComments(){
@@ -161,11 +143,6 @@
       alert('댓글 작성에 실패했습니다.');
     });
   }
-  
-  toggle.addEventListener('click',()=>{
-    if(cmt.classList.contains('open')) closeBox();
-    else openBox();
-  });
   
   btn.addEventListener('click',submit);
   

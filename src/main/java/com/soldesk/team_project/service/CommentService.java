@@ -170,7 +170,7 @@ public class CommentService {
 
     // 댓글 목록 조회 (활성 댓글만)
     public List<CommentDTO> getCommentsByNewsIdx(Integer newsIdx) {
-        List<CommentEntity> comments = commentRepository.findByNewsIdxAndCommentActiveOrderByCommentRegDateAsc(newsIdx, 1);
+        List<CommentEntity> comments = commentRepository.findByNewsIdxAndCommentActiveOrderByCommentRegDateDESC(newsIdx, 1);
         return comments.stream()
                 .map(this::convertCommentDTO)
                 .collect(Collectors.toList());
