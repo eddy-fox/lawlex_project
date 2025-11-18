@@ -32,20 +32,32 @@
         <div class="meta">
             <div class="left">
                 <!-- 변호사 사진: 있으면 그거, 없으면 placeholder -->
-                <img class="poto"
-                     th:if="${board.lawyer != null and board.lawyer.lawyerImgPath != null}"
-                     th:src="${board.lawyer.lawyerImgPath}"
-                     alt="변호사 사진">
-
-                <img class="poto"
-                     th:if="${board.lawyer == null or board.lawyer.lawyerImgPath == null}"
-                     src="https://placehold.co/150x200?text=%EB%B3%80%ED%98%B8%EC%82%AC"
-                     alt="변호사 사진">
+                <a th:if="${board.lawyer != null and board.lawyer.lawyerIdx != null}"
+                   th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${board.lawyer.lawyerIdx})}"
+                   style="text-decoration: none; display: inline-block;">
+                    <img class="poto"
+                         th:if="${board.lawyer.lawyerImgPath != null}"
+                         th:src="${board.lawyer.lawyerImgPath}"
+                         alt="변호사 사진">
+                    <img class="poto"
+                         th:if="${board.lawyer.lawyerImgPath == null}"
+                         src="https://placehold.co/150x200?text=%EB%B3%80%ED%98%B8%EC%82%AC"
+                         alt="변호사 사진">
+                </a>
+                <div th:if="${board.lawyer == null or board.lawyer.lawyerIdx == null}">
+                    <img class="poto"
+                         src="https://placehold.co/150x200?text=%EB%B3%80%ED%98%B8%EC%82%AC"
+                         alt="변호사 사진">
+                </div>
 
                 <!-- 이름 -->
-                <p class="writer"
-                   th:text="${board.lawyer != null ? board.lawyer.lawyerName + ' 변호사' : '변호사'}">
-                    홍길동(변호사)
+                <p class="writer" th:if="${board.lawyer != null and board.lawyer.lawyerIdx != null}">
+                    <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${board.lawyer.lawyerIdx})}"
+                       style="text-decoration: none; color: inherit;"
+                       th:text="${board.lawyer.lawyerName + ' 변호사'}">홍길동 변호사</a>
+                </p>
+                <p class="writer" th:if="${board.lawyer == null or board.lawyer.lawyerIdx == null}">
+                    변호사
                 </p>
             </div>
 

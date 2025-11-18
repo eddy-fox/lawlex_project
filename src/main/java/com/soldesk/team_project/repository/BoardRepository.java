@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.soldesk.team_project.entity.BoardEntity;
 
+
 public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     
     BoardEntity findByBoardTitle(String boardTitle);
@@ -57,6 +58,18 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     // 조회수 높은 순서로 조회 (상위 5개)
     List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
 
+    // 로그인한 회원이 쓴 최근 5개 게시글 (활성글만)
+    List<BoardEntity> findTop5ByMemberMemberIdxAndBoardActiveOrderByBoardRegDateDesc(
+            Integer memberIdx,
+            Integer boardActive
+    );
+    // 회원별 상담글 조회
+    @Query("SELECT b FROM BoardEntity b WHERE b.member.memberIdx = :memberIdx " +
+           "AND (b.boardActive = 1 OR b.boardActive IS NULL) " +
+           "ORDER BY b.boardRegDate DESC")
+    Page<BoardEntity> findByMemberMemberIdxOrderByBoardRegDateDesc(
+        @Param("memberIdx") Integer memberIdx, 
+        Pageable pageable);
 
            
 }

@@ -18,7 +18,7 @@
 
       <!-- 가입 폼 -->
       <form id="joinForm" class="form" th:action="@{/member/join/normal}" method="post" novalidate>
-        <!-- ✅ CSRF (있을 때만 렌더) -->
+        <!-- CSRF (있을 때만 렌더) -->
         <th:block th:if="${_csrf != null}">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         </th:block>
@@ -46,23 +46,34 @@
           <small id="pwMsg" class="help"></small>
         </div>
 
-        <!-- 닉네임 / 이메일 -->
+        <!--  이름 -->
+        <div class="field">
+          <label for="memberName" class="sr-only">이름</label>
+          <input id="memberName" name="memberName" class="input" type="text" placeholder="이름" required>
+          <small id="nameMsg" class="help"></small>
+        </div>
+
+        <!-- 닉네임 -->
         <div class="field">
           <label for="memberNickname" class="sr-only">닉네임</label>
           <input id="memberNickname" name="memberNickname" class="input" type="text" placeholder="닉네임" required>
         </div>
+
+        <!-- 이메일 -->
         <div class="field">
           <label for="memberEmail" class="sr-only">이메일</label>
           <input id="memberEmail" name="memberEmail" class="input" type="email" placeholder="이메일" autocomplete="email" required>
           <small id="emailMsg" class="help"></small>
         </div>
 
-        <!-- 전화번호 / 생년월일(주민번호 앞자리) -->
+        <!-- 전화번호 -->
         <div class="field">
           <label for="memberPhone" class="sr-only">전화번호</label>
           <input id="memberPhone" name="memberPhone" class="input" type="tel" placeholder="전화번호(예: 010-1234-5678)" inputmode="numeric" required>
           <small id="phoneMsg" class="help"></small>
         </div>
+
+        <!-- 생년월일(주민번호 앞자리) -->
         <div class="field">
           <label for="memberIdnum" class="sr-only">생년월일</label>
           <input id="memberIdnum" name="memberIdnum" class="input" type="text" placeholder="생년월일(예: 990101)" inputmode="numeric" required>

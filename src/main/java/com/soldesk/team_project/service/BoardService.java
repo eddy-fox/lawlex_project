@@ -82,6 +82,10 @@ public class BoardService {
         Optional<BoardEntity> boardEntity = this.boardRepository.findById(id);
         if(boardEntity.isPresent()) {
             BoardEntity board = boardEntity.get();
+            // interest 정보 로드 (사이드메뉴 강조 표시용)
+            if (board.getInterest() != null) {
+                board.getInterest().getInterestIdx(); // Lazy 로딩 강제 실행
+            }
             // reboardList와 lawyer 정보를 함께 로드하기 위해 초기화
             if (board.getReboardList() != null) {
                 board.getReboardList().size(); // Lazy 로딩 강제 실행

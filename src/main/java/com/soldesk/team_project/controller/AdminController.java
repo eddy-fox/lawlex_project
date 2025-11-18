@@ -28,36 +28,35 @@ import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.QuestionService;
 import com.soldesk.team_project.service.FirebaseStorageService;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
-    
+
     private final MemberService memberService;
     private final LawyerService lawyerService;
     private final QuestionService questionService;
     private final AdService adService;
-    private final FirebaseStorageService storageService; 
+    private final FirebaseStorageService storageService;
 
     private String nowUuidName(String originalFilename) {
-    if (originalFilename == null) originalFilename = "";
-    String ext = "";
-    int idx = originalFilename.lastIndexOf('.');
-    if (idx >= 0 && idx < originalFilename.length() - 1) {
-        ext = originalFilename.substring(idx).toLowerCase(); // .jpg 등
-    } else {
-        ext = ".bin";
+        if (originalFilename == null) originalFilename = "";
+        String ext = "";
+        int idx = originalFilename.lastIndexOf('.');
+        if (idx >= 0 && idx < originalFilename.length() - 1) {
+            ext = originalFilename.substring(idx).toLowerCase(); // .jpg 등
+        } else {
+            ext = ".bin";
+        }
+
+        String now = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+        String uuid8 = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+
+        return now + "-" + uuid8 + ext;   // 예: 20251113_223512123-1a2b3c4d.jpg
     }
-
-    String now = java.time.LocalDateTime.now()
-            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
-    String uuid8 = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
-
-    return now + "-" + uuid8 + ext;   // 예: 20251113_223512123-1a2b3c4d.jpg
-}
 
     // 일반 회원 관리
     @GetMapping("/memberManagement")
@@ -86,6 +85,7 @@ public class AdminController {
         model.addAttribute("searchType", searchType);
         return "admin/memberManagement";
     }
+
     @PostMapping("/memberManagement")
     public String memberSearch(
         @RequestParam("keyword") String keyword,
@@ -130,6 +130,7 @@ public class AdminController {
         model.addAttribute("searchType", searchType);
         return "admin/lawyerManagement";
     }
+
     @PostMapping("/lawyerManagement")
     public String lawyerSearch(
         @RequestParam("keyword") String keyword,
@@ -178,6 +179,7 @@ public class AdminController {
         model.addAttribute("searchType", searchType);
         return "admin/QnAManagement";
     }
+
     @PostMapping("/QnAManagement")
     public String questionSearch(
         @RequestParam("keyword") String keyword,
@@ -228,6 +230,7 @@ public class AdminController {
 
         return "admin/adRegistration";
     }
+
     @PostMapping("/adRegistration")
     public String registAdSubmit(RedirectAttributes redirectAttributes,
         @ModelAttribute("adRegistration")AdDTO adRegistration,
@@ -243,7 +246,7 @@ public class AdminController {
         String desiredName = adRegistration.getAdImgPath();
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            String filename   = nowUuidName(imageFile.getOriginalFilename());
+            String filename = nowUuidName(imageFile.getOriginalFilename());
             String objectPath = "ad/" + filename;  // ✅ 광고는 ad 폴더에
 
             var uploaded = storageService.upload(imageFile, objectPath);
@@ -298,6 +301,7 @@ public class AdminController {
 
         return "admin/adModify";
     }
+
     @PostMapping("/adModify")
     public String modifySubmit(@ModelAttribute("modifyAd") AdDTO modifyAd, RedirectAttributes redirectAttributes,
         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile, Model model,
@@ -343,13 +347,12 @@ public class AdminController {
     public ResponseEntity<Void> adCount(@RequestBody Map<String, Object> payload) {
         Integer adIdx = (Integer) payload.get("adIdx");
         adService.increaseAdViews(adIdx);
-        
+
         return ResponseEntity.ok().build();
     }
 
-    /* 
+    /*
     @GetMapping("/lawyer/pending")
-
     public String pendingLawyers(Model model) {
 
         List<LawyerEntity> list = lawyerService.getPending();
@@ -359,9 +362,8 @@ public class AdminController {
         return "admin/lawyer-pending";
 
     }
-    
-    @PostMapping("/lawyer/{idx}/approve")
 
+    @PostMapping("/lawyer/{idx}/approve")
     public String approveLawyer(@PathVariable Integer idx) {
 
         lawyerService.approve(idx);
@@ -370,23 +372,19 @@ public class AdminController {
 
     }
 
-
-
     @PostMapping("/lawyer/{idx}/reject")
-
     public String rejectLawyer(@PathVariable Integer idx) {
 
         lawyerService.reject(idx);
 
         return "redirect:/admin/lawyer/pending";
     */
-
     /* Q 문의글 상세보기 */
     @GetMapping("/qnaAnswer")
     public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
         QuestionDTO infoQ = questionService.getQ(qIdx);
         // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
-        
+
         Integer mIdx = infoQ.getMemberIdx();
         Integer lIdx = infoQ.getLawyerIdx();
 
@@ -394,7 +392,7 @@ public class AdminController {
             LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
             infoQ.setInfoId(l.getLawyerId());
             infoQ.setInfoName(l.getLawyerName());
-        }else if (mIdx != null) {
+        } else if (mIdx != null) {
             MemberDTO m = memberService.qMemberInquiry(mIdx);
             infoQ.setInfoId(m.getMemberId());
             infoQ.setInfoName(m.getMemberName());
@@ -403,7 +401,7 @@ public class AdminController {
         return "admin/qnaAnswer";
     }
 
-     // 생성자 변경 없이 사용하기 위해 필드 주입 사용
+    // 생성자 변경 없이 사용하기 위해 필드 주입 사용
     @org.springframework.beans.factory.annotation.Autowired
     private com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
 
@@ -456,8 +454,10 @@ public class AdminController {
     @PostMapping(value = "/api/lawyer/reject", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     @org.springframework.transaction.annotation.Transactional
-    public ResponseEntity<String> rejectLawyer(@RequestParam("lawyerIdx") Integer lawyerIdx,
-                                               @RequestParam(value = "reason", required = false) String reason) {
+    public ResponseEntity<String> rejectLawyer(
+            @RequestParam("lawyerIdx") Integer lawyerIdx,
+            @RequestParam(value = "reason", required = false) String reason) {
+
         var opt = lawyerRepository.findById(lawyerIdx);
         if (opt.isEmpty()) return ResponseEntity.status(404).body("NOT_FOUND");
 
@@ -468,5 +468,4 @@ public class AdminController {
         lawyerRepository.save(l);
         return ResponseEntity.ok("OK");
     }
-    
 }

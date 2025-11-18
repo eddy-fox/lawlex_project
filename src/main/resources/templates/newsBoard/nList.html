@@ -33,8 +33,21 @@
         목록
     </h1>
 
-    <!-- 로그인만 돼 있으면 보여주기 (실제 권한은 컨트롤러에서 다시 체크) -->
-    <a th:if="${loginAdmin != null or loginLawyer != null}"
+    <!-- 글쓰기 버튼: 카테고리별 권한 체크 -->
+    <!-- 뉴스(2): reporter 역할 관리자만 -->
+    <a th:if="${categoryIdx == 2 and loginAdmin != null and loginAdmin.adminRole == 'reporter'}"
+       th:href="@{/newsBoard/write(category=${categoryIdx})}"
+       class="btn-write">
+        글쓰기
+    </a>
+    <!-- 동영상(3): admin 역할 관리자만 -->
+    <a th:if="${categoryIdx == 3 and loginAdmin != null and loginAdmin.adminRole == 'admin'}"
+       th:href="@{/newsBoard/write(category=${categoryIdx})}"
+       class="btn-write">
+        글쓰기
+    </a>
+    <!-- 칼럼(4): 변호사만 -->
+    <a th:if="${categoryIdx == 4 and loginLawyer != null}"
        th:href="@{/newsBoard/write(category=${categoryIdx})}"
        class="btn-write">
         글쓰기

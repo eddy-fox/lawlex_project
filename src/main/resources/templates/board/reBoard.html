@@ -10,7 +10,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
   <main class="page-reBoard">
-    <div class="sideMenu" th:replace="~{include/bSide :: bSide}"></div>
+    <div class="sideMenu" th:replace="~{include/bSide :: bSide(interestIdx=${interestIdx})}"></div>
     <div class="wrap">
       <div class="backdrop">
        
@@ -101,9 +101,14 @@
                               th:text="${reboard.lawyer.lawyerName != null ? reboard.lawyer.lawyerName : 'AI 법률상담'}"></span>
                         
                         <!-- 일반 변호사 답변인 경우: 변호사 붙임 -->
+                        <a th:if="${reboard.lawyer != null and reboard.lawyer.lawyerIdx != null and reboard.lawyer.lawyerIdx != 205}"
+                           th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${reboard.lawyer.lawyerIdx})}"
+                           class="answer-author-name"
+                           style="text-decoration: none; color: inherit;"
+                           th:text="${reboard.lawyer.lawyerName != null ? (reboard.lawyer.lawyerName + ' 변호사') : '익명'}"></a>
                         <span class="answer-author-name" 
-                              th:if="${reboard.lawyer == null or reboard.lawyer.lawyerIdx != 205}"
-                              th:text="${reboard.lawyer != null and reboard.lawyer.lawyerName != null ? (reboard.lawyer.lawyerName + ' 변호사') : '익명'}"></span>
+                              th:if="${reboard.lawyer == null or reboard.lawyer.lawyerIdx == 205}"
+                              th:text="'익명'"></span>
                         <span class="answer-date" th:if="${reboard.reboardRegDate != null}" th:text="${#temporals.format(reboard.reboardRegDate, 'yyyy-MM-dd')}"></span>
                       </div>
                     </div>
@@ -127,6 +132,13 @@
                          sec:authorize="isAuthenticated()" 
                          th:if="${reboard.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reboard.lawyer.lawyerName}">
                         수정
+                      </a>
+                      <a href="javascript:void(0);" 
+                         class="answer-reply-btn delete"
+                         th:data-uri="@{|/reboard/delete/${reboard.reboardIdx}|}"
+                         sec:authorize="isAuthenticated()" 
+                         th:if="${(reboard.lawyer != null and #authentication != null and #authentication.principal != null and #authentication.principal.lawyerName != null and #authentication.principal.lawyerName == reboard.lawyer.lawyerName) or (isAdmin != null and isAdmin)}">
+                        삭제
                       </a>
                     </div>
                   </div>

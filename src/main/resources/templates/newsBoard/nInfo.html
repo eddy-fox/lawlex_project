@@ -80,36 +80,29 @@
         </article>
 
         <!-- 버튼들 -->
-<div class="actions"
-     th:with="
-        cat=${board.category.categoryIdx},
-        isAdminWriter=${loginAdmin != null and board.admin != null and loginAdmin.adminIdx == board.admin.adminIdx},
-        isLawyerWriter=${loginLawyer != null and board.lawyer != null and loginLawyer.lawyerIdx == board.lawyer.lawyerIdx},
-        isAdmin=${loginAdmin != null and loginAdmin.adminRole == 'admin'}
-     ">
+        <div class="actions"
+             th:with="
+                cat=${board.category.categoryIdx},
+                isAdminWriter=${loginAdmin != null and board.admin != null and loginAdmin.adminIdx == board.admin.adminIdx},
+                isLawyerWriter=${loginLawyer != null and board.lawyer != null and loginLawyer.lawyerIdx == board.lawyer.lawyerIdx},
+                isAdmin=${loginAdmin != null and loginAdmin.adminRole == 'admin'}
+             ">
+            <!-- 작성자이거나 관리자(admin_role='admin')일 때 수정/삭제 버튼 표시 -->
+            <a class="btn"
+               th:if="${isAdminWriter or isLawyerWriter or isAdmin}"
+               th:href="@{/newsBoard/modify(newsIdx=${board.newsIdx})}">수정</a>
 
-    <!-- 작성자이거나 관리자(admin_role='admin')일 때 수정 -->
-    <a class="btn"
-       th:if="${isAdminWriter or isLawyerWriter or isAdmin}"
-       th:href="@{/newsBoard/modify(newsIdx=${board.newsIdx})}">
-        수정
-    </a>
+            <form th:if="${isAdminWriter or isLawyerWriter or isAdmin}"
+                  th:action="@{/newsBoard/delete}"
+                  method="post"
+                  style="display:inline;">
+                <input type="hidden" name="newsIdx" th:value="${board.newsIdx}">
+                <button class="btn" type="submit">삭제</button>
+            </form>
 
-    <!-- 작성자이거나 관리자(admin_role='admin')일 때 삭제 -->
-    <form th:if="${isAdminWriter or isLawyerWriter or isAdmin}"
-          th:action="@{/newsBoard/delete}"
-          method="post"
-          style="display:inline;">
-        <input type="hidden" name="newsIdx" th:value="${board.newsIdx}">
-        <button class="btn" type="submit">삭제</button>
-    </form>
-
-    <!-- 목록은 항상 -->
-    <a class="btn"
-       th:href="@{/newsBoard/list(category=${cat})}">
-        목록
-    </a>
-</div>
+            <!-- 목록은 항상 표시 -->
+            <a class="btn" th:href="@{/newsBoard/list(category=${cat})}">목록</a>
+        </div>
 
         <!-- 댓글 (공지사항이 아닌 경우에만 표시) -->
         <section class="cmt open" th:if="${canComment}" th:classappend="${loginMember == null and loginLawyer == null}">

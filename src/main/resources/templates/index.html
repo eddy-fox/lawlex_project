@@ -87,10 +87,12 @@
         <h2 class="section-ttl">지금 바로 상담 가능한 변호사</h2>
         <div class="group">
           <div class="card" th:each="lawyer : ${availableLawyers}">
-            <div class="lImg">
+            <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${lawyer.lawyerIdx})}"
+               class="lImg"
+               style="text-decoration: none; display: block;">
               <img th:if="${lawyer.imgPath != null}" th:src="${lawyer.imgPath}" alt="변호사 사진">
               <img th:if="${lawyer.imgPath == null}" th:src="@{/img/test.png}" alt="">
-            </div>
+            </a>
             <div class="name">
               <b th:if="${lawyer.address != null}">
                 <span th:with="region=${#strings.contains(lawyer.address, ' ') ? #strings.substring(lawyer.address, 0, #strings.indexOf(lawyer.address, ' ')) : lawyer.address}">
@@ -117,7 +119,9 @@
               </b>
               <b th:if="${lawyer.address == null}">지역</b>
               <b>|</b>
-              <b th:text="|${lawyer.name} 변호사|">변호사명</b>
+              <b><a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${lawyer.lawyerIdx})}" 
+                    style="text-decoration: none; color: inherit;"
+                    th:text="|${lawyer.name} 변호사|">변호사명</a></b>
             </div>
             <div class="interest" th:text="${lawyer.interestName != null ? lawyer.interestName : '분야'}">분야</div>
             <form th:action="@{/chat/request}" method="post">
