@@ -10,11 +10,17 @@ import org.springframework.stereotype.Service;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
+import com.soldesk.team_project.dto.ReboardDTO;
+
 import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
+
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.UserMasterRepository;
+import com.soldesk.team_project.repository.ReBoardRepository;
+
 import com.soldesk.team_project.util.FileStorageService;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,29 +29,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-
-import java.util.NoSuchElementException;
-
-
-
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class LawyerService {
-    
+
     private final LawyerRepository lawyerRepository;
     private final FileStorageService fileStorageService;
     private final PasswordEncoder passwordEncoder;
 
     private final UserMasterRepository userMasterRepository;
     private final InterestRepository interestRepository;
-    
     private final MemberRepository memberRepository;
 
-    
+    private final ReBoardRepository reBoardRepository;
 
-    private LawyerDTO convertLawyerDTO (LawyerEntity lawyerEntity) {
+    private LawyerDTO convertLawyerDTO(LawyerEntity lawyerEntity) {
         LawyerDTO lawyerDTO = new LawyerDTO();
         lawyerDTO.setLawyerIdx(lawyerEntity.getLawyerIdx());
         lawyerDTO.setLawyerId(lawyerEntity.getLawyerId());
@@ -65,19 +65,19 @@ public class LawyerService {
         lawyerDTO.setLawyerAnswerCnt(lawyerEntity.getLawyerAnswerCnt());
         lawyerDTO.setLawyerActive(lawyerEntity.getLawyerActive());
         lawyerDTO.setInterestIdx(lawyerEntity.getInterestIdx());
-        lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
-
+        if (lawyerEntity.getInterest() != null) {
+            lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
+        }
         return lawyerDTO;
     }
 
     // 전체 변호사 조회
     public List<LawyerDTO> getAllLawyer() {
         List<LawyerEntity> lawyerEntityList = lawyerRepository.findByLawyerActive(1);
-        
         return lawyerEntityList.stream()
-            .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
+                .map(this::convertLawyerDTO)
+                .collect(Collectors.toList());
     }
-
 
     // 태그 별 특정 변호사 검색
     public List<LawyerDTO> searchLawyers(String searchType, String keyword) {
@@ -90,53 +90,76 @@ public class LawyerService {
                     lawyerEntityList = lawyerRepository.findByLawyerIdxAndLawyerActive(idx, 1);
                 } catch (NumberFormatException e) {
                     lawyerEntityList = new ArrayList<>();
-                } break;
-            case "id": lawyerEntityList = lawyerRepository.
-                findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1); break;
-            case "name": lawyerEntityList = lawyerRepository.
-                findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1); break;
-            case "idnum": lawyerEntityList = lawyerRepository.
-                findByLawyerIdnumContainingAndLawyerActiveOrderByLawyerIdnumAsc(keyword, 1); break;
-            case "email": lawyerEntityList = lawyerRepository.
-                findByLawyerEmailContainingIgnoreCaseAndLawyerActiveOrderByLawyerEmailAsc(keyword, 1); break;
-            case "phone": lawyerEntityList = lawyerRepository.
-                findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerPhoneAsc(keyword, 1); break;
-            case "nickname": lawyerEntityList = lawyerRepository.
-                findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerNicknameAsc(keyword, 1); break;
-            case "auth": 
+                }
+                break;
+            case "id":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1);
+                break;
+            case "name":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1);
+                break;
+            case "idnum":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerIdnumContainingAndLawyerActiveOrderByLawyerIdnumAsc(keyword, 1);
+                break;
+            case "email":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerEmailContainingIgnoreCaseAndLawyerActiveOrderByLawyerEmailAsc(keyword, 1);
+                break;
+            case "phone":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerPhoneAsc(keyword, 1);
+                break;
+            case "nickname":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerNicknameAsc(keyword, 1);
+                break;
+            case "auth":
                 try {
                     int auth = Integer.parseInt(keyword);
-                    lawyerEntityList = lawyerRepository.
-                        findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(auth, 1);
+                    lawyerEntityList = lawyerRepository
+                            .findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(auth, 1);
                 } catch (NumberFormatException e) {
                     lawyerEntityList = new ArrayList<>();
-                } break;
-            case "address": 
-                lawyerEntityList = lawyerRepository.
-                    findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(keyword, 1); 
-                    break;
-            case "tel": lawyerEntityList = lawyerRepository.
-                findByLawyerTelContainingAndLawyerActiveOrderByLawyerTelAsc(keyword, 1); break;
-            case "comment": lawyerEntityList = lawyerRepository.
-                findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerCommentAsc(keyword, 1); break;
-            
-            default: lawyerEntityList = lawyerRepository.findByLawyerActive(1); break;
+                }
+                break;
+            case "address":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(keyword, 1);
+                break;
+            case "tel":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerTelContainingAndLawyerActiveOrderByLawyerTelAsc(keyword, 1);
+                break;
+            case "comment":
+                lawyerEntityList = lawyerRepository
+                        .findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerCommentAsc(keyword, 1);
+                break;
+            default:
+                lawyerEntityList = lawyerRepository.findByLawyerActive(1);
+                break;
         }
         return lawyerEntityList.stream()
-            .map(lawyerEntity -> convertLawyerDTO(lawyerEntity)).collect(Collectors.toList());
+                .map(this::convertLawyerDTO)
+                .collect(Collectors.toList());
     }
 
     // 세션에서 로그인된 유저 가져오기
-    // 서비스 내부에서 세션의 loginUser(UserMasterDTO) 꺼내기
     private UserMasterDTO currentLoginUserOrThrow() {
         ServletRequestAttributes attrs =
-            (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attrs.getRequest().getSession(false);
-        if (session == null) throw new IllegalStateException("로그인이 필요합니다.");
+        if (session == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
         Object obj = session.getAttribute("loginUser");
-        if (obj instanceof UserMasterDTO u) return u;
+        if (obj instanceof UserMasterDTO u) {
+            return u;
+        }
         throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
-}
+    }
 
     // 세션의 로그인 유저가 변호사일 때, 그 프로필 DTO 반환
     @Transactional(readOnly = true)
@@ -144,13 +167,13 @@ public class LawyerService {
         UserMasterDTO login = currentLoginUserOrThrow();
         if (login.getRole() == null || !"LAWYER".equalsIgnoreCase(login.getRole())) {
             throw new IllegalStateException("변호사만 접근 가능합니다.");
+        }
+        var le = lawyerRepository.findById(login.getLawyerIdx())
+                .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
+        return convertLawyerDTO(le);
     }
-    var le = lawyerRepository.findById(login.getLawyerIdx())
-            .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
-    return convertLawyerDTO(le);
-}
 
-    // 변호사 회원가입
+    // ===== 기존 포털용 가입 메서드 (기존 코드 유지) =====
     @Transactional
     public void joinFromPortal(LawyerDTO dto) {
         // 아이디 중복 (멤버/로이어 전체에서 중복 불가)
@@ -158,8 +181,8 @@ public class LawyerService {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
-        // 비밀번호 암호화 (null 아니고 공백 아닐 때만)
-        String encPass = null;
+        // 비밀번호 암호화
+        String encPass;
         if (notBlank(dto.getLawyerPass())) {
             encPass = passwordEncoder.encode(dto.getLawyerPass());
         } else {
@@ -184,7 +207,50 @@ public class LawyerService {
         lawyerRepository.save(le);
     }
 
-    // 변호사 프로필 수정 
+
+    // === 새 변호사 회원가입 (LawyerController에서 사용) ===
+    @Transactional
+    public void joinLawyer(LawyerDTO dto, MultipartFile certImage) {
+
+        // 1) 아이디 중복 체크 (멤버/변호사 모두 포함)
+        if (isUserIdDuplicate(dto.getLawyerId())) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        }
+
+        // 2) 비밀번호 필수 + 암호화
+        if (!notBlank(dto.getLawyerPass())) {
+            throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+        }
+        String encPass = passwordEncoder.encode(dto.getLawyerPass());
+
+        Integer interest = dto.getInterestIdx();
+        if (interest == null) {
+            interest = 1;
+        }
+
+        LawyerEntity le = LawyerEntity.builder()
+                .lawyerId(dto.getLawyerId())
+                .lawyerPass(encPass)
+                .lawyerName(dto.getLawyerName())
+                .lawyerIdnum(digits(dto.getLawyerIdnum()))
+                .lawyerEmail(dto.getLawyerEmail())
+                .lawyerPhone(digits(dto.getLawyerPhone()))   // 휴대폰
+                .lawyerTel(digits(dto.getLawyerTel()))       // 사무실 전화
+                .lawyerAddress(dto.getLawyerAddress())
+                .lawyerNickname(dto.getLawyerNickname())
+                .interestIdx(interest)
+                .lawyerComment(dto.getLawyerComment())       // 한줄소개
+                .lawyerAgree("1")                          
+                .lawyerActive(1)
+                .lawyerAuth(1)
+                .build();
+
+        lawyerRepository.save(le);
+    }
+
+
+
+    // 변호사 프로필 수정
     @Transactional
     public LawyerUpdateResult updateProfileFromPortal(
             LawyerDTO dto,
@@ -193,11 +259,10 @@ public class LawyerService {
             Long /*unused*/ userIdx,
             Integer lawyerIdx
     ) {
-        // userIdx는 현 흐름에서 사용하지 않음(로그인은 user_master 미사용)
         LawyerEntity le = lawyerRepository.findById(lawyerIdx)
                 .orElseThrow(() -> new IllegalArgumentException("변호사 계정을 찾을 수 없습니다."));
 
-        // 아이디 변경 처리
+        // 아이디 변경
         if (notBlank(dto.getLawyerId()) && !dto.getLawyerId().equals(le.getLawyerId())) {
             if (isUserIdDuplicate(dto.getLawyerId())) {
                 throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
@@ -218,7 +283,14 @@ public class LawyerService {
         if (notBlank(dto.getLawyerEmail()))    le.setLawyerEmail(dto.getLawyerEmail());
         if (notBlank(dto.getLawyerNickname())) le.setLawyerNickname(dto.getLawyerNickname());
         if (notBlank(dto.getLawyerAddress()))  le.setLawyerAddress(dto.getLawyerAddress());
-        if (dto.getInterestIdx() != null)      le.setInterestIdx(dto.getInterestIdx());
+        if (dto.getInterestIdx() != null) {
+            le.setInterestIdx(dto.getInterestIdx());
+            var interest = interestRepository.findById(dto.getInterestIdx())
+                    .orElse(null);
+            if (interest != null) {
+                le.setInterest(interest);
+            }
+        }
 
         if (notBlank(dto.getLawyerPhone())) le.setLawyerPhone(digits(dto.getLawyerPhone()));
         if (notBlank(dto.getLawyerTel()))   le.setLawyerTel(digits(dto.getLawyerTel()));
@@ -226,7 +298,6 @@ public class LawyerService {
 
         lawyerRepository.save(le);
 
-        // 컨트롤러에서 세션 갱신에 쓰일 수 있도록 변경된 핵심 값 반환
         return new LawyerUpdateResult(le.getLawyerId(), le);
     }
 
@@ -237,24 +308,69 @@ public class LawyerService {
         return memberDup || lawyerDup;
     }
 
-    
-    // 유틸 
-    private static String digits(String s) { return s == null ? null : s.replaceAll("\\D", ""); }
-    private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
-    
+    // 유틸
+    private static String digits(String s) {
+        return s == null ? null : s.replaceAll("\\D", "");
+    }
+
+    private static boolean notBlank(String s) {
+        return s != null && !s.isBlank();
+    }
+
     // 결과 DTO
     public record LawyerUpdateResult(String newUserId, LawyerEntity lawyer) {}
-    
+
     // 로그인 아이디로 변호사 한 명 가져오기
     public LawyerEntity getLawyer(String lawyerId) {
         return lawyerRepository.findByLawyerId(lawyerId)
-        .orElseThrow(() -> new DataNotFoundException("변호사를 찾을 수 없습니다."));
+                .orElseThrow(() -> new DataNotFoundException("변호사를 찾을 수 없습니다."));
     }
 
     // 문의 상세 조회 필요한 id 와 name
-    public LawyerDTO qLawyerInquiry(Integer lawyerIdx){
+    public LawyerDTO qLawyerInquiry(Integer lawyerIdx) {
         LawyerEntity lawyerEntity = lawyerRepository.findById(lawyerIdx).orElse(null);
-        LawyerDTO lawyerDTO = convertLawyerDTO(lawyerEntity);
-        return lawyerDTO;
+        return convertLawyerDTO(lawyerEntity);
     }
+
+    // 변호사 리보드(내가 쓴 글) 조회
+    @Transactional(readOnly = true)
+    public List<ReboardDTO> getMyReboardsForLawyer(Integer lawyerIdx) {
+        if (lawyerIdx == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        return reBoardRepository
+                .findTop5ByLawyerIdxOrderByReboardRegDateDesc(lawyerIdx)
+                .stream()
+                .map(this::convertReboardDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ReBoardEntity -> ReboardDTO 변환
+    private ReboardDTO convertReboardDTO(ReBoardEntity entity) {
+        if (entity == null) return null;
+
+    ReboardDTO dto = new ReboardDTO();
+    dto.setReboardIdx(entity.getReboardIdx());
+    dto.setReboardTitle(entity.getReboardTitle());
+    dto.setReboardContent(entity.getReboardContent());
+    dto.setReboardRegDate(entity.getReboardRegDate());
+
+    // BoardEntity → boardIdx (PK) 꺼내서 넣기
+    if (entity.getBoardEntity() != null) {
+        dto.setBoardIdx(entity.getBoardEntity().getBoardIdx());
+    } else {
+        dto.setBoardIdx(null);
+    }
+
+    // LawyerEntity → lawyerIdx (PK) 꺼내서 넣기
+    if (entity.getLawyerIdx() != null) {
+        dto.setLawyerIdx(entity.getLawyerIdx().getLawyerIdx());
+    } else {
+        dto.setLawyerIdx(null);
+    }
+
+    return dto;
+}
+
 }

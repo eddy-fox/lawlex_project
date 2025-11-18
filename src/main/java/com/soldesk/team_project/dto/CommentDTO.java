@@ -3,12 +3,18 @@ package com.soldesk.team_project.dto;
 import java.time.LocalDate;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @Getter
 @Setter
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentDTO {
 
     private Integer commentIdx;
