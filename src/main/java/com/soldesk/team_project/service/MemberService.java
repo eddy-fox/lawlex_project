@@ -271,23 +271,6 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
     }
 
-    // OAuth2
-    @Transactional
-    public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
-        MemberEntity memberEntity = MemberEntity.builder()
-                .memberId(tempUser.getEmail())
-                .memberPass("{noop}oauth2")
-                .memberName(tempUser.getName())
-                .memberEmail(tempUser.getEmail())
-                .memberPhone(digits(memberDTO.getMemberPhone()))
-                .memberIdnum(digits(memberDTO.getMemberIdnum()))
-                .interestIdx1(memberDTO.getInterestIdx1())
-                .memberActive(1)
-                .provider(tempUser.getProvider())
-                .build();
-        return memberRepository.save(memberEntity);
-    }
-
     // 아이디 찾기 member → lawyer 순서
     public String findId(String memberPhone, String memberIdnum) {
         String phone = digits(memberPhone);
