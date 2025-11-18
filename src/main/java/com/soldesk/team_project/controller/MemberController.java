@@ -41,6 +41,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 // ===== [ADD] gmodify에 interests 바인딩용 =====
