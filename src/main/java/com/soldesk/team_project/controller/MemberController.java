@@ -36,6 +36,7 @@ import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
+import com.soldesk.team_project.service.RankingService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -66,6 +67,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final LawyerService lawyerService;
+    private final RankingService rankingService;
 
     private final MemberRepository memberRepository;
     private final LawyerRepository lawyerRepository;
@@ -387,6 +389,12 @@ public class MemberController {
         Integer lawyerIdx = loginUser.getLawyerIdx();
         List<ReboardDTO> myReboards = lawyerService.getMyReboardsForLawyer(lawyerIdx);
         model.addAttribute("myReboards", myReboards);
+
+        // 🔹 랭킹 계산 (변호사 프로필 페이지와 동일한 방식)
+        int likeRanking = rankingService.getLikeRanking(lawyerIdx);
+        int answerRanking = rankingService.getAnswerRanking(lawyerIdx);
+        model.addAttribute("likeRanking", likeRanking);
+        model.addAttribute("answerRanking", answerRanking);
 
         return "member/linfo";
 
