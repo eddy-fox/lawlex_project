@@ -112,6 +112,12 @@
             return;
           }
           
+          // 일반회원이 PENDING 상태인 경우 alert만 표시하고 채팅방 열지 않음
+          if (role === 'MEMBER' && room.state && room.state.toUpperCase() === 'PENDING') {
+            alert('상담대기중입니다.');
+            return;
+          }
+          
           var url = '/chat/room?roomId=' + room.chatroomIdx;
           var popup = window.open(
             url,
@@ -133,11 +139,20 @@
 
     // 뱃지 업데이트 함수
     function updateBadge() {
+      // 초기 상태: 뱃지는 항상 숨김 상태로 시작
+      if (badge) {
+        badge.hidden = true;
+      }
+      
       if (role === 'MEMBER') {
         fetch('/chat/api/member/rooms/badge')
           .then(function (r) { return r.ok ? r.json() : null; })
           .then(function (data) {
-            if (!data) return;
+            if (!data) {
+              // 데이터가 없으면 뱃지 숨김
+              if (badge) badge.hidden = true;
+              return;
+            }
             // 일반회원: 읽지 않은 메시지 수만 (대기중 방 제외)
             var count = (data.unread || 0);
             if (badge) {
@@ -145,12 +160,15 @@
                 badge.textContent = count;
                 badge.hidden = false;
               } else {
+                // 카운트가 0이면 뱃지 숨김 (채팅 아이콘만 표시)
                 badge.hidden = true;
               }
             }
           })
           .catch(function (err) { 
             console.error('[DEBUG] Badge update error:', err);
+            // 에러 발생 시에도 뱃지 숨김
+            if (badge) badge.hidden = true;
           });
       } else if (role === 'LAWYER') {
         // 변호사: 대기중 방 수 + 읽지 않은 메시지 수
@@ -162,7 +180,11 @@
           })
           .then(function (data) {
             console.log('[DEBUG] Lawyer badge data:', data);
-            if (!data) return;
+            if (!data) {
+              // 데이터가 없으면 뱃지 숨김
+              if (badge) badge.hidden = true;
+              return;
+            }
             var count = (data.pending || 0) + (data.unread || 0);
             console.log('[DEBUG] Lawyer badge count:', count, '(pending:', data.pending, ', unread:', data.unread, ')');
             if (badge) {
@@ -171,6 +193,7 @@
                 badge.hidden = false;
                 console.log('[DEBUG] Badge displayed:', count);
               } else {
+                // 카운트가 0이면 뱃지 숨김 (채팅 아이콘만 표시)
                 badge.hidden = true;
                 console.log('[DEBUG] Badge hidden (count is 0)');
               }
@@ -180,6 +203,8 @@
           })
           .catch(function (err) { 
             console.error('[DEBUG] Badge update error:', err);
+            // 에러 발생 시에도 뱃지 숨김
+            if (badge) badge.hidden = true;
           });
       }
     }
@@ -295,6 +320,12 @@
                   // DECLINED 상태인 경우 alert만 표시하고 채팅방 열지 않음
                   if (room.state && room.state.toUpperCase() === 'DECLINED') {
                     alert('변호사 사정으로 인해 현재 채팅이 불가합니다.');
+                    return;
+                  }
+                  
+                  // 일반회원이 PENDING 상태인 경우 alert만 표시하고 채팅방 열지 않음
+                  if (role === 'MEMBER' && room.state && room.state.toUpperCase() === 'PENDING') {
+                    alert('상담대기중입니다.');
                     return;
                   }
                   
@@ -490,24 +521,43 @@
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
         stompClient.connect({}, function () {
-          console.log('[DEBUG] Badge WebSocket connected');
+          console.log('[DEBUG] Badge WebSocket connected successfully');
           
           if (role === 'MEMBER' && memberIdx) {
             // 일반회원: 자신의 뱃지 업데이트 채널 구독 (사용자별 고유 토픽)
-            stompClient.subscribe('/topic/badge/member/' + memberIdx, function (msg) {
-              console.log('[DEBUG] Badge update received via WebSocket for member:', memberIdx);
+            var topic = '/topic/badge/member/' + memberIdx;
+            console.log('[DEBUG] Subscribing to badge topic:', topic);
+            stompClient.subscribe(topic, function (msg) {
+              console.log('[DEBUG] Badge update received via WebSocket for member:', memberIdx, 'body:', msg.body);
               updateBadge();
             });
           } else if (role === 'LAWYER' && lawyerIdx) {
             // 변호사: 자신의 뱃지 업데이트 채널 구독
-            stompClient.subscribe('/topic/badge/lawyer/' + lawyerIdx, function (msg) {
-              console.log('[DEBUG] Badge update received via WebSocket for lawyer:', lawyerIdx);
+            var topic = '/topic/badge/lawyer/' + lawyerIdx;
+            console.log('[DEBUG] Subscribing to badge topic:', topic);
+            stompClient.subscribe(topic, function (msg) {
+              console.log('[DEBUG] Badge update received via WebSocket for lawyer:', lawyerIdx, 'body:', msg.body);
               updateBadge();
             });
           }
         }, function(error) {
           console.error('[DEBUG] Badge WebSocket connection error:', error);
+          // 연결 실패 시 5초 후 재시도
+          setTimeout(function() {
+            console.log('[DEBUG] Retrying badge WebSocket connection...');
+            connectBadgeWebSocket();
+          }, 5000);
         });
+        
+        // WebSocket 연결 끊김 감지 및 재연결
+        socket.onclose = function() {
+          console.log('[DEBUG] Badge WebSocket closed, attempting to reconnect...');
+          setTimeout(function() {
+            if (stompClient && !stompClient.connected) {
+              connectBadgeWebSocket();
+            }
+          }, 5000);
+        };
       } catch (e) {
         console.error('[DEBUG] Badge WebSocket setup error:', e);
       }

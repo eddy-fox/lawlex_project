@@ -337,6 +337,14 @@ public class MemberController {
                          Model model) {
         if (loginUser == null) return "redirect:/member/login";
         model.addAttribute("loginUser", loginUser);
+        
+        // 일반회원일 경우 MemberDTO 조회하여 포인트 정보 포함
+        if (loginUser.getRole() != null && "MEMBER".equalsIgnoreCase(loginUser.getRole()) 
+            && loginUser.getMemberIdx() != null) {
+            MemberDTO member = memberService.searchSessionMember(loginUser.getMemberIdx());
+            model.addAttribute("member", member);
+        }
+        
         return switch (loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase()) {
             case "MEMBER" -> "member/ginfo";
             case "LAWYER" -> "member/linfo";

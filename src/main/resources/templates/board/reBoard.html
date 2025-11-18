@@ -75,7 +75,7 @@
               <!-- 답변 리스트 (로그인 필요) -->
               <div class="answers-list-wrapper" th:classappend="${loginUser == null ? 'login-required' : ''}">
                 <!-- 비로그인 오버레이 -->
-                <div class="answers-overlay" sec:authorize="isAnonymous()">
+                <div class="answers-overlay" th:if="${loginUser == null}">
                   <div class="overlay-content">
                     <p class="overlay-message">로그인 후에 답변 확인이 가능합니다</p>
                     <a th:href="@{/member/login}" class="overlay-login-btn">로그인하기</a>
@@ -173,6 +173,8 @@
     </div>
   </main>
     <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/reBoard.js}"></script>   
   <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/

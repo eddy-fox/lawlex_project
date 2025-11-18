@@ -40,10 +40,15 @@
       display: flex;
       justify-content: center;
     }
+
+    /* 뉴스게시판 사이드메뉴 위치 조정 */
+    .page-nList .sideMenu {
+      padding-top: 20px;
+    }
     
     .among{
       width: min(950px, 94%);
-      margin: 100px 0px;
+      margin: 20px 0px;
     }
 
     .page-nList .frame {
@@ -278,4 +283,53 @@
     .page-nList .pagination .arrow {
       font-weight: 700;
       color: var(--navy);
+    }
+
+    /* list-top 스타일 - 선만 표시 */
+    .page-nList .list-top {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+
+    /* 제목 숨기기 */
+    .page-nList .list-title {
+      display: none;
+    }
+
+    /* 글쓰기 버튼 스타일 */
+    .page-nList .btn-write {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 20px;
+      background: var(--navy);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 7, 119, 0.1);
+    }
+
+    .page-nList .btn-write:hover {
+      background: #000555;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 7, 119, 0.2);
+    }
+
+    .page-nList .btn-write:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0, 7, 119, 0.1);
+    }
+
+    /* 글쓰기 버튼 아이콘 */
+    .page-nList .btn-write::before {
+      content: "✏️";
+      font-size: 16px;
+      line-height: 1;
     }

@@ -83,7 +83,9 @@
 
         </div>
     </main>
-
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/chatIcon.js}"></script>
 </body>
 <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/

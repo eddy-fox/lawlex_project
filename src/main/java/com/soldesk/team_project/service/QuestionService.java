@@ -54,7 +54,7 @@ public class QuestionService {
         if (questionEntity.getLawyer() != null) {
             questionDTO.setLawyerId(questionEntity.getLawyer().getLawyerId());
         }
-
+        
         return questionDTO;
     }
 

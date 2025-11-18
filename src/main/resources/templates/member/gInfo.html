@@ -50,7 +50,7 @@
           <div class="pane">
             <div class="pane-title">
               <span>포인트</span>
-              <span class="strong-num" th:text="${m.memberPoint}">100 P</span>
+              <span class="strong-num" th:text="${member != null ? member.memberPoint : 0}">100 P</span>
             </div>
             <div class="pill-row">
               <a class="pill-btn" th:href="@{/member/point}">결제하기</a>
@@ -114,6 +114,7 @@
 
   <div class="include" th:replace="~{include/footer :: footer}"></div>
   <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/gInfo.js}"></script>
   <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/

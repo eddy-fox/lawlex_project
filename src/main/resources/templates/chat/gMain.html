@@ -46,9 +46,9 @@
 
         <div class="info">
           <h3 class="name" th:text="${law.name}">변호사</h3>
-          <div class="meta"
-               th:text="'상담가능시간 · ' + (${law.timeRange} ?: '정보없음')">
-            상담가능시간 · 상시
+          <div class="meta">
+            <div>상담가능시간</div>
+            <div th:text="${law.timeRange ?: '정보없음'}">11:00 ~ 14:00</div>
           </div>
         </div>
 
@@ -96,6 +96,18 @@
 
 <script th:src="@{/js/js.js}"></script>
 <script th:src="@{/js/chatIcon.js}"></script>
+<script th:if="${errorMessage != null}" th:inline="javascript">
+  (function() {
+    var errorMsg = decodeURIComponent(/*[[${errorMessage}]]*/ '');
+    if (errorMsg) {
+      alert(errorMsg);
+      // URL에서 error 파라미터 제거 (뒤로가기 시 alert가 다시 뜨지 않도록)
+      var url = new URL(window.location.href);
+      url.searchParams.delete('error');
+      window.history.replaceState({}, '', url);
+    }
+  })();
+</script>
 <script th:if="${successMessage != null}" th:inline="javascript">
   (function() {
     var message = decodeURIComponent(/*[[${successMessage}]]*/ '');

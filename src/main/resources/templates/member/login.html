@@ -55,14 +55,12 @@
           <div class="social-buttons">
             <button type="button" class="social-btn google-btn" aria-label="구글 로그인"
                     onclick="window.location.href='/oauth2/authorization/google'">
-              <img src="/assets/icons/btn_google.svg" alt="Google" style="padding-right:10px;">
-              구글로 시작하기
+              <img class="logoImg" th:src="@{/img/google-logo.png}" alt="Google">
             </button>
 
             <button type="button" class="social-btn naver-btn" aria-label="네이버 로그인"
                     onclick="window.location.href='/oauth2/authorization/naver'">
-              <img src="/assets/icons/btn_naver.svg" alt="Naver" style="padding-right:10px;">
-              네이버로 시작하기
+              <img class="logoImg" th:src="@{/img/naver-logo.png}" alt="Naver">
             </button>
           </div>
         </section>
@@ -70,6 +68,8 @@
     </div>
   </main>
   <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/login.js}"></script>
   <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/
