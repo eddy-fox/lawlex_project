@@ -676,6 +676,63 @@
     border-color: var(--navy);
 }
 
+/* 답변 리스트 래퍼 */
+.answers-list-wrapper {
+    position: relative;
+}
+
+.answers-list-wrapper.login-required {
+    position: relative;
+}
+
+/* 비로그인 오버레이 */
+.answers-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 12px;
+}
+
+.overlay-content {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.overlay-message {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 20px;
+}
+
+.overlay-login-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--navy);
+    color: #fff;
+    border: 1px solid var(--navy);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.overlay-login-btn:hover {
+    background: var(--navy-700);
+    border-color: var(--navy-700);
+    color: #fff;
+}
+
 /* 답변 아이템 */
 .answers-list {
     display: flex;

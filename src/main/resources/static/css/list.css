@@ -133,6 +133,17 @@
     background: #fafcff
   }
 
+  /* 글 제목 링크 색상 */
+  tbody td a {
+    color: var(--ink) !important;
+    text-decoration: none;
+  }
+
+  tbody td a:hover {
+    color: var(--ink) !important;
+    text-decoration: underline;
+  }
+
   a.link {
     color: inherit;
     text-decoration: none
@@ -159,6 +170,58 @@
     font-weight: 600;
     color: #1f2937;
     user-select: none
+  }
+
+  .pagination {
+    display: flex !important;
+    flex-direction: row !important;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .page-item {
+    display: inline-block;
+  }
+
+  .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .page-link:hover {
+    background: var(--navy) !important;
+    color: #fff !important;
+    border-color: var(--navy) !important;
+  }
+
+  .page-item.active .page-link {
+    background: var(--navy) !important;
+    color: #fff !important;
+    border-color: var(--navy) !important;
+    font-weight: 700;
+  }
+
+  .page-item.disabled .page-link {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .number .angle {
