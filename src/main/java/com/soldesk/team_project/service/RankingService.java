@@ -70,4 +70,50 @@ public class RankingService {
         }
         return rankingMap;
     }
+
+    /**
+     * 변호사의 좋아요 순 랭킹 계산 (활성 변호사만 대상)
+     */
+    public int getLikeRanking(Integer lawyerIdx) {
+        // 활성 변호사만 조회하여 정렬
+        List<LawyerEntity> allLawyers = rankingRepository.findAll()
+            .stream()
+            .filter(l -> l.getLawyerActive() != null && l.getLawyerActive() == 1)
+            .sorted((a, b) -> {
+                Integer likeA = a.getLawyerLike() != null ? a.getLawyerLike() : 0;
+                Integer likeB = b.getLawyerLike() != null ? b.getLawyerLike() : 0;
+                return likeB.compareTo(likeA); // 내림차순
+            })
+            .collect(Collectors.toList());
+        
+        for (int i = 0; i < allLawyers.size(); i++) {
+            if (allLawyers.get(i).getLawyerIdx().equals(lawyerIdx)) {
+                return i + 1; // 1부터 시작하는 순위
+            }
+        }
+        return 0; // 찾지 못한 경우
+    }
+
+    /**
+     * 변호사의 답변수 순 랭킹 계산 (활성 변호사만 대상)
+     */
+    public int getAnswerRanking(Integer lawyerIdx) {
+        // 활성 변호사만 조회하여 정렬
+        List<LawyerEntity> allLawyers = rankingRepository.findAll()
+            .stream()
+            .filter(l -> l.getLawyerActive() != null && l.getLawyerActive() == 1)
+            .sorted((a, b) -> {
+                Integer answerA = a.getLawyerAnswerCnt() != null ? a.getLawyerAnswerCnt() : 0;
+                Integer answerB = b.getLawyerAnswerCnt() != null ? b.getLawyerAnswerCnt() : 0;
+                return answerB.compareTo(answerA); // 내림차순
+            })
+            .collect(Collectors.toList());
+        
+        for (int i = 0; i < allLawyers.size(); i++) {
+            if (allLawyers.get(i).getLawyerIdx().equals(lawyerIdx)) {
+                return i + 1; // 1부터 시작하는 순위
+            }
+        }
+        return 0; // 찾지 못한 경우
+    }
 }

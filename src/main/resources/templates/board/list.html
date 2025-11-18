@@ -14,7 +14,7 @@
       <div class="wrap">
       <div class="backdrop">
         <div class="top">
-          <a th:href="@{/board/create}" id="write" class="btn">글쓰기</a>
+          <a th:href="@{/board/create}" id="write" class="btn" th:if="${isAdmin == null or !isAdmin}">글쓰기</a>
         </div>
 
         <div class="card">

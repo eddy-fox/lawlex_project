@@ -20,7 +20,7 @@ public class PythonService {
         try {
             // Python 스크립트 경로
             String scriptPath = String.format(
-                "C:\\SOLDESK\\2nd-project\\YM\\lawlex_project\\src\\main\\java\\com\\soldesk\\team_project\\python\\%s",
+                "C:\\Users\\eddy_\\Documents\\2ndTeamProject\\team-project\\src\\main\\java\\com\\soldesk\\team_project\\python\\%s",
                 scriptName
             );
 

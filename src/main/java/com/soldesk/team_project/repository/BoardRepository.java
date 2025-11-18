@@ -57,6 +57,13 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     // 조회수 높은 순서로 조회 (상위 5개)
     List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
 
+    // 회원별 상담글 조회
+    @Query("SELECT b FROM BoardEntity b WHERE b.member.memberIdx = :memberIdx " +
+           "AND (b.boardActive = 1 OR b.boardActive IS NULL) " +
+           "ORDER BY b.boardRegDate DESC")
+    Page<BoardEntity> findByMemberMemberIdxOrderByBoardRegDateDesc(
+        @Param("memberIdx") Integer memberIdx, 
+        Pageable pageable);
 
            
 }

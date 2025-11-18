@@ -55,7 +55,8 @@ public class BoardController {
     public String list(Model model, 
     @RequestParam(value="page", defaultValue="0") int page,
     @RequestParam(value="kw", defaultValue="") String kw,
-    @RequestParam(value="interestIdx", required = false) Integer interestIdx) {
+    @RequestParam(value="interestIdx", required = false) Integer interestIdx,
+    HttpSession session) {
 
         if(interestIdx == null) {
             interestIdx = 1;
@@ -69,6 +70,11 @@ public class BoardController {
         int currentBlock = page / 10;
         int startPage = currentBlock * 10;
         int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+        
+        // 관리자 권한 확인
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null;
+        model.addAttribute("isAdmin", isAdmin);
         
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
@@ -86,6 +92,16 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
+        
+        // interestIdx 추가 (사이드메뉴 강조 표시용)
+        Integer interestIdx = null;
+        if (boardEntity.getInterest() != null) {
+            interestIdx = boardEntity.getInterest().getInterestIdx();
+        }
+        if (interestIdx == null) {
+            interestIdx = 1; // 기본값
+        }
+        model.addAttribute("interestIdx", interestIdx);
         
         // 로그인 사용자 정보 추가
         model.addAttribute("loginUser", loginUser);

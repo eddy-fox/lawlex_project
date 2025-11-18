@@ -275,13 +275,39 @@
 
   /* 수정/삭제 버튼 */
   .edit {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
       margin-bottom: 30px;
   }
 
   .edit .link {
-      margin-right: 12px;
+      box-sizing: border-box;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
       font-size: 14px;
-      color: var(--navy);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .edit .link:hover {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+  }
+
+  .edit .link.delete:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
   }
 
   /* 답변 영역 */
@@ -821,18 +847,33 @@
   }
 
   .answer-reply-btn {
+      box-sizing: border-box;
       padding: 6px 12px;
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 8px;
       color: var(--ink);
       text-decoration: none;
       font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
   }
 
   .answer-reply-btn:hover {
-      background: var(--soft);
+      background: var(--navy);
       border-color: var(--navy);
+      color: #fff;
+  }
+
+  .answer-reply-btn.delete:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
   }
 
   @media (max-width: 760px) {
