@@ -213,6 +213,7 @@ public class BoardService {
         
         this.boardRepository.save(q);
 
+ 
     }
 
     public void modify(BoardEntity boardEntity, String boardTitle, String boardContent) {

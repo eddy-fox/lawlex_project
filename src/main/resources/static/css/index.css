@@ -1,7 +1,24 @@
-@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
-@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap;}
-@font-face{font-family:'Gooorm Sans';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap;}
-
+@font-face{
+  font-family:'Gooorm Sans';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/goorm-sans-regular.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Gooorm Sans';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/goorm-sans-medium.woff2') format('woff2');
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Gooorm Sans';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/goorm-sans-bold.woff2') format('woff2');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
 :root{--navy:#000777;--navy-700:#001366;--ink:#0f172a;--muted:#667085;--paper:#ffffff;--line:#e2e6ff;--soft:#eef2ff;--shadow:0 2px 8px rgba(0,0,0,.04);--radius-card:12px;}
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -15,7 +32,92 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
 .page-index .wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
 .page-index section{padding:60px 0;background:transparent;}
 .page-index .bg-gray{background:#f8f9fa;}
-.page-index .section-ttl{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:32px;text-align:center;letter-spacing:-0.03em;line-height:1.3;}
+.page-index .section-ttl{font-size:30px;font-weight:700;color:var(--ink);margin-bottom:32px;text-align:center;letter-spacing:-0.03em;line-height:1.3;}
+
+.page-index a.aLink,
+.page-index a.aLink:link,
+.page-index a.aLink:visited {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.page-index a.aLink:hover {
+  color: var(--navy);
+  text-decoration: none;
+}
+/* ===== 변호사 ===== */
+.page-index .group{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.page-index .card{
+  width:300px;
+  height:450px;
+  border:1px solid var(--navy);
+  border-radius:10px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:15px;
+  background:#fff;
+}
+.page-index .card:hover{
+  transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.08);
+}
+
+.page-index .lImg{
+  width:150px;
+  height:150px;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.page-index .lImg img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.page-index .name,
+.page-index .interest,
+.page-index .time{
+  text-align:center;
+}
+.page-index .name{
+  font: 700;
+  font-size: 20px;
+}
+
+.page-index .time label{
+  margin:0 8px;
+  font-size:14px;
+}
+
+.page-index .time input{
+  margin-right:4px;
+}
+
+.page-index .cardBtn{
+  background-color:var(--navy);
+  color:var(--paper);
+  padding:8px 16px;
+  border-radius:999px;
+  text-align:center;
+  text-decoration:none;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:auto;
+  min-width:120px;
+  font-size:14px;
+}
+
 
 /* ===== 버튼 ===== */
 .page-index .btn{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;line-height:1.4;font-size:16px;font-weight:500;padding:14px 28px;transition:all .2s;border:0;box-sizing:border-box;}
@@ -29,7 +131,7 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
 .page-index .inner{max-width:1200px;margin:0 auto;padding:0 20px;position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;}
 .page-index .content{flex:1;display:none;justify-content:center;align-items:center;}
 .page-index .content.active{display:flex;}
-.page-index .content a{display:flex;justify-content:center;align-items:center;width:100%;height:100%;}
+.page-index .content .aLink{display:flex;justify-content:center;align-items:center;width:100%;height:100%;}
 .page-index .content img{display:block;margin:0 auto;}
 .page-index .ttl-big{font-size:48px;font-weight:700;color:var(--ink);margin-bottom:20px;line-height:1.2;letter-spacing:-0.03em;}
 @media(min-width:1024px){.page-index .ttl-big{font-size:56px;}}
@@ -58,23 +160,8 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
 .page-index .cell-title{text-align:left;color:var(--ink);letter-spacing:-0.02em;}
 .page-index .badge{background:var(--navy);color:#fff;padding:5px 10px;border-radius:4px;font-size:12px;font-weight:500;line-height:1.3;display:inline-block; box-sizing: border-box; width: 100px;}
 
-/* ===== 변호사 카드 ===== */
-.page-index .lawyer-wrap{background:#f8f9fa;}
-.page-index .lawyer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;justify-content:center;}
-.page-index .lawyer-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);padding:32px 24px;text-align:center;transition:all .2s;box-shadow:var(--shadow);}
-.page-index .lawyer-card.featured{background:var(--navy);color:#fff;transform:scale(1.03);box-shadow:0 12px 32px rgba(0,7,119,.28);border:1px solid var(--navy);}
-.page-index .lawyer-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.08);}
-.page-index .lawyer-card.featured:hover{transform:scale(1.03) translateY(-4px);}
-.page-index .lawyer-head{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.03em;color:inherit;line-height:1.3;}
-.page-index .lawyer-name{font-size:16px;font-weight:400;margin-left:4px;color:inherit;}
-.page-index .lawyer-exp{font-size:14px;color:#6b7280;margin-bottom:20px;letter-spacing:-0.02em;line-height:1.4;}
-.page-index .lawyer-card.featured .lawyer-exp{color:rgba(255,255,255,.8);}
-.page-index .lawyer-stats{margin:20px auto;text-align:left;max-width:200px;}
-.page-index .lawyer-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;line-height:1.4;color:inherit;}
-.page-index .lawyer-ic{width:16px;height:16px;}
-.page-index .lawyer-btn{background:var(--navy);color:#fff;border:none;padding:10px 24px;border-radius:24px;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px;transition:all .2s;line-height:1.4;}
-.page-index .lawyer-card.featured .lawyer-btn{background:#fff;color:var(--navy);}
-.page-index .lawyer-btn:hover{opacity:.9;transform:scale(1.05);}
+
+
 
 /* ===== 법률 정보 카드 ===== */
 .page-index .legal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;justify-content:center;}
@@ -116,7 +203,7 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
   .page-index .inner{flex-direction:column;align-items:flex-start;}
   .page-index .nav-btn{display:none;}
   .page-index section{padding:40px 0;}
-  .page-index .section-ttl{font-size:20px;}
+  .page-index .section-ttl{font-size:30px;}
   .page-index .lawyer-grid,.page-index .legal-grid{grid-template-columns:1fr;}
   .page-index .lawyer-card.featured{transform:scale(1);}
   .page-index .lawyer-stats{text-align:left;margin-left:0;margin-right:0;}

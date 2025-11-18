@@ -6,9 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
-import com.soldesk.team_project.entity.MemberEntity;
 
 @Repository
 public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
