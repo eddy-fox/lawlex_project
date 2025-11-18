@@ -63,7 +63,7 @@
                 </tr>
                 <tr onclick="location.href='#'" style="cursor: pointer;" th:each="nq : ${newQuestions}">
                     <td class="center"><span th:text="${nq.qIdx}"></span></td>
-                    <td class="center"><span th:text="${nq.memberId}"></span></td>
+                    <td class="center"><span th:text="${nq.infoId != null ? nq.infoId : '-'}"></span></td>
                     <td><span th:text="${nq.qTitle}"></span></td>
                     <td class="center"><span th:text="${nq.qRegDate}"></span></td>
                     <td class="center">
@@ -99,7 +99,7 @@
                 </tr>
                 <tr onclick="location.href='#'" style="cursor: pointer;" th:each="cq : ${completedQuestions}">
                     <td class="center"><span th:text="${cq.qIdx}"></span></td>
-                    <td class="center"><span th:text="${cq.memberId}"></span></td>
+                    <td class="center"><span th:text="${cq.infoId != null ? cq.infoId : '-'}"></span></td>
                     <td><span th:text="${cq.qTitle}"></span></td>
                     <td class="center"><span th:text="${cq.qRegDate}"></span></td>
                     <td class="center">
