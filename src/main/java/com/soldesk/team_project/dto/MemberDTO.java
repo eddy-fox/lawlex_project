@@ -27,5 +27,7 @@ public class MemberDTO {
     public Integer interestIdx1; 
     public Integer interestIdx2; 
     public Integer interestIdx3;
+    private String memberProvider;
+    private String memberProviderId;
  
 }

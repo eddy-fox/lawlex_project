@@ -49,7 +49,7 @@
           <div class="pane">
             <div class="pane-title">
               <span>포인트</span>
-              <span class="strong-num">100 P</span>
+              <span class="strong-num" th:text="${member != null ? member.memberPoint : 0}">100 P</span>
             </div>
             <div class="pill-row">
               <a class="pill-btn" th:href="@{/member/point}">결제하기</a>
@@ -75,7 +75,7 @@
       <section class="list-card">
         <div class="list-title">
           <span>내가 쓴 글</span>
-          <a class="link-more" href="#">전체보기</a>
+          <a class="link-more" th:href="@{/member/mypage/myPosts}">전체보기</a>
         </div>
 
         <div class="item-list">
@@ -128,6 +128,7 @@
 
   <div class="include" th:replace="~{include/footer :: footer}"></div>
   <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/gInfo.js}"></script>
 </body>
 </html>

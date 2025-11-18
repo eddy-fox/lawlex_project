@@ -206,6 +206,13 @@
       font-size: 50px;
     }
 
+    .page-lInfo .pane-subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:4px;
+      text-align:center;
+    }
+
     .page-lInfo .pill-row{
       display:flex;
       justify-content: flex-end;

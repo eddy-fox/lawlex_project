@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${lawyer.lawyerName} + ' 변호사 프로필'">변호사 프로필</title>
+    <link rel="stylesheet" th:href="@{/css/lInfo.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+  <main class="page-lInfo">
+    <div class="container">
+      <h1>변호사 프로필</h1>
+      <section class="card">
+        <div class="profile-head">
+          <div class="avatar">
+            <img th:if="${lawyer.lawyerImgPath != null}" 
+                 th:src="${lawyer.lawyerImgPath}" 
+                 alt="변호사 사진"
+                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <span th:if="${lawyer.lawyerImgPath == null}">사진</span>
+          </div>
+
+          <div class="info">
+            <div class="nickname">
+              <div class="name" th:text="${lawyer.lawyerName}">김변호</div>
+              <div class="tag">변호사</div>
+            </div>
+
+            <div class="meta-line">
+              <div class="field"><label>아이디</label><span th:text="${lawyer.lawyerId}">law001</span></div>
+              <div class="field" th:if="${lawyer.lawyerPhone != null}">
+                <label>연락처</label><span th:text="${lawyer.lawyerPhone}">010-0000-0000</span>
+              </div>
+              <div class="field" th:if="${lawyer.lawyerAddress != null}">
+                <label>사무실</label><span th:text="${lawyer.lawyerAddress}">서울시 종로구 …</span>
+              </div>
+              <div class="field" th:if="${lawyer.interest != null}">
+                <label>전문분야</label><span th:text="${lawyer.interest.interestName}">분야</span>
+              </div>
+            </div>
+            
+            <div class="meta-line" th:if="${lawyer.lawyerComment != null}">
+              <div class="field"><label>한줄소개</label><span th:text="${lawyer.lawyerComment}">변호사 소개</span></div>
+            </div>
+          </div>
+
+          <div class="actions-top">
+            <button class="btn" type="button" id="consultBtn" 
+                    th:data-lawyer-idx="${lawyerIdx}"
+                    th:data-can-request-30="${canRequest30}"
+                    th:data-can-request-60="${canRequest60}">
+              상담하기
+            </button>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="pane">
+            <div class="pane-title">
+              <span>좋아요</span>
+              <span class="strong-num" th:text="${lawyer.lawyerLike != null ? lawyer.lawyerLike : 0} + ' 개'">27 개</span>
+            </div>
+            <div class="pane-subtitle" th:if="${likeRanking > 0}">
+              좋아요 순 랭킹 <span th:text="${likeRanking} + '위'">0위</span>
+            </div>
+          </div>
+
+          <div class="pane">
+            <div class="pane-title">
+              <span>답변수</span>
+              <span class="strong-num" th:text="${lawyer.lawyerAnswerCnt != null ? lawyer.lawyerAnswerCnt : 0} + ' 개'">0 개</span>
+            </div>
+            <div class="pane-subtitle" th:if="${answerRanking > 0}">
+              답변수 순 랭킹 <span th:text="${answerRanking} + '위'">0위</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="list-card">
+        <div class="list-title">
+          <span>내가 쓴 글</span>
+          <a class="link-more" th:href="@{/newsBoard/list(category=4)}">전체보기</a>
+        </div>
+
+        <div class="item-list">
+          <!-- 칼럼 글 목록은 추후 추가 가능 -->
+          <div class="row-item">
+            <div class="row-main">작성한 글이 없습니다.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
+  <script>
+    (function() {
+      const consultBtn = document.getElementById('consultBtn');
+      if (consultBtn) {
+        consultBtn.addEventListener('click', function() {
+          const canRequest30 = this.getAttribute('data-can-request-30') === 'true';
+          const canRequest60 = this.getAttribute('data-can-request-60') === 'true';
+          const lawyerIdx = this.getAttribute('data-lawyer-idx');
+          
+          if (!canRequest30 && !canRequest60) {
+            alert('지금은 상담가능시간이 아닙니다');
+            return;
+          }
+          
+          // 상담하기 페이지로 이동 (추후 구현)
+          // window.location.href = '/chat/request?lawyerIdx=' + lawyerIdx;
+          alert('상담 신청 기능은 추후 구현 예정입니다.');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
+

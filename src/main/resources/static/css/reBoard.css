@@ -1,874 +1,902 @@
   @font-face {
-    font-family: 'Gooorm Sans';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap
+      font-family: 'Gooorm Sans';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-400.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap
   }
 
   @font-face {
-    font-family: 'Gooorm Sans';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap
+      font-family: 'Gooorm Sans';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-500.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap
   }
 
   @font-face {
-    font-family: 'Gooorm Sans';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap
+      font-family: 'Gooorm Sans';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/gooorm-sans-700.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap
   }
 
   :root {
-    --navy: #000777;
-    --navy-700: #001366;
-    --ink: #0f172a;
-    --muted: #667085;
-    --paper: #ffffff;
-    --back: #f3f5ff;
-    --line: #e2e6ff;
-    --soft: #eef2ff;
-    --chip: #f8fafc;
-    --shadow: 0 2px 8px rgba(0, 0, 0, .04);
-    --radius: 12px;
+      --navy: #000777;
+      --navy-700: #001366;
+      --ink: #0f172a;
+      --muted: #667085;
+      --paper: #ffffff;
+      --back: #f3f5ff;
+      --line: #e2e6ff;
+      --soft: #eef2ff;
+      --chip: #f8fafc;
+      --shadow: 0 2px 8px rgba(0, 0, 0, .04);
+      --radius: 12px;
   }
 
-  * {
-    box-sizing: border-box
+  .page-reBoard * {
+      box-sizing: border-box
   }
 
   body {
-    margin: 0;
-    color: var(--ink);
-    background: var(--paper);
-    font-family: "Gooorm Sans", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Gooorm Sans", "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, sans-serif;
   }
 
   .page-reBoard {
-    display: flex;
-    justify-content: center;
+      display: flex;
+      justify-content: center;
   }
 
-  .wrap {
-    width: min(1000px, 94%);
-    margin: 150px 0px;
-  }
-
-  .backdrop {
-    background: var(--back);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 14px
+  .page-reBoard .wrap {
+      width: min(900px, 94%);
+      margin: 150px 0px;
   }
 
   .card {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    box-shadow: var(--shadow)
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow)
   }
 
   .inner {
-    padding: 22px
+      padding: 22px
   }
 
   .post-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 6px
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 6px
   }
 
   .post-meta {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 16px
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px
   }
 
   .post-body {
-    white-space: pre-line;
-    line-height: 1.9
+      white-space: pre-line;
+      line-height: 1.9
   }
 
   .note {
-    background: var(--soft);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 16px;
-    margin-top: 16px
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px
   }
 
   .note-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px
   }
 
   .badge {
-    font-size: 12px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 6px 10px;
-    background: #fff
+      font-size: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fff
   }
 
   .btn {
-    height: 36px;
-    padding: 0 16px;
-    border-radius: 10px;
-    background: var(--navy);
-    color: #fff;
-    border: 1px solid var(--navy);
-    font-weight: 700;
-    cursor: pointer
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: #fff;
+      border: 1px solid var(--navy);
+      font-weight: 700;
+      cursor: pointer
   }
 
   .btn:hover {
-    background: var(--navy-700);
-    border-color: var(--navy-700)
+      background: var(--navy-700);
+      border-color: var(--navy-700)
   }
 
   .textarea {
-    width: 100%;
-    min-height: 160px;
-    border: 1.6px solid var(--line);
-    border-radius: 10px;
-    padding: 12px;
-    background: #fff;
-    outline: none;
-    resize: none;
-    margin-top: 10px
+      width: 100%;
+      min-height: 160px;
+      border: 1.6px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+      outline: none;
+      resize: none;
+      margin-top: 10px
   }
 
   .counter {
-    font-size: 12px;
-    color: var(--muted);
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 6px
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px
   }
 
   .ok {
-    color: var(--navy);
-    font-weight: 700
+      color: var(--navy);
+      font-weight: 700
   }
 
   .actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 8px
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 8px
   }
 
   .ghost {
-    background: #fff;
-    color: #111;
-    border: 1px solid var(--line)
+      background: #fff;
+      color: #111;
+      border: 1px solid var(--line)
   }
 
   .cmt {
-    margin-top: 10px;
-    border: 1px solid #d1d5db;
-    background: var(--soft);
-    border-radius: 10px;
-    padding: 12px
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      background: var(--soft);
+      border-radius: 10px;
+      padding: 12px
   }
 
   .cmt-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    gap: 8px;
-    align-items: flex-end;
-    justify-content: center;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 8px;
+      align-items: flex-end;
+      justify-content: center;
   }
 
   .cmt-avatar {
-    width: 72px;
-    aspect-ratio: 3 / 4;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-size: 12px;
+      width: 72px;
+      aspect-ratio: 3 / 4;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 12px;
   }
 
   .cmt-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
   }
 
   .chip {
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    height: 34;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      height: 34;
   }
 
   .cmt-body {
-    margin-top: 10px;
-    background: #fff;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 12px
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 12px
   }
 
   .cmt-body ol {
-    margin: 0;
-    padding-left: 18px
+      margin: 0;
+      padding-left: 18px
   }
 
   .cmt-body li {
-    line-height: 1.7
+      line-height: 1.7
   }
 
   .hidden {
-    display: none
+      display: none
   }
 
   @media (max-width:760px) {
-    .cmt-head {
-      grid-template-columns: auto 1fr;
-      grid-auto-rows: min-content;
-      gap: 6px
-    }
+      .cmt-head {
+          grid-template-columns: auto 1fr;
+          grid-auto-rows: min-content;
+          gap: 6px
+      }
 
-    .btn {
-      height: 34px;
-      padding: 0 14px
-    }
+      .btn {
+          height: 34px;
+          padding: 0 14px
+      }
   }
 
   /* =========================== */
-/* 게시글, 답변, 작성폼 스타일 */
-/* =========================== */
-
-/* 게시글 본문 */
-.inner {
-    padding: 22px;
-}
-
-.post-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.post-meta {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 16px;
-}
-
-.card-text {
-    font-size: 16px;
-    line-height: 1.8;
-    white-space: pre-line;
-    margin-bottom: 30px;
-}
-
-/* 수정/삭제 버튼 */
-.edit {
-    margin-bottom: 30px;
-}
-
-.edit .link {
-    margin-right: 12px;
-    font-size: 14px;
-    color: var(--navy);
-}
-
-/* 답변 영역 */
-.answer-block {
-    background: var(--chip);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    box-shadow: var(--shadow);
-}
-
-.answer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.answer-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.lawyer-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--navy);
-}
-
-.answer-date {
-    font-size: 12px;
-    color: var(--muted);
-}
-
-.recommend-btn {
-    padding: 6px 14px;
-    font-size: 13px;
-    border-radius: 8px;
-    background: #e8eefc;
-    border: 1px solid #a9bdf4;
-    cursor: pointer;
-}
-
-.recommend-btn:hover {
-    background: #dce7ff;
-}
-
-.answer-content {
-    font-size: 15px;
-    line-height: 1.7;
-    margin-top: 12px;
-}
-
-/* 답변 작성 폼 */
-.my-3 {
-    margin-top: 40px;
-    width: 100%;
-}
-
-.my-3 .form-control,
-.my-3 textarea {
-    width: 100%;
-    font-size: 15px;
-    line-height: 1.6;
-    border-radius: 10px;
-    border: 1px solid var(--line);
-    padding: 10px 12px;
-    margin-bottom: 14px;
-    resize: vertical;
-}
-
-.my-3 input[type="submit"] {
-    padding: 10px 22px;
-    border-radius: 10px;
-    background: var(--navy);
-    border: 1px solid var(--navy);
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.my-3 input[type="submit"]:hover {
-    background: var(--navy-700);
-    border-color: var(--navy-700);
-}
-
-/* 전체 레이아웃 */
-.page-reBoard .wrap {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.page-reBoard .backdrop {
-    width: 900px;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* 게시글 기본 스타일 */
-.inner {
-    width: 100%;
-    margin-bottom: 40px;
-}
-
-.post-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.post-meta {
-    color: #777;
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-
-.card-text {
-    font-size: 17px;
-    line-height: 1.7;
-    margin-bottom: 30px;
-}
-
-/* 수정/삭제 버튼 */
-.edit {
-    margin-bottom: 40px;
-}
-
-.edit .link {
-    margin-right: 15px;
-    color: #4876ef;
-}
-
-/* ▽▽▽ 답변 영역 스타일 ▽▽▽ */
-.answer-block {
-    background: #f8fafc;
-    padding: 25px;
-    border-radius: 10px;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    border-left: 6px solid #4f80ff;
-}
-
-.answer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.answer-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.lawyer-name {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.answer-date {
-    font-size: 13px;
-    color: #777;
-}
-
-.recommend-btn {
-    padding: 8px 15px;
-    background: #e8eefc;
-    border: 1px solid #a9bdf4;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.recommend-btn:hover {
-    background: #dce7ff;
-}
-
-/* 답변 내용 */
-.answer-content {
-    margin-top: 15px;
-    font-size: 16px;
-    line-height: 1.7;
-}
-
-/* ▽▽▽ 답변 작성 폼 ▽▽▽ */
-.my-3 {
-    margin-top: 40px;
-    width: 100%;
-}
-
-.form-control {
-    width: 100%;
-    resize: vertical;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-
-.btn-primary {
-    padding: 10px 20px;
-    border: none;
-    background: #4f80ff;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background: #3b6af2;
-}
-
-/* =========================== */
-/* 답변 작성 및 목록 스타일 */
-/* =========================== */
-
-/* 답변 작성 섹션 */
-.answer-input-section {
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 1px solid var(--line);
-}
-
-.btn-answer-toggle {
-    padding: 10px 20px;
-    background: var(--navy);
-    color: #fff;
-    border: 1px solid var(--navy);
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.btn-answer-toggle:hover {
-    background: var(--navy-700);
-    border-color: var(--navy-700);
-}
-
-.answer-form-wrapper {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    margin-top: 16px;
-    margin-bottom: 24px;
-}
-
-.answer-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--navy);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    flex-shrink: 0;
-    overflow: hidden;
-}
-
-.lawyer-profile-img-small {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.answer-form {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.answer-textarea {
-    flex: 1;
-    min-height: 80px;
-    padding: 12px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    resize: vertical;
-    font-size: 14px;
-    outline: none;
-    font-family: inherit;
-}
-
-.answer-textarea:focus {
-    border-color: var(--navy);
-    box-shadow: 0 0 0 2px rgba(0, 7, 119, 0.1);
-}
-
-.answer-textarea:disabled {
-    background: #f5f5f5;
-    cursor: not-allowed;
-}
-
-.answer-form-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-}
-
-.btn-answer-submit {
-    padding: 10px 24px;
-    background: var(--navy);
-    color: #fff;
-    border: 1px solid var(--navy);
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.btn-answer-submit:hover {
-    background: var(--navy-700);
-    border-color: var(--navy-700);
-}
-
-.btn-answer-cancel {
-    padding: 10px 24px;
-    background: #fff;
-    color: var(--ink);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.btn-answer-cancel:hover {
-    background: var(--soft);
-    border-color: var(--navy);
-}
-
-/* 답변 목록 섹션 */
-.answers-section {
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 1px solid var(--line);
-}
-
-.answers-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.answers-header-left {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.answers-count {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--ink);
-}
-
-.answers-sort {
-    display: flex;
-    gap: 8px;
-}
-
-.sort-select {
-    padding: 6px 12px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: #fff;
-    font-size: 14px;
-    outline: none;
-    cursor: pointer;
-}
-
-.sort-select:focus {
-    border-color: var(--navy);
-}
-
-/* 답변 리스트 래퍼 */
-.answers-list-wrapper {
-    position: relative;
-}
-
-.answers-list-wrapper.login-required {
-    position: relative;
-}
-
-/* 비로그인 오버레이 */
-.answers-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    border-radius: 12px;
-}
-
-.overlay-content {
-    text-align: center;
-    padding: 40px 20px;
-}
-
-.overlay-message {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--ink);
-    margin-bottom: 20px;
-}
-
-.overlay-login-btn {
-    display: inline-block;
-    padding: 12px 24px;
-    background: var(--navy);
-    color: #fff;
-    border: 1px solid var(--navy);
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.overlay-login-btn:hover {
-    background: var(--navy-700);
-    border-color: var(--navy-700);
-    color: #fff;
-}
-
-/* 답변 아이템 */
-.answers-list {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.answer-item {
-    display: flex;
-    gap: 16px;
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-}
-
-.answer-avatar-large {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--navy);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 24px;
-    flex-shrink: 0;
-    overflow: hidden;
-}
-
-.lawyer-profile-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.answer-content-wrapper {
-    flex: 1;
-}
-
-.answer-header {
-    margin-bottom: 12px;
-}
-
-.answer-author {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.answer-author-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--ink);
-}
-
-.answer-date {
-    font-size: 13px;
-    color: var(--muted);
-}
-
-.answer-content {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--ink);
-    white-space: pre-line;
-    margin-bottom: 16px;
-}
-
-.answer-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.recommend-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #e8eefc;
-    border: 1px solid #a9bdf4;
-    border-radius: 6px;
-    color: var(--navy);
-    text-decoration: none;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.recommend-link:hover {
-    background: #dce7ff;
-}
-
-.recommend-count {
-    font-weight: 700;
-}
-
-.answer-reply-btn {
-    padding: 6px 12px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    color: var(--ink);
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.answer-reply-btn:hover {
-    background: var(--soft);
-    border-color: var(--navy);
-}
-
-@media (max-width: 760px) {
-    .answer-input-header {
-        flex-direction: column;
-    }
-
-    .answer-form {
-        flex-direction: column;
-    }
-
-    .btn-answer-submit {
-        width: 100%;
-        height: 44px;
-    }
-
-    .answer-item {
-        flex-direction: column;
-    }
-
-    .answer-avatar-large {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-    }
-}
-
+  /* 게시글, 답변, 작성폼 스타일 */
+  /* =========================== */
+
+  /* 게시글 본문 */
+  .inner {
+      padding: 22px;
+  }
+
+  .post-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+  }
+
+  .post-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+  }
+
+  .card-text {
+      font-size: 16px;
+      line-height: 1.8;
+      white-space: pre-line;
+      margin-bottom: 30px;
+  }
+
+  /* 수정/삭제 버튼 */
+  .edit {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-bottom: 30px;
+  }
+
+  .edit .link {
+      box-sizing: border-box;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .edit .link:hover {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+  }
+
+  .edit .link.delete:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+  }
+
+  /* 답변 영역 */
+  .answer-block {
+      background: var(--chip);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow);
+  }
+
+  .answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+  }
+
+  .answer-info {
+      display: flex;
+      flex-direction: column;
+  }
+
+  .lawyer-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+  }
+
+  .answer-date {
+      font-size: 12px;
+      color: var(--muted);
+  }
+
+  .recommend-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      border-radius: 8px;
+      background: #e8eefc;
+      border: 1px solid #a9bdf4;
+      cursor: pointer;
+  }
+
+  .recommend-btn:hover {
+      background: #dce7ff;
+  }
+
+  .answer-content {
+      font-size: 15px;
+      line-height: 1.7;
+      margin-top: 12px;
+  }
+
+  /* 답변 작성 폼 */
+  .my-3 {
+      margin-top: 40px;
+      width: 100%;
+  }
+
+  .my-3 .form-control,
+  .my-3 textarea {
+      width: 100%;
+      font-size: 15px;
+      line-height: 1.6;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      resize: vertical;
+  }
+
+  .my-3 input[type="submit"] {
+      padding: 10px 22px;
+      border-radius: 10px;
+      background: var(--navy);
+      border: 1px solid var(--navy);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+  }
+
+  .my-3 input[type="submit"]:hover {
+      background: var(--navy-700);
+      border-color: var(--navy-700);
+  }
+
+  /* 전체 레이아웃 */
+
+  .page-reBoard .backdrop {
+      width: 900px;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* 게시글 기본 스타일 */
+  .inner {
+      width: 100%;
+      margin-bottom: 40px;
+  }
+
+  .post-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+  }
+
+  .post-meta {
+      color: #777;
+      font-size: 14px;
+      margin-bottom: 20px;
+  }
+
+  .card-text {
+      font-size: 17px;
+      line-height: 1.7;
+      margin-bottom: 30px;
+  }
+
+  /* 수정/삭제 버튼 */
+  .edit {
+      margin-bottom: 40px;
+  }
+
+  .edit .link {
+      margin-right: 15px;
+      color: #4876ef;
+  }
+
+  /* ▽▽▽ 답변 영역 스타일 ▽▽▽ */
+  .answer-block {
+      background: #f8fafc;
+      padding: 25px;
+      border-radius: 10px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      border-left: 6px solid #4f80ff;
+  }
+
+  .answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+  }
+
+  .answer-info {
+      display: flex;
+      flex-direction: column;
+  }
+
+  .lawyer-name {
+      font-size: 18px;
+      font-weight: bold;
+  }
+
+  .answer-date {
+      font-size: 13px;
+      color: #777;
+  }
+
+  .recommend-btn {
+      padding: 8px 15px;
+      background: #e8eefc;
+      border: 1px solid #a9bdf4;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+  }
+
+  .recommend-btn:hover {
+      background: #dce7ff;
+  }
+
+  /* 답변 내용 */
+  .answer-content {
+      margin-top: 15px;
+      font-size: 16px;
+      line-height: 1.7;
+  }
+
+  /* ▽▽▽ 답변 작성 폼 ▽▽▽ */
+  .my-3 {
+      margin-top: 40px;
+      width: 100%;
+  }
+
+  .form-control {
+      width: 100%;
+      resize: vertical;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 16px;
+  }
+
+  .btn-primary {
+      padding: 10px 20px;
+      border: none;
+      background: #4f80ff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+  }
+
+  .btn-primary:hover {
+      background: #3b6af2;
+  }
+
+  /* =========================== */
+  /* 답변 작성 및 목록 스타일 */
+  /* =========================== */
+
+  /* 답변 작성 섹션 */
+  .answer-input-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line);
+  }
+
+  .btn-answer-toggle {
+      padding: 10px 20px;
+      background: var(--navy);
+      color: #fff;
+      border: 1px solid var(--navy);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+  }
+
+  .btn-answer-toggle:hover {
+      background: var(--navy-700);
+      border-color: var(--navy-700);
+  }
+
+  .answer-form-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-top: 16px;
+      margin-bottom: 24px;
+  }
+
+  .answer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+      overflow: hidden;
+  }
+
+  .lawyer-profile-img-small {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+  }
+
+  .answer-form {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+  }
+
+  .answer-textarea {
+      flex: 1;
+      min-height: 80px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      resize: vertical;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+  }
+
+  .answer-textarea:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 2px rgba(0, 7, 119, 0.1);
+  }
+
+  .answer-textarea:disabled {
+      background: #f5f5f5;
+      cursor: not-allowed;
+  }
+
+  .answer-form-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+  }
+
+  .btn-answer-submit {
+      padding: 10px 24px;
+      background: var(--navy);
+      color: #fff;
+      border: 1px solid var(--navy);
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+  }
+
+  .btn-answer-submit:hover {
+      background: var(--navy-700);
+      border-color: var(--navy-700);
+  }
+
+  .btn-answer-cancel {
+      padding: 10px 24px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+  }
+
+  .btn-answer-cancel:hover {
+      background: var(--soft);
+      border-color: var(--navy);
+  }
+
+  /* 답변 목록 섹션 */
+  .answers-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line);
+  }
+
+  .answers-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+  }
+
+  .answers-header-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+  }
+
+  .answers-count {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+  }
+
+  .answers-sort {
+      display: flex;
+      gap: 8px;
+  }
+
+  .sort-select {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+  }
+
+  .sort-select:focus {
+      border-color: var(--navy);
+  }
+
+  /* 답변 리스트 래퍼 */
+  .answers-list-wrapper {
+      position: relative;
+  }
+
+  .answers-list-wrapper.login-required {
+      position: relative;
+  }
+
+  /* 비로그인 오버레이 */
+  .answers-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      border-radius: 12px;
+  }
+
+  .overlay-content {
+      text-align: center;
+      padding: 40px 20px;
+  }
+
+  .overlay-message {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 20px;
+  }
+
+  .overlay-login-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: var(--navy);
+      color: #fff;
+      border: 1px solid var(--navy);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+  }
+
+  .overlay-login-btn:hover {
+      background: var(--navy-700);
+      border-color: var(--navy-700);
+      color: #fff;
+  }
+
+  /* 답변 아이템 */
+  .answers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+  }
+
+  .answer-item {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+  }
+
+  .answer-avatar-large {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      flex-shrink: 0;
+      overflow: hidden;
+  }
+
+  .lawyer-profile-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+  }
+
+  .answer-content-wrapper {
+      flex: 1;
+  }
+
+  .answer-header {
+      margin-bottom: 12px;
+  }
+
+  .answer-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+  }
+
+  .answer-author-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+  }
+
+  .answer-date {
+      font-size: 13px;
+      color: var(--muted);
+  }
+
+  .answer-content {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--ink);
+      white-space: pre-line;
+      margin-bottom: 16px;
+  }
+
+  .answer-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+  }
+
+  .recommend-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #e8eefc;
+      border: 1px solid #a9bdf4;
+      border-radius: 6px;
+      color: var(--navy);
+      text-decoration: none;
+      font-size: 13px;
+      cursor: pointer;
+  }
+
+  .recommend-link:hover {
+      background: #dce7ff;
+  }
+
+  .recommend-count {
+      font-weight: 700;
+  }
+
+  .answer-reply-btn {
+      box-sizing: border-box;
+      padding: 6px 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+  }
+
+  .answer-reply-btn:hover {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+  }
+
+  .answer-reply-btn.delete:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+  }
+
+  @media (max-width: 760px) {
+      .answer-input-header {
+          flex-direction: column;
+      }
+
+      .answer-form {
+          flex-direction: column;
+      }
+
+      .btn-answer-submit {
+          width: 100%;
+          height: 44px;
+      }
+
+      .answer-item {
+          flex-direction: column;
+      }
+
+      .answer-avatar-large {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+      }
+  }

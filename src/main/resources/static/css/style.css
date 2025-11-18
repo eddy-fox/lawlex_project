@@ -106,8 +106,8 @@ a {
 }
 
 .logo-img {
-  width: 40px;
-  height: 40px;
+  width: 150px;
+  height: auto;
   object-fit: contain;
 }
 
@@ -313,6 +313,10 @@ a {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+}
+
+.page-chatIcon .badge[hidden] {
+  display: none !important;
 }
 
 .page-chatIcon .panel {

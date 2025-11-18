@@ -36,10 +36,13 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer>{
     Optional<LawyerEntity> findByLawyerPhoneAndLawyerIdnum(String lawyerPhone, String lawyerIdnum);
     Optional<LawyerEntity> findByLawyerIdxAndLawyerPhoneAndLawyerIdnum(Integer lawyerIdx, String lawyerPhone, String lawyerIdnum);
 
-    // OAuth2 회원가입 email 중복체크
-    Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer lawyerActive);
+    // OAuth2 회원가입 중복체크
+    Optional<LawyerEntity> findByLawyerProviderAndLawyerProviderId(String lawyerProvider, String lawyerProviderId);
     
     boolean existsByLawyerId(String lawyerId);
+
+    // gpt 자동답변을 위한 idx검색
+    LawyerEntity findByLawyerIdx(Integer lawyerIdx);
 
     // Optional<LawyerEntity> findByLawyerEmailAndLawyerActive(String email, Integer memberActive);
 

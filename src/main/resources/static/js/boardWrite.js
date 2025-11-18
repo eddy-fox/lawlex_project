@@ -41,7 +41,7 @@
 
   function validate(){
     const titleOk = title.value.trim().length >= 2;
-    const contentOk = content.value.trim().length >= 20;
+    const contentOk = content.value.trim().length >= 5;
     const categoryInput = document.getElementById('boardCategory');
     const categoryOk = categoryInput && categoryInput.value.trim().length > 0;
     const ok = titleOk && contentOk && categoryOk;

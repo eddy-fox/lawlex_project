@@ -1,7 +1,9 @@
 package com.soldesk.team_project.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -53,7 +55,8 @@ public class BoardController {
     public String list(Model model, 
     @RequestParam(value="page", defaultValue="0") int page,
     @RequestParam(value="kw", defaultValue="") String kw,
-    @RequestParam(value="interestIdx", required = false) Integer interestIdx) {
+    @RequestParam(value="interestIdx", required = false) Integer interestIdx,
+    HttpSession session) {
 
         if(interestIdx == null) {
             interestIdx = 1;
@@ -67,6 +70,11 @@ public class BoardController {
         int currentBlock = page / 10;
         int startPage = currentBlock * 10;
         int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+        
+        // 관리자 권한 확인
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null;
+        model.addAttribute("isAdmin", isAdmin);
         
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
@@ -84,6 +92,16 @@ public class BoardController {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         model.addAttribute("boardEntity", boardEntity);
+        
+        // interestIdx 추가 (사이드메뉴 강조 표시용)
+        Integer interestIdx = null;
+        if (boardEntity.getInterest() != null) {
+            interestIdx = boardEntity.getInterest().getInterestIdx();
+        }
+        if (interestIdx == null) {
+            interestIdx = 1; // 기본값
+        }
+        model.addAttribute("interestIdx", interestIdx);
         
         // 로그인 사용자 정보 추가
         model.addAttribute("loginUser", loginUser);
@@ -139,7 +157,9 @@ public class BoardController {
     @PostMapping("/create")
     public String boardCrete(@Valid BoardForm boardForm, BindingResult bindingResult,
                              @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
-                             HttpSession session) {
+                             HttpSession session, Model model) {
+
+        System.out.println("========== 게시글 작성 시작 ==========");
 
         if(bindingResult.hasErrors()) {
             return "board/write";
@@ -153,7 +173,7 @@ public class BoardController {
         MemberEntity memberEntity = memberRepository.findById(loginUser.getMemberIdx())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
         
-        this.boardService.create(
+        BoardEntity writeBoard = this.boardService.create(
             boardForm.getBoardTitle(), 
             boardForm.getBoardContent(), 
             boardForm.getBoardCategory(),
@@ -161,14 +181,43 @@ public class BoardController {
             memberEntity
         );
         
+        // GPT 자동 답변 생성
+        reboardService.gptAutoReboard(writeBoard);
+
         // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
         // 카테고리로부터 interestIdx 자동 결정
         Integer interestIdx = boardForm.getInterestIdx();
         if (interestIdx == null || interestIdx <= 0) {
             interestIdx = boardService.getInterestIdxFromCategory(boardForm.getBoardCategory());
         }
-        return "redirect:/board/list?interestIdx=" + interestIdx;
-
+        
+        // gpt 답변 대기 알림창 스크립트 설정
+        model.addAttribute("boardIdx", writeBoard.getBoardIdx());
+        model.addAttribute("redirectUrl", "/board/list?interestIdx=" + interestIdx);
+        
+        return "board/gpt-loading";
+    }
+    @GetMapping("/api/check-gpt-answer")
+    @ResponseBody
+    public Map<String, Object> checkGptAnswer(@RequestParam("boardIdx") Integer boardIdx) {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            // 해당 게시글의 답변이 존재하는지 확인
+            ReBoardEntity reboard = reboardService.getReboardByBoardIdx(boardIdx);
+            
+            if (reboard != null && reboard.getReboardActive() == 1) {
+                result.put("answerExists", true);
+                result.put("reboardIdx", reboard.getReboardIdx());
+            } else {
+                result.put("answerExists", false);
+            }
+        } catch (Exception e) {
+            result.put("answerExists", false);
+            result.put("error", e.getMessage());
+        }
+        
+        return result;
     }
 
     @PreAuthorize("isAuthenticated()")

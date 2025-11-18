@@ -1,15 +1,32 @@
 <!-- 로그인 했을 때만 아이콘 보이게 -->
 <div class="page-chatIcon"
      th:fragment="page-chatIcon"
-     th:if="${session.loginMember != null or session.loginLawyer != null}">
+     th:with="user=${session.loginUser}, role=${user != null ? user.role : null}"
+     th:if="${user != null and role != null and (role == 'MEMBER' or role == 'LAWYER')}">
 
   <!-- 버튼: role 담아두기 -->
   <button class="icon"
           id="chatIconBtn"
           type="button"
           aria-expanded="false"
-          th:data-role="${session.loginMember != null} ? 'MEMBER' : 'LAWYER'"
-          th:aria-label="${session.loginMember != null} ? '채팅 목록 열기' : '상담 메인으로 이동'">
+          th:data-role="${role == 'MEMBER' ? 'MEMBER' : 'LAWYER'}"
+          th:if="${role == 'MEMBER'}"
+          aria-label="채팅 목록 열기">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 16c0 1.1-.9 2-2 2H9l-5 4V6c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10z"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+      <path d="M8 8.5h8M8 11h8M8 13.5h6"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+    </svg>
+    <span class="badge" id="chatBadge" hidden>0</span>
+  </button>
+  <button class="icon"
+          id="chatIconBtn"
+          type="button"
+          aria-expanded="false"
+          th:data-role="LAWYER"
+          th:if="${role == 'LAWYER'}"
+          aria-label="상담 메인으로 이동">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M20 16c0 1.1-.9 2-2 2H9l-5 4V6c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10z"
             fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
@@ -21,16 +38,16 @@
 
   <!-- 숨겨진 값들: JS에서 사용 -->
   <input type="hidden" id="memberIdx"
-         th:if="${session.loginMember != null}"
-         th:value="${session.loginMember.memberIdx}">
+         th:if="${user != null and role != null and role == 'MEMBER'}"
+         th:value="${user.memberIdx}">
   <input type="hidden" id="lawyerIdx"
-         th:if="${session.loginLawyer != null}"
-         th:value="${session.loginLawyer.lawyerIdx}">
+         th:if="${user != null and role != null and role == 'LAWYER'}"
+         th:value="${user.lawyerIdx}">
 
   <!-- 회원일 때만 나오는 패널 -->
   <section class="panel"
            id="chatPanel"
-           th:if="${session.loginMember != null}"
+           th:if="${user != null and role != null and role == 'MEMBER'}"
            hidden>
     <div class="tabs" role="tablist">
       <div class="tab is-active" data-filter="all" aria-selected="true">

@@ -45,6 +45,15 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     // 조회수 높은 순서로 조회 (상위 5개, 활성 게시물만)
     @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) ORDER BY b.boardViews DESC")
     List<BoardEntity> findTop5ActiveBoardsByOrderByBoardViewsDesc(Pageable pageable);
+    
+    // 관심 카테고리별 조회수 높은 순서로 조회 (상위 5개, 활성 게시물만)
+    // 기존 findTop5ActiveBoardsByOrderByBoardViewsDesc에 관심 카테고리 조건 추가
+    @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) " +
+           "AND (b.interest.interestIdx IN (:interestIdxList)) " +
+           "ORDER BY b.boardViews DESC")
+    List<BoardEntity> findTop5ActiveBoardsByInterestIdxOrderByBoardViewsDesc(
+        @Param("interestIdxList") List<Integer> interestIdxList,
+        Pageable pageable);
                                         
     // 조회수 높은 순서로 조회 (상위 5개)
     List<BoardEntity> findTop5ByOrderByBoardViewsDesc();
@@ -54,6 +63,13 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
             Integer memberIdx,
             Integer boardActive
     );
+    // 회원별 상담글 조회
+    @Query("SELECT b FROM BoardEntity b WHERE b.member.memberIdx = :memberIdx " +
+           "AND (b.boardActive = 1 OR b.boardActive IS NULL) " +
+           "ORDER BY b.boardRegDate DESC")
+    Page<BoardEntity> findByMemberMemberIdxOrderByBoardRegDateDesc(
+        @Param("memberIdx") Integer memberIdx, 
+        Pageable pageable);
 
            
 }

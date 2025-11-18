@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
@@ -24,9 +26,11 @@ import com.soldesk.team_project.dto.BoardDTO;
 import com.soldesk.team_project.dto.CommentDTO;
 
 import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.BoardRepository;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.repository.ReBoardRepository;
 import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
@@ -44,8 +48,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.BoardEntity;
+import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
 // ===== [ADD] gmodify에 interests 바인딩용 =====
 import com.soldesk.team_project.entity.InterestEntity;
 
@@ -64,6 +71,8 @@ public class MemberController {
     private final LawyerRepository lawyerRepository;
     private final AdminRepository adminRepository;
     private final InterestRepository interestRepository; // 로이어 관심 1개를 조인으로 세팅할 때 사용
+    private final BoardRepository boardRepository;
+    private final ReBoardRepository reBoardRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final JwtProvider jwtProvider;
@@ -95,9 +104,9 @@ public class MemberController {
     }
 
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum,
-                                  Model model,
+    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model,
                                   @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+                                    
         Integer memberIdx = loginUser.getMemberIdx();
         String memberIdxStr = String.valueOf(memberIdx);
         List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
@@ -390,6 +399,51 @@ public class MemberController {
     }
 }
 
+    // 내가 쓴 글 리스트 (일반회원: 상담글, 변호사: 답변글)
+    @GetMapping("/mypage/myPosts")
+    public String myPosts(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          @RequestParam(value = "page", defaultValue = "0") int page,
+                          Model model) {
+        if (loginUser == null) return "redirect:/member/login";
+
+        org.springframework.data.domain.PageRequest pageable = 
+            org.springframework.data.domain.PageRequest.of(page, 10);
+
+        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
+            // 일반회원: 상담글 리스트
+            org.springframework.data.domain.Page<BoardEntity> paging = 
+                boardRepository.findByMemberMemberIdxOrderByBoardRegDateDesc(loginUser.getMemberIdx(), pageable);
+            
+            // 페이징 범위 계산
+            int currentBlock = page / 10;
+            int startPage = currentBlock * 10;
+            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+            
+            model.addAttribute("paging", paging);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            model.addAttribute("userType", "MEMBER");
+            return "member/myPosts";
+        } else if ("LAWYER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+            // 변호사: 답변글 리스트
+            org.springframework.data.domain.Page<ReBoardEntity> paging = 
+                reBoardRepository.findByLawyerLawyerIdxOrderByReboardRegDateDesc(loginUser.getLawyerIdx(), pageable);
+            
+            // 페이징 범위 계산
+            int currentBlock = page / 10;
+            int startPage = currentBlock * 10;
+            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+            
+            model.addAttribute("paging", paging);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            model.addAttribute("userType", "LAWYER");
+            return "member/myPosts";
+        }
+        
+        return "redirect:/member/mypage";
+    }
+
     // 공통 API
     // 아이디 찾기
     @PostMapping("/api/findId")
@@ -419,41 +473,49 @@ public class MemberController {
     }
     
 
-    // OAuth
-    @GetMapping("/oauth2/additional-info")
-    public String showAdditionalInfoForm() {
-        return "member/oauthJoin"; // 추가 정보 입력 폼 HTML
+    // OAuth로 회원가입
+    @GetMapping("/joinType-oauth")
+    public String OAuth2JoinChoice() {
+        return "member/loginChoice-oauth";
     }
 
-    @PostMapping("/oauth2/complete")
-    public void saveAdditionalInfo(@ModelAttribute("member123") MemberDTO memberDTO,
-                                   HttpSession session, HttpServletResponse response) throws IOException {
-        TemporaryOauthDTO tempUser = (TemporaryOauthDTO) session.getAttribute("oauth2TempUser");
-        if (tempUser == null) {
-            response.sendRedirect("/member/login");
-            return;
+    @GetMapping("/joinMember-oauth")
+    public String OAuth2JoinMemberForm(
+        HttpSession session, Model model, 
+        RedirectAttributes redirectAttributes) {
+
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
+    
+        if (temp == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/member/login";
         }
-        MemberEntity savedUser = memberService.saveProcess(memberDTO, tempUser);
-        session.removeAttribute("oauth2TempUser");
-        String token = jwtProvider.createToken(savedUser);
+    
+        MemberDTO joinMember = new MemberDTO();
+        joinMember.setMemberEmail(temp.getEmail());
+        joinMember.setMemberName(temp.getName());
+        
+        model.addAttribute("joinMember", joinMember);
+        model.addAttribute("interests", interestRepository.findAll());
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("status", HttpServletResponse.SC_OK);
-        responseMap.put("message", "Login successful");
+        return "member/gJoin-oauth";
+    }
+    @PostMapping("/joinMember-oauth")
+    public String OAuth2JoinMemberSubmit(HttpSession session,
+        @ModelAttribute("joinMember") MemberDTO joinMember) {
 
-        Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("email", savedUser.getMemberEmail());
-        dataMap.put("name", savedUser.getMemberName());
-        dataMap.put("token", token);
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
 
-        responseMap.put("data", dataMap);
+        memberService.joinOAuthMember(temp, joinMember);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseMap);
+        session.removeAttribute("tempOauth");
+            
+        return "redirect:/member/login";
+    }
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
+    @GetMapping("/joinLawyer-oauth")
+    public String OAuth2JoinLawyer() {
+        return "member/lJoin-oauth";
     }
 
     // =================== 세션 DTO들 ===================

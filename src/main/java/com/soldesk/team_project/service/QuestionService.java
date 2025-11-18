@@ -47,6 +47,20 @@ public class QuestionService {
         questionDTO.setQActive(questionEntity.getQuestionActive());
         questionDTO.setMemberIdx(questionEntity.getMemberIdx());
         questionDTO.setLawyerIdx(questionEntity.getLawyerIdx());
+        
+        // 작성자 ID 설정 (member 또는 lawyer) - 수동 조회
+        if (questionEntity.getLawyerIdx() != null) {
+            lawyerRepository.findById(questionEntity.getLawyerIdx()).ifPresent(lawyer -> {
+                questionDTO.setInfoId(lawyer.getLawyerId());
+                questionDTO.setInfoName(lawyer.getLawyerName());
+            });
+        } else if (questionEntity.getMemberIdx() != null) {
+            memberRepository.findById(questionEntity.getMemberIdx()).ifPresent(member -> {
+                questionDTO.setInfoId(member.getMemberId());
+                questionDTO.setInfoName(member.getMemberName());
+            });
+        }
+        
         return questionDTO;
     }
 

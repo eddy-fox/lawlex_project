@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,12 +37,18 @@ public class ReBoardEntity {
     @Column(name = "reboard_reg_date")
     private LocalDate reboardRegDate;
 
+    @Column(name = "reboard_active")
+    private Integer reboardActive;
+
+    @Column(name = "lawyer_idx", insertable = false, updatable = false)
+    private Integer lawyerIdx;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawyer_idx")
-    private LawyerEntity lawyerIdx;
-
-    @ManyToOne
     private LawyerEntity lawyer;
+
+    @Column(name = "board_idx", insertable = false, updatable = false)
+    private Integer boardIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_idx")
@@ -56,5 +63,13 @@ public class ReBoardEntity {
     private MemberEntity memberIdx;
 
     private LocalDate modifyDate;
+
+    // 날짜 null이면 자동 설정
+    @PrePersist
+    public void prePersist() {
+        if (this.reboardRegDate == null) {
+            this.reboardRegDate = LocalDate.now();
+        }
+    }
 
 }

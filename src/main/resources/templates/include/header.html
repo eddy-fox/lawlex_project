@@ -11,44 +11,43 @@
     <header class="header" th:fragment="header">
         <div class="container">
             <a class="logo-area" th:href="@{/}">
-                <img src="#" class="logo-img">
-                <h1 class="logo-text">LawLex</h1>
+                <img th:src="@{/img/LawLex-logo.png}" class="logo-img">
             </a>
-            <div class="inout">
+            <div class="inout" th:with="user=${session.loginUser}, role=${user != null ? user.role : null}">
                 <!-- 로그인 전: 로그인 링크만 -->
-                <div th:if="${session.loginMember == null and session.loginLawyer == null and session.loginAdmin == null}">
+                <div th:if="${user == null}">
                     <a th:href="@{/member/login}">로그인</a>
                 </div>
                 
                 <!-- 로그인 후 (일반회원/변호사): 마이페이지, chaticon만 -->
-                <div th:if="${(session.loginMember != null or session.loginLawyer != null) and session.loginAdmin == null}">
+                <div th:if="${user != null and role != null and (role == 'MEMBER' or role == 'LAWYER')}">
                     <div th:replace="~{include/chatIcon :: page-chatIcon}"></div>
                     <a th:href="@{/member/mypage}">마이페이지</a>
                 </div>
                 
                 <!-- 관리자 로그인 후: 관리자페이지, 로그아웃만 -->
-                <div th:if="${session.loginAdmin != null}">
+                <div th:if="${user != null and role != null and role == 'ADMIN'}">
                     <a th:href="@{/admin/memberManagement}">관리자 페이지</a>
                     <a th:href="@{/member/logout}">로그아웃</a>
                 </div>
             </div>
         </div>
-        <nav class="main-menu">
+        <nav class="main-menu" th:with="user=${session.loginUser}, role=${user != null ? user.role : null}">
             <a th:href="@{/board/list}">상담</a>
             <!-- 로그인한 일반회원이면 → /chat/member -->
-            <a th:if="${session.loginMember != null}"
+            <a th:if="${user != null and role != null and role == 'MEMBER'}"
             th:href="@{/chat/member}">
             실시간 상담
             </a>
 
             <!-- 로그인한 변호사이면 → /chat/lawyer -->
-            <a th:if="${session.loginLawyer != null}"
+            <a th:if="${user != null and role != null and role == 'LAWYER'}"
             th:href="@{/chat/lawyer}">
             실시간 상담
             </a>
 
             <!-- 로그인 안 했으면 → 로그인 페이지로 -->
-            <a th:if="${session.loginMember == null and session.loginLawyer == null}"
+            <a th:if="${user == null}"
             th:href="@{/member/login}">
             실시간 상담
             </a>
@@ -58,5 +57,7 @@
             <a th:href="@{/question/faq}">문의</a>
         </nav>
     </header>
+    <!-- chatIcon 스크립트: header에 포함된 chatIcon을 위해 필요 -->
+    <script th:src="@{/js/chatIcon.js}"></script>
 </body>
 </html>
