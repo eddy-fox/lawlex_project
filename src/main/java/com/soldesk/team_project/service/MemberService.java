@@ -13,10 +13,7 @@ import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
-<<<<<<< HEAD
-=======
 import com.soldesk.team_project.entity.InterestEntity;
->>>>>>> main
 // import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.InterestRepository;
