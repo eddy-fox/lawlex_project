@@ -315,6 +315,10 @@ a {
   pointer-events: none;
 }
 
+.page-chatIcon .badge[hidden] {
+  display: none !important;
+}
+
 .page-chatIcon .panel {
   position: absolute;
   top: calc(var(--icon-size) + var(--gap));
