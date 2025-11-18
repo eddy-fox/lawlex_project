@@ -93,7 +93,6 @@
                  name="lawyerIdnum"
                  class="input"
                  type="text"
-                 th:field="*{lawyerAuth}"
                  placeholder="등록번호"
                  inputmode="numeric"
                  required>
@@ -117,6 +116,7 @@
             </div>
           <small id="fileMsg" class="help">등록증 이미지를 첨부해주세요.</small>
           <small id="agreeMsg" class="help"></small>
+          <button type="button" id="verifyBtn">인증</button>
         </div>
 
         <!-- 닉네임 -->
@@ -263,5 +263,33 @@
         alert('[[${alert}]]'); // 전달된 alert 메세지 출력
         /*]]>*/
     </script>
+  <script>
+    document.getElementById("verifyBtn").addEventListener("click", async () => {
+        const number = document.getElementById("lawyerIdnum").value;
+        const image = document.getElementById("certImage").files[0];
+
+        const formData = new FormData();
+        formData.append("licenseNumber", number);
+        formData.append("licenseImage", image);
+
+        const res = await fetch("/member/verify-license", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await res.json();
+
+        console.log("🔍 OCR 결과:", result.ocrTexts);
+
+        if (result.valid === true) {
+            alert((result.message || "자격 검증 성공") + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
+            document.getElementById("submitBtn").disabled = false;
+        } else {
+            alert((result.error || result.message || "자격 검증 실패. 다시 확인해주세요.") 
+                + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
+            document.getElementById("submitBtn").disabled = true;
+        }
+    });
+  </script>
 </body>
 </html>

@@ -18,6 +18,9 @@ configurations {
    compileOnly {
       extendsFrom annotationProcessor
    }
+   all {
+      exclude group: 'org.mock-server', module: 'mockserver-junit-rule-no-dependencies'
+   }
 }
 
 repositories {

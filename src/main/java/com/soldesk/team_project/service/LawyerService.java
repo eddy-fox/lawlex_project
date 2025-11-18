@@ -399,11 +399,13 @@ public class LawyerService {
     dto.setReboardContent(entity.getReboardContent());
     dto.setReboardRegDate(entity.getReboardRegDate());
 
-    // BoardEntity → boardIdx (PK) 꺼내서 넣기
+    // BoardEntity → boardIdx (PK) 및 boardTitle 꺼내서 넣기
     if (entity.getBoardEntity() != null) {
         dto.setBoardIdx(entity.getBoardEntity().getBoardIdx());
+        dto.setBoardTitle(entity.getBoardEntity().getBoardTitle());
     } else {
         dto.setBoardIdx(null);
+        dto.setBoardTitle(null);
     }
 
     // LawyerEntity → lawyerIdx (PK) 꺼내서 넣기
