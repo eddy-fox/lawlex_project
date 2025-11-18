@@ -35,9 +35,9 @@
                     </div>
                     <div class="among"><a class="name" th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</a></div>
                     <div class="right">
-                        <div class="pick" th:unless="${pick == like}">좋아요 <span class="v"
+                        <div class="pick" th:if="${pick == 'like'}">좋아요 <span class="v"
                                 th:text="${#numbers.formatInteger(rank.lawyerLike, 0, 'COMMA')}">3,451</span></div>
-                        <div class="pick" th:unless="${pick == like}" >답변수 <span class="v"
+                        <div class="pick" th:if="${pick == 'answer'}">답변수 <span class="v"
                                 th:text="${#numbers.formatInteger(rank.lawyerAnswerCnt, 0, 'COMMA')}">3,951</span></div>
                     </div>
                 </div>
@@ -56,8 +56,8 @@
                                  th:classappend="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : ''))}" th:text="${st.index + 1} + '위'">1위</div>
                             <div class="Cphoto"><img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}"></div>
                             <div class="name" th:text="${iRank[3]} + ' 변호사'">김민지 변호사</div>
-                            <div class="sub" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150</div>
-                            <div class="sub" th:text="'좋아요 '+ ${iRank[5]}">좋아요 1,200</div>
+                            <div class="sub" th:if="${pick == 'answer'}" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150</div>
+                            <div class="sub" th:if="${pick == 'like'}" th:text="'좋아요 '+ ${iRank[5]}">좋아요 1,200</div>
                         </div>
                     </div>
                 </div>
@@ -68,6 +68,7 @@
 
     <div class="include" th:replace="~{include/footer :: footer}"></div>
     <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/chatIcon.js}"></script>
 </body>
 
 </html>
