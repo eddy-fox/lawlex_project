@@ -32,7 +32,7 @@
       <form id="payment-form" th:action="@{/member/point}" method="post" class="container">
         <div class="titlebar">
             <h1>포인트 결제</h1>
-            <span class="small">잔여 포인트: <b th:text="${member.memberPoint}"></b></span>
+            <span class="small">잔여 포인트 : <b th:text="${member.memberPoint}"></b></span>
         </div>
 
         <section class="card split">
@@ -50,7 +50,7 @@
 
           <aside class="side">
             <div class="label">결제 주의사항</div>
-            <textarea name="reason" placeholder="내용을 입력해주세요"></textarea>
+            <div class="ask">이러한 사항이 있음으로 동의합니까?</div>
             <div class="radio-row">
                 동의합니까?
               <label for="agree" class="radio-square">
