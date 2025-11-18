@@ -81,14 +81,21 @@ body{
 .page-cInfo .actions{display:flex;gap:10px;justify-content:flex-end;margin:20px 0;}
 .page-cInfo .btn{
   box-sizing: border-box;
-  padding:3px 15px;border-radius:10px;
-  border:1px solid var(--line);
-  background:#fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
   color: var(--ink);
-  font-weight:700;cursor:pointer;
-  transition:all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.page-cInfo .btn:hover{background:var(--navy);color:#fff;}
+.page-cInfo .btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
 
 /* 댓글 */
 .page-cInfo .cmt{margin-top:26px;}

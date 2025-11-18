@@ -21,9 +21,11 @@ import com.soldesk.team_project.dto.PurchaseDTO;
 import com.soldesk.team_project.dto.TemporaryOauthDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.repository.AdminRepository;
+import com.soldesk.team_project.repository.BoardRepository;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.repository.ReBoardRepository;
 import com.soldesk.team_project.security.JwtProvider;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
@@ -41,9 +43,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.soldesk.team_project.entity.AdminEntity;
+import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.InterestEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
+import com.soldesk.team_project.entity.ReBoardEntity;
 // ===== [ADD] gmodify에 interests 바인딩용 =====
 import com.soldesk.team_project.entity.InterestEntity;
 
@@ -62,6 +66,8 @@ public class MemberController {
     private final LawyerRepository lawyerRepository;
     private final AdminRepository adminRepository;
     private final InterestRepository interestRepository; // 로이어 관심 1개를 조인으로 세팅할 때 사용
+    private final BoardRepository boardRepository;
+    private final ReBoardRepository reBoardRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final JwtProvider jwtProvider;
@@ -351,6 +357,51 @@ public class MemberController {
             case "ADMIN"  -> "admin/ainfo";
             default -> "redirect:/member/login";
         };
+    }
+
+    // 내가 쓴 글 리스트 (일반회원: 상담글, 변호사: 답변글)
+    @GetMapping("/mypage/myPosts")
+    public String myPosts(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          @RequestParam(value = "page", defaultValue = "0") int page,
+                          Model model) {
+        if (loginUser == null) return "redirect:/member/login";
+
+        org.springframework.data.domain.PageRequest pageable = 
+            org.springframework.data.domain.PageRequest.of(page, 10);
+
+        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
+            // 일반회원: 상담글 리스트
+            org.springframework.data.domain.Page<BoardEntity> paging = 
+                boardRepository.findByMemberMemberIdxOrderByBoardRegDateDesc(loginUser.getMemberIdx(), pageable);
+            
+            // 페이징 범위 계산
+            int currentBlock = page / 10;
+            int startPage = currentBlock * 10;
+            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+            
+            model.addAttribute("paging", paging);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            model.addAttribute("userType", "MEMBER");
+            return "member/myPosts";
+        } else if ("LAWYER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+            // 변호사: 답변글 리스트
+            org.springframework.data.domain.Page<ReBoardEntity> paging = 
+                reBoardRepository.findByLawyerLawyerIdxOrderByReboardRegDateDesc(loginUser.getLawyerIdx(), pageable);
+            
+            // 페이징 범위 계산
+            int currentBlock = page / 10;
+            int startPage = currentBlock * 10;
+            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+            
+            model.addAttribute("paging", paging);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            model.addAttribute("userType", "LAWYER");
+            return "member/myPosts";
+        }
+        
+        return "redirect:/member/mypage";
     }
 
     // 공통 API

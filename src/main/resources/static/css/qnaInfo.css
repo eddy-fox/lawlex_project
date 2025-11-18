@@ -73,7 +73,7 @@
       border-radius: 20px;
       font-size: 16px;
       cursor: pointer;
-      transition: all .15s ease;
+      transition: background-color .15s ease, color .15s ease;
     }
 
     .page-qnaInfo .btn:disabled {
@@ -97,5 +97,18 @@
 
     .page-qnaInfo .btn-submit:hover {
       background: #000555;
-      padding: 10px 20px;
+      padding: 5px 10px;
+    }
+
+    .page-qnaInfo .btn:active {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .page-qnaInfo .btn-submit:active {
+      background: var(--navy);
+    }
+
+    .page-qnaInfo .btn-delete:active {
+      background: #dc3545;
     }
