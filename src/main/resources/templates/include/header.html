@@ -11,8 +11,7 @@
     <header class="header" th:fragment="header">
         <div class="container">
             <a class="logo-area" th:href="@{/}">
-                <img src="#" class="logo-img">
-                <h1 class="logo-text">LawLex</h1>
+                <img th:src="@{/img/LawLex-logo.png}" class="logo-img">
             </a>
             <div class="inout" th:with="user=${session.loginUser}, role=${user != null ? user.role : null}">
                 <!-- 로그인 전: 로그인 링크만 -->
