@@ -88,14 +88,9 @@ public class BoardService {
             }
             // reboardList와 lawyer 정보를 함께 로드하기 위해 초기화
             if (board.getReboardList() != null) {
-                int reboardCount = board.getReboardList().size(); // Lazy 로딩 강제 실행
-                System.out.println("========== BoardService.getBoardEntity - 답변 목록 로드 ==========");
-                System.out.println("게시글 ID: " + board.getBoardIdx());
-                System.out.println("답변 개수: " + reboardCount);
-                
+                board.getReboardList().size(); // Lazy 로딩 강제 실행
                 // 각 reboard의 lawyer 정보와 memberVoter도 로드
                 board.getReboardList().forEach(reboard -> {
-                    System.out.println("답변 ID: " + reboard.getReboardIdx() + ", 활성화: " + reboard.getReboardActive() + ", 내용: " + (reboard.getReboardContent() != null ? reboard.getReboardContent().substring(0, Math.min(50, reboard.getReboardContent().length())) : "null"));
                     if (reboard.getLawyer() != null) {
                         reboard.getLawyer().getLawyerName(); // Lazy 로딩 강제 실행
                         reboard.getLawyer().getLawyerImgPath(); // 이미지 경로도 로드
@@ -107,8 +102,6 @@ public class BoardService {
                         }
                     }
                 });
-            } else {
-                System.out.println("========== BoardService.getBoardEntity - 답변 목록이 null입니다 ==========");
             }
             return board;
         } else {

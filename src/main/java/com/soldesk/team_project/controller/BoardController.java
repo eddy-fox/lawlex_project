@@ -195,8 +195,6 @@ public class BoardController {
                              @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                              HttpSession session, Model model) {
 
-        System.out.println("========== 게시글 작성 시작 ==========");
-
         if(bindingResult.hasErrors()) {
             return "board/write";
         }
@@ -218,25 +216,12 @@ public class BoardController {
         );
         
         // 이미지 파일 업로드 처리
-        System.out.println("========== 이미지 파일 체크 ==========");
-        System.out.println("imgFile null 여부: " + (boardForm.getImgFile() == null));
-        if (boardForm.getImgFile() != null) {
-            System.out.println("imgFile isEmpty: " + boardForm.getImgFile().isEmpty());
-            System.out.println("imgFile originalFilename: " + boardForm.getImgFile().getOriginalFilename());
-            System.out.println("imgFile size: " + boardForm.getImgFile().getSize());
-        }
-        
         if (boardForm.getImgFile() != null && !boardForm.getImgFile().isEmpty()) {
             try {
-                System.out.println("========== 이미지 업로드 시작 ==========");
                 String filename = nowUuidName(boardForm.getImgFile().getOriginalFilename());
                 String objectPath = "boardimg/" + filename;
-                System.out.println("생성된 파일명: " + filename);
-                System.out.println("objectPath: " + objectPath);
                 
                 var uploaded = storageService.upload(boardForm.getImgFile(), objectPath);
-                System.out.println("업로드 성공 - URL: " + uploaded.url());
-                System.out.println("업로드 성공 - fileId: " + uploaded.fileId());
                 
                 // boardImgPath에 Firebase URL 저장
                 writeBoard.setBoardImgPath(uploaded.url());
@@ -245,14 +230,9 @@ public class BoardController {
                 
                 // 업데이트된 엔티티 저장
                 boardService.save(writeBoard);
-                System.out.println("========== 이미지 업로드 완료 및 DB 저장 완료 ==========");
             } catch (Exception e) {
-                System.err.println("========== 이미지 업로드 실패 ==========");
-                System.err.println("에러 메시지: " + e.getMessage());
-                e.printStackTrace();
+                // 이미지 업로드 실패 시 무시하고 계속 진행
             }
-        } else {
-            System.out.println("이미지 파일이 없거나 비어있습니다.");
         }
         
         // GPT 자동 답변 생성
@@ -372,7 +352,6 @@ public class BoardController {
                             : boardEntity.getBoardImgid();
                         storageService.delete(oldObjectPath);
                     } catch (Exception e) {
-                        System.err.println("기존 이미지 삭제 실패: " + e.getMessage());
                         // 삭제 실패해도 계속 진행
                     }
                 }
@@ -391,8 +370,7 @@ public class BoardController {
                 // 업데이트된 엔티티 저장
                 boardService.save(boardEntity);
             } catch (Exception e) {
-                System.err.println("이미지 업로드 실패: " + e.getMessage());
-                e.printStackTrace();
+                // 이미지 업로드 실패 시 무시하고 계속 진행
             }
         }
         

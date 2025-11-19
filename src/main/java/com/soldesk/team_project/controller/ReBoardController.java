@@ -50,26 +50,10 @@ public class ReBoardController {
                                 BindingResult bindingResult,
                                 @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
-        System.out.println("========== createReboard 메서드 호출됨 ==========");
-        System.out.println("게시글 ID: " + id);
-        System.out.println("loginUser: " + (loginUser != null ? loginUser.getRole() : "null"));
-        System.out.println("reboardForm: " + (reboardForm != null ? reboardForm.getReboardContent() : "null"));
-        System.out.println("bindingResult.hasErrors(): " + bindingResult.hasErrors());
-        if (bindingResult.hasErrors()) {
-            System.out.println("bindingResult 에러들:");
-            bindingResult.getAllErrors().forEach(error -> System.out.println("  - " + error.getDefaultMessage()));
-        }
-
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         
         // 변호사 권한 확인
         if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole()) || loginUser.getLawyerIdx() == null) {
-            System.out.println("========== 변호사 권한 없음 ==========");
-            System.out.println("loginUser null: " + (loginUser == null));
-            if (loginUser != null) {
-                System.out.println("role: " + loginUser.getRole());
-                System.out.println("lawyerIdx: " + loginUser.getLawyerIdx());
-            }
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "변호사만 답변을 작성할 수 있습니다.");
         }
         
@@ -77,26 +61,12 @@ public class ReBoardController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "변호사 정보를 찾을 수 없습니다."));
         
         if (bindingResult.hasErrors()) {
-            System.out.println("========== validation 에러 발생 ==========");
             // 에러 났을 때는 다시 원래 게시글 정보 보여줘야 하니까 이걸 넣어야 함
             model.addAttribute("boardEntity", boardEntity);
             return "redirect:/board/detail/" + id;
         }
         
-        System.out.println("========== 답변 작성 시작 ==========");
-        System.out.println("게시글 ID: " + id);
-        System.out.println("답변 내용: " + reboardForm.getReboardContent());
-        System.out.println("변호사 ID: " + lawyerEntity.getLawyerIdx());
-        System.out.println("변호사 이름: " + lawyerEntity.getLawyerName());
-        
         ReBoardEntity reboardEntity = this.reboardService.create(boardEntity, reboardForm.getReboardContent(), lawyerEntity);
-        
-        System.out.println("========== 답변 저장 완료 ==========");
-        System.out.println("답변 ID: " + reboardEntity.getReboardIdx());
-        System.out.println("답변 내용: " + reboardEntity.getReboardContent());
-        System.out.println("답변 활성화 상태: " + reboardEntity.getReboardActive());
-        System.out.println("리다이렉트 URL: " + String.format("/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx()));
-        
         return String.format("redirect:/board/detail/%s#reboard_%s", reboardEntity.getBoardEntity().getBoardIdx(), reboardEntity.getReboardIdx());
     
     }
