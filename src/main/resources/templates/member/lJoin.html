@@ -89,8 +89,8 @@
 
         <!-- 4. 등록번호 (이름 아래로 내림) -->
         <div class="field">
-          <input id="lawyerIdnum"
-                 name="lawyerIdnum"
+          <input id="lawyerAuth"
+                 name="lawyerAuth"
                  class="input"
                  type="text"
                  placeholder="등록번호"
@@ -138,6 +138,17 @@
                  placeholder="이메일"
                  autocomplete="email"
                  required>
+        </div>
+
+        <!-- 생년월일(주민번호 앞자리) -->
+        <div class="field">
+          <input id="lawyerIdnum" 
+                name="lawyerIdnum" 
+                class="input" 
+                type="text" 
+                placeholder="생년월일(예: 990101)" 
+                inputmode="numeric" 
+                required>
         </div>
 
         <!-- 사무실 주소 -->
@@ -196,23 +207,6 @@
                      class="input"
                      type="text"
                      placeholder="한줄소개 (선택)">
-              <label style="display:block; margin-top:8px;">상담 가능 요일 및 시간대 (선택)</label>
-              <div class="days">
-                <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
-                <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
-                <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
-                <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
-                <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
-                <input type="checkbox" id="sat" value="토"><label for="sat">토</label>
-                <input type="checkbox" id="sun" value="일"><label for="sun">일</label>
-              </div>
-              <div class="inline" style="margin-top:4px;">
-                <input id="timeStart" class="input" type="time" style="flex:1">
-                <span style="margin:0 6px">~</span>
-                <input id="timeEnd" class="input" type="time" style="flex:1">
-              </div>
-              <button type="button" class="small-btn" id="addTime" style="margin-top:6px;">추가</button>
-              <div id="selectedList" class="selected-list"></div>
             </div>
           </div>
         </div>
@@ -220,18 +214,9 @@
         <!-- 등록증 업로드 + 동의 -->
         <div class="field">
           <div class="agree-area">
-            <div class="left">
-              <!-- 신분증 업로드 제거, 등록증만 유지 -->
-              <input id="certImage"
-                     name="certImage"
-                     type="file"
-                     accept="image/*"
-                     style="display:none" />
-              <button type="button" class="small-btn" id="certPickBtn">등록증 업로드</button>
-            </div>
             <div class="right">
               <!-- 화면에서는 Y/N로 토글하지만 DB 저장은 서비스에서 1로 처리 -->
-              <input type="hidden" id="lawyerAgree" name="lawyerAgree" value="N">
+              <input type="hidden" id="lawyerAgree" name="lawyerAgree" value="0">
               <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
             </div>
           </div>
@@ -241,7 +226,6 @@
               <div id="certImagePreview" class="thumb"></div>
             </div>
           </div>
-          <small id="fileMsg" class="help">등록증 이미지를 첨부해주세요.</small>
           <small id="agreeMsg" class="help"></small>
         </div>
 
@@ -264,31 +248,81 @@
         /*]]>*/
     </script>
   <script>
+    // OCR 검증 완료 플래그
+    let ocrVerified = false;
+
     document.getElementById("verifyBtn").addEventListener("click", async () => {
-        const number = document.getElementById("lawyerIdnum").value;
-        const image = document.getElementById("certImage").files[0];
+      const number = document.getElementById("lawyerAuth").value;
+      const image = document.getElementById("certImage").files[0];
 
-        const formData = new FormData();
-        formData.append("licenseNumber", number);
-        formData.append("licenseImage", image);
+      if (!number) {
+        alert("등록번호를 입력해주세요.");
+        return;
+      }
 
+      if (!image) {
+        alert("등록증 이미지를 업로드해주세요.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("licenseNumber", number);
+      formData.append("licenseImage", image);
+
+      try {
         const res = await fetch("/member/verify-license", {
-            method: "POST",
-            body: formData
+          method: "POST",
+          body: formData
         });
 
         const result = await res.json();
-
         console.log("🔍 OCR 결과:", result.ocrTexts);
 
         if (result.valid === true) {
-            alert((result.message || "자격 검증 성공") + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
-            document.getElementById("submitBtn").disabled = false;
+          ocrVerified = true;
+          alert((result.message || "자격 검증 성공") + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
+          
+          // 인증 완료 표시
+          document.getElementById("verifyBtn").textContent = "인증 완료";
+          document.getElementById("verifyBtn").classList.add("complete-btn");
+          document.getElementById("verifyBtn").disabled = true;
         } else {
-            alert((result.error || result.message || "자격 검증 실패. 다시 확인해주세요.") 
-                + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
-            document.getElementById("submitBtn").disabled = true;
+          ocrVerified = false;
+          alert((result.error || result.message || "자격 검증 실패. 다시 확인해주세요.") 
+              + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
         }
+      } catch (error) {
+        console.error("OCR 검증 오류:", error);
+        ocrVerified = false;
+        alert("검증 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    });
+
+    // OCR 검증 상태를 전역으로 노출
+    window.isOcrVerified = () => ocrVerified;
+
+    // --- 회원가입 제출 검사 추가 ---
+    document.getElementById("lawyerJoinForm").addEventListener("submit", function(e) {
+
+      let errors = [];
+
+      // 🔍 OCR 검증 여부 체크
+      if (!ocrVerified) {
+        errors.push("등록증 인증을 완료해주세요.");
+        const verifyBtn = document.getElementById("verifyBtn");
+
+        if (verifyBtn) {
+          verifyBtn.style.border = "2px solid red";
+          setTimeout(() => verifyBtn.style.border = "", 2000);
+        }
+      }
+
+      // 에러가 하나라도 있으면 제출 막기
+      if (errors.length > 0) {
+        e.preventDefault();
+        alert(errors.join("\n"));
+        return;
+      }
     });
   </script>
 </body>

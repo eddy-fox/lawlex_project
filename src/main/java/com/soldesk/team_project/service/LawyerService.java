@@ -92,6 +92,7 @@ public class LawyerService {
         lawyerEntity.setLawyerComment(lawyerDTO.getLawyerComment());
         lawyerEntity.setLawyerLike(lawyerDTO.getLawyerLike());
         lawyerEntity.setLawyerAnswerCnt(lawyerDTO.getLawyerAnswerCnt());
+        lawyerEntity.setInterestIdx(lawyerDTO.getInterestIdx());
         
         InterestEntity interestEntity = interestRepository.findById(lawyerDTO.getInterestIdx()).orElse(null);
         lawyerEntity.setInterest(interestEntity);
@@ -357,6 +358,8 @@ public class LawyerService {
         lawyerEntity.setLawyerName(temp.getName());
         lawyerEntity.setLawyerEmail(temp.getEmail());
         lawyerEntity.setLawyerActive(1);
+        lawyerEntity.setLawyerLike(0);
+        lawyerEntity.setLawyerAnswerCnt(0);
         lawyerEntity.setLawyerProvider(temp.getProvider());
         lawyerEntity.setLawyerProviderId(temp.getProviderId());
 
@@ -408,7 +411,6 @@ public class LawyerService {
         dto.setBoardTitle(null);
     }
 
-    // LawyerEntity → lawyerIdx (PK) 꺼내서 넣기
     if (entity.getLawyerIdx() != null) {
         dto.setLawyerIdx(entity.getLawyer().getLawyerIdx());
     } else {

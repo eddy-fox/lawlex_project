@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,5 +47,13 @@ public class PointEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private MemberEntity member;
+
+    // 날짜 null이면 자동 설정
+    @PrePersist
+    public void prePersist() {
+        if (this.pointRegDate == null) {
+            this.pointRegDate = LocalDate.now();
+        }
+    }
 
 }
