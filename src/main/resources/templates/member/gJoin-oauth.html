@@ -100,4 +100,30 @@
   <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/gJoin.js}"></script>
 </body>
+<script>
+  // 개인정보 수신 동의 토글
+  document.addEventListener('DOMContentLoaded', function() {
+    const privacyBtn = document.getElementById('privacyBtn');
+    const memberAgreeInput = document.getElementById('memberAgree');
+    
+    let isAgreed = false;
+
+    privacyBtn.addEventListener('click', function() {
+      isAgreed = !isAgreed;
+      
+      if (isAgreed) {
+        memberAgreeInput.value = 'Y';
+        privacyBtn.classList.add('agreed');
+      } else {
+        memberAgreeInput.value = 'N';
+        privacyBtn.classList.remove('agreed');
+      }
+    });
+  });
+</script>
+<script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </html>

@@ -54,21 +54,17 @@
                 </tr>
               </thead>
               <tbody id="tbodyNew">
-                <tr onclick="location.href='#'" style="cursor: pointer;">
-                    <td class="center">1</td>
-                    <td class="center">user01</td>
-                    <td>하드코딩 된 더미 새로운 질문글</td>
-                    <td class="center">20251017</td>
-                    <td class="center">Y</td>
-                </tr>
-                <tr onclick="location.href='#'" style="cursor: pointer;" th:each="nq : ${newQuestions}">
+                <tr th:onclick="|location.href='/question/qnaInfo?qIdx=' + ${nq.qIdx}|" style="cursor: pointer;" th:each="nq : ${newQuestions}">
                     <td class="center"><span th:text="${nq.qIdx}"></span></td>
-                    <td class="center"><span th:text="${nq.infoId != null ? nq.infoId : '-'}"></span></td>
+                    <td class="center">
+                      <span th:if="${nq.memberId != null and nq.lawyerId == null}" th:text="${nq.memberId}"></span>
+                      <span th:unless="${nq.memberId != null and nq.lawyerId == null}" th:text="${nq.lawyerId}"></span>
+                    </td>
                     <td><span th:text="${nq.qTitle}"></span></td>
                     <td class="center"><span th:text="${nq.qRegDate}"></span></td>
                     <td class="center">
                       <span th:if="${nq.qSecret == 1}">🔒</span>
-                      <span th:unless="${nq.qSecret == 1}">🔓</span>
+                      <span th:unless="${nq.qSecret == 1}">  </span>
                     </td>
                 </tr>
               </tbody>
@@ -90,21 +86,17 @@
                 </tr>
               </thead>
               <tbody id="tbodyDone">
-                <tr onclick="location.href='#'" style="cursor: pointer;">
-                    <td class="center">1</td>
-                    <td class="center">user01</td>
-                    <td>하드코딩 된 더미 답변한 질문글</td>
-                    <td class="center">20251016</td>
-                    <td class="center">N</td>
-                </tr>
-                <tr onclick="location.href='#'" style="cursor: pointer;" th:each="cq : ${completedQuestions}">
+                <tr th:onclick="|location.href='/question/qnaInfo?qIdx=' + ${cq.qIdx}|" style="cursor: pointer;" th:each="cq : ${completedQuestions}">
                     <td class="center"><span th:text="${cq.qIdx}"></span></td>
-                    <td class="center"><span th:text="${cq.infoId != null ? cq.infoId : '-'}"></span></td>
+                    <td class="center">
+                      <span th:if="${cq.memberId != null and cq.lawyerId == null}" th:text="${cq.memberId}"></span>
+                      <span th:unless="${cq.memberId != null and cq.lawyerId == null}" th:text="${cq.lawyerId}"></span>
+                    </td>
                     <td><span th:text="${cq.qTitle}"></span></td>
                     <td class="center"><span th:text="${cq.qRegDate}"></span></td>
                     <td class="center">
                       <span th:if="${cq.qSecret == 1}">🔒</span>
-                      <span th:unless="${cq.qSecret == 1}">🔓</span>
+                      <span th:unless="${cq.qSecret == 1}">  </span>
                     </td>
                 </tr>
               </tbody>
@@ -136,4 +128,9 @@
         document.getElementById('completedQnA').classList.add('active');
     }
 </script>
+<script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </html>

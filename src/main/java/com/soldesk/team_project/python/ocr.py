@@ -8,7 +8,12 @@ Created on Mon Nov  3 14:41:40 2025
 import os
 import sys
 import cv2
+import json
+import warnings
 import easyocr
+
+# 모든 경고 메시지 무시
+warnings.filterwarnings('ignore')
 
 reader = easyocr.Reader(['ko', 'en'])
 
@@ -23,10 +28,11 @@ if __name__ == "__main__":
     # 이미지 읽기
     img = cv2.imread(img_path)
     if img is None:
-        raise ValueError("이미지를 읽지 못했습니다. 경로나 파일 손상 여부를 확인하세요.")
+        sys.stderr.write("ERROR: 이미지를 읽지 못했습니다. 경로나 파일 손상 여부를 확인하세요.\n")
+        sys.exit(1)
         
     result = reader.readtext(img)
 
-    # 결과 출력
+    # 결과 출력 - JSON 형식으로 직접 출력
     texts = [detection[1] for detection in result]
-    print(texts) 
+    print(json.dumps(texts, ensure_ascii=False))
