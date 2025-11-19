@@ -30,11 +30,6 @@ public class ReBoardService {
     @Transactional
     public ReBoardEntity create(BoardEntity board, String content, LawyerEntity lawyer) {
 
-        System.out.println("========== ReBoardService.create 시작 ==========");
-        System.out.println("게시글 ID: " + board.getBoardIdx());
-        System.out.println("답변 내용: " + content);
-        System.out.println("변호사 ID: " + lawyer.getLawyerIdx());
-        
         ReBoardEntity reboard = new ReBoardEntity();
         reboard.setReboardContent(content);
         reboard.setReboardRegDate(LocalDate.now());
@@ -42,14 +37,7 @@ public class ReBoardService {
         reboard.setLawyer(lawyer);
         reboard.setReboardActive(1);
         
-        System.out.println("답변 엔티티 생성 완료, 저장 시작...");
-        ReBoardEntity saved = this.reboardRepository.save(reboard);
-        System.out.println("========== ReBoardService.create 저장 완료 ==========");
-        System.out.println("저장된 답변 ID: " + saved.getReboardIdx());
-        System.out.println("저장된 답변 내용: " + saved.getReboardContent());
-        System.out.println("저장된 답변 활성화 상태: " + saved.getReboardActive());
-        
-        return saved;
+        return this.reboardRepository.save(reboard);
 
     }
 
