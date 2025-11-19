@@ -41,11 +41,11 @@ public class PointEntity {
     @Column(name = "point_reg_date")
     private LocalDate pointRegDate;
 
-    @Column(name = "member_idx", insertable = false, updatable = false)
+    @Column(name = "member_idx")
     private Integer memberIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_idx")
+    @JoinColumn(name = "member_idx", insertable = false, updatable = false)
     private MemberEntity member;
 
     // 날짜 null이면 자동 설정
