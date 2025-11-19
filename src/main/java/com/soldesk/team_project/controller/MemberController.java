@@ -121,48 +121,6 @@ public class MemberController {
         return "payment/checkout";
     }
 
-    // -------------------- OCR 테스트 --------------------
-    @GetMapping("/testOCR")
-    public String testOCR(Model model) {
-        LawyerDTO lawyerDTO = new LawyerDTO();
-        lawyerDTO.setLawyerAuth(0);
-        model.addAttribute("lawyerAuth", new LawyerDTO());
-        return "member/testOCR";
-    }
-
-    @PostMapping("/verify-license")
-    @ResponseBody
-    public Map<String, Object> verifyLicense(@RequestParam("licenseNumber") String licenseNumber,
-                                             @RequestParam("licenseImage") MultipartFile licenseImage) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            File tempFile = File.createTempFile("license_", ".jpg");
-            licenseImage.transferTo(tempFile);
-
-            Map<String, Object> ocrResult = pythonService.runPythonOCR("ocr.py", tempFile.toString());
-            if (!(boolean) ocrResult.getOrDefault("valid", false)) {
-                result.put("valid", false);
-                result.put("error", ocrResult.get("error"));
-                return result;
-            }
-
-            @SuppressWarnings("unchecked")
-            List<String> ocrTexts = (List<String>) ocrResult.get("texts");
-            boolean matched = ocrTexts.stream().anyMatch(text -> text.contains(licenseNumber));
-
-            result.put("valid", matched);
-            result.put("message", matched ? "자격번호 일치!" : "자격번호 불일치!");
-            result.put("ocrTexts", ocrTexts);
-            tempFile.delete();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("valid", false);
-            result.put("error", "검증 과정 중 오류 발생: " + e.getMessage());
-        }
-        return result;
-    }
-
     // 로그인 / 로그아웃
     @GetMapping("/login")
     public String loginForm(@RequestParam(name = "need", required = false) String need,
@@ -487,6 +445,7 @@ public class MemberController {
         return "member/loginChoice-oauth";
     }
 
+    // OAuth 일반회원
     @GetMapping("/joinMember-oauth")
     public String OAuth2JoinMemberForm(HttpSession session, Model model, 
         RedirectAttributes redirectAttributes) {
@@ -520,6 +479,7 @@ public class MemberController {
         return "redirect:/member/login";
     }
 
+    // OAuth 변호사회원
     @GetMapping("/joinLawyer-oauth")
     public String OAuth2JoinLawyerForm(HttpSession session, Model model, 
         RedirectAttributes redirectAttributes) {
@@ -546,11 +506,45 @@ public class MemberController {
 
         TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
 
+        System.out.println("🔍 받은 interestIdx: " + joinLawyer.getLawyerAuth());
+    
         lawyerService.joinOAuthLawyer(temp, joinLawyer);
 
         session.removeAttribute("tempOauth");
             
         return "redirect:/member/login";
+    }
+    @PostMapping("/verify-license")
+    @ResponseBody
+    public Map<String, Object> verifyLicense(@RequestParam("licenseNumber") String licenseNumber,
+                                             @RequestParam("licenseImage") MultipartFile licenseImage) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            File tempFile = File.createTempFile("license_", ".jpg");
+            licenseImage.transferTo(tempFile);
+
+            Map<String, Object> ocrResult = pythonService.runPythonOCR("ocr.py", tempFile.toString());
+            if (!(boolean) ocrResult.getOrDefault("valid", false)) {
+                result.put("valid", false);
+                result.put("error", ocrResult.get("error"));
+                return result;
+            }
+
+            @SuppressWarnings("unchecked")
+            List<String> ocrTexts = (List<String>) ocrResult.get("texts");
+            boolean matched = ocrTexts.stream().anyMatch(text -> text.contains(licenseNumber));
+
+            result.put("valid", matched);
+            result.put("message", matched ? "자격번호 일치!" : "자격번호 불일치!");
+            result.put("ocrTexts", ocrTexts);
+            tempFile.delete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("valid", false);
+            result.put("error", "검증 과정 중 오류 발생: " + e.getMessage());
+        }
+        return result;
     }
 
     // =================== 세션 DTO들 ===================

@@ -81,7 +81,7 @@
         <!-- 개인정보 수신 동의 토글 -->
         <div class="field">
           <div class="agree-area">
-            <input type="hidden" id="memberAgree" name="memberAgree" th:field="*{memberAgree}" value="N">
+            <input type="hidden" id="memberAgree" name="memberAgree" th:field="*{memberAgree}" value="0">
             <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
           </div>
           <small id="agreeMsg" class="help"></small>
@@ -112,10 +112,10 @@
       isAgreed = !isAgreed;
       
       if (isAgreed) {
-        memberAgreeInput.value = 'Y';
+        memberAgreeInput.value = '1';
         privacyBtn.classList.add('agreed');
       } else {
-        memberAgreeInput.value = 'N';
+        memberAgreeInput.value = '0';
         privacyBtn.classList.remove('agreed');
       }
     });
