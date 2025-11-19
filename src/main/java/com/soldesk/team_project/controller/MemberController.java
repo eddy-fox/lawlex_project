@@ -412,43 +412,51 @@ public class MemberController {
     public String myPosts(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                           @RequestParam(value = "page", defaultValue = "0") int page,
                           Model model) {
+
         if (loginUser == null) return "redirect:/member/login";
 
-        org.springframework.data.domain.PageRequest pageable = 
+        if (page < 0) page = 0;
+
+        org.springframework.data.domain.PageRequest pageable =
             org.springframework.data.domain.PageRequest.of(page, 10);
 
-        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
-            // 일반회원: 상담글 리스트
-            org.springframework.data.domain.Page<BoardEntity> paging = 
-                boardRepository.findByMemberMemberIdxOrderByBoardRegDateDesc(loginUser.getMemberIdx(), pageable);
-            
-            // 페이징 범위 계산
+        String role = loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase();
+
+        if ("MEMBER".equals(role) && loginUser.getMemberIdx() != null) {
+            // 일반회원: 내가 쓴 글 리스트 (board.member.memberIdx == loginUser.memberIdx)
+            org.springframework.data.domain.Page<BoardEntity> paging =
+                boardRepository.findByMemberMemberIdxOrderByBoardRegDateDesc(
+                    loginUser.getMemberIdx(), pageable);
+
             int currentBlock = page / 10;
             int startPage = currentBlock * 10;
-            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
-            
+            int totalPages = paging.getTotalPages();
+            int endPage = Math.min(startPage + 9, (totalPages > 0 ? totalPages - 1 : 0));
+
             model.addAttribute("paging", paging);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             model.addAttribute("userType", "MEMBER");
             return "member/myPosts";
-        } else if ("LAWYER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+
+        } else if ("LAWYER".equals(role) && loginUser.getLawyerIdx() != null) {
             // 변호사: 답변글 리스트
-            org.springframework.data.domain.Page<ReBoardEntity> paging = 
-                reBoardRepository.findByLawyerLawyerIdxOrderByReboardRegDateDesc(loginUser.getLawyerIdx(), pageable);
-            
-            // 페이징 범위 계산
+            org.springframework.data.domain.Page<ReBoardEntity> paging =
+                reBoardRepository.findByLawyerLawyerIdxOrderByReboardRegDateDesc(
+                    loginUser.getLawyerIdx(), pageable);
+
             int currentBlock = page / 10;
             int startPage = currentBlock * 10;
-            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
-            
+            int totalPages = paging.getTotalPages();
+            int endPage = Math.min(startPage + 9, (totalPages > 0 ? totalPages - 1 : 0));
+
             model.addAttribute("paging", paging);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             model.addAttribute("userType", "LAWYER");
             return "member/myPosts";
         }
-        
+
         return "redirect:/member/mypage";
     }
 

@@ -143,10 +143,11 @@ public class MemberService {
     }
 
     // 세션에서 가져온 회원 검색
-    public MemberDTO searchSessionMember(int memberIdx) {
-        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
-        MemberDTO memberDTO = convertMemberDTO(memberEntity);
-        return memberDTO;
+    public MemberDTO searchSessionMember(Integer memberIdx) {
+        if (memberIdx == null) return null;
+        return memberRepository.findById(memberIdx)
+                .map(this::convertMemberDTO)
+                .orElse(null);
     }
 
     //특정 회원 검색
@@ -270,23 +271,6 @@ public class MemberService {
                 .map(this::convertMemberDTO)
                 .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
     }
-
-    // OAuth2
-    // @Transactional
-    // public MemberEntity saveProcess(MemberDTO memberDTO, TemporaryOauthDTO tempUser) {
-    //     MemberEntity memberEntity = MemberEntity.builder()
-    //             .memberId(tempUser.getEmail())
-    //             .memberPass("{noop}oauth2")
-    //             .memberName(tempUser.getName())
-    //             .memberEmail(tempUser.getEmail())
-    //             .memberPhone(digits(memberDTO.getMemberPhone()))
-    //             .memberIdnum(digits(memberDTO.getMemberIdnum()))
-    //             .interestIdx1(memberDTO.getInterestIdx1())
-    //             .memberActive(1)
-    //             .provider(tempUser.getProvider())
-    //             .build();
-    //     return memberRepository.save(memberEntity);
-    // }
 
     // 아이디 찾기 member → lawyer 순서
     public String findId(String memberPhone, String memberIdnum) {
@@ -438,7 +422,7 @@ public class MemberService {
         return true;
     }
 
-    // ===== 내가 쓴 글 / 댓글 =====
+    // ===== 내가 쓴 글  =====
 
     @Transactional(readOnly = true)
     public List<BoardDTO> getMyBoards(Integer memberIdx) {
