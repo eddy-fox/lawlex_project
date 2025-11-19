@@ -56,7 +56,8 @@ public class BoardController {
     @RequestParam(value="page", defaultValue="0") int page,
     @RequestParam(value="kw", defaultValue="") String kw,
     @RequestParam(value="interestIdx", required = false) Integer interestIdx,
-    HttpSession session) {
+    HttpSession session,
+    @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         if(interestIdx == null) {
             interestIdx = 1;
@@ -75,6 +76,9 @@ public class BoardController {
         AdminEntity loginAdmin = getLoginAdmin(session);
         boolean isAdmin = loginAdmin != null;
         model.addAttribute("isAdmin", isAdmin);
+        
+        // 로그인 사용자 정보 추가
+        model.addAttribute("loginUser", loginUser);
         
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
@@ -111,6 +115,37 @@ public class BoardController {
             lawyerRepository.findById(loginUser.getLawyerIdx()).ifPresent(lawyer -> {
                 model.addAttribute("loginLawyer", lawyer);
             });
+        }
+        
+        // 일반회원이 각 답글에 좋아요를 눌렀는지 확인
+        java.util.Map<Integer, Boolean> likedReboards = new java.util.HashMap<>();
+        if (loginUser != null && "MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
+            if (boardEntity.getReboardList() != null) {
+                for (com.soldesk.team_project.entity.ReBoardEntity reboard : boardEntity.getReboardList()) {
+                    boolean isLiked = false;
+                    // memberVoter 강제 로딩 및 확인
+                    if (reboard.getMemberVoter() != null) {
+                        // 각 MemberEntity를 실제로 로드
+                        for (com.soldesk.team_project.entity.MemberEntity member : reboard.getMemberVoter()) {
+                            if (member.getMemberIdx() != null && member.getMemberIdx().equals(loginUser.getMemberIdx())) {
+                                isLiked = true;
+                                break;
+                            }
+                        }
+                    }
+                    likedReboards.put(reboard.getReboardIdx(), isLiked);
+                }
+            }
+        }
+        model.addAttribute("likedReboards", likedReboards);
+        
+        // 세션에서 alreadyLiked 플래그 확인 및 모델에 추가
+        boolean alreadyLiked = session.getAttribute("alreadyLiked") != null && (Boolean) session.getAttribute("alreadyLiked");
+        model.addAttribute("alreadyLiked", alreadyLiked);
+        
+        // 세션에서 alreadyLiked 플래그 제거 (한 번만 표시하기 위해)
+        if (session.getAttribute("alreadyLiked") != null) {
+            session.removeAttribute("alreadyLiked");
         }
         
         // 관리자 권한 확인
