@@ -29,6 +29,7 @@ public class RankingService {
         lawyerDTO.setLawyerImgPath(lawyerEntity.getLawyerImgPath());
         lawyerDTO.setLawyerLike(lawyerEntity.getLawyerLike());
         lawyerDTO.setLawyerAnswerCnt(lawyerEntity.getLawyerAnswerCnt());
+        lawyerDTO.setLawyerActive(lawyerEntity.getLawyerActive());
         return lawyerDTO;
     }
     private LawyerEntity converLawyerEntity(LawyerDTO lawyerDTO) {
@@ -38,6 +39,7 @@ public class RankingService {
         lawyerEntity.setLawyerImgPath(lawyerDTO.getLawyerImgPath());
         lawyerEntity.setLawyerLike(lawyerDTO.getLawyerLike());
         lawyerEntity.setLawyerAnswerCnt(lawyerDTO.getLawyerAnswerCnt());
+        lawyerEntity.setLawyerActive(lawyerDTO.getLawyerActive());
         return lawyerEntity;
     }
 
@@ -45,9 +47,9 @@ public class RankingService {
         Pageable pageable = PageRequest.of(0, 10);
         List<LawyerEntity> rankingList;
         if("answer".equals(pick)){
-            rankingList = rankingRepository.findAllByOrderByLawyerAnswerCntDesc(pageable);
+            rankingList = rankingRepository.findAllByLawyerActiveOrderByLawyerAnswerCntDesc(1, pageable);
         }else {
-            rankingList = rankingRepository.findAllByOrderByLawyerLikeDesc(pageable);
+            rankingList = rankingRepository.findAllByLawyerActiveOrderByLawyerLikeDesc(1, pageable);
         }
         return rankingList.stream()
                            .map(this :: convertLawyerDTO)
