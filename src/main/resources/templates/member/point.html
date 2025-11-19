@@ -6,20 +6,6 @@
     <title>포인트 메인</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/point.css}">
-    <!-- <style>
-       .point-option {
-           border: 2px solid #ccc;
-           border-radius: 10px;
-           padding: 10px;
-           margin: 10px 0;
-           cursor: pointer;
-           transition: 0.2s;
-       }
-       .point-option.selected {
-           border-color: #000777;
-           background-color: #e9f2ff;
-       }
-   </style> -->
 </head>
 <body>
     <!-- 헤더 -->
@@ -27,9 +13,26 @@
 
     <!-- 메인 -->
     <main class="page-point">
+
+      <!-- 회원 정보를 data 속성으로 저장 -->
+      <div id="member-data" style="display: none;" 
+        th:data-member-idx="${member.memberIdx}"
+        th:data-member-email="${member.memberEmail}"
+        th:data-member-name="${member.memberName}"
+        th:data-member-phone="${member.memberPhone}">
+      </div>
+      
+      <!-- 디버깅용: 실제 값 확인 (나중에 삭제) -->
+      <div style="border: 2px solid red; padding: 10px; margin: 10px;">
+        <h3>디버깅 정보 (나중에 삭제)</h3>
+        <p>memberIdx: <span th:text="${member.memberIdx}"></span></p>
+        <p>memberEmail: <span th:text="${member.memberEmail}"></span></p>
+        <p>memberName: <span th:text="${member.memberName}"></span></p>
+        <p>memberPhone: <span th:text="${member.memberPhone}"></span></p>
+      </div>
         
       <!-- 포인트 결제 -->
-      <form id="payment-form" th:action="@{/member/point}" method="post" class="container">
+      <form id="payment-form" class="container">
         <div class="titlebar">
             <h1>포인트 결제</h1>
             <span class="small">잔여 포인트 : <b th:text="${member.memberPoint}"></b></span>
@@ -40,7 +43,10 @@
             <div class="opt-grid">
               <input type="hidden" name="selectedProduct" id="selectedProduct">
               <div class="pick" th:each="product : ${productList}">
-                <div th:data-product="${product.productIdx}" class="opt point-option">
+                <div th:data-product="${product.productIdx}" 
+                     th:data-price="${product.productPrice}"
+                     th:data-content="${product.productContent}"
+                     class="opt point-option">
                     <div th:text="${product.productContent}" class="tag"></div>
                     <div th:text="${product.productPrice}" class="price"></div>
                 </div>
@@ -50,14 +56,23 @@
 
           <aside class="side-grid">
             <div class="label">결제 주의사항</div>
-            <div class="ask">이러한 사항이 있음으로 동의합니까?</div>
+            <div class="ask">토스페이를 이용하여 제공하는 상품 및 서비스를 구매하고자 할 경우, LawLex는 거래 당사자간 원활한 의사소통 및 배송, 상담 등 거래이행을 위하여 필요한 최소한의 개인정보를 아래와 같이 제공하고 있습니다. <br><br>
+                            1. 개인정보를 제공받는 자 <br>
+                            상품 및 서비스 판매자 <br>
+                            2. 제공하는 개인정보 항목 <br>
+                            이름, 아이디, (휴대)전화번호, 상품 구매정보, 결제수단, 상품 수령인 정보, 개인통관고유부호(통관 필요 상품 주문 시에만 해당) <br>
+                            3. 개인정보를 제공받는 자의 이용목적 <br>
+                            판매자와 구매자의 원활한 거래 진행, 본인의사의 확인, 고객상담 및 불만처리/부정이용 방지 등의 고객관리, 물품배송, 통관, 새로운 상품/서비스 정보와 고지사항의 안내, 상품/서비스 구매에 따른 혜택 제공, 서비스 개선·통계·분석 <br>
+                            4. 개인정보를 제공받는 자의 개인정보 보유 및 이용기간 <br>
+                            개인정보 이용목적 달성 시까지 보존합니다. 단, 관계 법령의 규정에 의하여 일정 기간 보존이 필요한 경우에는 해당 기간만큼 보관 후 삭제합니다. <br>
+                            위 개인정보 제공 동의를 거부할 권리가 있으나, 거부 시 토스페이를 이용한 상품 및 디지털 콘텐츠 구매가 불가능합니다. 그 밖의 내용은 토스페이 가맹점의 자체 이용약관 및 개인정보처리방침에 따릅니다.</div>
             <div class="radio-row">
                 동의합니까?
               <label for="agree" class="radio-square">
                 <input type="checkbox" id="agree" name="agree" value="yes"></input>
               </label>
             </div>
-            <button type="submit" class="btn">결제하기</button>
+            <button type="button" id="payment-button" class="btn">결제하기</button>
           </aside>
         </section>
       </form>
@@ -123,12 +138,17 @@
 
     <!-- 푸터 -->
     <div class="include" th:replace="~{include/footer :: footer}"></div>
+    
+    <!-- 토스페이먼츠 SDK -->
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+    
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/chatIcon.js}"></script>
     <script th:src="@{/js/point.js}"></script>
+    
     <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/
-        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        alert('[[${alert}]]');
         /*]]>*/
     </script>
     

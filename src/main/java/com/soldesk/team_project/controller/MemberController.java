@@ -84,9 +84,18 @@ public class MemberController {
 
     // -------------------- 포인트 --------------------
     @GetMapping("/point")
-    public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+    public String pointMain(Model model, RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         // 세션에서 회원 가져오기
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("alert", "세션이 만료되었습니다.");
+            return "redirect:/member/login";
+        } else if (loginUser.getMemberIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/";
+        } 
+
         Integer memberIdx = loginUser.getMemberIdx();
         MemberDTO member = memberService.searchSessionMember(memberIdx);
         model.addAttribute("member", member);
@@ -104,15 +113,53 @@ public class MemberController {
 
         return "member/point";
     }
+    @PostMapping("/point/prepare")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> preparePurchase(
+            @RequestBody Map<String, Object> request,
+            @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+        
+        if (loginUser == null || loginUser.getMemberIdx() == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "인증 필요"));
+        }
+
+        try {
+            int productIdx = (Integer) request.get("productIdx");
+            String orderId = (String) request.get("orderId");
+            int memberIdx = (Integer) request.get("memberIdx");
+
+            // 주문 정보 생성
+            PurchaseDTO purchase = purchaseService.createPendingPurchase(
+                productIdx, orderId, memberIdx);
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "orderId", orderId
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model,
-                                  @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model, RedirectAttributes redirectAttributes,
+                                  @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
                                     
+        // 세션에서 회원 가져오기
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("alert", "세션이 만료되었습니다.");
+            return "redirect:/member/login";
+        } else if (loginUser.getMemberIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/";
+        } 
+
         Integer memberIdx = loginUser.getMemberIdx();
-        String memberIdxStr = String.valueOf(memberIdx);
-        List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
+        MemberDTO member = memberService.searchSessionMember(memberIdx);
         model.addAttribute("member", member);
+
+        ProductDTO product = purchaseService.getProduct(productNum);
+        model.addAttribute("product", product);
 
         String purchaseId = "order-" + System.currentTimeMillis();
         PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId, memberIdx);

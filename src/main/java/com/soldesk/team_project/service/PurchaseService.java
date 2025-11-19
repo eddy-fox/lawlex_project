@@ -69,13 +69,18 @@ public class PurchaseService {
     // purchase DTO -> Entity
     private PurchaseEntity convertPurchaseEntity (PurchaseDTO purchaseDTO) {
         PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setPurchaseIdx(purchaseDTO.getPurchaseIdx());
         purchaseEntity.setPurchaseId(purchaseDTO.getPurchaseId());
+        purchaseEntity.setPurchaseState(purchaseDTO.getPurchaseState());
+        purchaseEntity.setPurchaseLegDate(purchaseDTO.getPurchaseLegDate());
+        purchaseEntity.setProductIdx(purchaseDTO.getProductIdx());
+        purchaseEntity.setMemberIdx(purchaseDTO.getMemberIdx());
     
         ProductEntity productEntity = productRepository.findById(purchaseDTO.getProductIdx()).orElse(null);
-        // MemberEntity memberEntity = memberRepository.findById(purchaseDTO.getMemberIdx()).orElse(null);
+        MemberEntity memberEntity = memberRepository.findById(purchaseDTO.getMemberIdx()).orElse(null);
     
         purchaseEntity.setProduct(productEntity);
-        // purchaseEntity.setMember(memberEntity);
+        purchaseEntity.setMember(memberEntity);
 
         return purchaseEntity;
     }
@@ -122,6 +127,7 @@ public class PurchaseService {
         purchaseDTO.setProductIdx(productIdx);
         purchaseDTO.setMemberIdx(memberIdx);
         purchaseDTO.setPurchaseId(purchaseId);
+        purchaseDTO.setPurchaseState("pending");
 
         PurchaseEntity purchaseEntity = convertPurchaseEntity(purchaseDTO);
         purchaseRepository.save(purchaseEntity);

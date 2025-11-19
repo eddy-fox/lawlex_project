@@ -38,11 +38,9 @@
     </div>
 
     <script>
-      // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-      // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
       const urlParams = new URLSearchParams(window.location.search);
 
-      // 서버로 결제 승인에 필요한 결제 정보를 보내세요.
+      // 서버로 결제 승인 요청
       async function confirm() {
         var requestData = {
           paymentKey: urlParams.get("paymentKey"),
@@ -50,7 +48,7 @@
           amount: urlParams.get("amount"),
         };
 
-        const response = await fetch("/confirm", {
+        const response = await fetch("/payment/confirm", {  // ✅ /payment/confirm
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -61,15 +59,14 @@
         const json = await response.json();
 
         if (!response.ok) {
-          // TODO: 결제 실패 비즈니스 로직을 구현하세요.
           console.log(json);
-          window.location.href = `/fail?message=${json.message}&code=${json.code}`;
+          window.location.href = `/payment/fail?message=${json.message}&code=${json.code}`;  // ✅ /payment/fail
+          return;
         }
 
-        // TODO: 결제 성공 비즈니스 로직을 구현하세요.
-        // console.log(json);
         return json;
       }
+      
       confirm().then(function (data) {
         document.getElementById("response").innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
       });
