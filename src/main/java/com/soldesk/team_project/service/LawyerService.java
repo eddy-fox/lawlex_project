@@ -411,7 +411,6 @@ public class LawyerService {
         dto.setBoardTitle(null);
     }
 
-    // LawyerEntity → lawyerIdx (PK) 꺼내서 넣기
     if (entity.getLawyerIdx() != null) {
         dto.setLawyerIdx(entity.getLawyer().getLawyerIdx());
     } else {
