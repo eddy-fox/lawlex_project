@@ -119,13 +119,17 @@
                     </div>
                     <div class="answer-content" th:text="${reboard.reboardContent}"></div>
                     <div class="answer-actions">
-                      <!-- 일반 변호사 답변만 추천 버튼 표시 -->
-                      <a href="javascript:void(0);" 
-                        class="recommend-link" 
-                        th:if="${reboard.lawyer == null or reboard.lawyer.lawyerIdx != 205}"
-                        th:data-uri="@{|/reboard/vote/${reboard.reboardIdx}|}">
-                        도움됐어요
-                        <span class="recommend-count" th:text="${#lists.size(reboard.voter)}"></span>
+                      <!-- 일반회원용 도움이됐어요 버튼 (카운트 표시용, 항상 표시) -->
+                      <a th:href="@{|/reboard/member-like/${reboard.reboardIdx}|}" 
+                        class="recommend-link like-btn"
+                        th:classappend="${(loginUser != null and loginUser.role == 'LAWYER') ? 'disabled' : ''}"
+                        th:if="${reboard.lawyer != null and reboard.lawyer.lawyerIdx != null and reboard.lawyer.lawyerIdx != 205}"
+                        th:data-liked="${(likedReboards != null and likedReboards.containsKey(reboard.reboardIdx) and likedReboards.get(reboard.reboardIdx) == true) ? 'true' : 'false'}"
+                        th:data-member="${(loginUser != null and loginUser.role == 'MEMBER' and loginUser.memberIdx != null) ? 'true' : 'false'}"
+                        th:data-lawyer="${(loginUser != null and loginUser.role == 'LAWYER') ? 'true' : 'false'}"
+                        th:data-reboard-idx="${reboard.reboardIdx}">
+                        도움이됐어요
+                        <span class="recommend-count" th:text="${reboard.memberVoter != null ? #lists.size(reboard.memberVoter) : 0}"></span>
                       </a>
                       <a th:href="@{|/reboard/modify/${reboard.reboardIdx}|}" 
                          class="answer-reply-btn"
@@ -193,5 +197,43 @@
         alert('[[${alert}]]'); // 전달된 alert 메세지 출력
         /*]]>*/
     </script>
+  <script th:src="@{/js/reBoard.js}"></script>
+  <script>
+    // 도움이됐어요 버튼 클릭 처리
+    (function() {
+      const likeButtons = document.querySelectorAll('.like-btn');
+      likeButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          const isLiked = this.getAttribute('data-liked');
+          const isMember = this.getAttribute('data-member');
+          const isLawyer = this.getAttribute('data-lawyer');
+          
+          // 변호사회원은 클릭 불가
+          if (isLawyer === 'true') {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+          }
+          
+          if (isMember !== 'true') {
+            e.preventDefault();
+            return false;
+          }
+          
+          if (isLiked === 'true') {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            alert('이미 추천하신 답변입니다.');
+            return false;
+          }
+        }, true); // capture phase에서 실행
+      });
+    })();
+  </script>
+  <script th:if="${alreadyLiked != null and alreadyLiked == true}">
+    alert('이미 추천하신 답변입니다.');
+  </script>
 </body>
 </html>

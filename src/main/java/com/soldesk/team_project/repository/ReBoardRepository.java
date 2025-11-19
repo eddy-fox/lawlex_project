@@ -14,6 +14,8 @@ import com.soldesk.team_project.entity.ReBoardEntity;
 public interface ReBoardRepository extends JpaRepository<ReBoardEntity, Integer> {
     
     Optional<ReBoardEntity> findByBoardEntityBoardIdx(Integer boardIdx);
+    
+    List<ReBoardEntity> findByBoardEntityBoardIdxAndReboardActive(Integer boardIdx, Integer reboardActive);
 
     // 변호사 idx 기준으로 최신 5개
     List<ReBoardEntity> findTop5ByLawyerIdxOrderByReboardRegDateDesc(Integer lawyerIdx);
