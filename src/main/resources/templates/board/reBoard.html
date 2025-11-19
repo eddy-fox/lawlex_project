@@ -90,11 +90,11 @@
                         <span class="answer-date" th:if="${reboard.reboardRegDate != null}" th:text="${#temporals.format(reboard.reboardRegDate, 'yyyy-MM-dd')}"></span>
                       </div>
                     </div>
-                    <div class="answer-content" th:text="${reboard.reboardContent + #lists.size(reboard.voter)}"></div>
+                    <div class="answer-content" th:text="${reboard.reboardContent}"></div>
                     <div class="answer-actions">
                       <a href="javascript:void(0);" class="recommend" th:data-uri="@{|/reboard/vote/${reboard.reboardIdx}|}">
                         도움됐어요
-                        <span th:text="${reboard.lawyer.lawyerLike}"></span>
+                        <span th:text="${reboard.lawyer.lawyerLike + #lists.size(reboard.voter)}"></span>
                       </a>
                       <a th:href="@{|/reboard/modify/${reboard.reboardIdx}|}" 
                          class="answer-reply-btn"
