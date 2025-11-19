@@ -42,5 +42,9 @@ public class TemporaryOauthDTO implements UserBase{
         return 1; // 임시 사용자는 활성 상태로 간주
     }
 
+    @Override
+    public String getUserType() {
+        return null; // 또는 "temp" - 아직 회원 타입이 결정되지 않음
+    }
     
 }

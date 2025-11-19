@@ -80,4 +80,9 @@
 </body>
 
 <script src="/js/admin.js"></script>
+<script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </html>

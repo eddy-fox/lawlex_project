@@ -10,20 +10,6 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 
-  <!-- 로그인 상태별 마이페이지 진입 버튼 -->
-  <div class="wrap" style="display:flex; justify-content:flex-end; gap:8px; margin:12px 0;">
-    <a th:if="${session.loginUser != null}"
-       class="primary-btn"
-       th:href="@{/member/mypage}">
-      마이페이지
-    </a>
-    <a th:if="${session.loginUser == null}"
-       class="small-btn"
-       th:href="@{/member/login(need='mypage')}">
-      로그인하고 마이페이지
-    </a>
-  </div>
-
   <main class="page-lJoin">
     <section class="center-card">
       <div class="head">
@@ -32,9 +18,10 @@
 
       <!-- 변호사 회원가입 폼 -->
       <form id="lawyerJoinForm" class="form"
-            th:action="@{/lawyer/join}"
+            th:action="@{/member/joinLawyer-oauth}"
             method="post"
             enctype="multipart/form-data"
+            th:object="${joinLawyer}"
             novalidate>
 
         <!-- CSRF -->
@@ -42,49 +29,14 @@
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         </th:block>
 
-        <!-- 1. 아이디 + 중복확인 (맨 위) -->
-        <div class="field">
-          <div class="inline">
-            <input id="lawyerId"
-                   name="lawyerId"
-                   class="input"
-                   type="text"
-                   placeholder="아이디"
-                   autocomplete="username"
-                   required>
-            <button class="pill" type="button" id="dupBtn">중복확인</button>
-          </div>
-          <small id="dupMsg" class="help"></small>
-        </div>
-
-        <!-- 2. 비밀번호 / 비밀번호 확인 -->
-        <div class="field">
-          <input id="lawyerPass"
-                 name="lawyerPass"
-                 class="input"
-                 type="password"
-                 placeholder="비밀번호"
-                 autocomplete="new-password"
-                 required>
-        </div>
-        <div class="field">
-          <input id="passConfirm"
-                 class="input"
-                 type="password"
-                 placeholder="비밀번호 확인"
-                 autocomplete="new-password"
-                 required>
-          <small id="pwMsg" class="help"></small>
-        </div>
-
         <!-- 3. 이름 (아이디 아래로 내림) -->
         <div class="field">
           <input id="lawyerName"
                  name="lawyerName"
                  class="input"
                  type="text"
-                 placeholder="이름"
-                 required>
+                 th:value="${joinLawyer.lawyerName}"
+                 readonly>
         </div>
 
         <!-- 4. 등록번호 (이름 아래로 내림) -->
@@ -93,6 +45,7 @@
                  name="lawyerAuth"
                  class="input"
                  type="text"
+                 th:field="*{lawyerAuth}"
                  placeholder="등록번호"
                  inputmode="numeric"
                  required>
@@ -125,6 +78,7 @@
                  name="lawyerNickname"
                  class="input"
                  type="text"
+                 th:field="*{lawyerNickname}"
                  placeholder="닉네임"
                  required>
         </div>
@@ -135,9 +89,8 @@
                  name="lawyerEmail"
                  class="input"
                  type="email"
-                 placeholder="이메일"
-                 autocomplete="email"
-                 required>
+                 th:value="${joinLawyer.lawyerEmail}"
+                 readonly>
         </div>
 
         <!-- 생년월일(주민번호 앞자리) -->
@@ -146,6 +99,7 @@
                 name="lawyerIdnum" 
                 class="input" 
                 type="text" 
+                th:field="*{lawyerIdnum}" 
                 placeholder="생년월일(예: 990101)" 
                 inputmode="numeric" 
                 required>
@@ -157,6 +111,7 @@
                  name="lawyerAddress"
                  class="input"
                  type="text"
+                 th:field="*{lawyerAddress}"
                  placeholder="사무실 주소">
         </div>
 
@@ -166,6 +121,7 @@
                  name="lawyerPhone"
                  class="input"
                  type="tel"
+                 th:field="*{lawyerPhone}"
                  placeholder="휴대폰 번호 (예: 010-1234-5678)"
                  inputmode="numeric"
                  required>
@@ -177,6 +133,7 @@
                  name="lawyerTel"
                  class="input"
                  type="tel"
+                 th:field="*{lawyerTel}"
                  placeholder="사무실 전화번호 (선택)"
                  inputmode="numeric">
         </div>
@@ -186,6 +143,7 @@
           <select id="interestIdx"
                   name="interestIdx"
                   class="input"
+                  th:field="*{interestIdx}"
                   required>
             <option value="" disabled selected>전문 분야 선택</option>
             <option th:each="it : ${interests}"
@@ -206,6 +164,7 @@
                      name="lawyerComment"
                      class="input"
                      type="text"
+                     th:field="*{lawyerComment}"
                      placeholder="한줄소개 (선택)">
             </div>
           </div>
@@ -216,7 +175,7 @@
           <div class="agree-area">
             <div class="right">
               <!-- 화면에서는 Y/N로 토글하지만 DB 저장은 서비스에서 1로 처리 -->
-              <input type="hidden" id="lawyerAgree" name="lawyerAgree" value="0">
+              <input type="hidden" id="lawyerAgree" name="lawyerAgree" th:field="*{lawyerAgree}" value="0">
               <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
             </div>
           </div>
@@ -241,12 +200,159 @@
   <div class="include" th:replace="~{include/footer :: footer}"></div>
   <script th:src="@{/js/js.js}"></script>
   <script th:src="@{/js/chatIcon.js}"></script>
-  <script th:src="@{/js/lJoin.js}"></script>
-  <script th:if="${alert}" th:inline="javascript">
-        /*<![CDATA[*/
-        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
-        /*]]>*/
-    </script>
+  <script>
+    // static/js/lJoin-oauth.js
+    (() => {
+      const form = document.getElementById('lawyerJoinForm');
+      if (!form) return;
+
+      const $ = (id) => document.getElementById(id);
+      const digits = (s) => (s || "").replace(/\D/g, "");
+
+      const lawyerPhone = $('lawyerPhone');
+      const lawyerIdnum = $('lawyerIdnum');  // 생년월일
+      const lawyerAuth = $('lawyerAuth');
+      const interestIdx = $('interestIdx');
+      const lawyerAgree = $('lawyerAgree');
+      const privacyBtn = $('privacyBtn');
+      const agreeMsg = $('agreeMsg');
+      const certFile = $('certImage');
+      const certPickBtn = $('certPickBtn');
+      const certPreview = $('certImagePreview');
+      const fileMsg = $('fileMsg');
+      const verifyBtn = $('verifyBtn');
+
+      // 전화번호 포맷팅
+      const formatPhone = (raw) => {
+        const d = digits(raw).slice(0, 11);
+        if (d.length <= 3) return d;
+        if (d.length <= 7) return `${d.slice(0,3)}-${d.slice(3)}`;
+        return `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`;
+      };
+
+      lawyerPhone?.addEventListener('input', (e) => {
+        e.target.value = formatPhone(e.target.value);
+      });
+
+      // 생년월일 유효성 검사
+      const validateBirthDate = (value) => {
+        const d = digits(value);
+        if (d.length !== 6) return false;
+        
+        const year = parseInt(d.substring(0, 2));
+        const month = parseInt(d.substring(2, 4));
+        const day = parseInt(d.substring(4, 6));
+        
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+        
+        return true;
+      };
+
+      // 등록번호 입력 시 숫자만
+      lawyerAuth?.addEventListener('input', (e) => {
+        e.target.value = digits(e.target.value);
+      });
+
+      // 개인정보 동의 토글
+      privacyBtn?.addEventListener('click', () => {
+        if (lawyerAgree.value === "1") {
+          lawyerAgree.value = "0";
+          privacyBtn.textContent = "개인 정보 수신 동의";
+          privacyBtn.classList.remove("complete-btn");
+          if (agreeMsg) agreeMsg.textContent = "개인 정보 수신 동의가 필요합니다.";
+        } else {
+          lawyerAgree.value = "1";
+          privacyBtn.textContent = "개인 정보 수신 동의 완료";
+          privacyBtn.classList.add("complete-btn");
+          if (agreeMsg) agreeMsg.textContent = "";
+        }
+      });
+
+      // 등록증 파일 선택
+      certPickBtn?.addEventListener('click', () => certFile.click());
+
+      certFile?.addEventListener('change', () => {
+        const f = certFile.files && certFile.files[0];
+        certPreview.innerHTML = "";
+        if (!f) {
+          certPickBtn.textContent = "등록증 업로드";
+          certPickBtn.classList.remove("complete-btn");
+          return;
+        }
+
+        const url = URL.createObjectURL(f);
+        const img = new Image();
+        img.onload = () => URL.revokeObjectURL(url);
+        img.src = url;
+        img.style.maxWidth = "100%";
+        img.style.maxHeight = "160px";
+        certPreview.appendChild(img);
+        
+        certPickBtn.textContent = "등록증 업로드 완료";
+        certPickBtn.classList.add("complete-btn");
+        if (fileMsg) fileMsg.textContent = "";
+      });
+
+      // 제출 검증
+      form.addEventListener('submit', (e) => {
+        const errors = [];
+
+        const regNo = (lawyerIdnum?.value || "").trim();
+        const phone = digits(lawyerPhone?.value || "");
+        const interest = interestIdx?.value || "";
+
+        // 등록번호
+        if (!regNo) {
+          errors.push("등록번호를 입력하세요.");
+        }
+
+        // 등록증 파일
+        if (!certFile.files || !certFile.files.length) {
+          errors.push("등록증 이미지를 첨부해주세요.");
+          if (fileMsg) fileMsg.textContent = "등록증 이미지를 첨부해주세요.";
+        }
+
+        // OCR 인증 확인
+        if (typeof window.isOcrVerified === 'function' && !window.isOcrVerified()) {
+          errors.push("등록증 인증을 완료해주세요.");
+          if (verifyBtn) {
+            verifyBtn.style.border = "2px solid red";
+            setTimeout(() => {
+              verifyBtn.style.border = "";
+            }, 2000);
+          }
+        }
+
+        // 전문 분야
+        if (!interest) {
+          errors.push("전문 분야를 선택하세요.");
+        }
+
+        // 전화번호
+        if (phone.length < 10) {
+          errors.push("전화번호를 올바르게 입력하세요.");
+        }
+
+        // 개인정보 동의
+        if (lawyerAgree.value !== "1") {
+          errors.push("개인 정보 수신 동의가 필요합니다.");
+          if (agreeMsg) agreeMsg.textContent = "개인 정보 수신 동의가 필요합니다.";
+        }
+
+        if (errors.length > 0) {
+          e.preventDefault();
+          alert(errors.join("\n"));
+          return;
+        }
+
+        // 전송 전에 전화번호 포맷 정리
+        if (lawyerPhone) {
+          lawyerPhone.value = formatPhone(lawyerPhone.value);
+        }
+      });
+    })();
+  </script>
   <script>
     // OCR 검증 완료 플래그
     let ocrVerified = false;
@@ -300,30 +406,11 @@
 
     // OCR 검증 상태를 전역으로 노출
     window.isOcrVerified = () => ocrVerified;
-
-    // --- 회원가입 제출 검사 추가 ---
-    document.getElementById("lawyerJoinForm").addEventListener("submit", function(e) {
-
-      let errors = [];
-
-      // 🔍 OCR 검증 여부 체크
-      if (!ocrVerified) {
-        errors.push("등록증 인증을 완료해주세요.");
-        const verifyBtn = document.getElementById("verifyBtn");
-
-        if (verifyBtn) {
-          verifyBtn.style.border = "2px solid red";
-          setTimeout(() => verifyBtn.style.border = "", 2000);
-        }
-      }
-
-      // 에러가 하나라도 있으면 제출 막기
-      if (errors.length > 0) {
-        e.preventDefault();
-        alert(errors.join("\n"));
-        return;
-      }
-    });
   </script>
+  <script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </body>
 </html>

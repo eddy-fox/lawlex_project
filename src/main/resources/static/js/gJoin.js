@@ -147,7 +147,7 @@
   const agreeMsg = document.querySelector("#agreeMsg");
 
   function validateAgree() {
-    if (memberAgree.value !== "Y") {
+    if (memberAgree.value !== "1") {
       agreeMsg.textContent = "개인정보 수신동의(필수) 필요";
       agreeMsg.classList.add("error"); agreeMsg.classList.remove("success");
       return false;
@@ -158,8 +158,8 @@
   }
 
   privacyBtn.addEventListener("click", () => {
-    const on = memberAgree.value === "Y";
-    memberAgree.value = on ? "N" : "Y";
+    const on = memberAgree.value === "1";
+    memberAgree.value = on ? "0" : "1";
 
     privacyBtn.classList.toggle("active", !on);
     privacyBtn.setAttribute("aria-pressed", String(!on));

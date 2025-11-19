@@ -179,12 +179,12 @@
 
   // ===== 개인정보 수신 동의 토글 =====
   privacyBtn?.addEventListener('click', () => {
-    if (lawyerAgree.value === "Y") {
-      lawyerAgree.value = "N";
+    if (lawyerAgree.value === "1") {
+      lawyerAgree.value = "0";
       setUndo(privacyBtn, "개인 정보 수신 동의");
       if (agreeMsg) agreeMsg.textContent = "개인 정보 수신 동의가 필요합니다.";
     } else {
-      lawyerAgree.value = "Y";
+      lawyerAgree.value = "1";
       setDone(privacyBtn, "개인 정보 수신 동의");
       if (agreeMsg) agreeMsg.textContent = "";
     }
@@ -264,7 +264,7 @@
     }
 
     // 개인정보 수신 동의
-    if (lawyerAgree.value !== "Y") {
+    if (lawyerAgree.value !== "1") {
       errors.push("개인 정보 수신 동의가 필요합니다.");
       if (agreeMsg) agreeMsg.textContent = "개인 정보 수신 동의가 필요합니다.";
     }
