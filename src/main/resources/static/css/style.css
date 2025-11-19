@@ -31,7 +31,7 @@
   /* 표면/경계/파스텔 */
   --bg: #ffffff;
   --bg-soft: #f9fafb;
-  --line: #f3f4f6;
+  --line: #d4d9e4;
   --blue-50: #eff6ff;
   --blue-100: #dbeafe;
   --blue-200: #bfdbfe;
@@ -70,9 +70,7 @@ a {
   background: var(--bg);
 }
 
-.include header {
-  border-bottom: 1px solid var(--line);
-}
+
 
 .include footer {
   border-top: 1px solid var(--line);
@@ -82,7 +80,6 @@ a {
 /* header.html 위 */
 .header {
   background: var(--bg);
-  border-bottom: 1px solid var(--line);
 }
 
 /* 상단 바: 로고(좌) / inout(우) */
@@ -95,7 +92,6 @@ a {
   padding: 0 var(--px);
   max-width: var(--container);
   margin: 0 auto;
-  border-bottom: 1px solid var(--line);
 }
 
 /* 로고 */
