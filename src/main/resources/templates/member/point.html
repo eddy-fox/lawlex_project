@@ -14,21 +14,12 @@
     <!-- 메인 -->
     <main class="page-point">
 
-      <!-- 회원 정보를 data 속성으로 저장 -->
+      <!-- 회원 정보 -->
       <div id="member-data" style="display: none;" 
         th:data-member-idx="${member.memberIdx}"
         th:data-member-email="${member.memberEmail}"
         th:data-member-name="${member.memberName}"
         th:data-member-phone="${member.memberPhone}">
-      </div>
-      
-      <!-- 디버깅용: 실제 값 확인 (나중에 삭제) -->
-      <div style="border: 2px solid red; padding: 10px; margin: 10px;">
-        <h3>디버깅 정보 (나중에 삭제)</h3>
-        <p>memberIdx: <span th:text="${member.memberIdx}"></span></p>
-        <p>memberEmail: <span th:text="${member.memberEmail}"></span></p>
-        <p>memberName: <span th:text="${member.memberName}"></span></p>
-        <p>memberPhone: <span th:text="${member.memberPhone}"></span></p>
       </div>
         
       <!-- 포인트 결제 -->
@@ -41,15 +32,19 @@
         <section class="card split">
           <div class="payment">
             <div class="opt-grid">
-              <input type="hidden" name="selectedProduct" id="selectedProduct">
-              <div class="pick" th:each="product : ${productList}">
-                <div th:data-product="${product.productIdx}" 
-                     th:data-price="${product.productPrice}"
-                     th:data-content="${product.productContent}"
-                     class="opt point-option">
+              <div class="pick" th:each="product, iterStat : ${productList}">
+                <input type="radio" 
+                       name="selectedProduct" 
+                       th:id="'product-' + ${product.productIdx}"
+                       th:value="${product.productIdx}"
+                       th:data-price="${product.productPrice}"
+                       th:data-content="${product.productContent}"
+                       th:checked="${iterStat.index == 0}"
+                       class="opt-input">
+                <label th:for="'product-' + ${product.productIdx}" class="opt">
                     <div th:text="${product.productContent}" class="tag"></div>
                     <div th:text="${product.productPrice}" class="price"></div>
-                </div>
+                </label>
               </div>
             </div>
           </div>
@@ -69,7 +64,7 @@
             <div class="radio-row">
                 동의합니까?
               <label for="agree" class="radio-square">
-                <input type="checkbox" id="agree" name="agree" value="yes"></input>
+                <input type="checkbox" id="agree" name="agree" value="yes">
               </label>
             </div>
             <button type="button" id="payment-button" class="btn">결제하기</button>
@@ -78,16 +73,15 @@
       </form>
 
     <!-- 이용 내역 -->
-      <section>
-        <form class="container">
+      <div class="container">
         <div class="tabs">
-          <div id="pointHistory" onclick="point()" class="tab active">포인트 이용 내역</div>
+          <div id="pointHistoryTab" class="tab active">포인트 이용 내역</div>
           <div class="tab divider">|</div>
-          <div id="paymentHistory" onclick="payment()" class="tab">결제 내역</div>
+          <div id="paymentHistoryTab" class="tab">결제 내역</div>
         </div>
     
       <!-- 포인트 이용 내역 -->          
-      <div id="point" name="point" class="history">
+      <div id="pointHistory" class="history">
         <div class="scroll">
           <table>
             <thead>
@@ -111,7 +105,7 @@
       </div>
 
       <!-- 결제 내역 -->    
-      <div id="payment" name="payment" class="history" style="display: none;">
+      <div id="paymentHistory" class="history" style="display: none;">
         <div class="scroll">
           <table>
             <thead>
@@ -123,7 +117,7 @@
             </thead>
             <tbody>
               <tr th:each="purchase : ${purchaseList}">
-                <td th:text="${purchase.purchaseRegDate}"></td>
+                <td th:text="${purchase.purchaseLegDate}"></td>
                 <td th:text="${purchase.productPrice}"></td>
                 <td th:text="${purchase.productContent}"></td>
               </tr>
@@ -131,9 +125,7 @@
           </table>
         </div>
       </div>
-      </form>
-
-      </section>
+      </div>
     </main>
 
     <!-- 푸터 -->
@@ -144,13 +136,7 @@
     
     <script th:src="@{/js/js.js}"></script>
     <script th:src="@{/js/chatIcon.js}"></script>
-    <script th:src="@{/js/point.js}"></script>
-    
-    <script th:if="${alert}" th:inline="javascript">
-        /*<![CDATA[*/
-        alert('[[${alert}]]');
-        /*]]>*/
-    </script>
+    <script th:src="@{/js/point-inline.js}"></script>
     
 </body>
 </html>
