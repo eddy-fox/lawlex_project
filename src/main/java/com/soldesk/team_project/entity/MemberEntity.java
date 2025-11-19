@@ -123,4 +123,9 @@ public class MemberEntity implements UserBase{
         return this.memberActive;
     }
 
+    @Override
+    public String getUserType() {
+        return "member";    
+    }
+
 }

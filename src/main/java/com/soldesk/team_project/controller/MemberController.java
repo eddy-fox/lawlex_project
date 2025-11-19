@@ -84,9 +84,18 @@ public class MemberController {
 
     // -------------------- 포인트 --------------------
     @GetMapping("/point")
-    public String pointMain(Model model, @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+    public String pointMain(Model model, RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         // 세션에서 회원 가져오기
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("alert", "세션이 만료되었습니다.");
+            return "redirect:/member/login";
+        } else if (loginUser.getMemberIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/";
+        } 
+
         Integer memberIdx = loginUser.getMemberIdx();
         MemberDTO member = memberService.searchSessionMember(memberIdx);
         model.addAttribute("member", member);
@@ -104,63 +113,59 @@ public class MemberController {
 
         return "member/point";
     }
+    @PostMapping("/point/prepare")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> preparePurchase(
+            @RequestBody Map<String, Object> request,
+            @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+        
+        if (loginUser == null || loginUser.getMemberIdx() == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "인증 필요"));
+        }
+
+        try {
+            int productIdx = (Integer) request.get("productIdx");
+            String orderId = (String) request.get("orderId");
+            int memberIdx = (Integer) request.get("memberIdx");
+
+            // 주문 정보 생성
+            PurchaseDTO purchase = purchaseService.createPendingPurchase(
+                productIdx, orderId, memberIdx);
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "orderId", orderId
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 
     @PostMapping("/point")
-    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model,
-                                  @SessionAttribute("loginUser") UserMasterDTO loginUser) {
+    public String productPurchase(@RequestParam("selectedProduct") int productNum, Model model, RedirectAttributes redirectAttributes,
+                                  @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
                                     
+        // 세션에서 회원 가져오기
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("alert", "세션이 만료되었습니다.");
+            return "redirect:/member/login";
+        } else if (loginUser.getMemberIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/";
+        } 
+
         Integer memberIdx = loginUser.getMemberIdx();
-        String memberIdxStr = String.valueOf(memberIdx);
-        List<MemberDTO> member = memberService.searchMembers("Idx", memberIdxStr);
+        MemberDTO member = memberService.searchSessionMember(memberIdx);
         model.addAttribute("member", member);
+
+        ProductDTO product = purchaseService.getProduct(productNum);
+        model.addAttribute("product", product);
 
         String purchaseId = "order-" + System.currentTimeMillis();
         PurchaseDTO purchase = purchaseService.createPendingPurchase(productNum, purchaseId, memberIdx);
         model.addAttribute("purchase", purchase);
 
         return "payment/checkout";
-    }
-
-    // -------------------- OCR 테스트 --------------------
-    @GetMapping("/testOCR")
-    public String testOCR(Model model) {
-        LawyerDTO lawyerDTO = new LawyerDTO();
-        lawyerDTO.setLawyerAuth(0);
-        model.addAttribute("lawyerAuth", new LawyerDTO());
-        return "member/testOCR";
-    }
-
-    @PostMapping("/verify-license")
-    @ResponseBody
-    public Map<String, Object> verifyLicense(@RequestParam("licenseNumber") String licenseNumber,
-                                             @RequestParam("licenseImage") MultipartFile licenseImage) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            File tempFile = File.createTempFile("license_", ".jpg");
-            licenseImage.transferTo(tempFile);
-
-            Map<String, Object> ocrResult = pythonService.runPythonOCR("ocr.py", tempFile.toString());
-            if (!(boolean) ocrResult.getOrDefault("valid", false)) {
-                result.put("valid", false);
-                result.put("error", ocrResult.get("error"));
-                return result;
-            }
-
-            @SuppressWarnings("unchecked")
-            List<String> ocrTexts = (List<String>) ocrResult.get("texts");
-            boolean matched = ocrTexts.stream().anyMatch(text -> text.contains(licenseNumber));
-
-            result.put("valid", matched);
-            result.put("message", matched ? "자격번호 일치!" : "자격번호 불일치!");
-            result.put("ocrTexts", ocrTexts);
-            tempFile.delete();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("valid", false);
-            result.put("error", "검증 과정 중 오류 발생: " + e.getMessage());
-        }
-        return result;
     }
 
     // 로그인 / 로그아웃
@@ -495,9 +500,9 @@ public class MemberController {
         return "member/loginChoice-oauth";
     }
 
+    // OAuth 일반회원
     @GetMapping("/joinMember-oauth")
-    public String OAuth2JoinMemberForm(
-        HttpSession session, Model model, 
+    public String OAuth2JoinMemberForm(HttpSession session, Model model, 
         RedirectAttributes redirectAttributes) {
 
         TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
@@ -529,9 +534,72 @@ public class MemberController {
         return "redirect:/member/login";
     }
 
+    // OAuth 변호사회원
     @GetMapping("/joinLawyer-oauth")
-    public String OAuth2JoinLawyer() {
+    public String OAuth2JoinLawyerForm(HttpSession session, Model model, 
+        RedirectAttributes redirectAttributes) {
+
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
+    
+        if (temp == null) {
+            redirectAttributes.addFlashAttribute("alert", "올바르지 않은 접근입니다.");
+            return "redirect:/member/login";
+        }
+    
+        LawyerDTO joinLawyer = new LawyerDTO();
+        joinLawyer.setLawyerEmail(temp.getEmail());
+        joinLawyer.setLawyerName(temp.getName());
+        
+        model.addAttribute("joinLawyer", joinLawyer);
+        model.addAttribute("interests", interestRepository.findAll());
+
         return "member/lJoin-oauth";
+    }
+    @PostMapping("/joinLawyer-oauth")
+    public String OAuth2JoinLawyerSubmit(HttpSession session,
+        @ModelAttribute("joinLawyer") LawyerDTO joinLawyer) {
+
+        TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
+
+        System.out.println("🔍 받은 interestIdx: " + joinLawyer.getLawyerAuth());
+    
+        lawyerService.joinOAuthLawyer(temp, joinLawyer);
+
+        session.removeAttribute("tempOauth");
+            
+        return "redirect:/member/login";
+    }
+    @PostMapping("/verify-license")
+    @ResponseBody
+    public Map<String, Object> verifyLicense(@RequestParam("licenseNumber") String licenseNumber,
+                                             @RequestParam("licenseImage") MultipartFile licenseImage) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            File tempFile = File.createTempFile("license_", ".jpg");
+            licenseImage.transferTo(tempFile);
+
+            Map<String, Object> ocrResult = pythonService.runPythonOCR("ocr.py", tempFile.toString());
+            if (!(boolean) ocrResult.getOrDefault("valid", false)) {
+                result.put("valid", false);
+                result.put("error", ocrResult.get("error"));
+                return result;
+            }
+
+            @SuppressWarnings("unchecked")
+            List<String> ocrTexts = (List<String>) ocrResult.get("texts");
+            boolean matched = ocrTexts.stream().anyMatch(text -> text.contains(licenseNumber));
+
+            result.put("valid", matched);
+            result.put("message", matched ? "자격번호 일치!" : "자격번호 불일치!");
+            result.put("ocrTexts", ocrTexts);
+            tempFile.delete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("valid", false);
+            result.put("error", "검증 과정 중 오류 발생: " + e.getMessage());
+        }
+        return result;
     }
 
     // =================== 세션 DTO들 ===================

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.soldesk.team_project.config.TossProperties;
 import com.soldesk.team_project.dto.PurchaseDTO;
@@ -28,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Controller
-@RequestMapping("/payment")
+@RequestMapping("/payment")  // ✅ 이거 유지!
 @RequiredArgsConstructor
 public class WidgetController {
 
@@ -36,11 +38,7 @@ public class WidgetController {
     private final PurchaseService purchaseService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    // public WidgetController(TossProperties tossProperties) {
-    //     this.tossProperties = tossProperties;
-    // }
-
-    @RequestMapping(value = "/confirm")
+    @PostMapping("/confirm")
     public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody, HttpServletResponse response) throws Exception {
 
         JSONParser parser = new JSONParser();
@@ -48,54 +46,60 @@ public class WidgetController {
         String amount;
         String paymentKey;
         try {
-            // 클라이언트에서 받은 JSON 요청 바디입니다.
             JSONObject requestData = (JSONObject) parser.parse(jsonBody);
             paymentKey = (String) requestData.get("paymentKey");
             orderId = (String) requestData.get("orderId");
             amount = (String) requestData.get("amount");
+            
+            // ✅ 받은 데이터 로그
+            logger.info("=== 결제 승인 요청 데이터 ===");
+            logger.info("paymentKey: {}", paymentKey);
+            logger.info("orderId: {}", orderId);
+            logger.info("amount: {}", amount);
+            
         } catch (ParseException e) {
             throw new RuntimeException(e);
-        };
+        }
 
         // 구매 요청 검증
         PurchaseDTO purchase = purchaseService.getOrderInfo(orderId);
-        if (purchase == null) { // 주문ID 조회
-            response.sendRedirect("/fail?code=404&message=존재하지 않는 주문");
-
+        if (purchase == null) {
             JSONObject error = new JSONObject();
             error.put("message", "존재하지 않는 주문입니다.");
+            error.put("code", "NOT_FOUND_ORDER");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
         
         String productPrice = purchaseService.getProductPrice(purchase.getProductIdx());
-
-        if (!amount.equals(String.valueOf(productPrice))) {
-            response.sendRedirect("/fail?code=404&message=일치하지 않는 금액");
-
+        
+        // 숫자만 추출해서 비교
+        String cleanAmount = amount.replaceAll("[^0-9]", "");
+        String cleanProductPrice = productPrice.replaceAll("[^0-9]", "");
+        
+        if (!cleanAmount.equals(cleanProductPrice)) {
             JSONObject error = new JSONObject();
             error.put("message", "결제 금액이 일치하지 않습니다.");
+            error.put("code", "AMOUNT_MISMATCH");
+            error.put("expected", cleanProductPrice);
+            error.put("received", cleanAmount);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
         JSONObject obj = new JSONObject();
         obj.put("orderId", orderId);
-        obj.put("amount", amount);
+        obj.put("amount", cleanAmount);  // ✅ 숫자만 전송
         obj.put("paymentKey", paymentKey);
+        
+        // ✅ 토스에 보낼 데이터 로그
+        logger.info("=== 토스 API 요청 데이터 ===");
+        logger.info("Request Body: {}", obj.toString());
 
-        // TODO: 개발자센터에 로그인해서 내 결제위젯 연동 키 > 시크릿 키를 입력하세요. 시크릿 키는 외부에 공개되면 안돼요.
-        // @docs https://docs.tosspayments.com/reference/using-api/api-keys
         String widgetSecretKey = tossProperties.getSecretKey();
 
-        // 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
-        // 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
-        // @docs https://docs.tosspayments.com/reference/using-api/authorization#%EC%9D%B8%EC%A6%9D
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
         String authorizations = "Basic " + new String(encodedBytes);
 
-        // 결제 승인 API를 호출하세요.
-        // 결제를 승인하면 결제수단에서 금액이 차감돼요.
-        // @docs https://docs.tosspayments.com/guides/v2/payment-widget/integration#3-결제-승인하기
         URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Authorization", authorizations);
@@ -103,19 +107,25 @@ public class WidgetController {
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
 
-
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write(obj.toString().getBytes("UTF-8"));
 
         int code = connection.getResponseCode();
         boolean isSuccess = code == 200;
+        
+        // ✅ 토스 API 응답 로그
+        logger.info("=== 토스 API 응답 ===");
+        logger.info("Response Code: {}", code);
+        logger.info("Success: {}", isSuccess);
 
         InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
 
-        // TODO: 결제 성공 및 실패 비즈니스 로직을 구현하세요.
         Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
         JSONObject jsonObject = (JSONObject) parser.parse(reader);
         responseStream.close();
+        
+        // ✅ 토스 응답 내용 로그
+        logger.info("Response Body: {}", jsonObject.toString());
 
         JSONObject result = new JSONObject();
         if (isSuccess) {
@@ -131,6 +141,11 @@ public class WidgetController {
             result.put("status", "fail");
             result.put("message", "결제에 실패했습니다.");
             result.put("data", jsonObject);
+            
+            // ✅ 실패 상세 로그
+            logger.error("=== 결제 실패 상세 ===");
+            logger.error("Error Code: {}", jsonObject.get("code"));
+            logger.error("Error Message: {}", jsonObject.get("message"));
         }
 
         return ResponseEntity.status(code).body(result);
@@ -138,32 +153,22 @@ public class WidgetController {
 
     /**
      * 인증성공처리
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
      */
-    @RequestMapping(value = "/success", method = RequestMethod.GET)
-    public String paymentRequest(HttpServletRequest request, Model model) throws Exception {
+    @GetMapping("/success")
+    public String paymentSuccess(HttpServletRequest request, Model model) throws Exception {
+        logger.info("결제 성공 페이지 진입");
         return "payment/success";
     }
 
-    // @RequestMapping(value = "/", method = RequestMethod.GET)
-    // public String index(HttpServletRequest request, Model model) throws Exception {
-    //     return "payment/checkout";
-    // }
-
     /**
      * 인증실패처리
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
      */
-    @RequestMapping(value = "/fail", method = RequestMethod.GET)
+    @GetMapping("/fail")
     public String failPayment(HttpServletRequest request, Model model) throws Exception {
         String failCode = request.getParameter("code");
         String failMessage = request.getParameter("message");
+        
+        logger.info("결제 실패: code={}, message={}", failCode, failMessage);
 
         model.addAttribute("code", failCode);
         model.addAttribute("message", failMessage);

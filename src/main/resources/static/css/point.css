@@ -146,7 +146,9 @@
   }
 
   .ask{
-    text-align: center;
+    overflow-y: scroll;
+    height: 50px;
+    font-size: 10px
   }
 
 

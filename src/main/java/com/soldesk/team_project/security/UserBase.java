@@ -5,4 +5,5 @@ public interface UserBase {
     String getEmail();
     String getName();
     Integer isActive();
+    String getUserType();
 }
