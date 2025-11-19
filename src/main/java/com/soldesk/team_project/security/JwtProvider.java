@@ -26,6 +26,7 @@ public class JwtProvider {
                 .setSubject(user.getEmail())
                 .claim("idx", user.getIdx())
                 .claim("name", user.getName())
+                .claim("userType", user.getUserType())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key)

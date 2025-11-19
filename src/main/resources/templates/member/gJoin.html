@@ -108,7 +108,7 @@
         <!-- 개인정보 수신 동의 토글 -->
         <div class="field">
           <div class="agree-area">
-            <input type="hidden" id="memberAgree" name="memberAgree" value="N">
+            <input type="hidden" id="memberAgree" name="memberAgree" value="0">
             <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
           </div>
           <small id="agreeMsg" class="help"></small>
@@ -124,5 +124,10 @@
   <script th:src="@{/js/js.js}"></script>
   <script th:src="@{/js/chatIcon.js}"></script>
   <script th:src="@{/js/gJoin.js}"></script>
+  <script th:if="${alert}" th:inline="javascript">
+        /*<![CDATA[*/
+        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
+        /*]]>*/
+    </script>
 </body>
 </html>

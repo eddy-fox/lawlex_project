@@ -20,7 +20,7 @@ public class PythonService {
         try {
             // Python 스크립트 경로
             String scriptPath = String.format(
-                "C:\\Users\\eddy_\\Documents\\2ndTeamProject\\team-project\\src\\main\\java\\com\\soldesk\\team_project\\python\\%s",
+                "C:\\SOLDESK\\2nd-project\\YM\\lawlex_project\\src\\main\\java\\com\\soldesk\\team_project\\python\\%s",
                 scriptName
             );
 
@@ -54,7 +54,7 @@ public class PythonService {
         }
     }
 
-    // orc 연동
+    // OCR 연동
     public Map<String, Object> runPythonOCR(String scriptName, String... args) {
         Map<String, Object> result = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -63,21 +63,17 @@ public class PythonService {
             String output = runPython(scriptName, args);
             String trimmed = output.trim();
 
-            int startIdx = trimmed.indexOf('[');
-            int endIdx = trimmed.lastIndexOf(']');
+            // 여러 줄 출력에서 마지막 JSON 라인만 추출
+            String jsonLine = extractLastJsonLine(trimmed);
 
-            // JSON인지 확인
-            if (startIdx != -1 && endIdx != -1 && endIdx > startIdx) {
-                String jsonPart = trimmed.substring(startIdx, endIdx + 1);
-
-                jsonPart = jsonPart.replace("'", "\"");
-
-                List<String> texts = mapper.readValue(jsonPart, new TypeReference<List<String>>() {});
+            if (jsonLine != null && jsonLine.startsWith("[") && jsonLine.endsWith("]")) {
+                // 직접 JSON 파싱
+                List<String> texts = mapper.readValue(jsonLine, new TypeReference<List<String>>() {});
                 result.put("valid", true);
                 result.put("texts", texts);
             } else {
                 result.put("valid", false);
-                result.put("error", "OCR 실행 실패 또는 Traceback 발생: " + trimmed);
+                result.put("error", "OCR 실행 실패 또는 JSON 추출 실패: " + trimmed);
             }
 
         } catch (Exception e) {
@@ -87,6 +83,26 @@ public class PythonService {
         }
 
         return result;
+    }
+
+    // Python 출력에서 마지막 JSON 배열 라인 추출
+    private String extractLastJsonLine(String output) {
+        if (output == null || output.isEmpty()) {
+            return null;
+        }
+
+        // 줄바꿈으로 분리
+        String[] lines = output.split("\n");
+
+        // 뒤에서부터 찾기 (마지막 JSON이 실제 결과)
+        for (int i = lines.length - 1; i >= 0; i--) {
+            String line = lines[i].trim();
+            if (line.startsWith("[") && line.endsWith("]")) {
+                return line;
+            }
+        }
+
+        return null;
     }
     
 }

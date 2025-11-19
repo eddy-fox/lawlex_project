@@ -89,11 +89,17 @@ public class BoardService {
             // reboardList와 lawyer 정보를 함께 로드하기 위해 초기화
             if (board.getReboardList() != null) {
                 board.getReboardList().size(); // Lazy 로딩 강제 실행
-                // 각 reboard의 lawyer 정보도 로드
+                // 각 reboard의 lawyer 정보와 memberVoter도 로드
                 board.getReboardList().forEach(reboard -> {
                     if (reboard.getLawyer() != null) {
                         reboard.getLawyer().getLawyerName(); // Lazy 로딩 강제 실행
                         reboard.getLawyer().getLawyerImgPath(); // 이미지 경로도 로드
+                    }
+                    // memberVoter 강제 로딩 (실제 MemberEntity 객체들을 로드)
+                    if (reboard.getMemberVoter() != null) {
+                        for (com.soldesk.team_project.entity.MemberEntity member : reboard.getMemberVoter()) {
+                            member.getMemberIdx(); // 각 MemberEntity를 실제로 로드
+                        }
                     }
                 });
             }

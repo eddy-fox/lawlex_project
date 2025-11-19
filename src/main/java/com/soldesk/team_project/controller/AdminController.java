@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -20,6 +21,7 @@ import com.soldesk.team_project.dto.AdDTO;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.MemberDTO;
 import com.soldesk.team_project.dto.QuestionDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
@@ -59,9 +61,14 @@ public class AdminController {
     // 일반 회원 관리
     @GetMapping("/memberManagement")
     public String memberList(
-            @RequestParam(value = "keyword", required = false) String keyword,
-            Model model,
-            @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
+        @RequestParam(value = "keyword",required = false) String keyword, Model model, RedirectAttributes redirectAttributes,
+        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+        
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         List<MemberDTO> memberList;
 
@@ -81,9 +88,15 @@ public class AdminController {
 
     @PostMapping("/memberManagement")
     public String memberSearch(
-            @RequestParam("keyword") String keyword,
-            @RequestParam("searchType") String searchType,
-            RedirectAttributes redirectAttributes) {
+        @RequestParam("keyword") String keyword,
+        @RequestParam("searchType") String searchType,
+        RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         redirectAttributes.addAttribute("keyword", keyword);
         redirectAttributes.addAttribute("searchType", searchType);
@@ -93,10 +106,15 @@ public class AdminController {
     // 변호사 회원 관리
     @GetMapping("/lawyerManagement")
     public String lawyerList(
-            @RequestParam(value = "keyword", required = false) String keyword,
-            Model model,
-            @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
+        @RequestParam(value = "keyword",required = false) String keyword, Model model, RedirectAttributes redirectAttributes,
+        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+        
         List<LawyerDTO> lawyerList;
 
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -115,9 +133,15 @@ public class AdminController {
 
     @PostMapping("/lawyerManagement")
     public String lawyerSearch(
-            @RequestParam("keyword") String keyword,
-            @RequestParam("searchType") String searchType,
-            RedirectAttributes redirectAttributes) {
+        @RequestParam("keyword") String keyword,
+        @RequestParam("searchType") String searchType,
+        RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         redirectAttributes.addAttribute("keyword", keyword);
         redirectAttributes.addAttribute("searchType", searchType);
@@ -127,9 +151,14 @@ public class AdminController {
     // 문의글 관리
     @GetMapping("/QnAManagement")
     public String questionList(
-            @RequestParam(value = "keyword", required = false) String keyword,
-            Model model,
-            @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType) {
+        @RequestParam(value = "keyword",required = false) String keyword, Model model, RedirectAttributes redirectAttributes,
+        @RequestParam(value = "searchType", required = false, defaultValue = "idx") String searchType,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+        
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         List<QuestionDTO> newQuestions;
         List<QuestionDTO> completedQuestions;
@@ -153,9 +182,15 @@ public class AdminController {
 
     @PostMapping("/QnAManagement")
     public String questionSearch(
-            @RequestParam("keyword") String keyword,
-            @RequestParam("searchType") String searchType,
-            RedirectAttributes redirectAttributes) {
+        @RequestParam("keyword") String keyword,
+        @RequestParam("searchType") String searchType,
+        RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         redirectAttributes.addAttribute("keyword", keyword);
         redirectAttributes.addAttribute("searchType", searchType);
@@ -164,7 +199,13 @@ public class AdminController {
 
     // 광고 관리
     @GetMapping("/adManagement")
-    public String adList(Model model) {
+    public String adList(Model model, RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+        
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         // 만료된 광고 비활성화
         adService.refreshActiveAds();
@@ -178,14 +219,28 @@ public class AdminController {
 
     // 광고 등록
     @GetMapping("/adRegistration")
-    public String registAdForm(@ModelAttribute("adRegistration") AdDTO adRegistration) {
+    public String registAdForm(RedirectAttributes redirectAttributes,
+        @ModelAttribute("adRegistration")AdDTO adRegistration, 
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+
         return "admin/adRegistration";
     }
 
     @PostMapping("/adRegistration")
-    public String registAdSubmit(
-            @ModelAttribute("adRegistration") AdDTO adRegistration,
-            @RequestParam("imageFile") MultipartFile imageFile) {
+    public String registAdSubmit(RedirectAttributes redirectAttributes,
+        @ModelAttribute("adRegistration")AdDTO adRegistration,
+        @RequestParam("imageFile") MultipartFile imageFile,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+        
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         // 광고 이미지 업로드
         String desiredName = adRegistration.getAdImgPath();
@@ -217,7 +272,14 @@ public class AdminController {
 
     // 광고 상세
     @GetMapping("/adInfo")
-    public String showAd(@RequestParam("adIdx") Integer adIdx, Model model) {
+    public String showAd(@RequestParam("adIdx") Integer adIdx, Model model, RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+
         AdDTO ad = adService.getAd(adIdx);
         model.addAttribute("ad", ad);
 
@@ -226,7 +288,14 @@ public class AdminController {
 
     // 광고 수정
     @GetMapping("/adModify")
-    public String modifyForm(@RequestParam("adIdx") Integer adIdx, Model model) {
+    public String modifyForm(@RequestParam("adIdx") Integer adIdx, Model model, RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+            
         AdDTO modifyAd = adService.getAd(adIdx);
         model.addAttribute("modifyAd", modifyAd);
 
@@ -234,20 +303,24 @@ public class AdminController {
     }
 
     @PostMapping("/adModify")
-    public String modifySubmit(
-            @ModelAttribute("modifyAd") AdDTO modifyAd,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            Model model) {
+    public String modifySubmit(@ModelAttribute("modifyAd") AdDTO modifyAd, RedirectAttributes redirectAttributes,
+        @RequestParam(value = "imageFile", required = false) MultipartFile imageFile, Model model,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            String filename = nowUuidName(imageFile.getOriginalFilename());
+            String filename   = nowUuidName(imageFile.getOriginalFilename());
             String objectPath = "ads/" + filename;
 
             var uploaded = storageService.upload(imageFile, objectPath);
-
+            
             modifyAd.setAdImgPath(uploaded.url());   // 기존 경로 덮어쓰기
         }
-
+        
         adService.modifyProcess(modifyAd);
 
         return "redirect:/admin/adInfo?adIdx=" + modifyAd.getAdIdx();
@@ -255,7 +328,14 @@ public class AdminController {
 
     // 광고 삭제
     @GetMapping("/adDelete")
-    public String deleteAd(@RequestParam("adIdx") int adIdx) {
+    public String deleteAd(@RequestParam("adIdx") int adIdx, RedirectAttributes redirectAttributes,
+        @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+
+        if (loginUser.getAdminIdx() == null) {
+            redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+
         adService.deleteProcess(adIdx);
 
         return "redirect:/admin/adManagement";

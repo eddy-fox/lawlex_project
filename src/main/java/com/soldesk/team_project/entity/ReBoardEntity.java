@@ -58,6 +58,9 @@ public class ReBoardEntity {
     @ManyToMany
     Set<LawyerEntity> voter;
 
+    @ManyToMany
+    Set<MemberEntity> memberVoter;
+
     @ManyToOne
     @JoinColumn(name = "member_idx")
     private MemberEntity memberIdx;

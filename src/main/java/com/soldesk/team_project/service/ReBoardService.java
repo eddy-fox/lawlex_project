@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soldesk.team_project.DataNotFoundException;
 import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.entity.ReBoardEntity;
 import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.repository.ReBoardRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class ReBoardService {
     private final ReBoardRepository reboardRepository;
     private final PythonService pythonService;
     private final LawyerRepository lawyerRepository;
+    private final MemberRepository memberRepository;
 
     public ReBoardEntity create(BoardEntity board, String content, LawyerEntity lawyer) {
 
@@ -70,11 +73,49 @@ public class ReBoardService {
 
     public void vote(ReBoardEntity reboard, LawyerEntity lawyer) {
 
+        if (reboard.getVoter() == null) {
+            reboard.setVoter(new java.util.HashSet<>());
+        }
         reboard.getVoter().add(lawyer);
         lawyer.setLawyerLike(lawyer.getLawyerLike() + 1);
         this.reboardRepository.save(reboard);
         this.lawyerRepository.save(lawyer);
 
+    }
+
+    @Transactional
+    public void memberLike(ReBoardEntity reboard, MemberEntity member, Integer boardIdx) {
+        // 이미 좋아요를 눌렀는지 확인 (같은 게시글의 같은 답글에 대해)
+        if (reboard.getMemberVoter() == null) {
+            reboard.setMemberVoter(new java.util.HashSet<>());
+        }
+        
+        // 중복 체크: 이미 좋아요를 누른 경우 무시
+        if (reboard.getMemberVoter().contains(member)) {
+            return;
+        }
+        
+        // 같은 게시글(boardIdx)의 다른 답글에 이미 좋아요를 눌렀는지 확인
+        // 요구사항: 한 게시글당 한 번만 누를 수 있음
+        java.util.List<ReBoardEntity> boardReboards = this.reboardRepository.findByBoardEntityBoardIdxAndReboardActive(boardIdx, 1);
+        for (ReBoardEntity rb : boardReboards) {
+            if (rb.getMemberVoter() != null && rb.getMemberVoter().contains(member)) {
+                // 이미 이 게시글의 다른 답글에 좋아요를 눌렀음
+                return;
+            }
+        }
+        
+        // 좋아요 추가
+        reboard.getMemberVoter().add(member);
+        
+        // 변호사의 lawyerLike 증가
+        if (reboard.getLawyer() != null) {
+            LawyerEntity lawyer = reboard.getLawyer();
+            lawyer.setLawyerLike(lawyer.getLawyerLike() + 1);
+            this.lawyerRepository.save(lawyer);
+        }
+        
+        this.reboardRepository.save(reboard);
     }
 
     // GPT 자동 답변 생성

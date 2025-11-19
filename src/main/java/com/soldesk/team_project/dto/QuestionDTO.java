@@ -23,5 +23,7 @@ public class QuestionDTO {
 
     private String infoId;
     private String infoName;
+    private String memberId;
+    private String lawyerId;
 
 }
