@@ -69,6 +69,7 @@ public class MemberController {
     private final MemberService memberService;
     private final LawyerService lawyerService;
     private final RankingService rankingService;
+    private final com.soldesk.team_project.service.CalendarService calendarService;
 
     private final MemberRepository memberRepository;
     private final LawyerRepository lawyerRepository;
@@ -234,10 +235,10 @@ public class MemberController {
     if (lOpt.isPresent()) {
         LawyerEntity l = lOpt.get();
 
-        // 필요하면 여기에도 lawyerActive 체크 추가 가능
-        // if (l.getLawyerActive() != null && l.getLawyerActive() == 0) {
-        //     return "redirect:/member/login?error=deactivated";
-        // }
+        // 🔹 탈퇴(비활성) 변호사이면 로그인 차단
+        if (l.getLawyerActive() != null && l.getLawyerActive() == 0) {
+            return "redirect:/member/login?error=deactivated";
+        }
 
         if (!passwordMatches(rawPw, l.getLawyerPass())) {
             return "redirect:/member/login?error=badpw";
@@ -300,8 +301,8 @@ public class MemberController {
     public ResponseEntity<String> joinNormalSubmit(@ModelAttribute MemberDTO dto) {
         try {
             // 필수 클라이언트 검증이 있어도 서버에서 한 번 더 안전장치
-            if (dto.getMemberAgree() == null || !"Y".equalsIgnoreCase(dto.getMemberAgree())) {
-                return ResponseEntity.badRequest().body("개인정보 수신동의(Y)가 필요합니다.");
+            if (dto.getMemberAgree() == null || !"1".equals(dto.getMemberAgree())) {
+                return ResponseEntity.badRequest().body("개인정보 수신동의가 필요합니다.");
             }
             // 관심 분야 3개 모두 선택 + 서로 달라야 함
             Integer i1 = dto.getInterestIdx1(), i2 = dto.getInterestIdx2(), i3 = dto.getInterestIdx3();
@@ -366,8 +367,18 @@ public class MemberController {
     }
 
     @GetMapping("/lmodify")
-    public String lmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+    public String lmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          Model model) {
         if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) return "redirect:/member/login";
+        
+        LawyerDTO lawyer = lawyerService.getSessionLawyer();
+        model.addAttribute("lawyer", lawyer);
+        model.addAttribute("interests", interestRepository.findAllByOrderByInterestNameAsc());
+        
+        // 기존 상담 가능 시간 불러오기
+        var calendarList = calendarService.findAllActiveByLawyer(loginUser.getLawyerIdx());
+        model.addAttribute("calendarList", calendarList);
+        
         return "member/lmodify";
     }
 
@@ -487,6 +498,10 @@ public class MemberController {
         model.addAttribute("likeRanking", likeRanking);
         model.addAttribute("answerRanking", answerRanking);
 
+        // 🔹 상담 가능 요일 및 시간대
+        var calendarList = calendarService.findAllActiveByLawyer(lawyerIdx);
+        model.addAttribute("calendarList", calendarList);
+
         return "member/linfo";
 
     } else if ("ADMIN".equals(role)) {
@@ -503,43 +518,51 @@ public class MemberController {
     public String myPosts(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                           @RequestParam(value = "page", defaultValue = "0") int page,
                           Model model) {
+
         if (loginUser == null) return "redirect:/member/login";
 
-        org.springframework.data.domain.PageRequest pageable = 
+        if (page < 0) page = 0;
+
+        org.springframework.data.domain.PageRequest pageable =
             org.springframework.data.domain.PageRequest.of(page, 10);
 
-        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
-            // 일반회원: 상담글 리스트
-            org.springframework.data.domain.Page<BoardEntity> paging = 
-                boardRepository.findByMemberMemberIdxOrderByBoardRegDateDesc(loginUser.getMemberIdx(), pageable);
-            
-            // 페이징 범위 계산
+        String role = loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase();
+
+        if ("MEMBER".equals(role) && loginUser.getMemberIdx() != null) {
+            // 일반회원: 내가 쓴 글 리스트 (board.member.memberIdx == loginUser.memberIdx)
+            org.springframework.data.domain.Page<BoardEntity> paging =
+                boardRepository.findByMemberMemberIdxOrderByBoardRegDateDesc(
+                    loginUser.getMemberIdx(), pageable);
+
             int currentBlock = page / 10;
             int startPage = currentBlock * 10;
-            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
-            
+            int totalPages = paging.getTotalPages();
+            int endPage = Math.min(startPage + 9, (totalPages > 0 ? totalPages - 1 : 0));
+
             model.addAttribute("paging", paging);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             model.addAttribute("userType", "MEMBER");
             return "member/myPosts";
-        } else if ("LAWYER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+
+        } else if ("LAWYER".equals(role) && loginUser.getLawyerIdx() != null) {
             // 변호사: 답변글 리스트
-            org.springframework.data.domain.Page<ReBoardEntity> paging = 
-                reBoardRepository.findByLawyerLawyerIdxOrderByReboardRegDateDesc(loginUser.getLawyerIdx(), pageable);
-            
-            // 페이징 범위 계산
+            org.springframework.data.domain.Page<ReBoardEntity> paging =
+                reBoardRepository.findByLawyerLawyerIdxOrderByReboardRegDateDesc(
+                    loginUser.getLawyerIdx(), pageable);
+
             int currentBlock = page / 10;
             int startPage = currentBlock * 10;
-            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
-            
+            int totalPages = paging.getTotalPages();
+            int endPage = Math.min(startPage + 9, (totalPages > 0 ? totalPages - 1 : 0));
+
             model.addAttribute("paging", paging);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             model.addAttribute("userType", "LAWYER");
             return "member/myPosts";
         }
-        
+
         return "redirect:/member/mypage";
     }
 
@@ -857,8 +880,53 @@ public class MemberController {
             return ResponseEntity.status(500).body("SERVER_ERROR");
         }
     }
-}
 
+    // =================== 변호사 상담시간 설정 API ===================
+    /**
+     * 변호사 마이페이지 > 상담시간 설정 저장
+     * - 요청 Body(JSON) 예시:
+     *   [
+     *     { "weekdays": [0, 2, 4], "start": "09:00", "end": "12:00" },
+     *     { "weekdays": [1],       "start": "13:00", "end": "18:00" }
+     *   ]
+     * - CalendarService.updateAvailabilityMultiple() 사용해서
+     *   해당 변호사의 calendar_active를 0/1로 갱신
+     */
+    @PostMapping(value = "/api/lawyer/calendar", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateLawyerCalendar(
+            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+            @RequestBody List<Map<String, Object>> timeSlots
+    ) {
+        Map<String, Object> res = new HashMap<>();
+
+        // 로그인/권한 체크
+        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+            res.put("success", false);
+            res.put("message", "로그인이 필요하거나 변호사 계정이 아닙니다.");
+            return ResponseEntity.status(401).body(res);
+        }
+
+        try {
+            Integer lawyerIdx = loginUser.getLawyerIdx();
+            calendarService.updateAvailabilityMultiple(lawyerIdx, timeSlots);
+
+            res.put("success", true);
+            res.put("message", "상담 가능 시간이 저장되었습니다.");
+            return ResponseEntity.ok(res);
+        } catch (IllegalArgumentException e) {
+            res.put("success", false);
+            res.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.put("success", false);
+            res.put("message", "서버 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(res);
+        }
+    }
+
+}
 /*유저 마스터 dto에 저장된 세션 가져오는 코드
 
 // 컨트롤러 예시

@@ -9,9 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
 import com.soldesk.team_project.entity.BoardEntity;
-
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     
@@ -63,13 +61,12 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
             Integer memberIdx,
             Integer boardActive
     );
-    // 회원별 상담글 조회
+
+    // 회원별 상담글 조회 (전체보기용)
     @Query("SELECT b FROM BoardEntity b WHERE b.member.memberIdx = :memberIdx " +
            "AND (b.boardActive = 1 OR b.boardActive IS NULL) " +
            "ORDER BY b.boardRegDate DESC")
     Page<BoardEntity> findByMemberMemberIdxOrderByBoardRegDateDesc(
         @Param("memberIdx") Integer memberIdx, 
         Pageable pageable);
-
-           
 }
