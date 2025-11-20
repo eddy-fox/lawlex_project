@@ -12,7 +12,7 @@
 
   function init() {
     console.log('init() 함수 실행 시작');
-    const MAX_FILES = 10;
+    const MAX_FILES = 1; // 단일 이미지 업로드
 
     const form = document.getElementById('writeForm');
     const title = document.getElementById('title');
@@ -28,7 +28,6 @@
     
     console.log('모든 필수 요소 찾음, 초기화 진행');
 
-    const uploadBtn = document.getElementById('uploadBtn');
     const drop = document.getElementById('drop');
     const fileInput = document.getElementById('file');
     const thumbs = document.getElementById('thumbs');
@@ -263,6 +262,10 @@
     div.querySelector('.remove').addEventListener('click', ()=>{
       div.remove();
       updateCounter();
+      // 파일이 삭제되면 input도 초기화
+      if(thumbs.querySelectorAll('.thumb').length === 0){
+        fileInput.value = '';
+      }
     });
     thumbs.appendChild(div);
     updateCounter();
@@ -273,6 +276,15 @@
     const remain = MAX_FILES - already;
     if(remain <= 0){ alert('이미지는 최대 ' + MAX_FILES + '장까지 가능합니다.'); return; }
     const list = Array.from(files).slice(0, remain);
+    
+    // 첫 번째 파일만 실제 input에 설정 (단일 파일 업로드)
+    if(list.length > 0 && list[0].type.startsWith('image/')){
+      // DataTransfer를 사용하여 파일 input에 파일 설정
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(list[0]);
+      fileInput.files = dataTransfer.files;
+    }
+    
     list.forEach(file=>{
       if(!file.type.startsWith('image/')) return;
       const reader = new FileReader();
@@ -285,7 +297,6 @@
   }
 
   function openPicker(){ fileInput.click(); }
-  uploadBtn.addEventListener('click', openPicker);
   drop.addEventListener('click', openPicker);
 
   fileInput.addEventListener('change', (e)=> addFiles(e.target.files));

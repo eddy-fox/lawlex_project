@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>랭킹</title>
-    <link rel="stylesheet" th:href="@{/css/ranking.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/ranking.css}">
 </head>
 
 <body>
@@ -25,34 +25,18 @@
                     th:classappend="${pick} == 'answer' ? ' on' : ''">답변수순</a>
             </div>
 
-            <section>
+            <section class="topten">
                 <div class="top" th:each="rank, st : ${rankingList}"
                     th:class="${st.index==0 ? 'top-1' : (st.index==1 ? 'top-2' : (st.index==2 ? 'top-3' : 'top'))}">
-                    <div class="left">
-                        <div class="num" th:text="${st.index +1 }">1위</div>
-                        <a th:if="${st.index<3 and rank.lawyerIdx != null}"
-                           th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${rank.lawyerIdx})}"
-                           class="photo"
-                           style="text-decoration: none;">
-                            <img th:src="@{${rank.lawyerImgPath}}"
-                                 th:alt="${rank.lawyerName}">
-                        </a>
-                        <div class="photo" th:if="${st.index>=3 or rank.lawyerIdx == null}">
-                            <img th:if="${rank.lawyerImgPath != null}" 
-                                 th:src="@{${rank.lawyerImgPath}}"
-                                 th:alt="${rank.lawyerName}">
+                    <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${rank.lawyerIdx})}" class="lprofile">
+                        <div class="left">
+                            <div class="num" th:text="${st.index +1 }">1위</div>
+                            <div class="photo" th:if="${st.index<3}"><img th:src="@{${rank.lawyerImgPath}}"
+                                    th:alt="${rank.lawyerName}"></div>
                         </div>
-                    </div>
-                    <div class="among">
-                        <a class="name" 
-                           th:if="${rank.lawyerIdx != null}"
-                           th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${rank.lawyerIdx})}"
-                           style="text-decoration: none; color: inherit;"
-                           th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</a>
-                        <span class="name" 
-                              th:if="${rank.lawyerIdx == null}"
-                              th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</span>
-                    </div>
+                        <div class="among"><samp class="name" th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</samp>
+                        </div>
+                    </a>
                     <div class="right">
                         <div class="pick" th:if="${pick == 'like'}">좋아요 <span class="v"
                                 th:text="${#numbers.formatInteger(rank.lawyerLike, 0, 'COMMA')}">3,451</span></div>
@@ -63,37 +47,94 @@
 
             </section>
 
-            <section class="category-section">
+            <section class="best-answer-section"
+                th:if="${bestAnswers != null and !#lists.isEmpty(bestAnswers)}">
+                <div class="best-answer-header">
+                    <div>
+                        <h2>도움이 많이 된 답변</h2>
+                        <p>회원 추천수가 높은 변호사 답변 TOP 10</p>
+                    </div>
+                </div>
+                <div class="best-answer-list">
+                    <article class="best-answer-card" th:each="answer, st : ${bestAnswers}">
+                        <div class="best-answer-rank" th:text="${st.index + 1}">1</div>
+                        <div class="best-answer-body">
+                            <div class="best-answer-title">
+                                <a th:if="${answer.boardIdx != null}"
+                                    th:href="@{/board/detail/{boardIdx}(boardIdx=${answer.boardIdx})}"
+                                    th:text="${answer.boardTitle != null ? answer.boardTitle : '상담글 제목'}">
+                                    상담글 제목
+                                </a>
+                                <span th:if="${answer.boardIdx == null}"
+                                    th:text="${answer.boardTitle != null ? answer.boardTitle : '상담글 제목'}">
+                                    상담글 제목
+                                </span>
+                                <span class="best-answer-date"
+                                    th:text="${answer.answerDate != null ? #temporals.format(answer.answerDate, 'yyyy.MM.dd') : ''}">
+                                    2024.01.01
+                                </span>
+                            </div>
+                            <p class="best-answer-preview"
+                                th:text="${answer.answerPreview != null && !#strings.isEmpty(answer.answerPreview) ? answer.answerPreview : '답변 본문을 불러올 수 없습니다.'}">
+                                답변 미리보기
+                            </p>
+                            <div class="best-answer-meta">
+                                <div class="best-answer-lawyer">
+                                    <a th:if="${answer.lawyerIdx != null}"
+                                        th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${answer.lawyerIdx})}"
+                                        class="best-lawyer-info">
+                                        <div class="best-lawyer-photo">
+                                            <img th:if="${answer.lawyerImgPath != null && !#strings.isEmpty(answer.lawyerImgPath)}"
+                                                th:src="@{${answer.lawyerImgPath}}"
+                                                th:alt="${answer.lawyerName}">
+                                            <span th:if="${answer.lawyerImgPath == null || #strings.isEmpty(answer.lawyerImgPath)}">A</span>
+                                        </div>
+                                        <span th:text="${answer.lawyerName != null ? answer.lawyerName + ' 변호사' : '익명 변호사'}">
+                                            변호사명
+                                        </span>
+                                    </a>
+                                    <div th:if="${answer.lawyerIdx == null}" class="best-lawyer-info">
+                                        <div class="best-lawyer-photo">
+                                            <span>?</span>
+                                        </div>
+                                        <span th:text="${answer.lawyerName != null ? answer.lawyerName : '익명'}">
+                                            익명
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="best-answer-like">
+                                    <span class="like-icon">👍</span>
+                                    <span class="like-count" th:text="${answer.likeCount != null ? #numbers.formatInteger(answer.likeCount, 0, 'COMMA') : '0'}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- <section class="category-section">
                 <div class="category">
                     <h2>카테고리별</h2>
                 </div>
-                <div class="category-group" th:each="rankI, st : ${rankingMap}" >
+                <div class="category-group" th:each="rankI, st : ${rankingMap}">
                     <h3 class="category-title" th:text="${rankI.key}">카테고리명</h3>
                     <div class="grid">
-                        <div class="card" th:each="iRank, st : ${rankI.value}" th:if="${st.index < 3}" th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
-                            <div class="ranknum" 
-                                 th:classappend="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : ''))}" th:text="${st.index + 1} + '위'">1위</div>
-                            <a th:if="${iRank[2] != null}"
-                               th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${iRank[2]})}"
-                               class="Cphoto"
-                               style="text-decoration: none;">
-                                <img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}">
+                        <div class="card" th:each="iRank, st : ${rankI.value}" th:if="${st.index < 3}"
+                            th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
+                            <div class="ranknum"
+                                th:classappend="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : ''))}"
+                                th:text="${st.index + 1} + '위'">1위</div>
+                            <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${iRank[2]})}" class="cLprofile">
+                                <div class="Cphoto"><img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}"></div>
+                                <div class="name" th:text="${iRank[3]} + ' 변호사'">김민지 변호사</div>
+                                <div class="sub" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150
+                                </div>
+                                <div class="sub" th:text="'좋아요 '+ ${iRank[5]}">좋아요 1,200</div>
                             </a>
-                            <div class="Cphoto" th:if="${iRank[2] == null}">
-                                <img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}">
-                            </div>
-                            <div class="name" th:if="${iRank[2] != null}">
-                                <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${iRank[2]})}"
-                                   style="text-decoration: none; color: inherit;"
-                                   th:text="${iRank[3]} + ' 변호사'">김민지 변호사</a>
-                            </div>
-                            <div class="name" th:if="${iRank[2] == null}" th:text="${iRank[3]} + ' 변호사'">김민지 변호사</div>
-                            <div class="sub" th:if="${pick == 'answer'}" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150</div>
-                            <div class="sub" th:if="${pick == 'like'}" th:text="'좋아요 '+ ${iRank[5]}">좋아요 1,200</div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
         </div>
     </main>

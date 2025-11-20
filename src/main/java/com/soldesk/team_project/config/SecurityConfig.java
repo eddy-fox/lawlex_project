@@ -54,7 +54,8 @@ public class SecurityConfig {
                     "/member/login","/member/loginTemp",
                     "/member/join/**",
                     "/member/api/**","/member/popup/**",
-                    "/oauth2/**"
+                    "/oauth2/**",
+                    "/login/oauth2/code/**"  // OAuth2 콜백 URL 허용
                 ).permitAll()
                 .anyRequest().permitAll()
             )
@@ -64,8 +65,7 @@ public class SecurityConfig {
                 .loginPage("/member/login")
                 .userInfoEndpoint(u -> u.userService(principalOauth2UserService))
                 .successHandler(oAuth2LoginSuccessHandler)
-            )
-            .logout(logout -> logout.disable());
+            );
 
         return http.build();
         

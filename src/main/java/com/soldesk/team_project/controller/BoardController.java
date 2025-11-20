@@ -1,6 +1,5 @@
 package com.soldesk.team_project.controller;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import com.soldesk.team_project.service.BoardService;
 import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.ReBoardService;
 import com.soldesk.team_project.service.CategoryRecommendService;
+import com.soldesk.team_project.service.FirebaseStorageService;
 import com.soldesk.team_project.repository.AdminRepository;
 import com.soldesk.team_project.repository.MemberRepository;
 import com.soldesk.team_project.dto.UserMasterDTO;
@@ -47,6 +47,7 @@ public class BoardController {
     private final MemberService memberService;
     private final ReBoardService reboardService;
     private final CategoryRecommendService categoryRecommendService;
+    private final FirebaseStorageService storageService;
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
     private final com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
@@ -194,8 +195,6 @@ public class BoardController {
                              @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                              HttpSession session, Model model) {
 
-        System.out.println("========== 게시글 작성 시작 ==========");
-
         if(bindingResult.hasErrors()) {
             return "board/write";
         }
@@ -216,12 +215,36 @@ public class BoardController {
             memberEntity
         );
         
+        // 이미지 파일 업로드 처리
+        if (boardForm.getImgFile() != null && !boardForm.getImgFile().isEmpty()) {
+            try {
+                String filename = nowUuidName(boardForm.getImgFile().getOriginalFilename());
+                String objectPath = "boardimg/" + filename;
+                
+                var uploaded = storageService.upload(boardForm.getImgFile(), objectPath);
+                
+                // boardImgPath에 Firebase URL 저장
+                writeBoard.setBoardImgPath(uploaded.url());
+                // boardImgid에 경로+파일명 저장 (예: /boardimg/파일명)
+                writeBoard.setBoardImgid("/" + objectPath);
+                
+                // 업데이트된 엔티티 저장
+                boardService.save(writeBoard);
+            } catch (Exception e) {
+                // 이미지 업로드 실패 시 무시하고 계속 진행
+            }
+        }
+        
         // GPT 자동 답변 생성
         reboardService.gptAutoReboard(writeBoard);
 
         // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
-        // 카테고리로부터 interestIdx 자동 결정
-        Integer interestIdx = boardForm.getInterestIdx();
+        // 실제로 저장된 글의 interestIdx를 사용
+        Integer interestIdx = null;
+        if (writeBoard.getInterest() != null) {
+            interestIdx = writeBoard.getInterest().getInterestIdx();
+        }
+        // interest가 없으면 카테고리로부터 결정
         if (interestIdx == null || interestIdx <= 0) {
             interestIdx = boardService.getInterestIdxFromCategory(boardForm.getBoardCategory());
         }
@@ -257,8 +280,10 @@ public class BoardController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String boardModifyForm(BoardForm boardForm, Principal principal, 
-                                  @PathVariable("id") Integer id, HttpSession session) {
+    public String boardModifyForm(BoardForm boardForm, 
+                                  @PathVariable("id") Integer id, 
+                                  HttpSession session,
+                                  @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
         
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         
@@ -266,10 +291,10 @@ public class BoardController {
         AdminEntity loginAdmin = getLoginAdmin(session);
         boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
         
-        // 작성자 확인 (Principal이 있을 때만)
+        // 작성자 확인 (loginUser 사용)
         boolean isOwner = false;
-        if (principal != null && boardEntity.getMember() != null) {
-            isOwner = boardEntity.getMember().getMemberId().equals(principal.getName());
+        if (loginUser != null && loginUser.getMemberIdx() != null && boardEntity.getMember() != null) {
+            isOwner = loginUser.getMemberIdx().equals(boardEntity.getMember().getMemberIdx());
         }
         
         if(!isOwner && !isAdmin) {
@@ -289,7 +314,9 @@ public class BoardController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String boardModify(@Valid BoardForm boardForm, BindingResult bindingResult,
-    Principal principal, @PathVariable("id") Integer id, HttpSession session) {
+                              @PathVariable("id") Integer id, 
+                              HttpSession session,
+                              @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
         
         if(bindingResult.hasErrors()) {
             return "board/write";
@@ -300,24 +327,62 @@ public class BoardController {
         AdminEntity loginAdmin = getLoginAdmin(session);
         boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
         
-        // 작성자 확인 (Principal이 있을 때만)
+        // 작성자 확인 (loginUser 사용)
         boolean isOwner = false;
-        if (principal != null && boardEntity.getMember() != null) {
-            isOwner = boardEntity.getMember().getMemberId().equals(principal.getName());
+        if (loginUser != null && loginUser.getMemberIdx() != null && boardEntity.getMember() != null) {
+            isOwner = loginUser.getMemberIdx().equals(boardEntity.getMember().getMemberIdx());
         }
         
         if(!isOwner && !isAdmin) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
         
+        // 제목과 내용 수정
         this.boardService.modify(boardEntity, boardForm.getBoardTitle(), boardForm.getBoardContent());
+        
+        // 이미지 파일 업로드 처리 (새 이미지가 첨부된 경우)
+        if (boardForm.getImgFile() != null && !boardForm.getImgFile().isEmpty()) {
+            try {
+                // 기존 이미지가 있으면 Firebase에서 삭제
+                if (boardEntity.getBoardImgid() != null && !boardEntity.getBoardImgid().isEmpty()) {
+                    try {
+                        // /boardimg/파일명 형식에서 앞의 / 제거
+                        String oldObjectPath = boardEntity.getBoardImgid().startsWith("/") 
+                            ? boardEntity.getBoardImgid().substring(1) 
+                            : boardEntity.getBoardImgid();
+                        storageService.delete(oldObjectPath);
+                    } catch (Exception e) {
+                        // 삭제 실패해도 계속 진행
+                    }
+                }
+                
+                // 새 이미지 업로드
+                String filename = nowUuidName(boardForm.getImgFile().getOriginalFilename());
+                String objectPath = "boardimg/" + filename;
+                
+                var uploaded = storageService.upload(boardForm.getImgFile(), objectPath);
+                
+                // boardImgPath에 Firebase URL 저장
+                boardEntity.setBoardImgPath(uploaded.url());
+                // boardImgid에 경로+파일명 저장 (예: /boardimg/파일명)
+                boardEntity.setBoardImgid("/" + objectPath);
+                
+                // 업데이트된 엔티티 저장
+                boardService.save(boardEntity);
+            } catch (Exception e) {
+                // 이미지 업로드 실패 시 무시하고 계속 진행
+            }
+        }
+        
         return String.format("redirect:/board/detail/%s", id);
 
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
-    public String boardDelete(Principal principal, @PathVariable("id") Integer id, HttpSession session) {
+    public String boardDelete(@PathVariable("id") Integer id, 
+                              HttpSession session,
+                              @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
         
@@ -325,10 +390,10 @@ public class BoardController {
         AdminEntity loginAdmin = getLoginAdmin(session);
         boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
         
-        // 작성자 확인 (Principal이 있을 때만)
+        // 작성자 확인 (loginUser 사용)
         boolean isOwner = false;
-        if (principal != null && boardEntity.getMember() != null) {
-            isOwner = boardEntity.getMember().getMemberId().equals(principal.getName());
+        if (loginUser != null && loginUser.getMemberIdx() != null && boardEntity.getMember() != null) {
+            isOwner = loginUser.getMemberIdx().equals(boardEntity.getMember().getMemberIdx());
         }
         
         if(!isOwner && !isAdmin) {
@@ -352,6 +417,32 @@ public class BoardController {
             return adminRepository.findById(as.getAdminIdx()).orElse(null);
         }
         return null;
+    }
+
+    /**
+     * 파일명 생성 메서드 (Firebase 업로드용)
+     * 형식: yyyyMMdd_HHmmssSSS-8자리UUID.확장자
+     * 예: 20251113_213015123-7f3a9c1b.jpg
+     */
+    private String nowUuidName(String originalFilename) {
+        String ext = getExt(originalFilename);
+        String now = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+        String shortUuid = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        return now + "-" + shortUuid + ext;
+    }
+
+    /**
+     * 원본 파일명에서 확장자 추출
+     */
+    private String getExt(String original) {
+        if (original == null || original.isBlank()) return ".bin";
+        String name = original.trim();
+        int i = name.lastIndexOf('.');
+        if (i < 0 || i == name.length() - 1) return ".bin";
+        String ext = name.substring(i).toLowerCase(java.util.Locale.ROOT);
+        if (ext.length() > 10 || ext.contains("/") || ext.contains("\\") || ext.contains(" ")) return ".bin";
+        return ext;
     }
 
 }

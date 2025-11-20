@@ -236,4 +236,8 @@ public class BoardService {
 
     }
 
+    public BoardEntity save(BoardEntity boardEntity) {
+        return this.boardRepository.save(boardEntity);
+    }
+
 }

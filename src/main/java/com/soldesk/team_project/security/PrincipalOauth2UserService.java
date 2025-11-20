@@ -1,5 +1,6 @@
 package com.soldesk.team_project.security;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -15,6 +16,9 @@ import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.MemberEntity;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.MemberRepository;
+import com.soldesk.team_project.security.oauth.GoogleUserInfo;
+import com.soldesk.team_project.security.oauth.NaverUserInfo;
+import com.soldesk.team_project.security.oauth.OAuth2UserInfo;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -38,20 +42,29 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        String provider = userRequest.getClientRegistration().getRegistrationId(); // "google"
-        String providerId = oAuth2User.getAttribute("sub"); // 구글의 유니크 ID
-        String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("name");
+        String provider = userRequest.getClientRegistration().getRegistrationId(); // "google", "naver"
+        
+        OAuth2UserInfo oauth2UserInfo = null;
+        
+        if (provider.equals("google")) {
+            oauth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+        } else if (provider.equals("naver")) {
+            oauth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
+        }
+
+        if (oauth2UserInfo == null) {
+            throw new OAuth2AuthenticationException("지원하지 않는 OAuth2 제공자입니다.");
+        }
+
+        String providerId = oauth2UserInfo.getProviderId();
+        String email = oauth2UserInfo.getEmail();
+        String name = oauth2UserInfo.getName();
 
         Optional<MemberEntity> memberUser = memberRepository.findByMemberProviderAndMemberProviderId(provider, providerId);
         Optional<LawyerEntity> lawyerUser = lawyerRepository.findByLawyerProviderAndLawyerProviderId(provider, providerId);
 
          if (memberUser.isEmpty() && lawyerUser.isEmpty()) {
             TemporaryOauthDTO temp = new TemporaryOauthDTO(email, name, provider, providerId);
-            temp.setEmail(email);
-            temp.setName(name);
-            temp.setProvider(provider);
-            temp.setProviderId(providerId);
 
             HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                                     .getRequest().getSession();

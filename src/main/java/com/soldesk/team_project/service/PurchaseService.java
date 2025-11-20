@@ -63,6 +63,15 @@ public class PurchaseService {
         purchaseDTO.setProductIdx(purchaseEntity.getProductIdx());
         purchaseDTO.setMemberIdx(purchaseEntity.getMemberIdx());
 
+        ProductEntity productEntity = purchaseEntity.getProduct();
+        if (productEntity == null && purchaseEntity.getProductIdx() != null) {
+            productEntity = productRepository.findById(purchaseEntity.getProductIdx()).orElse(null);
+        }
+        if (productEntity != null) {
+            purchaseDTO.setProductPrice(productEntity.getProductPrice());
+            purchaseDTO.setProductContent(productEntity.getProductContent());
+        }
+
         return purchaseDTO;
     }
 

@@ -46,6 +46,7 @@ public class MemberService {
     // [ADD] 게시글/댓글용 리포지토리
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final com.soldesk.team_project.repository.NewsBoardRepository newsBoardRepository;
 
     private MemberDTO convertMemberDTO (MemberEntity memberEntity) {
         MemberDTO memberDTO = new MemberDTO();
@@ -148,6 +149,13 @@ public class MemberService {
         return memberRepository.findById(memberIdx)
                 .map(this::convertMemberDTO)
                 .orElse(null);
+    }
+
+    // 관리자가 회원 정보 조회 (memberIdx로)
+    public MemberDTO getMemberByIdx(int memberIdx) {
+        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
+        if (memberEntity == null) return null;
+        return convertMemberDTO(memberEntity);
     }
 
     //특정 회원 검색
@@ -486,5 +494,54 @@ public class MemberService {
         d.setLawyerIdx(e.getLawyerIdx());
         d.setCommentActive(e.getCommentActive());
         return d;
+    }
+
+    // 댓글을 남긴 newsboard 게시글 목록 조회
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<com.soldesk.team_project.entity.NewsBoardEntity> getMyCommentedNewsBoards(
+            Integer memberIdx, org.springframework.data.domain.Pageable pageable) {
+        if (memberIdx == null) {
+            return org.springframework.data.domain.Page.empty(pageable);
+        }
+
+        // 댓글을 남긴 newsIdx 목록 조회 (중복 제거, 최신순)
+        List<Integer> newsIdxList = commentRepository
+                .findDistinctNewsIdxByMemberIdxAndCommentActiveOrderByCommentRegDateDesc(memberIdx);
+
+        if (newsIdxList.isEmpty()) {
+            return org.springframework.data.domain.Page.empty(pageable);
+        }
+
+        // newsIdx 목록으로 NewsBoardEntity 조회
+        List<com.soldesk.team_project.entity.NewsBoardEntity> allNewsBoards = 
+                newsBoardRepository.findAllById(newsIdxList);
+
+        // 최신 댓글 순으로 정렬 (newsIdxList 순서 유지)
+        // Map을 사용하여 빠른 조회
+        java.util.Map<Integer, com.soldesk.team_project.entity.NewsBoardEntity> newsBoardMap = 
+                allNewsBoards.stream()
+                    .collect(Collectors.toMap(
+                        com.soldesk.team_project.entity.NewsBoardEntity::getNewsIdx,
+                        e -> e,
+                        (e1, e2) -> e1
+                    ));
+
+        // newsIdxList 순서대로 정렬된 리스트 생성
+        List<com.soldesk.team_project.entity.NewsBoardEntity> newsBoards = newsIdxList.stream()
+                .map(newsBoardMap::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        // 페이징 처리
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), newsBoards.size());
+        List<com.soldesk.team_project.entity.NewsBoardEntity> pagedList = 
+                start < newsBoards.size() ? newsBoards.subList(start, end) : new ArrayList<>();
+
+        return new org.springframework.data.domain.PageImpl<>(
+                pagedList, 
+                pageable, 
+                newsBoards.size()
+        );
     }
 }

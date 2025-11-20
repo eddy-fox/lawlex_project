@@ -27,6 +27,7 @@ public class ReBoardService {
     private final LawyerRepository lawyerRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public ReBoardEntity create(BoardEntity board, String content, LawyerEntity lawyer) {
 
         ReBoardEntity reboard = new ReBoardEntity();
@@ -35,8 +36,8 @@ public class ReBoardService {
         reboard.setBoardEntity(board);
         reboard.setLawyer(lawyer);
         reboard.setReboardActive(1);
-        this.reboardRepository.save(reboard);
-        return reboard;
+        
+        return this.reboardRepository.save(reboard);
 
     }
 

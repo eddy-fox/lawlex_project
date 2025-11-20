@@ -66,9 +66,23 @@ public class QuestionService {
         questionEntity.setQuestionRegDate(questionDTO.getQRegDate());
         questionEntity.setQuestionSecret(questionDTO.getQSecret());
         questionEntity.setQuestionAnswer(questionDTO.getQAnswer());
+        // qActive가 null이면 1로 기본값 설정
+        questionEntity.setQuestionActive(questionDTO.getQActive() != null ? questionDTO.getQActive() : 1);
+        
+        // memberIdx와 lawyerIdx를 직접 설정 (DB에 저장되도록)
+        questionEntity.setMemberIdx(questionDTO.getMemberIdx());
+        questionEntity.setLawyerIdx(questionDTO.getLawyerIdx());
 
-        MemberEntity memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
-        LawyerEntity lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
+        // 조회용 관계 엔티티 설정 (insertable=false이므로 저장에는 영향 없음)
+        MemberEntity memberEntity = null;
+        if (questionDTO.getMemberIdx() != null) {
+            memberEntity = memberRepository.findById(questionDTO.getMemberIdx()).orElse(null);
+        }
+        
+        LawyerEntity lawyerEntity = null;
+        if (questionDTO.getLawyerIdx() != null) {
+            lawyerEntity = lawyerRepository.findById(questionDTO.getLawyerIdx()).orElse(null);
+        }
 
         questionEntity.setMember(memberEntity);
         questionEntity.setLawyer(lawyerEntity);
@@ -97,8 +111,15 @@ public class QuestionService {
         answerEntity.setQuestionIdx(answerDTO.getQIdx());
         answerEntity.setAdminIdx(answerDTO.getAdminIdx());
 
-        QuestionEntity questionEntity = questionRepository.findById(answerDTO.getQIdx()).orElse(null);
-        AdminEntity adminEntity = adminRepository.findById(answerDTO.getAdminIdx()).orElse(null);
+        QuestionEntity questionEntity = null;
+        if (answerDTO.getQIdx() != null) {
+            questionEntity = questionRepository.findById(answerDTO.getQIdx()).orElse(null);
+        }
+        
+        AdminEntity adminEntity = null;
+        if (answerDTO.getAdminIdx() != null) {
+            adminEntity = adminRepository.findById(answerDTO.getAdminIdx()).orElse(null);
+        }
 
         answerEntity.setQuestion(questionEntity);
         answerEntity.setAdmin(adminEntity);

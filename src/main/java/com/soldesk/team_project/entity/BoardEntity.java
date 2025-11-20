@@ -56,6 +56,9 @@ public class BoardEntity {
     @Column(name = "board_category")
     private String boardCategory;
 
+    @Column(name = "board_imgid")
+    private String boardImgid;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_idx")
     private InterestEntity interest;

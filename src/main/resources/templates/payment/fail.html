@@ -1,41 +1,103 @@
 <!DOCTYPE html>
-<html lang="kr">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
-    <link rel="stylesheet" type="text/css" href="toss.css" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>토스페이먼츠 샘플 프로젝트</title>
-  </head>
-
-  <body>
-    <div id="info" class="box_section" style="width: 600px">
-      <img width="100px" src="https://static.toss.im/lotties/error-spot-no-loop-space-apng.png" />
-      <h2>결제를 실패했어요</h2>
-
-      <div class="p-grid typography--p" style="margin-top: 50px">
-        <div class="p-grid-col text--left"><b>에러메시지</b></div>
-        <div class="p-grid-col text--right" id="message"></div>
-      </div>
-      <div class="p-grid typography--p" style="margin-top: 10px">
-        <div class="p-grid-col text--left"><b>에러코드</b></div>
-        <div class="p-grid-col text--right" id="code"></div>
-      </div>
-      <div class="p-grid">
-        <button class="button p-grid-col5" onclick="location.href='https://docs.tosspayments.com/guides/v2/payment-widget/integration';">연동 문서</button>
-        <button class="button p-grid-col5" onclick="location.href='https://discord.gg/A4fRFXQhRu';" style="background-color: #e8f3ff; color: #1b64da">실시간 문의</button>
-      </div>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>결제 실패</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #111827;
+    }
+    .modal {
+      width: 320px;
+      padding: 32px 28px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, .15);
+      text-align: center;
+    }
+    .icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 10px;
+    }
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .info {
+      margin: 24px 0 30px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #fef2f2;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #b91c1c;
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <section class="modal">
+    <img class="icon" src="https://static.toss.im/lotties/error-spot-no-loop-space-apng.png" alt="fail" />
+    <h1>결제를 완료하지 못했어요</h1>
+    <p>안내 후 포인트 페이지로 다시 이동합니다.</p>
+    <div class="info">
+      <div><strong>에러코드</strong> <span id="code">-</span></div>
+      <div style="margin-top:8px;"><strong>에러메시지</strong> <span id="message">-</span></div>
     </div>
+    <button class="btn btn-primary" id="retryBtn">다시 시도하기</button>
+  </section>
 
-    <script>
-      const urlParams = new URLSearchParams(window.location.search);
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeElement = document.getElementById("code");
+    const messageElement = document.getElementById("message");
+    const retryBtn = document.getElementById("retryBtn");
 
-      const codeElement = document.getElementById("code");
-      const messageElement = document.getElementById("message");
+    codeElement.textContent = urlParams.get("code") || "-";
+    messageElement.textContent = urlParams.get("message") || "결제가 취소되었거나 승인되지 않았습니다.";
 
-      codeElement.textContent = urlParams.get("code");
-      messageElement.textContent = urlParams.get("message");
-    </script>
-  </body>
+    function goBackToPoint() {
+      if (window.opener && !window.opener.closed) {
+        window.opener.location.href = "/member/point";
+        window.close();
+      } else {
+        window.location.href = "/member/point";
+      }
+    }
+
+    retryBtn.addEventListener("click", goBackToPoint);
+    setTimeout(goBackToPoint, 2500);
+  </script>
+</body>
 </html>

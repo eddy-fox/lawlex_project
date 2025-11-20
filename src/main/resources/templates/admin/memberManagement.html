@@ -61,7 +61,9 @@
                 </tr>
               </thead>
               <tbody id="tbody-user">
-                <tr th:onclick="|location.href='/member/mypage?memberIdx=' + ${member.memberIdx}|" style="cursor: pointer;" th:each="member : ${memberList}">
+                <tr th:each="member : ${memberList}" 
+                    th:onclick="|location.href='/member/mypage?memberIdx=' + ${member.memberIdx}|" 
+                    style="cursor: pointer;">
                     <td><span th:text="${member.memberIdx}"></span></td>
                     <td><span th:text="${member.memberId}"></span></td>
                     <td><span th:text="${member.memberName}"></span></td>

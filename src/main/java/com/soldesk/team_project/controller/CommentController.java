@@ -18,6 +18,7 @@ import com.soldesk.team_project.controller.MemberController.AdminSession;
 import com.soldesk.team_project.controller.MemberController.LawyerSession;
 import com.soldesk.team_project.controller.MemberController.MemberSession;
 import com.soldesk.team_project.dto.CommentDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.entity.AdminEntity;
 import com.soldesk.team_project.entity.CommentEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
@@ -26,6 +27,7 @@ import com.soldesk.team_project.service.CommentService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
 @RequiredArgsConstructor
@@ -57,22 +59,22 @@ public class CommentController {
     // 댓글 작성
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> createComment(@RequestBody CommentCreateRequest request, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> createComment(
+            @RequestBody CommentCreateRequest request,
+            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+            HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-        
-        // 세션에서 로그인 사용자 확인
-        MemberSession loginMember = getLoginMember(session);
-        LawyerSession loginLawyer = getLoginLawyer(session);
         
         try {
             CommentDTO comment;
             
-            if (loginMember != null) {
+            // loginUser에서 memberIdx 또는 lawyerIdx 읽기
+            if (loginUser != null && loginUser.getMemberIdx() != null) {
                 // 일반 회원이 댓글 작성
-                comment = commentService.create(request.newsIdx, loginMember.memberIdx, request.commentContent);
-            } else if (loginLawyer != null) {
+                comment = commentService.create(request.newsIdx, loginUser.getMemberIdx(), request.commentContent);
+            } else if (loginUser != null && loginUser.getLawyerIdx() != null) {
                 // 변호사가 댓글 작성
-                comment = commentService.createByLawyer(request.newsIdx, loginLawyer.lawyerIdx, request.commentContent);
+                comment = commentService.createByLawyer(request.newsIdx, loginUser.getLawyerIdx(), request.commentContent);
             } else {
                 response.put("success", false);
                 response.put("message", "로그인이 필요합니다.");
