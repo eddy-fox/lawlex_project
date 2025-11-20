@@ -151,6 +151,118 @@ public class CalendarService {
         saveInitialAvailability(lawyerIdx, weekdays, startHHmm, endHHmm);
     }
 
+    /**
+     * 회원정보수정: 여러 시간대를 한 번에 처리 (소프트 삭제 방식)
+     * - 추가/수정: calendar_active = 1
+     * - 삭제: calendar_active = 0
+     * @param lawyerIdx 변호사 ID
+     * @param timeSlots 시간대 리스트 (각 항목: {weekdays: [0,1,2], start: "09:00", end: "18:00"})
+     */
+    @Transactional
+    public void updateAvailabilityMultiple(Integer lawyerIdx, List<Map<String, Object>> timeSlots) {
+        var lawyer = lawyerRepository.findById(lawyerIdx).orElseThrow();
+        
+        // 기존 모든 calendar 데이터 가져오기 (active 포함)
+        List<CalendarEntity> existing = calendarRepository
+                .findByLawyerLawyerIdxOrderByCalendarWeeknameAscCalendarStartTimeAsc(lawyerIdx);
+        
+        // 새로운 timeSlots를 Set으로 변환하여 빠른 조회
+        Map<String, CalendarEntity> newSlotsMap = new HashMap<>();
+        if (timeSlots != null && !timeSlots.isEmpty()) {
+            for (Map<String, Object> slot : timeSlots) {
+                @SuppressWarnings("unchecked")
+                List<Integer> weekdays = (List<Integer>) slot.get("weekdays");
+                String startHHmm = (String) slot.get("start");
+                String endHHmm = (String) slot.get("end");
+                
+                if (weekdays == null || weekdays.isEmpty() || startHHmm == null || endHHmm == null) {
+                    continue;
+                }
+                
+                int startMin = hhmmToMinutes(startHHmm);
+                int endMin = hhmmToMinutes(endHHmm);
+                LocalTime s = minutesToTime(startMin);
+                LocalTime e = minutesToTime(endMin);
+                
+                if (!validRange(s, e)) {
+                    continue;
+                }
+                
+                for (Integer dow : weekdays) {
+                    if (dow == null || dow < 0 || dow > 6) continue;
+                    // 키: "요일_시작시간_끝시간" 형식
+                    String key = dow + "_" + s.toString() + "_" + e.toString();
+                    newSlotsMap.put(key, null); // 나중에 실제 Entity로 교체
+                }
+            }
+        }
+        
+        // 기존 데이터 처리: 일치하면 active=1, 없으면 active=0
+        List<CalendarEntity> toUpdate = new ArrayList<>();
+        for (CalendarEntity existingEntity : existing) {
+            String key = existingEntity.getCalendarWeekname() + "_" 
+                        + existingEntity.getCalendarStartTime().toString() + "_" 
+                        + existingEntity.getCalendarEndTime().toString();
+            
+            if (newSlotsMap.containsKey(key)) {
+                // 새로운 timeSlots에 있으면 active=1
+                existingEntity.setCalendarActive(1);
+                toUpdate.add(existingEntity);
+                newSlotsMap.put(key, existingEntity); // 기존 Entity 사용
+            } else {
+                // 새로운 timeSlots에 없으면 active=0 (소프트 삭제)
+                existingEntity.setCalendarActive(0);
+                toUpdate.add(existingEntity);
+            }
+        }
+        
+        // 새로운 시간대 추가 (기존에 없던 것만)
+        List<CalendarEntity> toSave = new ArrayList<>();
+        if (timeSlots != null && !timeSlots.isEmpty()) {
+            for (Map<String, Object> slot : timeSlots) {
+                @SuppressWarnings("unchecked")
+                List<Integer> weekdays = (List<Integer>) slot.get("weekdays");
+                String startHHmm = (String) slot.get("start");
+                String endHHmm = (String) slot.get("end");
+                
+                if (weekdays == null || weekdays.isEmpty() || startHHmm == null || endHHmm == null) {
+                    continue;
+                }
+                
+                int startMin = hhmmToMinutes(startHHmm);
+                int endMin = hhmmToMinutes(endHHmm);
+                LocalTime s = minutesToTime(startMin);
+                LocalTime e = minutesToTime(endMin);
+                
+                if (!validRange(s, e)) {
+                    continue;
+                }
+                
+                for (Integer dow : weekdays) {
+                    if (dow == null || dow < 0 || dow > 6) continue;
+                    String key = dow + "_" + s.toString() + "_" + e.toString();
+                    
+                    // 기존에 없던 것만 새로 생성
+                    if (newSlotsMap.get(key) == null) {
+                        CalendarEntity ce = new CalendarEntity();
+                        ce.setLawyer(lawyer);
+                        ce.setCalendarWeekname(dow);
+                        ce.setCalendarStartTime(s);
+                        ce.setCalendarEndTime(e);
+                        ce.setCalendarActive(1);
+                        toSave.add(ce);
+                    }
+                }
+            }
+        }
+        
+        // 업데이트 및 저장
+        calendarRepository.saveAll(toUpdate);
+        if (!toSave.isEmpty()) {
+            calendarRepository.saveAll(toSave);
+        }
+    }
+
     /* ========== 지금 신청 가능? (마감 1시간 룰 포함) ========== */
 
     /**
@@ -174,6 +286,11 @@ public boolean canRequestNow(Integer lawyerIdx, Integer durationMinutes) {
     for (var c : list) {
         LocalTime start = c.getCalendarStartTime();
         LocalTime end   = c.getCalendarEndTime();
+
+        // null 체크
+        if (start == null || end == null) {
+            continue;
+        }
 
         // 지금이 이 슬롯 안에 있어야 함
         if (now.isBefore(end) && !now.isBefore(start)) {
@@ -231,6 +348,7 @@ public List<Map<String, Object>> listLawyersForDayAsMap(int weekday) {
         List<CalendarEntity> daySlots = entry.getValue();
 
         CalendarEntity first = daySlots.stream()
+                .filter(s -> s.getCalendarStartTime() != null && s.getCalendarEndTime() != null)
                 .min(Comparator.comparing(CalendarEntity::getCalendarStartTime))
                 .orElse(null);
 
@@ -240,7 +358,7 @@ public List<Map<String, Object>> listLawyersForDayAsMap(int weekday) {
         m.put("name",       lawyer.getLawyerName());
         m.put("address",    lawyer.getLawyerAddress());
         m.put("interestName", lawyer.getInterest() != null ? lawyer.getInterest().getInterestName() : null);
-        m.put("timeRange",  first != null
+        m.put("timeRange",  (first != null && first.getCalendarStartTime() != null && first.getCalendarEndTime() != null)
                 ? first.getCalendarStartTime() + " ~ " + first.getCalendarEndTime()
                 : "상시");
 

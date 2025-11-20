@@ -196,10 +196,32 @@
           </select>
         </div>
 
-        <!-- 한줄소개 + 상담 가능 요일/시간 -->
+        <!-- 한줄소개 + 사진 업로드 -->
         <div class="field">
           <div class="inline align-start">
-            <label class="photo">상담 안내</label>
+            <!-- 사진 박스와 버튼들 -->
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-right:-5px;">
+              <label class="photo" for="lawyerImage" style="position:relative; overflow:hidden; cursor:pointer;">
+                <span id="photoLabelText">사진</span>
+                <div id="lawyerImagePreview" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; z-index:1;">
+                  <img style="width:100%; height:100%; object-fit:cover;" alt="변호사 사진">
+                </div>
+                <input id="lawyerImage"
+                       name="lawyerImage"
+                       type="file"
+                       accept="image/*"
+                       style="display:none" />
+              </label>
+              <!-- 사진 업로드 버튼과 개인정보 수신동의를 같은 줄에 배치 (현재 위치 고정) -->
+              <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                <button type="button" class="small-btn" id="lawyerImagePickBtn">변호사 사진 업로드</button>
+                <div>
+                  <input type="hidden" id="lawyerAgree" name="lawyerAgree" value="0">
+                  <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
+                </div>
+              </div>
+              <small id="agreeMsg" class="help" style="margin-top:4px;"></small>
+            </div>
             <div class="flex-1">
               <!-- 한줄소개: lawyerComment 로 name 지정 -->
               <input id="lawyerIntro"
@@ -211,22 +233,13 @@
           </div>
         </div>
 
-        <!-- 등록증 업로드 + 동의 -->
+        <!-- 등록증 업로드 -->
         <div class="field">
-          <div class="agree-area">
-            <div class="right">
-              <!-- 화면에서는 Y/N로 토글하지만 DB 저장은 서비스에서 1로 처리 -->
-              <input type="hidden" id="lawyerAgree" name="lawyerAgree" value="0">
-              <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
-            </div>
-          </div>
-
           <div class="inline align-start" style="margin-top:8px">
             <div class="flex-1">
               <div id="certImagePreview" class="thumb"></div>
             </div>
           </div>
-          <small id="agreeMsg" class="help"></small>
         </div>
 
         <!-- 상담 가능 시간 JSON (선택값 서버로 전달용) -->

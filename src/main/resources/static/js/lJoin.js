@@ -37,6 +37,10 @@
   const certPreview  = $('certImagePreview');
   const fileMsg      = $('fileMsg');
 
+  const lawyerImageFile  = $('lawyerImage');
+  const lawyerImagePickBtn = $('lawyerImagePickBtn');
+  const lawyerImagePreview = $('lawyerImagePreview');
+
   const setDone = (btn, base) => {
     if (!btn) return;
     btn.textContent = base + " 완료";
@@ -216,6 +220,35 @@
 
   certFile?.addEventListener('change', () => {
     previewFile(certFile, certPreview, "등록증 업로드", certPickBtn);
+  });
+
+  // ===== 변호사 사진 파일 선택 & 미리보기 =====
+  lawyerImagePickBtn?.addEventListener('click', () => {
+    lawyerImageFile.click();
+  });
+
+  lawyerImageFile?.addEventListener('change', () => {
+    const f = lawyerImageFile.files && lawyerImageFile.files[0];
+    const preview = document.getElementById('lawyerImagePreview');
+    const labelText = document.getElementById('photoLabelText');
+    
+    if (!f) return;
+    
+    if (preview) {
+      const url = URL.createObjectURL(f);
+      const img = preview.querySelector('img');
+      
+      if (img) {
+        img.src = url;
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+        };
+        preview.style.display = 'block';
+        if (labelText) labelText.style.display = 'none';
+      }
+    }
+    
+    if (lawyerImagePickBtn) setDone(lawyerImagePickBtn, "변호사 사진 업로드");
   });
 
   const validateFile = () => {

@@ -1,6 +1,7 @@
 package com.soldesk.team_project.controller;
 
 import com.soldesk.team_project.dto.LawyerDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
@@ -10,11 +11,14 @@ import com.soldesk.team_project.service.MemberService;
 import com.soldesk.team_project.service.RankingService;
 // import com.soldesk.team_project.controller.MemberController.SessionUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,9 +44,11 @@ public class LawyerController {
     @PostMapping("/join")
     public String joinSubmit(@ModelAttribute("lawyer") LawyerDTO dto,
                              @RequestParam("certImage") MultipartFile certImage,
+                             @RequestParam(value = "lawyerImage", required = false) MultipartFile lawyerImage,
+                             @RequestParam(value = "availabilityJson", required = false) String availabilityJson,
                              RedirectAttributes ra) {
         try {
-            lawyerService.joinLawyer(dto, certImage);
+            lawyerService.joinLawyer(dto, certImage, lawyerImage, availabilityJson);
             return "redirect:/member/login?joined=true";
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("error", e.getMessage());
@@ -82,5 +88,77 @@ public class LawyerController {
         model.addAttribute("answerRanking", answerRanking);
         
         return "lawyer/profile";
+    }
+
+    // ===== 변호사 정보 수정 API =====
+
+    // 변호사 프로필 수정
+    @PostMapping(value="/api/profile", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> updateProfileForLawyer(
+            @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
+            @ModelAttribute LawyerDTO form,
+            @RequestParam(value="lawyerImage", required = false) MultipartFile lawyerImage,
+            @RequestParam(value="calendarJson", required = false) String calendarJson) {
+
+        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        try {
+            lawyerService.updateProfileForCurrent(form, lawyerImage, calendarJson);
+            return ResponseEntity.ok("OK");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("SERVER_ERROR");
+        }
+    }
+
+    // 변호사 비밀번호 변경(아이디+전화번호+생년월일 검증)
+    @PostMapping(value="/api/changePassword", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> changePasswordForLawyer(
+            @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
+            @RequestParam("lawyerId") String lawyerId,
+            @RequestParam("lawyerPhone") String lawyerPhone,
+            @RequestParam("lawyerIdnum")  String lawyerIdnum,
+            @RequestParam("newPassword")  String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword) {
+
+        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String res = lawyerService.changePasswordWithVerificationForCurrent(lawyerId, lawyerPhone, lawyerIdnum, newPassword, confirmPassword);
+        return switch (res) {
+            case "OK"       -> ResponseEntity.ok("OK");
+            case "MISMATCH" -> ResponseEntity.badRequest().body("비밀번호 확인이 일치하지 않습니다.");
+            default         -> ResponseEntity.badRequest().body("본인 확인에 실패했습니다.");
+        };
+    }
+
+    // 변호사 회원 탈퇴(전화번호+생년월일 검증)
+    @PostMapping(value="/api/deactivate", produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public ResponseEntity<String> deactivateLawyer(
+            @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
+            HttpSession session,
+            @RequestParam("lawyerPhone") String lawyerPhone,
+            @RequestParam("lawyerIdnum")  String lawyerIdnum) {
+
+        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        try {
+            boolean ok = lawyerService.deactivateWithVerificationForCurrent(lawyerPhone, lawyerIdnum);
+            if (ok) {
+                session.invalidate();
+                return ResponseEntity.ok("OK");
+            }
+            return ResponseEntity.badRequest().body("본인 확인에 실패했습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("SERVER_ERROR");
+        }
     }
 }

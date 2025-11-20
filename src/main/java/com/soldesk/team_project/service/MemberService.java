@@ -144,10 +144,11 @@ public class MemberService {
     }
 
     // 세션에서 가져온 회원 검색
-    public MemberDTO searchSessionMember(int memberIdx) {
-        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
-        MemberDTO memberDTO = convertMemberDTO(memberEntity);
-        return memberDTO;
+    public MemberDTO searchSessionMember(Integer memberIdx) {
+        if (memberIdx == null) return null;
+        return memberRepository.findById(memberIdx)
+                .map(this::convertMemberDTO)
+                .orElse(null);
     }
 
     // 관리자가 회원 정보 조회 (memberIdx로)
@@ -169,6 +170,20 @@ public class MemberService {
 
     // 공통 유틸 
     private static String digits(String s) { return s == null ? null : s.replaceAll("\\D", ""); }
+    
+    // 전화번호 포맷팅 (010-1234-5678 형식)
+    private static String formatPhone(String s) {
+        if (s == null) return null;
+        String d = digits(s);
+        if (d == null || d.length() < 10) return d;
+        if (d.length() == 10) {
+            return d.substring(0, 3) + "-" + d.substring(3, 6) + "-" + d.substring(6);
+        }
+        if (d.length() == 11) {
+            return d.substring(0, 3) + "-" + d.substring(3, 7) + "-" + d.substring(7);
+        }
+        return d;
+    }
     private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
     private static Integer nz(Integer v) { return v == null ? -1 : v; }
     private static void validateDistinctInterests(MemberDTO d) {
@@ -195,15 +210,18 @@ public class MemberService {
 
         String enc = passwordEncoder.encode(dto.getMemberPass());
 
+        // 수신동의: "1" 또는 "0"으로 저장 (동의하면 "1", 아니면 "0")
+        String agreeValue = ("1".equals(dto.getMemberAgree())) ? "1" : "0";
+        
         MemberEntity me = MemberEntity.builder()
                 .memberId(dto.getMemberId())
                 .memberPass(enc)
                 .memberName(dto.getMemberName())
                 .memberEmail(dto.getMemberEmail())
-                .memberPhone(digits(dto.getMemberPhone()))
+                .memberPhone(formatPhone(dto.getMemberPhone()))
                 .memberIdnum(digits(dto.getMemberIdnum()))
                 .memberNickname(dto.getMemberNickname())
-                .memberAgree(dto.getMemberAgree())
+                .memberAgree(agreeValue)
                 .memberActive(1)
                 .memberProvider("local")
                 // 호환 컬럼
@@ -348,6 +366,10 @@ public class MemberService {
         memberEntity.setMemberPoint(0);
         memberEntity.setMemberProvider(temp.getProvider());
         memberEntity.setMemberProviderId(temp.getProviderId());
+        
+        // 수신동의: "1" 또는 "0"으로 저장 (동의하면 "1", 아니면 "0")
+        String agreeValue = (joinMember.getMemberAgree() != null && "1".equals(joinMember.getMemberAgree())) ? "1" : "0";
+        memberEntity.setMemberAgree(agreeValue);
 
         return memberRepository.save(memberEntity);
     }
@@ -429,7 +451,7 @@ public class MemberService {
         return true;
     }
 
-    // ===== 내가 쓴 글 / 댓글 =====
+    // ===== 내가 쓴 글  =====
 
     @Transactional(readOnly = true)
     public List<BoardDTO> getMyBoards(Integer memberIdx) {

@@ -19,7 +19,6 @@
         <p class="field-error" th:switch="${param.error}">
           <span th:case="'nouser'">가입되지 않은 아이디입니다.</span>
           <span th:case="'badpw'">비밀번호가 일치하지 않습니다.</span>
-          <span th:case="*">로그인에 실패했습니다. 다시 시도해주세요.</span>
         </p>
       </div>
 
