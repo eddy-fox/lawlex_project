@@ -212,6 +212,12 @@ public class LawyerService {
         }
         var le = lawyerRepository.findById(login.getLawyerIdx())
                 .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
+        
+        // 🔹 탈퇴(비활성) 변호사이면 접근 차단
+        if (le.getLawyerActive() != null && le.getLawyerActive() == 0) {
+            throw new IllegalStateException("탈퇴 처리된 계정입니다.");
+        }
+        
         return convertLawyerDTO(le);
     }
 
@@ -236,8 +242,8 @@ public class LawyerService {
                 .lawyerPass(encPass)
                 .lawyerName(dto.getLawyerName())
                 .lawyerEmail(dto.getLawyerEmail())
-                .lawyerPhone(digits(dto.getLawyerPhone()))
-                .lawyerTel(digits(dto.getLawyerTel()))
+                .lawyerPhone(formatPhone(dto.getLawyerPhone()))
+                .lawyerTel(formatPhone(dto.getLawyerTel()))
                 .lawyerIdnum(digits(dto.getLawyerIdnum()))
                 .lawyerAddress(dto.getLawyerAddress())
                 .lawyerNickname(dto.getLawyerNickname())
@@ -294,8 +300,8 @@ public class LawyerService {
                 .lawyerName(dto.getLawyerName())
                 .lawyerIdnum(digits(dto.getLawyerIdnum()))
                 .lawyerEmail(dto.getLawyerEmail())
-                .lawyerPhone(digits(dto.getLawyerPhone()))   // 휴대폰
-                .lawyerTel(digits(dto.getLawyerTel()))       // 사무실 전화
+                .lawyerPhone(formatPhone(dto.getLawyerPhone()))   // 휴대폰
+                .lawyerTel(formatPhone(dto.getLawyerTel()))       // 사무실 전화
                 .lawyerAddress(dto.getLawyerAddress())
                 .lawyerNickname(dto.getLawyerNickname())
                 .interestIdx(interest)
@@ -400,8 +406,8 @@ public class LawyerService {
             }
         }
 
-        if (notBlank(dto.getLawyerPhone())) le.setLawyerPhone(digits(dto.getLawyerPhone()));
-        if (notBlank(dto.getLawyerTel()))   le.setLawyerTel(digits(dto.getLawyerTel()));
+        if (notBlank(dto.getLawyerPhone())) le.setLawyerPhone(formatPhone(dto.getLawyerPhone()));
+        if (notBlank(dto.getLawyerTel()))   le.setLawyerTel(formatPhone(dto.getLawyerTel()));
         if (notBlank(dto.getLawyerIdnum())) le.setLawyerIdnum(digits(dto.getLawyerIdnum()));
 
         lawyerRepository.save(le);
@@ -419,6 +425,20 @@ public class LawyerService {
     // 유틸
     private static String digits(String s) {
         return s == null ? null : s.replaceAll("\\D", "");
+    }
+    
+    // 전화번호 포맷팅 (010-1234-5678 형식)
+    private static String formatPhone(String s) {
+        if (s == null) return null;
+        String d = digits(s);
+        if (d == null || d.length() < 10) return d;
+        if (d.length() == 10) {
+            return d.substring(0, 3) + "-" + d.substring(3, 6) + "-" + d.substring(6);
+        }
+        if (d.length() == 11) {
+            return d.substring(0, 3) + "-" + d.substring(3, 7) + "-" + d.substring(7);
+        }
+        return d;
     }
 
     private static boolean notBlank(String s) {
@@ -534,6 +554,11 @@ public class LawyerService {
         
         LawyerEntity le = lawyerRepository.findById(login.getLawyerIdx())
                 .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
+        
+        // 🔹 탈퇴(비활성) 변호사이면 접근 차단
+        if (le.getLawyerActive() != null && le.getLawyerActive() == 0) {
+            throw new IllegalStateException("탈퇴 처리된 계정입니다.");
+        }
 
         // 닉네임
         if (notBlank(dto.getLawyerNickname())) {
@@ -635,6 +660,11 @@ public class LawyerService {
 
         LawyerEntity le = lawyerRepository.findById(login.getLawyerIdx())
                 .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
+        
+        // 🔹 탈퇴(비활성) 변호사이면 접근 차단
+        if (le.getLawyerActive() != null && le.getLawyerActive() == 0) {
+            return "FAIL";
+        }
 
         // 본인 확인: 아이디, 전화번호, 생년월일 일치 확인
         boolean verified = Objects.equals(lawyerId, le.getLawyerId())

@@ -234,10 +234,10 @@ public class MemberController {
     if (lOpt.isPresent()) {
         LawyerEntity l = lOpt.get();
 
-        // 필요하면 여기에도 lawyerActive 체크 추가 가능
-        // if (l.getLawyerActive() != null && l.getLawyerActive() == 0) {
-        //     return "redirect:/member/login?error=deactivated";
-        // }
+        // 🔹 탈퇴(비활성) 변호사이면 로그인 차단
+        if (l.getLawyerActive() != null && l.getLawyerActive() == 0) {
+            return "redirect:/member/login?error=deactivated";
+        }
 
         if (!passwordMatches(rawPw, l.getLawyerPass())) {
             return "redirect:/member/login?error=badpw";

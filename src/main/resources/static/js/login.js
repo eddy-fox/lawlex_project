@@ -17,8 +17,6 @@ const errPw = document.querySelector('#err-password');
     errId.textContent = '존재하지 않는 계정입니다.';
   } else if (error === 'deactivated') {
     errId.textContent = '탈퇴 처리된 계정입니다. 새로 가입해 주세요.';
-  } else if (error) {
-    errId.textContent = '로그인에 실패했습니다. 다시 시도해 주세요.';
   }
 
   if (joined === 'true') {
