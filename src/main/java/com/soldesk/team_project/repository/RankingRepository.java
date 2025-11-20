@@ -10,8 +10,8 @@ import com.soldesk.team_project.entity.LawyerEntity;
 
 public interface RankingRepository extends JpaRepository<LawyerEntity, Integer> {
     
-    List<LawyerEntity> findAllByOrderByLawyerLikeDesc(Pageable pageable);
-    List<LawyerEntity> findAllByOrderByLawyerAnswerCntDesc(Pageable pageable);
+    List<LawyerEntity> findAllByLawyerActiveOrderByLawyerLikeDesc(Integer lawyerActive, Pageable pageable);
+    List<LawyerEntity> findAllByLawyerActiveOrderByLawyerAnswerCntDesc(Integer lawyerActive, Pageable pageable);
 
     @Query(value = """
                         SELECT
@@ -26,6 +26,7 @@ public interface RankingRepository extends JpaRepository<LawyerEntity, Integer> 
                         JOIN reboard r ON b.board_idx  = r.board_idx
                         JOIN lawyer  l ON r.lawyer_idx = l.lawyer_idx
                         JOIN interest i ON b.interest_idx = i.interest_idx
+                        WHERE l.lawyer_active = 1
                         GROUP BY
                             i.interest_idx,
                             i.interest_name,

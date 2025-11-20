@@ -24,6 +24,7 @@ public class BoardDTO {
     private Integer boardViews;
     private Integer memberIdx;
     private Integer interest;
+    private String boardImgid;
 
     private String boardCategory;
 

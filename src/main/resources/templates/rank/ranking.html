@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>랭킹</title>
-    <link rel="stylesheet" th:href="@{/css/ranking.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/ranking.css}">
 </head>
 
 <body>
@@ -25,34 +25,18 @@
                     th:classappend="${pick} == 'answer' ? ' on' : ''">답변수순</a>
             </div>
 
-            <section>
+            <section class="topten">
                 <div class="top" th:each="rank, st : ${rankingList}"
                     th:class="${st.index==0 ? 'top-1' : (st.index==1 ? 'top-2' : (st.index==2 ? 'top-3' : 'top'))}">
-                    <div class="left">
-                        <div class="num" th:text="${st.index +1 }">1위</div>
-                        <a th:if="${st.index<3 and rank.lawyerIdx != null}"
-                           th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${rank.lawyerIdx})}"
-                           class="photo"
-                           style="text-decoration: none;">
-                            <img th:src="@{${rank.lawyerImgPath}}"
-                                 th:alt="${rank.lawyerName}">
-                        </a>
-                        <div class="photo" th:if="${st.index>=3 or rank.lawyerIdx == null}">
-                            <img th:if="${rank.lawyerImgPath != null}" 
-                                 th:src="@{${rank.lawyerImgPath}}"
-                                 th:alt="${rank.lawyerName}">
+                    <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${rank.lawyerIdx})}" class="lprofile">
+                        <div class="left">
+                            <div class="num" th:text="${st.index +1 }">1위</div>
+                            <div class="photo" th:if="${st.index<3}"><img th:src="@{${rank.lawyerImgPath}}"
+                                    th:alt="${rank.lawyerName}"></div>
                         </div>
-                    </div>
-                    <div class="among">
-                        <a class="name" 
-                           th:if="${rank.lawyerIdx != null}"
-                           th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${rank.lawyerIdx})}"
-                           style="text-decoration: none; color: inherit;"
-                           th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</a>
-                        <span class="name" 
-                              th:if="${rank.lawyerIdx == null}"
-                              th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</span>
-                    </div>
+                        <div class="among"><samp class="name" th:text="${rank.lawyerName}+'&nbsp;변호사'">김하나 변호사</samp>
+                        </div>
+                    </a>
                     <div class="right">
                         <div class="pick" th:if="${pick == 'like'}">좋아요 <span class="v"
                                 th:text="${#numbers.formatInteger(rank.lawyerLike, 0, 'COMMA')}">3,451</span></div>
@@ -67,29 +51,21 @@
                 <div class="category">
                     <h2>카테고리별</h2>
                 </div>
-                <div class="category-group" th:each="rankI, st : ${rankingMap}" >
+                <div class="category-group" th:each="rankI, st : ${rankingMap}">
                     <h3 class="category-title" th:text="${rankI.key}">카테고리명</h3>
                     <div class="grid">
-                        <div class="card" th:each="iRank, st : ${rankI.value}" th:if="${st.index < 3}" th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
-                            <div class="ranknum" 
-                                 th:classappend="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : ''))}" th:text="${st.index + 1} + '위'">1위</div>
-                            <a th:if="${iRank[2] != null}"
-                               th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${iRank[2]})}"
-                               class="Cphoto"
-                               style="text-decoration: none;">
-                                <img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}">
+                        <div class="card" th:each="iRank, st : ${rankI.value}" th:if="${st.index < 3}"
+                            th:class="${st.index==0 ? 'card1' : (st.index==1 ? 'card2' : (st.index==2 ? 'card3' : 'card'))}">
+                            <div class="ranknum"
+                                th:classappend="${st.index==0 ? 'ranknum1' : (st.index==1 ? 'ranknum2' : (st.index==2 ? 'ranknum3' : ''))}"
+                                th:text="${st.index + 1} + '위'">1위</div>
+                            <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${iRank[2]})}" class="cLprofile">
+                                <div class="Cphoto"><img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}"></div>
+                                <div class="name" th:text="${iRank[3]} + ' 변호사'">김민지 변호사</div>
+                                <div class="sub" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150
+                                </div>
+                                <div class="sub" th:text="'좋아요 '+ ${iRank[5]}">좋아요 1,200</div>
                             </a>
-                            <div class="Cphoto" th:if="${iRank[2] == null}">
-                                <img th:src="@{${iRank[4]}}" th:alt="${iRank[3]}">
-                            </div>
-                            <div class="name" th:if="${iRank[2] != null}">
-                                <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${iRank[2]})}"
-                                   style="text-decoration: none; color: inherit;"
-                                   th:text="${iRank[3]} + ' 변호사'">김민지 변호사</a>
-                            </div>
-                            <div class="name" th:if="${iRank[2] == null}" th:text="${iRank[3]} + ' 변호사'">김민지 변호사</div>
-                            <div class="sub" th:if="${pick == 'answer'}" th:text="'답변수 '+ ${iRank[6]}">답변수 1,150</div>
-                            <div class="sub" th:if="${pick == 'like'}" th:text="'좋아요 '+ ${iRank[5]}">좋아요 1,200</div>
                         </div>
                     </div>
                 </div>
