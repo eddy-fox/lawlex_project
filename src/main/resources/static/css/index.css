@@ -135,7 +135,7 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
   height:450px;
   border:1px solid var(--navy);
   border-radius:10px;
-  padding:20px;
+  padding: 40px 20px ;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -180,6 +180,15 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
   margin-right:4px;
 }
 
+.page-index .card form{
+  margin-top:auto;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
 .page-index .cardBtn{
   background-color:var(--navy);
   color:var(--paper);
@@ -193,7 +202,7 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
   display:inline-flex;
   justify-content:center;
   align-items:center;
-  margin:auto;
+  margin:0;
   min-width:120px;
   font-size:14px;
   cursor:pointer;
