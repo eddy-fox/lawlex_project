@@ -85,7 +85,13 @@
     <section>
       <div class="wrap">
         <h2 class="section-ttl">지금 바로 상담 가능한 변호사</h2>
-        <div class="group">
+        <div class="lawyer-slider">
+          <button class="slider-btn slider-prev" aria-label="이전">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="group">
           <div class="card" th:each="lawyer : ${availableLawyers}">
             <a th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${lawyer.lawyerIdx})}"
                class="lImg"
@@ -149,6 +155,12 @@
           <p class="empty" th:if="${#lists.isEmpty(availableLawyers)}" style="text-align: center; padding: 20px;">
             지금 상담 가능한 변호사가 없습니다.
           </p>
+        </div>
+          <button class="slider-btn slider-next" aria-label="다음">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
 
       </div>
