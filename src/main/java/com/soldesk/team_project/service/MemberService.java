@@ -188,6 +188,9 @@ public class MemberService {
 
         String enc = passwordEncoder.encode(dto.getMemberPass());
 
+        // 수신동의: "1" 또는 "0"으로 저장 (동의하면 "1", 아니면 "0")
+        String agreeValue = ("1".equals(dto.getMemberAgree())) ? "1" : "0";
+        
         MemberEntity me = MemberEntity.builder()
                 .memberId(dto.getMemberId())
                 .memberPass(enc)
@@ -196,7 +199,7 @@ public class MemberService {
                 .memberPhone(digits(dto.getMemberPhone()))
                 .memberIdnum(digits(dto.getMemberIdnum()))
                 .memberNickname(dto.getMemberNickname())
-                .memberAgree(dto.getMemberAgree())
+                .memberAgree(agreeValue)
                 .memberActive(1)
                 .memberProvider("local")
                 // 호환 컬럼
@@ -341,6 +344,10 @@ public class MemberService {
         memberEntity.setMemberPoint(0);
         memberEntity.setMemberProvider(temp.getProvider());
         memberEntity.setMemberProviderId(temp.getProviderId());
+        
+        // 수신동의: "1" 또는 "0"으로 저장 (동의하면 "1", 아니면 "0")
+        String agreeValue = (joinMember.getMemberAgree() != null && "1".equals(joinMember.getMemberAgree())) ? "1" : "0";
+        memberEntity.setMemberAgree(agreeValue);
 
         return memberRepository.save(memberEntity);
     }

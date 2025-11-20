@@ -1,161 +1,267 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>변호사회원정보수정</title>
-    <link rel="stylesheet" th:href="@{/css/lModify.css}">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>변호사회원정보수정</title>
+  <link rel="stylesheet" th:href="@{/css/lModify.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
-    <main class="page-lModify">
-    <section class="center-card">
-        <div class="head">
+
+  <main class="page-lModify" th:with="me=${lawyer}">
+    <section class="container-narrow" style="max-width: 720px; margin: 0 auto 3rem;">
+
+      <header class="page-head" aria-label="페이지 제목" style="text-align: center; margin-top: 2rem;">
         <h1 class="title">정보수정</h1>
         <span class="role-badge">변호사</span>
-        </div>
+      </header>
 
-        <form class="form" action="#" method="post" enctype="multipart/form-data">
+      <div id="msgArea"
+           class="alert"
+           role="status"
+           aria-live="polite"
+           style="display:none; text-align:center; margin:1.5rem auto;">
+      </div>
 
-        <div class="field">
-            <label class="label" for="id_l">아이디</label>
-            <div class="input-wrap">
-            <input class="input" id="id_l" name="id_l" type="text" value="lawyer123" readonly>
-            </div>
-        </div>
+      <!-- 프로필 수정 -->
+      <section class="card form-card" aria-labelledby="secProfile" style="margin-top: 2.5rem;">
+        <h2 id="secProfile"
+            class="sub-ttl"
+            style="text-align:left; margin:0 0 1.5rem 0;">
+          프로필 수정
+        </h2>
 
-        <div class="field">
-            <label class="label" for="pw_l">비밀번호</label>
-            <div class="input-wrap">
-            <input class="input" id="pw_l" name="pw_l" type="password" placeholder="비밀번호 입력">
-            </div>
-        </div>
+        <form id="formProfile" th:action="@{/lawyer/api/profile}" method="post" enctype="multipart/form-data" novalidate>
+          <th:block th:if="${_csrf != null}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          </th:block>
 
-        <div class="field">
-            <label class="label" for="pw2_l">비밀번호 확인</label>
-            <div class="input-wrap">
-            <input class="input" id="pw2_l" name="pw2_l" type="password" placeholder="비밀번호 확인">
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label" for="nick_l">닉네임</label>
-            <div class="input-wrap">
-            <input class="input" id="nick_l" name="nick_l" type="text" placeholder="닉네임">
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label" for="email_l">이메일</label>
-            <div class="input-wrap">
-            <input class="input" id="email_l" name="email_l" type="email" placeholder="이메일 입력">
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label" for="addr_l">사무실 주소</label>
-            <div class="input-wrap">
-            <input class="input" id="addr_l" name="addr_l" type="text" placeholder="사무실 주소 입력">
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label" for="tel_l">전화번호</label>
-            <div class="input-wrap">
-            <div class="phone-flex">
-                <input class="input" id="tel_l" name="tel_l" type="text" placeholder="전화번호 입력">
-                <button type="button" class="verify-btn">인증 요청</button>
+          <div class="form-grid">
+            <label for="lawyerNickname" class="label">닉네임</label>
+            <div class="control">
+              <input id="lawyerNickname" name="lawyerNickname" class="input" type="text"
+                     th:value="${me != null ? me.lawyerNickname : ''}" placeholder="닉네임">
             </div>
 
-            <div class="verify-row">
-                <input class="code-input" id="code_l" name="code_l" type="text" placeholder="인증번호 입력">
-                <button type="button" class="verify-btn confirm">확인</button>
+            <label for="lawyerEmail" class="label">이메일</label>
+            <div class="control">
+              <input id="lawyerEmail" name="lawyerEmail" class="input" type="email"
+                     th:value="${me != null ? me.lawyerEmail : ''}" placeholder="이메일 입력">
             </div>
 
-            <p class="verify-hint">전화번호 변경 시 본인 확인이 필요합니다.</p>
+            <label for="lawyerAddress" class="label">사무실 주소</label>
+            <div class="control">
+              <input id="lawyerAddress" name="lawyerAddress" class="input" type="text"
+                     th:value="${me != null ? me.lawyerAddress : ''}" placeholder="사무실 주소 입력">
             </div>
-        </div>
 
-        <div class="field">
-            <span class="label">관심분야</span>
-            <div class="input-wrap">
-            <div class="chips">
-                <label class="chip"><input type="checkbox" name="cate[]" value="성범죄"> 성범죄</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="재산범죄"> 재산범죄</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="교통사고 · 범죄"> 교통사고 · 범죄</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="폭행 · 협박"> 폭행 · 협박</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="명예훼손 · 모욕"> 명예훼손 · 모욕</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="부동산 · 임대차"> 부동산 · 임대차</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="금전 · 계약 문제"> 금전 · 계약 문제</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="가족"> 가족</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="회사"> 회사</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="의료 · 세금 · 행정"> 의료 · 세금 · 행정</label>
-                <label class="chip"><input type="checkbox" name="cate[]" value="지식재산 · 금융"> 지식재산 · 금융</label>
+            <div class="label">전문분야</div>
+            <div class="control">
+              <select id="interestIdx" name="interestIdx" class="input select" required>
+                <option value="">전문분야 선택</option>
+                <option th:each="it : ${interests}"
+                        th:value="${it.interestIdx}"
+                        th:selected="${me != null and me.interestIdx != null and me.interestIdx == it.interestIdx}"
+                        th:text="${it.interestName}"></option>
+              </select>
             </div>
-            </div>
-        </div>
+          </div>
 
-        <section class="profile-block">
+          <!-- 사진 및 한줄소개, 상담 가능 시간 -->
+          <section class="profile-block" style="margin-top: 2rem;">
             <div class="inline-top">
-
-            <div class="photo-area">
-                <div class="photo-box" id="photoPreview">
-                <span>사진</span>
+              <div class="photo-area">
+                <div class="photo-box" id="photoPreview" style="overflow:hidden;">
+                  <img th:if="${me != null and me.lawyerImgPath != null and !me.lawyerImgPath.isEmpty()}"
+                       th:src="${me.lawyerImgPath}"
+                       style="width:100%; height:100%; object-fit:cover; display:block;"
+                       alt="변호사 사진">
+                  <span th:if="${me == null or me.lawyerImgPath == null or me.lawyerImgPath.isEmpty()}"
+                        style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">
+                    사진
+                  </span>
                 </div>
                 <div class="photo-actions">
-                <label class="photo-upload-btn" for="photoInput">사진 변경</label>
-                <button class="photo-upload-btn sub" type="button" id="photoRemoveBtn">삭제</button>
+                  <label class="photo-upload-btn" for="photoInput">사진 변경</label>
+                  <button class="photo-upload-btn sub" type="button" id="photoRemoveBtn">삭제</button>
                 </div>
-                <input type="file" id="photoInput" name="photo" accept="image/*">
-            </div>
+                <input type="file" id="photoInput" name="lawyerImage" accept="image/*">
+              </div>
 
-            <div class="profile-col">
+              <div class="profile-col">
                 <div>
-                <div class="sub-label mainline">한줄소개</div>
-                <input class="input" id="intro" name="intro" type="text" placeholder="한줄소개">
+                  <div class="sub-label mainline">한줄소개</div>
+                  <input class="input" id="lawyerComment" name="lawyerComment" type="text"
+                         th:value="${me != null ? me.lawyerComment : ''}" placeholder="한줄소개">
                 </div>
 
                 <div>
-                <div class="sub-label">상담 가능 요일 및 시간대</div>
+                  <div class="sub-label">상담 가능 요일 및 시간대</div>
 
-                <div class="days-row" id="dayCheckboxes">
-                    <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
-                    <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
-                    <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
-                    <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
-                    <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
-                    <input type="checkbox" id="sat" value="토"><label for="sat">토</label>
-                    <input type="checkbox" id="sun" value="일"><label for="sun">일</label>
-                </div>
+                  <div class="days-row" id="dayCheckboxes">
+                    <input type="checkbox" id="mon" value="0"><label for="mon">월</label>
+                    <input type="checkbox" id="tue" value="1"><label for="tue">화</label>
+                    <input type="checkbox" id="wed" value="2"><label for="wed">수</label>
+                    <input type="checkbox" id="thu" value="3"><label for="thu">목</label>
+                    <input type="checkbox" id="fri" value="4"><label for="fri">금</label>
+                    <input type="checkbox" id="sat" value="5"><label for="sat">토</label>
+                    <input type="checkbox" id="sun" value="6"><label for="sun">일</label>
+                  </div>
 
-                <div class="time-block">
+                  <div class="time-block">
                     <input id="timeStart" class="time-input" type="time">
                     <span class="time-tilde">~</span>
                     <input id="timeEnd" class="time-input" type="time">
                     <button type="button" class="small-btn" id="addTime">추가</button>
+                  </div>
+
+                  <div id="selectedList" class="selected-list"></div>
+                  <input type="hidden" id="calendarJson" name="calendarJson" value="">
                 </div>
-
-                <div id="selectedList" class="selected-list"></div>
-                </div>
+              </div>
             </div>
+          </section>
 
-            </div>
-        </section>
-
-        <div class="actions">
-            <button class="btn-main btn-ghost" type="button">취소</button>
-            <button class="btn-main" id="saveBtn" type="submit">정보수정</button>
-        </div>
-
+          <div class="actions right"
+               style="text-align: right; margin-top: 2rem;">
+            <a class="btn ghost" th:href="@{/member/mypage}" role="button"
+               style="margin-right: 0.75rem;">
+              취소
+            </a>
+            <button id="btnSaveProfile"
+                    class="btn primary"
+                    type="submit"
+                    style="background:#000; color:#fff; border:none; padding:0.45rem 1.4rem; border-radius:4px; font-weight:500; cursor:pointer;">
+              수정완료
+            </button>
+          </div>
         </form>
+      </section>
+
+      <!-- 비밀번호 변경 -->
+      <section class="card form-card" aria-labelledby="secPw" style="margin-top: 3.5rem;">
+        <h2 id="secPw"
+            class="sub-ttl"
+            style="text-align:left; margin:0 0 1.5rem 0;">
+          비밀번호 변경
+        </h2>
+
+        <form id="formPw" th:action="@{/lawyer/api/changePassword}" method="post" novalidate>
+          <th:block th:if="${_csrf != null}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          </th:block>
+
+          <div class="form-grid">
+            <label for="pw_id" class="label">아이디</label>
+            <div class="control">
+              <input id="pw_id" name="lawyerId" class="input" type="text"
+                     th:value="${me != null ? me.lawyerId : ''}"
+                     placeholder="아이디" autocomplete="username">
+            </div>
+
+            <label for="pw_phone" class="label">전화번호</label>
+            <div class="control">
+              <input id="pw_phone" name="lawyerPhone" class="input" type="text"
+                     placeholder="예) 010-1234-5678" inputmode="numeric">
+            </div>
+
+            <label for="pw_idnum" class="label">생년월일(6자리)</label>
+            <div class="control">
+              <input id="pw_idnum" name="lawyerIdnum" class="input" type="text"
+                     placeholder="예) 990101" inputmode="numeric" maxlength="6">
+            </div>
+
+            <label for="newPassword" class="label">새 비밀번호</label>
+            <div class="control">
+              <input id="newPassword" name="newPassword" class="input" type="password" placeholder="새 비밀번호">
+            </div>
+
+            <label for="confirmPassword" class="label">비밀번호 확인</label>
+            <div class="control">
+              <input id="confirmPassword" name="confirmPassword" class="input" type="password" placeholder="비밀번호 확인">
+            </div>
+          </div>
+
+          <div class="actions right"
+               style="text-align: right; margin-top: 2rem;">
+            <button id="btnChangePw"
+                    class="btn primary"
+                    type="submit"
+                    style="background:#000; color:#fff; border:none; padding:0.45rem 1.4rem; border-radius:4px; font-weight:500; cursor:pointer;">
+              비밀번호 변경
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 회원탈퇴 -->
+      <section class="card form-card" aria-labelledby="secLeave" style="margin-top: 3.5rem; margin-bottom: 1.5rem;">
+        <h2 id="secLeave"
+            class="sub-ttl"
+            style="text-align:left; margin:0 0 1.5rem 0;">
+          회원탈퇴
+        </h2>
+
+        <form id="formDelete" th:action="@{/lawyer/api/deactivate}" method="post" novalidate>
+          <th:block th:if="${_csrf != null}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          </th:block>
+
+          <div class="warning" style="margin-bottom: 1.5rem;">
+            <p class="warn-ttl">탈퇴 전 꼭 확인해주세요</p>
+            <ul class="warn-list">
+              <li>탈퇴 후 계정과 이용 기록은 복구할 수 없습니다.</li>
+              <li>법적 보관 의무가 있는 최소 정보만 남기고 모두 삭제됩니다.</li>
+              <li>다시 이용하시려면 새 계정으로 가입해야 합니다.</li>
+            </ul>
+            <label class="check">
+              <input id="agreeDelete" type="checkbox">
+              위 내용을 확인했으며, 탈퇴에 동의합니다.
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <label for="del_phone" class="label">전화번호</label>
+            <div class="control">
+              <input id="del_phone" name="lawyerPhone" class="input" type="text"
+                     placeholder="예) 010-1234-5678" inputmode="numeric">
+            </div>
+
+            <label for="del_idnum" class="label">생년월일(6자리)</label>
+            <div class="control">
+              <input id="del_idnum" name="lawyerIdnum" class="input" type="text"
+                     placeholder="예) 990101" inputmode="numeric" maxlength="6">
+            </div>
+          </div>
+
+          <div class="actions right"
+               style="text-align: right; margin-top: 2rem;">
+            <button id="btnDelete"
+                    class="btn danger"
+                    type="submit"
+                    disabled
+                    style="background:#000; color:#fff; border:none; padding:0.45rem 1.4rem; border-radius:4px; font-weight:500; cursor:pointer;">
+              회원탈퇴
+            </button>
+          </div>
+        </form>
+      </section>
+
     </section>
-    </main> 
-    <div class="include" th:replace="~{include/footer :: footer}"></div>
-    <script th:src="@{/js/js.js}"></script>
-    <script th:src="@{/js/chatIcon.js}"></script>
-    <script th:src="@{/js/lModify.js}"></script> 
-    <script th:if="${alert}" th:inline="javascript">
+  </main>
+
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.calendarListData = /*[[${calendarList}]]*/ [];
+    /*]]>*/
+  </script>
+  <script th:src="@{/js/lModify.js}"></script>
+  <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/
         alert('[[${alert}]]'); // 전달된 alert 메세지 출력
         /*]]>*/

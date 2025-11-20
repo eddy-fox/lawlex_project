@@ -41,4 +41,5 @@ public class LawyerDTO {
     // 파일 업로드 DTO로 쓰는 경우 (register에서 사용)
     private MultipartFile idImage;     // 신분증
     private MultipartFile certImage;   // 등록증
+    private MultipartFile lawyerImage; // 변호사 사진
 }

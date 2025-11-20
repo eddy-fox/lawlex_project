@@ -68,6 +68,7 @@ public class MemberController {
     private final MemberService memberService;
     private final LawyerService lawyerService;
     private final RankingService rankingService;
+    private final com.soldesk.team_project.service.CalendarService calendarService;
 
     private final MemberRepository memberRepository;
     private final LawyerRepository lawyerRepository;
@@ -299,8 +300,8 @@ public class MemberController {
     public ResponseEntity<String> joinNormalSubmit(@ModelAttribute MemberDTO dto) {
         try {
             // 필수 클라이언트 검증이 있어도 서버에서 한 번 더 안전장치
-            if (dto.getMemberAgree() == null || !"Y".equalsIgnoreCase(dto.getMemberAgree())) {
-                return ResponseEntity.badRequest().body("개인정보 수신동의(Y)가 필요합니다.");
+            if (dto.getMemberAgree() == null || !"1".equals(dto.getMemberAgree())) {
+                return ResponseEntity.badRequest().body("개인정보 수신동의가 필요합니다.");
             }
             // 관심 분야 3개 모두 선택 + 서로 달라야 함
             Integer i1 = dto.getInterestIdx1(), i2 = dto.getInterestIdx2(), i3 = dto.getInterestIdx3();
@@ -356,8 +357,18 @@ public class MemberController {
     }
 
     @GetMapping("/lmodify")
-    public String lmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
+    public String lmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          Model model) {
         if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) return "redirect:/member/login";
+        
+        LawyerDTO lawyer = lawyerService.getSessionLawyer();
+        model.addAttribute("lawyer", lawyer);
+        model.addAttribute("interests", interestRepository.findAllByOrderByInterestNameAsc());
+        
+        // 기존 상담 가능 시간 불러오기
+        var calendarList = calendarService.findAllActiveByLawyer(loginUser.getLawyerIdx());
+        model.addAttribute("calendarList", calendarList);
+        
         return "member/lmodify";
     }
 
@@ -400,6 +411,10 @@ public class MemberController {
         int answerRanking = rankingService.getAnswerRanking(lawyerIdx);
         model.addAttribute("likeRanking", likeRanking);
         model.addAttribute("answerRanking", answerRanking);
+
+        // 🔹 상담 가능 요일 및 시간대
+        var calendarList = calendarService.findAllActiveByLawyer(lawyerIdx);
+        model.addAttribute("calendarList", calendarList);
 
         return "member/linfo";
 
@@ -751,8 +766,53 @@ public class MemberController {
             return ResponseEntity.status(500).body("SERVER_ERROR");
         }
     }
-}
 
+    // =================== 변호사 상담시간 설정 API ===================
+    /**
+     * 변호사 마이페이지 > 상담시간 설정 저장
+     * - 요청 Body(JSON) 예시:
+     *   [
+     *     { "weekdays": [0, 2, 4], "start": "09:00", "end": "12:00" },
+     *     { "weekdays": [1],       "start": "13:00", "end": "18:00" }
+     *   ]
+     * - CalendarService.updateAvailabilityMultiple() 사용해서
+     *   해당 변호사의 calendar_active를 0/1로 갱신
+     */
+    @PostMapping(value = "/api/lawyer/calendar", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateLawyerCalendar(
+            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+            @RequestBody List<Map<String, Object>> timeSlots
+    ) {
+        Map<String, Object> res = new HashMap<>();
+
+        // 로그인/권한 체크
+        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+            res.put("success", false);
+            res.put("message", "로그인이 필요하거나 변호사 계정이 아닙니다.");
+            return ResponseEntity.status(401).body(res);
+        }
+
+        try {
+            Integer lawyerIdx = loginUser.getLawyerIdx();
+            calendarService.updateAvailabilityMultiple(lawyerIdx, timeSlots);
+
+            res.put("success", true);
+            res.put("message", "상담 가능 시간이 저장되었습니다.");
+            return ResponseEntity.ok(res);
+        } catch (IllegalArgumentException e) {
+            res.put("success", false);
+            res.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.put("success", false);
+            res.put("message", "서버 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(res);
+        }
+    }
+
+}
 /*유저 마스터 dto에 저장된 세션 가져오는 코드
 
 // 컨트롤러 예시
