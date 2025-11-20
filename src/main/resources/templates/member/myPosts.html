@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${userType == 'MEMBER' ? '내가 쓴 상담글' : '내가 쓴 답변글'}">내가 쓴 글</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/list.css}">
+    <link rel="stylesheet" th:href="@{/css/myPosts.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
