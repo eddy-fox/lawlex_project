@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.soldesk.team_project.entity.LawyerEntity;
 
@@ -24,11 +25,11 @@ public interface RankingRepository extends JpaRepository<LawyerEntity, Integer> 
                 l.lawyer_img_path,
                 r.reboard_content,
                 r.reboard_reg_date,
-                COUNT(rv.voter_member_idx) AS like_cnt
+                COUNT(rv.re_board_entity_reboard_idx) AS like_cnt
             FROM reboard r
             JOIN board b ON r.board_idx = b.board_idx
             JOIN lawyer l ON r.lawyer_idx = l.lawyer_idx
-            LEFT JOIN reboard_voter rv ON r.reboard_idx = rv.re_board_entity_reboard_idx
+            LEFT JOIN reboard_member_voter rv ON r.reboard_idx = rv.re_board_entity_reboard_idx
             WHERE (r.reboard_active = 1 OR r.reboard_active IS NULL)
               AND (b.board_active = 1 OR b.board_active IS NULL)
               AND (l.lawyer_active = 1 OR l.lawyer_active IS NULL)
@@ -46,7 +47,7 @@ public interface RankingRepository extends JpaRepository<LawyerEntity, Integer> 
             ORDER BY like_cnt DESC, r.reboard_reg_date DESC
             LIMIT :limit
             """, nativeQuery = true)
-    List<Object[]> findTopLikedAnswersNative(@org.springframework.data.repository.query.Param("limit") int limit);
+    List<Object[]> findTopLikedAnswersNative(@Param("limit") int limit);
 
 /*     @Query(value = """
                         SELECT

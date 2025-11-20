@@ -102,6 +102,10 @@
                                         </span>
                                     </div>
                                 </div>
+                                <div class="best-answer-like">
+                                    <span class="like-icon">👍</span>
+                                    <span class="like-count" th:text="${answer.likeCount != null ? #numbers.formatInteger(answer.likeCount, 0, 'COMMA') : '0'}">0</span>
+                                </div>
                             </div>
                         </div>
                     </article>

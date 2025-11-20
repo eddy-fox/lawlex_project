@@ -494,3 +494,21 @@
       height: 100%;
       object-fit: cover;
     }
+
+    .best-answer-like {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--navy);
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .best-answer-like .like-icon {
+      font-size: 18px;
+    }
+
+    .best-answer-like .like-count {
+      color: var(--navy);
+      font-weight: 700;
+    }
