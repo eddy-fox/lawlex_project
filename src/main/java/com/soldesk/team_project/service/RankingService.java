@@ -48,7 +48,11 @@ public class RankingService {
     }
 
     public List<Map<String, Object>> getTopLikedAnswers(int limit) {
-        List<Object[]> rows = rankingRepository.findTopLikedAnswersNative(limit);
+        List<Object[]> allRows = rankingRepository.findTopLikedAnswersNative();
+        // limit만큼만 가져오기
+        List<Object[]> rows = allRows.stream()
+                                     .limit(limit)
+                                     .collect(Collectors.toList());
         List<Map<String, Object>> bestAnswers = new ArrayList<>();
 
         for (Object[] row : rows) {

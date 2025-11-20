@@ -376,19 +376,31 @@ public class MemberController {
                      @RequestParam(value = "memberIdx", required = false) Integer memberIdxParam,
                      @RequestParam(value = "lawyerIdx", required = false) Integer lawyerIdxParam,
                      Model model, RedirectAttributes redirectAttributes) {
+        
+        // 강제로 출력 버퍼 플러시
+        System.out.flush();
+        System.err.flush();
+        
+        System.out.println("========================================");
+        System.out.println("[DEBUG] MemberController.mypage - 메서드 진입!!!");
+        System.out.println("[DEBUG] MemberController.mypage - loginUser: " + (loginUser != null ? "not null" : "null"));
+        System.out.println("[DEBUG] MemberController.mypage - memberIdxParam: " + memberIdxParam);
+        System.out.println("[DEBUG] MemberController.mypage - lawyerIdxParam: " + lawyerIdxParam);
+        System.out.println("========================================");
+        
+        System.out.flush();
+        System.err.flush();
                         
-    if (loginUser == null) return "redirect:/member/login";
-    model.addAttribute("loginUser", loginUser);
+        if (loginUser == null) {
+            System.out.println("[DEBUG] MemberController.mypage - loginUser가 null, 로그인 페이지로 리다이렉트");
+            return "redirect:/member/login";
+        }
+        model.addAttribute("loginUser", loginUser);
 
-    // 관리자 권한 확인
-    if (loginUser.getAdminIdx() == null) {
-        redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
-        return "redirect:/";
-    } else {
-        // 관리자가 다른 회원의 마이페이지를 볼 경우
+    // 관리자가 다른 회원/변호사의 마이페이지를 볼 경우
+    if (loginUser.getAdminIdx() != null && (memberIdxParam != null || lawyerIdxParam != null)) {
+        // 관리자가 일반 회원의 마이페이지 조회
         if (memberIdxParam != null) {
-            
-            // 관리자가 일반 회원의 마이페이지 조회
             MemberDTO member = memberService.getMemberByIdx(memberIdxParam);
             if (member == null) {
                 return "redirect:/admin/memberManagement";
@@ -423,21 +435,40 @@ public class MemberController {
 
     // 일반 사용자가 자신의 마이페이지 조회
     String role = loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase();
+    System.out.println("[DEBUG] MemberController.mypage - role: " + role);
 
     if ("MEMBER".equals(role)) {
-        // 프로필
-        MemberDTO me = memberService.getSessionMember();
-        model.addAttribute("member", me);
-
-        // 내가 쓴 글 / 댓글 (memberIdx 기준)
+        System.out.println("[DEBUG] MemberController.mypage - MEMBER 경로 진입");
         Integer memberIdx = loginUser.getMemberIdx();
-        List<BoardDTO> myBoards   = memberService.getMyBoards(memberIdx);
-        List<CommentDTO> myComments = memberService.getMyComments(memberIdx);
+        System.out.println("[DEBUG] MemberController.mypage - memberIdx: " + memberIdx);
+        
+        try {
+            // 프로필
+            System.out.println("[DEBUG] MemberController.mypage - getSessionMember() 호출 전");
+            MemberDTO me = memberService.getSessionMember();
+            System.out.println("[DEBUG] MemberController.mypage - getSessionMember() 완료, me: " + (me != null ? "not null" : "null"));
+            model.addAttribute("member", me);
 
-        model.addAttribute("myBoards", myBoards);
-        model.addAttribute("myComments", myComments);
+            // 내가 쓴 글 / 댓글 (memberIdx 기준)
+            System.out.println("[DEBUG] MemberController.mypage - getMyBoards() 호출 전");
+            List<BoardDTO> myBoards = memberService.getMyBoards(memberIdx);
+            System.out.println("[DEBUG] MemberController.mypage - getMyBoards() 완료, size: " + (myBoards != null ? myBoards.size() : "null"));
+            
+            System.out.println("[DEBUG] MemberController.mypage - getMyComments() 호출 전");
+            List<CommentDTO> myComments = memberService.getMyComments(memberIdx);
+            System.out.println("[DEBUG] MemberController.mypage - getMyComments() 완료, size: " + (myComments != null ? myComments.size() : "null"));
 
-        return "member/ginfo";
+            model.addAttribute("myBoards", myBoards);
+            model.addAttribute("myComments", myComments);
+
+            System.out.println("[DEBUG] MemberController.mypage - member/ginfo 반환 전");
+            return "member/ginfo";
+        } catch (Exception e) {
+            System.err.println("[ERROR] MemberController.mypage - 오류 발생: " + e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("alert", "마이페이지 조회 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/";
+        }
 
     } else if ("LAWYER".equals(role)) {
 
@@ -507,6 +538,34 @@ public class MemberController {
             model.addAttribute("endPage", endPage);
             model.addAttribute("userType", "LAWYER");
             return "member/myPosts";
+        }
+        
+        return "redirect:/member/mypage";
+    }
+
+    // 내가 댓글을 남긴 newsboard 게시글 리스트
+    @GetMapping("/mypage/myComments")
+    public String myComments(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                             @RequestParam(value = "page", defaultValue = "0") int page,
+                             Model model) {
+        if (loginUser == null) return "redirect:/member/login";
+
+        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
+            org.springframework.data.domain.PageRequest pageable = 
+                org.springframework.data.domain.PageRequest.of(page, 10);
+
+            org.springframework.data.domain.Page<com.soldesk.team_project.entity.NewsBoardEntity> paging = 
+                memberService.getMyCommentedNewsBoards(loginUser.getMemberIdx(), pageable);
+            
+            // 페이징 범위 계산
+            int currentBlock = page / 10;
+            int startPage = currentBlock * 10;
+            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+            
+            model.addAttribute("paging", paging);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            return "member/myComments";
         }
         
         return "redirect:/member/mypage";

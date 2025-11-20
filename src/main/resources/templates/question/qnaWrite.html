@@ -12,11 +12,13 @@
     <main class="page-qnaWrite">
         <div class="inner">
             <section class="frame">
-                <form th:action="@{/question/qnaWrite}" th:object="${qnaWrite}" id="qnaForm" method="post">
+                <form th:action="${isModify != null and isModify ? '/question/qnaModify' : '/question/qnaWrite'}" 
+                      th:object="${qnaWrite}" id="qnaForm" method="post">
                     <div class="form-group">
                         <div class="header-line">
-                            <input type="hidden"  th:field="*{memberIdx}">
-                            <input type="hidden"  th:field="*{lawyerIdx}">
+                            <input type="hidden" th:if="${qIdx != null}" name="qIdx" th:value="${qIdx}">
+                            <input type="hidden" th:field="*{memberIdx}">
+                            <input type="hidden" th:field="*{lawyerIdx}">
                             <input type="hidden" th:field="*{qRegDate}">
                             <input type="hidden" name="qAnswer" value="0">
                             <label for="titleInput" class="form-label">제목</label>
@@ -35,7 +37,9 @@
 
                     <div class="form-actions">
                         <button type="button" class="btn btn-cancel" id="cancelBtn">취소</button>
-                        <button type="submit" class="btn btn-submit" id="submitBtn" disabled>글쓰기</button>
+                        <button type="submit" class="btn btn-submit" id="submitBtn" disabled>
+                            <span th:text="${isModify != null and isModify ? '수정하기' : '글쓰기'}">글쓰기</span>
+                        </button>
                     </div>
                 </form>
             </section>

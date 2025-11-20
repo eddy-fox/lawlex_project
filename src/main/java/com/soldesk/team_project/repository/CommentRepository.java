@@ -42,4 +42,14 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
         Integer memberIdx,
         Integer commentActive
 );
+    
+    // 특정 회원이 댓글을 남긴 newsIdx 목록 (중복 제거, 최신순)
+    // GROUP BY를 사용하여 각 newsIdx의 최신 댓글 날짜로 정렬
+    @Query("SELECT c.newsIdx FROM CommentEntity c " +
+           "WHERE c.memberIdx = :memberIdx AND c.commentActive = 1 " +
+           "GROUP BY c.newsIdx " +
+           "ORDER BY MAX(c.commentRegDate) DESC")
+    List<Integer> findDistinctNewsIdxByMemberIdxAndCommentActiveOrderByCommentRegDateDesc(
+        @Param("memberIdx") Integer memberIdx
+    );
 }
