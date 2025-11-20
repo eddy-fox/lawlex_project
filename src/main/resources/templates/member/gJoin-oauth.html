@@ -17,39 +17,48 @@
       </div>
 
       <!-- 가입 폼 -->
-      <form id="gJoinForm" class="form" th:action="@{/member/joinMember-oauth}" method="post" th:object="${joinMember}" enctype="multipart/form-data">
+      <form id="gJoinForm" class="form" th:action="@{/member/joinMember-oauth}" method="post" th:object="${joinMember}" enctype="multipart/form-data" novalidate>
         <!-- ✅ CSRF (있을 때만 렌더) -->
         <th:block th:if="${_csrf != null}">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         </th:block>
       
-        <!-- 이름 -->
+        <!-- 이름 (읽기 전용) -->
         <div class="field">
           <label for="memberName" class="sr-only">이름</label>
-          <input class="input" type="text" th:text="${joinMember.memberName}" id="memberName" readonly>
+          <input class="input" type="text" id="memberName" name="memberName" 
+                 th:value="${joinMember.memberName}" readonly>
         </div>
 
         <!-- 닉네임 -->
         <div class="field">
           <label for="memberNickname" class="sr-only">닉네임</label>
-          <input id="memberNickname" name="memberNickname" class="input" type="text" placeholder="닉네임" th:field="*{memberNickname}" required>
+          <input id="memberNickname" name="memberNickname" class="input" type="text" 
+                 placeholder="닉네임" th:field="*{memberNickname}" required>
         </div>
 
-        <!-- 이메일 -->
+        <!-- 이메일 (읽기 전용) -->
         <div class="field">
           <label for="memberEmail" class="sr-only">이메일</label>
-          <input class="input" id="memberEmail" name="memberEmail" type="email" autocomplete="email" th:text="${joinMember.memberEmail}" readonly>
+          <input class="input" id="memberEmail" name="memberEmail" type="email" 
+                 autocomplete="email" th:value="${joinMember.memberEmail}" readonly>
         </div>
 
-        <!-- 전화번호 / 생년월일(주민번호 앞자리) -->
+        <!-- 전화번호 -->
         <div class="field">
           <label for="memberPhone" class="sr-only">전화번호</label>
-          <input id="memberPhone" name="memberPhone" class="input" type="tel" placeholder="전화번호(예: 010-1234-5678)" inputmode="numeric" th:field="*{memberPhone}" required>
+          <input id="memberPhone" name="memberPhone" class="input" type="tel" 
+                 placeholder="전화번호(예: 010-1234-5678)" inputmode="numeric" 
+                 th:field="*{memberPhone}" required>
           <small id="phoneMsg" class="help"></small>
         </div>
+
+        <!-- 생년월일(주민번호 앞자리) -->
         <div class="field">
           <label for="memberIdnum" class="sr-only">생년월일</label>
-          <input id="memberIdnum" name="memberIdnum" class="input" type="text" placeholder="생년월일(예: 990101)" inputmode="numeric" th:field="*{memberIdnum}" required>
+          <input id="memberIdnum" name="memberIdnum" class="input" type="text" 
+                 placeholder="생년월일(예: 990101)" inputmode="numeric" 
+                 th:field="*{memberIdnum}" required>
           <small id="birthMsg" class="help"></small>
         </div>
 
@@ -68,7 +77,7 @@
                       th:value="${it.interestIdx}"
                       th:text="${it.interestName}">민사</option>
             </select>
-            <select id="interest3" name="interestIdx3" th:field="*{interestIdx2}" class="input" required>
+            <select id="interest3" name="interestIdx3" th:field="*{interestIdx3}" class="input" required>
               <option value="" disabled selected>관심 분야 3</option>
               <option th:each="it : ${interests}"
                       th:value="${it.interestIdx}"
@@ -82,7 +91,7 @@
         <div class="field">
           <div class="agree-area">
             <input type="hidden" id="memberAgree" name="memberAgree" th:field="*{memberAgree}" value="0">
-            <button class="small-btn" type="button" id="privacyBtn">개인 정보 수신 동의</button>
+            <button class="small-btn" type="button" id="privacyBtn" aria-pressed="false">개인 정보 수신 동의</button>
           </div>
           <small id="agreeMsg" class="help"></small>
         </div>
@@ -98,32 +107,11 @@
   <div class="include" th:replace="~{include/footer :: footer}"></div>
   <script th:src="@{/js/js.js}"></script>
   <script th:src="@{/js/chatIcon.js}"></script>
-  <script th:src="@{/js/gJoin.js}"></script>
+  <script th:src="@{/js/gJoin-oauth.js}"></script>
+  <script th:if="${alert}" th:inline="javascript">
+    /*<![CDATA[*/
+    alert('[[${alert}]]');
+    /*]]>*/
+  </script>
 </body>
-<script>
-  // 개인정보 수신 동의 토글
-  document.addEventListener('DOMContentLoaded', function() {
-    const privacyBtn = document.getElementById('privacyBtn');
-    const memberAgreeInput = document.getElementById('memberAgree');
-    
-    let isAgreed = false;
-
-    privacyBtn.addEventListener('click', function() {
-      isAgreed = !isAgreed;
-      
-      if (isAgreed) {
-        memberAgreeInput.value = '1';
-        privacyBtn.classList.add('agreed');
-      } else {
-        memberAgreeInput.value = '0';
-        privacyBtn.classList.remove('agreed');
-      }
-    });
-  });
-</script>
-<script th:if="${alert}" th:inline="javascript">
-        /*<![CDATA[*/
-        alert('[[${alert}]]'); // 전달된 alert 메세지 출력
-        /*]]>*/
-    </script>
 </html>

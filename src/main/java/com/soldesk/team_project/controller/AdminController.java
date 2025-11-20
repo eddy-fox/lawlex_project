@@ -380,92 +380,92 @@ public class AdminController {
         return "redirect:/admin/lawyer/pending";
     */
     /* Q 문의글 상세보기 */
-    @GetMapping("/qnaAnswer")
-    public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
-        QuestionDTO infoQ = questionService.getQ(qIdx);
-        // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
+    // @GetMapping("/qnaAnswer")
+    // public String qnaAnswer(@RequestParam("qIdx") int qIdx, Model model) {
+    //     QuestionDTO infoQ = questionService.getQ(qIdx);
+    //     // if(infoQ == null) return "redirect:"; // null 이면 돌아가라
 
-        Integer mIdx = infoQ.getMemberIdx();
-        Integer lIdx = infoQ.getLawyerIdx();
+    //     Integer mIdx = infoQ.getMemberIdx();
+    //     Integer lIdx = infoQ.getLawyerIdx();
 
-        if (lIdx != null) {
-            LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
-            infoQ.setInfoId(l.getLawyerId());
-            infoQ.setInfoName(l.getLawyerName());
-        } else if (mIdx != null) {
-            MemberDTO m = memberService.qMemberInquiry(mIdx);
-            infoQ.setInfoId(m.getMemberId());
-            infoQ.setInfoName(m.getMemberName());
-        }
-        model.addAttribute("infoQ", infoQ);
-        return "admin/qnaAnswer";
-    }
+    //     if (lIdx != null) {
+    //         LawyerDTO l = lawyerService.qLawyerInquiry(lIdx);
+    //         infoQ.setInfoId(l.getLawyerId());
+    //         infoQ.setInfoName(l.getLawyerName());
+    //     } else if (mIdx != null) {
+    //         MemberDTO m = memberService.qMemberInquiry(mIdx);
+    //         infoQ.setInfoId(m.getMemberId());
+    //         infoQ.setInfoName(m.getMemberName());
+    //     }
+    //     model.addAttribute("infoQ", infoQ);
+    //     return "admin/qnaAnswer";
+    // }
 
     // 생성자 변경 없이 사용하기 위해 필드 주입 사용
-    @org.springframework.beans.factory.annotation.Autowired
-    private com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
+    // @org.springframework.beans.factory.annotation.Autowired
+    // private com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
 
     /**
      * 대기 중(미승인) 변호사 목록 JSON
      * GET /admin/api/lawyer/pending
      */
-    @GetMapping(value = "/api/lawyer/pending", produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ResponseEntity<?> getPendingLawyers() {
-        var list = lawyerRepository.findAll().stream()
-                .filter(l -> l.getLawyerAuth() == null || l.getLawyerAuth() == 0)
-                .map(l -> {
-                    var m = new java.util.HashMap<String, Object>();
-                    m.put("lawyerIdx", l.getLawyerIdx());
-                    m.put("lawyerId", l.getLawyerId());
-                    m.put("lawyerName", l.getLawyerName());
-                    m.put("lawyerEmail", l.getLawyerEmail());
-                    m.put("lawyerPhone", l.getLawyerPhone());
-                    m.put("interestIdx", l.getInterestIdx());
-                    return m;
-                })
-                .collect(java.util.stream.Collectors.toList());
-        return ResponseEntity.ok(list);
-    }
+    // @GetMapping(value = "/api/lawyer/pending", produces = "application/json;charset=UTF-8")
+    // @ResponseBody
+    // public ResponseEntity<?> getPendingLawyers() {
+    //     var list = lawyerRepository.findAll().stream()
+    //             .filter(l -> l.getLawyerAuth() == null || l.getLawyerAuth() == 0)
+    //             .map(l -> {
+    //                 var m = new java.util.HashMap<String, Object>();
+    //                 m.put("lawyerIdx", l.getLawyerIdx());
+    //                 m.put("lawyerId", l.getLawyerId());
+    //                 m.put("lawyerName", l.getLawyerName());
+    //                 m.put("lawyerEmail", l.getLawyerEmail());
+    //                 m.put("lawyerPhone", l.getLawyerPhone());
+    //                 m.put("interestIdx", l.getInterestIdx());
+    //                 return m;
+    //             })
+    //             .collect(java.util.stream.Collectors.toList());
+    //     return ResponseEntity.ok(list);
+    // }
 
     /**
      * 변호사 승인 처리
      * POST /admin/api/lawyer/approve
      * 파라미터: lawyerIdx
      */
-    @PostMapping(value = "/api/lawyer/approve", produces = "text/plain;charset=UTF-8")
-    @ResponseBody
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseEntity<String> approveLawyer(@RequestParam("lawyerIdx") Integer lawyerIdx) {
-        var opt = lawyerRepository.findById(lawyerIdx);
-        if (opt.isEmpty()) return ResponseEntity.status(404).body("NOT_FOUND");
+    // @PostMapping(value = "/api/lawyer/approve", produces = "text/plain;charset=UTF-8")
+    // @ResponseBody
+    // @org.springframework.transaction.annotation.Transactional
+    // public ResponseEntity<String> approveLawyer(@RequestParam("lawyerIdx") Integer lawyerIdx) {
+    //     var opt = lawyerRepository.findById(lawyerIdx);
+    //     if (opt.isEmpty()) return ResponseEntity.status(404).body("NOT_FOUND");
 
-        var l = opt.get();
-        l.setLawyerAuth(1); // 승인
-        lawyerRepository.save(l);
-        return ResponseEntity.ok("OK");
-    }
+    //     var l = opt.get();
+    //     l.setLawyerAuth(1); // 승인
+    //     lawyerRepository.save(l);
+    //     return ResponseEntity.ok("OK");
+    // }
 
     /**
      * 변호사 거절 처리 (선택: -1로 표기)
      * POST /admin/api/lawyer/reject
      * 파라미터: lawyerIdx, reason(선택)
      */
-    @PostMapping(value = "/api/lawyer/reject", produces = "text/plain;charset=UTF-8")
-    @ResponseBody
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseEntity<String> rejectLawyer(
-            @RequestParam("lawyerIdx") Integer lawyerIdx,
-            @RequestParam(value = "reason", required = false) String reason) {
+    // @PostMapping(value = "/api/lawyer/reject", produces = "text/plain;charset=UTF-8")
+    // @ResponseBody
+    // @org.springframework.transaction.annotation.Transactional
+    // public ResponseEntity<String> rejectLawyer(
+    //         @RequestParam("lawyerIdx") Integer lawyerIdx,
+    //         @RequestParam(value = "reason", required = false) String reason) {
 
-        var opt = lawyerRepository.findById(lawyerIdx);
-        if (opt.isEmpty()) return ResponseEntity.status(404).body("NOT_FOUND");
+    //     var opt = lawyerRepository.findById(lawyerIdx);
+    //     if (opt.isEmpty()) return ResponseEntity.status(404).body("NOT_FOUND");
 
-        var l = opt.get();
-        l.setLawyerAuth(-1); // 거절
-        // 필요 시 reason을 별도 컬럼에 저장하도록 확장 (현재는 로깅만)
-        System.out.println("[ADMIN] Lawyer rejected. idx=" + lawyerIdx + ", reason=" + reason);
-        lawyerRepository.save(l);
-        return ResponseEntity.ok("OK");
-    }
+    //     var l = opt.get();
+    //     l.setLawyerAuth(-1); // 거절
+    //     // 필요 시 reason을 별도 컬럼에 저장하도록 확장 (현재는 로깅만)
+    //     System.out.println("[ADMIN] Lawyer rejected. idx=" + lawyerIdx + ", reason=" + reason);
+    //     lawyerRepository.save(l);
+    //     return ResponseEntity.ok("OK");
+    // }
 }

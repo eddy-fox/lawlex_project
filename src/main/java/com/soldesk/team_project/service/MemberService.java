@@ -149,6 +149,13 @@ public class MemberService {
         return memberDTO;
     }
 
+    // 관리자가 회원 정보 조회 (memberIdx로)
+    public MemberDTO getMemberByIdx(int memberIdx) {
+        MemberEntity memberEntity = memberRepository.findById(memberIdx).orElse(null);
+        if (memberEntity == null) return null;
+        return convertMemberDTO(memberEntity);
+    }
+
     //특정 회원 검색
     public MemberEntity getMember(String memberName) {
         Optional<MemberEntity> member = this.memberRepository.findByMemberName(memberName);

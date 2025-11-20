@@ -1,183 +1,167 @@
-// 탭 활성 토글
-document.querySelectorAll('.tabs .tab').forEach(tab=>{
-    tab.addEventListener('click',()=>{
-        if(tab.classList.contains('divider')) return;
-        document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
-        tab.classList.add('active');
-    });
-});
-
-function point() {
-    document.getElementById('point').style.display = 'block';
-    document.getElementById('payment').style.display = 'none';
+// 페이지 로드 대기
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
 }
 
-function payment() {
-    document.getElementById('point').style.display = 'none';
-    document.getElementById('payment').style.display = 'block';
-}
-
-const options = document.querySelectorAll('.point-option');
-const productInput = document.getElementById('selectedProduct');
-
-let selectedProductIdx = null;
-let selectedPrice = null;
-let selectedContent = null;
 let tossPayments = null;
 let paymentInstance = null;
 
-// 포인트 선택
-options.forEach(opt => {
-    opt.addEventListener('click', () => {
-        options.forEach(o => o.classList.remove('selected'));
-        opt.classList.add('selected');
-        
-        selectedProductIdx = opt.dataset.product;
-        selectedPrice = opt.dataset.price;
-        selectedContent = opt.dataset.content;
-        productInput.value = selectedProductIdx;
-    });
-});
-
-// 첫번째 포인트 선택
-window.addEventListener('DOMContentLoaded', () => {
-    if (options.length > 0) {
-        options[0].classList.add('selected');
-        selectedProductIdx = options[0].dataset.product;
-        selectedPrice = options[0].dataset.price;
-        selectedContent = options[0].dataset.content;
-        productInput.value = selectedProductIdx;
-    }
+function init() {
+    console.log('=== 초기화 시작 ===');
     
-    // 토스페이먼츠 초기화 (페이지 로드시 한번)
-    initTossPayments();
-});
-
-// 토스페이먼츠 초기화 (API 개별 연동 방식)
-function initTossPayments() {
-    const clientKey = "test_ck_oEjb0gm23P5GeZ2laN2WVpGwBJn5";
-    const customerKey = generateRandomString();
-    tossPayments = TossPayments(clientKey);
-    paymentInstance = tossPayments.payment({ customerKey });
-}
-
-function generateRandomString() {
-    return window.btoa(Math.random()).slice(0, 20);
-}
-
-// 전화번호에서 특수문자 제거 (숫자만) - 더 안전하게
-function formatPhoneNumber(phone) {
-    if (!phone) {
-        console.error('전화번호가 없습니다:', phone);
-        return '';
-    }
-    
-    // 문자열로 변환 후 숫자만 추출
-    const str = String(phone);
-    const onlyNumbers = str.replace(/\D/g, ''); // \D는 숫자가 아닌 모든 것
-    
-    console.log('전화번호 변환:', str, '->', onlyNumbers);
-    
-    return onlyNumbers;
-}
-
-// 결제하기 버튼 클릭
-document.getElementById('payment-button').addEventListener('click', async function(e) {
-    e.preventDefault();
-    
-    // 1. 상품 선택 확인
-    if (!selectedProductIdx) {
-        alert('결제할 상품을 선택해주세요.');
-        return;
-    }
-
-    // 2. 동의 확인
-    const agreeCheckbox = document.getElementById('agree');
-    if (!agreeCheckbox.checked) {
-        alert('결제 주의사항에 동의해주세요.');
-        return;
-    }
-
+    // 1. 토스페이먼츠 초기화
     try {
-        // 3. 회원 정보 가져오기
-        const memberDataDiv = document.getElementById('member-data');
-        
-        if (!memberDataDiv) {
-            alert('회원 정보를 찾을 수 없습니다.');
+        if (typeof TossPayments === 'undefined') {
+            console.error('TossPayments SDK 로드 실패');
             return;
         }
         
-        const memberIdx = memberDataDiv.dataset.memberIdx;
-        const memberEmail = memberDataDiv.dataset.memberEmail;
-        const memberName = memberDataDiv.dataset.memberName;
-        const memberPhone = memberDataDiv.dataset.memberPhone;
+        const clientKey = "test_ck_oEjb0gm23P5GeZ2laN2WVpGwBJn5";
+        const customerKey = window.btoa(Math.random()).slice(0, 20);
+        tossPayments = TossPayments(clientKey);
+        paymentInstance = tossPayments.payment({ customerKey });
+        console.log('✅ 토스 초기화 완료');
+    } catch (e) {
+        console.error('토스 초기화 실패:', e);
+    }
+    
+    // 2. 탭 전환 이벤트
+    const pointTab = document.getElementById('pointHistoryTab');
+    const paymentTab = document.getElementById('paymentHistoryTab');
+    const pointDiv = document.getElementById('pointHistory');
+    const paymentDiv = document.getElementById('paymentHistory');
+    
+    if (pointTab && paymentTab && pointDiv && paymentDiv) {
+        pointTab.onclick = function() {
+            console.log('포인트 탭 클릭');
+            pointTab.classList.add('active');
+            paymentTab.classList.remove('active');
+            pointDiv.style.display = 'block';
+            paymentDiv.style.display = 'none';
+        };
         
-        console.log('=== 원본 회원 정보 ===');
-        console.log('memberPhone (원본):', memberPhone);
-        
-        // 전화번호 포맷팅 - 먼저!
-        const formattedPhone = formatPhoneNumber(memberPhone);
-        
-        console.log('=== 포맷팅 후 ===');
-        console.log('formattedPhone:', formattedPhone);
-        console.log('길이:', formattedPhone.length);
-        
-        if (!formattedPhone || formattedPhone.length < 10) {
-            alert('올바른 전화번호 형식이 아닙니다.');
-            return;
-        }
+        paymentTab.onclick = function() {
+            console.log('결제 탭 클릭');
+            pointTab.classList.remove('active');
+            paymentTab.classList.add('active');
+            pointDiv.style.display = 'none';
+            paymentDiv.style.display = 'block';
+        };
+        console.log('✅ 탭 이벤트 등록 완료');
+    } else {
+        console.error('탭 요소 없음:', {pointTab, paymentTab, pointDiv, paymentDiv});
+    }
+    
+    // 3. 결제 버튼 이벤트
+    const payBtn = document.getElementById('payment-button');
+    if (payBtn) {
+        payBtn.onclick = handlePayment;
+        console.log('✅ 결제 버튼 이벤트 등록 완료');
+    } else {
+        console.error('결제 버튼 없음');
+    }
+}
 
-        // 4. 서버에 주문 생성 요청
+async function handlePayment(e) {
+    e.preventDefault();
+    console.log('=== 결제 시작 ===');
+    
+    // 1. 선택된 상품 확인
+    const selected = document.querySelector('input[name="selectedProduct"]:checked');
+    if (!selected) {
+        alert('상품을 선택해주세요');
+        return;
+    }
+    
+    const productIdx = selected.value;
+    const price = selected.dataset.price;
+    const content = selected.dataset.content;
+    console.log('선택 상품:', {productIdx, price, content});
+    
+    // 2. 동의 확인
+    const agree = document.getElementById('agree');
+    if (!agree || !agree.checked) {
+        alert('결제 주의사항에 동의해주세요');
+        return;
+    }
+    
+    // 3. 회원 정보
+    const memberData = document.getElementById('member-data');
+    if (!memberData) {
+        alert('회원 정보를 찾을 수 없습니다');
+        return;
+    }
+    
+    const memberIdx = memberData.dataset.memberIdx;
+    const memberEmail = memberData.dataset.memberEmail;
+    const memberName = memberData.dataset.memberName;
+    const memberPhone = memberData.dataset.memberPhone;
+    
+    const phone = (memberPhone || '').replace(/\D/g, '');
+    if (phone.length < 10) {
+        alert('올바른 전화번호가 아닙니다');
+        return;
+    }
+    
+    console.log('회원:', {memberIdx, memberEmail, memberName, phone});
+    
+    try {
+        // 4. 주문 생성
         const orderId = 'order-' + Date.now();
+        console.log('주문 생성:', orderId);
         
-        const response = await fetch('/member/point/prepare', {
+        const res = await fetch('/member/point/prepare', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                productIdx: parseInt(selectedProductIdx),
+                productIdx: parseInt(productIdx),
                 orderId: orderId,
                 memberIdx: parseInt(memberIdx)
             })
         });
-
-        if (!response.ok) {
-            throw new Error('주문 생성 실패');
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || '주문 생성 실패');
         }
-
-        // 5. 결제 요청 데이터 준비
-        const paymentData = {
+        
+        console.log('주문 생성 완료');
+        
+        // 5. 결제 요청
+        if (!paymentInstance) {
+            throw new Error('결제 시스템 초기화 안됨');
+        }
+        
+        const amount = parseInt(price.replace(/[^0-9]/g, ''));
+        console.log('결제 요청:', {amount, orderId, content});
+        
+        await paymentInstance.requestPayment({
             method: "CARD",
             amount: {
                 currency: "KRW",
-                value: parseInt(selectedPrice.replace(/,/g, ''))
+                value: amount
             },
             orderId: orderId,
-            orderName: selectedContent,
-            // ✅ /payment/ 유지
+            orderName: content,
             successUrl: window.location.origin + "/payment/success",
             failUrl: window.location.origin + "/payment/fail",
             customerEmail: memberEmail || '',
             customerName: memberName || '',
-            customerMobilePhone: formattedPhone,
+            customerMobilePhone: phone,
             card: {
                 useEscrow: false,
                 flowMode: "DEFAULT",
                 useCardPoint: false,
-                useAppCardOnly: false,
+                useAppCardOnly: false
             }
-        };
+        });
         
-        console.log('=== 최종 결제 요청 데이터 ===');
-        console.log(JSON.stringify(paymentData, null, 2));
-
-        // 6. 결제 요청
-        await paymentInstance.requestPayment(paymentData);
-
+        console.log('결제창 호출 완료');
+        
     } catch (error) {
         console.error('결제 오류:', error);
-        console.error('에러 상세:', JSON.stringify(error, null, 2));
-        alert('결제 중 오류가 발생했습니다: ' + error.message);
+        alert('결제 중 오류: ' + error.message);
     }
-});
+}
