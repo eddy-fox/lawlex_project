@@ -47,7 +47,72 @@
 
             </section>
 
-            <section class="category-section">
+            <section class="best-answer-section"
+                th:if="${bestAnswers != null and !#lists.isEmpty(bestAnswers)}">
+                <div class="best-answer-header">
+                    <div>
+                        <h2>도움이 많이 된 답변</h2>
+                        <p>회원 추천수가 높은 변호사 답변 TOP 10</p>
+                    </div>
+                </div>
+                <div class="best-answer-list">
+                    <article class="best-answer-card" th:each="answer, st : ${bestAnswers}">
+                        <div class="best-answer-rank" th:text="${st.index + 1}">1</div>
+                        <div class="best-answer-body">
+                            <div class="best-answer-title">
+                                <a th:if="${answer.boardIdx != null}"
+                                    th:href="@{/board/detail/{boardIdx}(boardIdx=${answer.boardIdx})}"
+                                    th:text="${answer.boardTitle != null ? answer.boardTitle : '상담글 제목'}">
+                                    상담글 제목
+                                </a>
+                                <span th:if="${answer.boardIdx == null}"
+                                    th:text="${answer.boardTitle != null ? answer.boardTitle : '상담글 제목'}">
+                                    상담글 제목
+                                </span>
+                                <span class="best-answer-date"
+                                    th:text="${answer.answerDate != null ? #temporals.format(answer.answerDate, 'yyyy.MM.dd') : ''}">
+                                    2024.01.01
+                                </span>
+                            </div>
+                            <p class="best-answer-preview"
+                                th:text="${answer.answerPreview != null && !#strings.isEmpty(answer.answerPreview) ? answer.answerPreview : '답변 본문을 불러올 수 없습니다.'}">
+                                답변 미리보기
+                            </p>
+                            <div class="best-answer-meta">
+                                <div class="best-answer-lawyer">
+                                    <a th:if="${answer.lawyerIdx != null}"
+                                        th:href="@{/lawyer/profile/{lawyerIdx}(lawyerIdx=${answer.lawyerIdx})}"
+                                        class="best-lawyer-info">
+                                        <div class="best-lawyer-photo">
+                                            <img th:if="${answer.lawyerImgPath != null && !#strings.isEmpty(answer.lawyerImgPath)}"
+                                                th:src="@{${answer.lawyerImgPath}}"
+                                                th:alt="${answer.lawyerName}">
+                                            <span th:if="${answer.lawyerImgPath == null || #strings.isEmpty(answer.lawyerImgPath)}">A</span>
+                                        </div>
+                                        <span th:text="${answer.lawyerName != null ? answer.lawyerName + ' 변호사' : '익명 변호사'}">
+                                            변호사명
+                                        </span>
+                                    </a>
+                                    <div th:if="${answer.lawyerIdx == null}" class="best-lawyer-info">
+                                        <div class="best-lawyer-photo">
+                                            <span>?</span>
+                                        </div>
+                                        <span th:text="${answer.lawyerName != null ? answer.lawyerName : '익명'}">
+                                            익명
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="best-answer-like">
+                                    <span class="like-icon">👍</span>
+                                    <span class="like-count" th:text="${answer.likeCount != null ? #numbers.formatInteger(answer.likeCount, 0, 'COMMA') : '0'}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- <section class="category-section">
                 <div class="category">
                     <h2>카테고리별</h2>
                 </div>
@@ -69,7 +134,7 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
         </div>
     </main>

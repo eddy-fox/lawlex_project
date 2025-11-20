@@ -1,5 +1,7 @@
 package com.soldesk.team_project.service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,17 +34,6 @@ public class RankingService {
         lawyerDTO.setLawyerActive(lawyerEntity.getLawyerActive());
         return lawyerDTO;
     }
-    private LawyerEntity converLawyerEntity(LawyerDTO lawyerDTO) {
-        LawyerEntity lawyerEntity = new LawyerEntity();
-        lawyerEntity.setLawyerIdx(lawyerDTO.getLawyerIdx());
-        lawyerEntity.setLawyerName(lawyerDTO.getLawyerName());
-        lawyerEntity.setLawyerImgPath(lawyerDTO.getLawyerImgPath());
-        lawyerEntity.setLawyerLike(lawyerDTO.getLawyerLike());
-        lawyerEntity.setLawyerAnswerCnt(lawyerDTO.getLawyerAnswerCnt());
-        lawyerEntity.setLawyerActive(lawyerDTO.getLawyerActive());
-        return lawyerEntity;
-    }
-
     public List<LawyerDTO> getRankingList(String pick) {
         Pageable pageable = PageRequest.of(0, 10);
         List<LawyerEntity> rankingList;
@@ -56,7 +47,53 @@ public class RankingService {
                            .collect(Collectors.toList());
     }
 
-    public Map<String, List<Object[]>> getInterestAnswerRanking() {
+    public List<Map<String, Object>> getTopLikedAnswers(int limit) {
+        List<Object[]> rows = rankingRepository.findTopLikedAnswersNative(limit);
+        List<Map<String, Object>> bestAnswers = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("reboardIdx", row[0]);
+            item.put("boardIdx", row[1]);
+            item.put("boardTitle", row[2]);
+            item.put("boardCategory", row[3]);
+            item.put("lawyerIdx", row[4]);
+            item.put("lawyerName", row[5]);
+            item.put("lawyerImgPath", row[6]);
+
+            String content = row[7] != null ? row[7].toString() : "";
+            item.put("answerPreview", buildPreview(content));
+
+            LocalDate answerDate = null;
+            Object dateObj = row[8];
+            if (dateObj instanceof LocalDate ld) {
+                answerDate = ld;
+            } else if (dateObj instanceof Date sqlDate) {
+                answerDate = sqlDate.toLocalDate();
+            }
+            item.put("answerDate", answerDate);
+
+            Number likeCount = row[9] instanceof Number ? (Number) row[9] : Integer.valueOf(0);
+            item.put("likeCount", likeCount.intValue());
+
+            bestAnswers.add(item);
+        }
+
+        return bestAnswers;
+    }
+
+    private String buildPreview(String content) {
+        if (content == null) {
+            return "";
+        }
+        String normalized = content.replaceAll("\\s+", " ").trim();
+        if (normalized.length() <= 130) {
+            return normalized;
+        }
+        return normalized.substring(0, 127) + "...";
+    }
+
+/*     public Map<String, List<Object[]>> getInterestAnswerRanking() {
         List<Object[]> rankingInterest = rankingRepository.findInterestAnswerRanking();
 
         Map<String, List<Object[]>> rankingMap = new LinkedHashMap<>();
@@ -71,7 +108,7 @@ public class RankingService {
             }
         }
         return rankingMap;
-    }
+    } */
 
     /**
      * 변호사의 좋아요 순 랭킹 계산 (활성 변호사만 대상)

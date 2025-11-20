@@ -46,25 +46,102 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
   text-decoration: none;
 }
 /* ===== 변호사 ===== */
+.page-index .lawyer-slider{
+  position:relative;
+  width:100%;
+  max-width:1100px;
+  margin:0 auto;
+  padding:0 50px;
+}
 .page-index .group{
   display:flex;
-  justify-content:center;
+  justify-content:space-between;
   align-items:center;
   gap:16px;
-  flex-wrap:wrap;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:10px 0;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  width:100%;
+}
+.page-index .group::-webkit-scrollbar{
+  display:none;
+}
+/* 카드가 1개일 때 가운데 정렬 */
+.page-index .group .card:only-child{
+  margin:0 auto;
+}
+.page-index .slider-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:transparent;
+  border:none;
+  color:var(--navy);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:10;
+  transition:all .2s;
+  box-shadow:none;
+}
+.page-index .slider-btn:hover{
+  background:transparent;
+  color:var(--navy-700);
+  box-shadow:none;
+  transform:translateY(-50%) scale(1.1);
+}
+.page-index .slider-btn:active{
+  transform:translateY(-50%) scale(0.95);
+}
+.page-index .slider-btn:disabled{
+  opacity:0.3;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+.page-index .slider-prev{
+  left:0;
+}
+.page-index .slider-next{
+  right:0;
+}
+@media(max-width:768px){
+  .page-index .lawyer-slider{
+    padding:0 40px;
+  }
+  .page-index .slider-btn{
+    width:36px;
+    height:36px;
+  }
+  .page-index .slider-prev{
+    left:0;
+  }
+  .page-index .slider-next{
+    right:0;
+  }
 }
 
 .page-index .card{
   width:300px;
+  min-width:300px;
   height:450px;
   border:1px solid var(--navy);
   border-radius:10px;
-  padding:20px;
+  padding: 40px 20px ;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:15px;
   background:#fff;
+  flex-shrink:0;
 }
 .page-index .card:hover{
   transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.08);
@@ -103,19 +180,32 @@ body{font-family:'Gooorm Sans',"Noto Sans KR",system-ui,-apple-system,Segoe UI,R
   margin-right:4px;
 }
 
+.page-index .card form{
+  margin-top:auto;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
 .page-index .cardBtn{
   background-color:var(--navy);
   color:var(--paper);
   padding:8px 16px;
   border-radius:999px;
+  border:none;
+  outline:none;
+  box-shadow:none;
   text-align:center;
   text-decoration:none;
   display:inline-flex;
   justify-content:center;
   align-items:center;
-  margin-top:auto;
+  margin:0;
   min-width:120px;
   font-size:14px;
+  cursor:pointer;
 }
 
 
