@@ -17,7 +17,9 @@
       --muted:#6b7280;
       --paper:#ffffff;
       --panel:#f5f6f8;
+      --line:#e6e8ee;
       --softline:#eef1f5;
+      --soft:#eef1f5;
       --hover:#f9faff;
       --shadow:0 1px 2px rgba(0,0,0,.03);
 
@@ -82,8 +84,8 @@
       margin-bottom:16px;
     }
     .page-lInfo .avatar{
-      width:72px;
-      height:96px;
+      width:100px;
+      height:133px;
       border-radius:10px;
       background:#fff;
       display:flex;
@@ -92,6 +94,21 @@
       color:#6b7280;
       font-size:13px;
       flex:0 0 auto;
+      overflow:hidden;
+      padding:0;
+    }
+    .page-lInfo .avatar-img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .page-lInfo .avatar-placeholder{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      height:100%;
     }
     .page-lInfo .info{
       flex:1;
@@ -120,11 +137,17 @@
     }
 
     .page-lInfo .meta-line{
-      font-size:13px;
+      font-size:15px;
       color:var(--muted);
       display:flex;
       flex-wrap:wrap;
       gap:10px;
+      align-items:flex-start;
+    }
+    .page-lInfo .meta-line .meta-item{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
     }
     .page-lInfo .meta-line .field{
       display:flex;
@@ -333,6 +356,51 @@
       color:var(--muted);
       text-align:right;
       min-width:max-content;
+    }
+
+    .page-lInfo .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:1rem;
+    }
+    .page-lInfo .meta.meta-calendar{
+      margin-top:1rem;
+    }
+    .page-lInfo .meta-item{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .page-lInfo .meta-item-full{
+      width:100%;
+    }
+    .page-lInfo .meta-item .label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:500;
+    }
+    .page-lInfo .meta-item .value{
+      font-size:14px;
+      color:var(--ink);
+    }
+    .page-lInfo .value-calendar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+      margin-top:0.5rem;
+    }
+    .page-lInfo .calendar-empty{
+      color:var(--muted);
+      font-size:13px;
+    }
+    .page-lInfo .calendar-slot{
+      display:inline-block;
+      padding:0.25rem 0.5rem;
+      background:var(--soft);
+      border-radius:4px;
+      font-size:0.875rem;
+      white-space:nowrap;
     }
 
     @media(max-width:480px){

@@ -1,169 +1,171 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>변호사마이페이지</title>
-    <link rel="stylesheet" th:href="@{/css/lInfo.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/lInfo.css}">
 </head>
+
 <body>
-<div class="include" th:replace="~{include/header :: header}"></div>
+    <div class="include" th:replace="~{include/header :: header}"></div>
 
-<main class="page-lInfo" th:with="l=${session.loginLawyer}">
-    <div class="container">
-        <h1>마이페이지</h1>
+    <main class="page-lInfo" th:with="l=${session.loginLawyer}">
+        <div class="container">
+            <h1>마이페이지</h1>
 
-        <!-- 프로필 카드 -->
-        <section class="card">
-            <div class="profile-head">
-                <!-- 프로필 이미지 -->
-                <div class="avatar" style="overflow:hidden; padding:0;">
-                    <img th:if="${lawyer != null and lawyer.lawyerImgPath != null and !lawyer.lawyerImgPath.isEmpty()}"
-                         th:src="${lawyer.lawyerImgPath}"
-                         style="width:100%; height:100%; object-fit:cover; display:block;"
-                         alt="변호사 사진">
-                    <span th:if="${lawyer == null or lawyer.lawyerImgPath == null or lawyer.lawyerImgPath.isEmpty()}"
-                          style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">
-                        사진
-                    </span>
-                </div>
-
-                <div class="info">
-                    <div class="nickname">
-                        <!-- 닉네임/이름 -->
-                        <div class="name"
-                             th:text="${l != null ? l.lawyerName : '변호사이름'}">
-                            변호사이름
-                        </div>
-                        <div class="tag">변호사</div>
+            <!-- 프로필 카드 -->
+            <section class="card">
+                <div class="profile-head">
+                    <!-- 프로필 이미지 -->
+                    <div class="avatar">
+                        <img th:if="${lawyer != null and lawyer.lawyerImgPath != null and !lawyer.lawyerImgPath.isEmpty()}"
+                            th:src="${lawyer.lawyerImgPath}" class="avatar-img" alt="변호사 사진">
+                        <span
+                            th:if="${lawyer == null or lawyer.lawyerImgPath == null or lawyer.lawyerImgPath.isEmpty()}"
+                            class="avatar-placeholder">
+                            사진
+                        </span>
                     </div>
 
-                    <!-- 아이디 / 이메일 / 휴대폰 한 줄 -->
-                    <div class="meta-line">
-                        <span th:text="${l != null ? l.lawyerId : 'lawyer001'}">lawyer001</span>
-                        <span th:text="${l != null ? l.lawyerPhone : '010-0000-0000'}">010-0000-0000</span>
-                        <span th:text="${l != null ? l.lawyerEmail : 'lawyer@example.com'}">lawyer@example.com</span>
-                    </div>
-
-                    <!-- 한 줄 소개 / comment (LawyerDTO에서 가져옴, 없으면 기본 문구) -->
-                    <p class="comment"
-                       th:text="${lawyer != null and lawyer.lawyerComment != null ? lawyer.lawyerComment : '의뢰인의 입장에서 끝까지 함께 하겠습니다.'}">
-                        의뢰인의 입장에서 끝까지 함께 하겠습니다.
-                    </p>
-
-                    <!-- 관심분야 / 랭킹 / 좋아요 (LawyerDTO 기준) -->
-                    <div class="meta">
-                        <div class="meta-item">
-                            <span class="label">관심분야</span>
-                            <span class="value"
-                                  th:text="${lawyer != null and lawyer.interestName != null ? lawyer.interestName : '형사 · 민사'}">
-                                형사 · 민사
-                            </span>
+                    <div class="info">
+                        <div class="nickname">
+                            <!-- 닉네임/이름 -->
+                            <div class="name" th:text="${l != null ? l.lawyerName : '변호사이름'}">
+                                변호사이름
+                            </div>
+                            <div class="tag">변호사</div>
                         </div>
-                        <div class="meta-item">
-                            <span class="label">랭킹</span>
-                            <span class="value"
-                                  th:text="${likeRanking > 0 ? (likeRanking + '위') : '순위 없음'}">
-                                순위 없음
-                            </span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">좋아요</span>
-                            <span class="value"
-                                  th:text="${lawyer != null and lawyer.lawyerLike != null ? lawyer.lawyerLike : 0}">
-                                0
-                            </span>
-                        </div>
-                    </div>
 
-                    <!-- 상담 가능 요일 및 시간대 -->
-                    <div class="meta" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line);">
-                        <div class="meta-item" style="width: 100%;">
-                            <span class="label">상담 가능 시간</span>
-                            <div class="value" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
-                                <!-- 등록된 시간이 없을 때 -->
-                                <span th:if="${calendarList == null or #lists.isEmpty(calendarList)}" style="color: var(--muted);">
-                                    등록된 상담 시간이 없습니다.
+                        <!-- 아이디 / 이메일 / 휴대폰 -->
+                        <div class="meta-line">
+                            <div class="meta-item">
+                                <span th:text="${l != null ? l.lawyerId : 'lawyer001'}">lawyer001</span>
+                                <span th:text="${l != null ? l.lawyerPhone : '010-0000-0000'}">
+                                    010-0000-0000
                                 </span>
+                            </div>
+                            <span th:text="${l != null ? l.lawyerEmail : 'lawyer@example.com'}">
+                                lawyer@example.com
+                            </span>
+                        </div>
 
-                                <!-- 등록된 시간이 있을 때: 각 슬롯 표시 -->
-                                <span th:each="cal : ${calendarList}"
-                                      th:if="${calendarList != null and !#lists.isEmpty(calendarList)}"
-                                      style="display: inline-block; padding: 0.25rem 0.5rem; background: var(--soft); border-radius: 4px; font-size: 0.875rem;">
-                                    <!-- 요일 -->
-                                    <span th:with="dayNames=${#arrays.toArray({'월', '화', '수', '목', '금', '토', '일'})}"
-                                          th:text="${dayNames[cal.calendarWeekname]}">
-                                        월
-                                    </span>
-                                    <!-- 시간대: 분 단위 → HH:mm -->
-                                    <span th:with="startH=${cal.calendarStartTime / 60},
-                                                   startM=${cal.calendarStartTime % 60},
-                                                   endH=${cal.calendarEndTime / 60},
-                                                   endM=${cal.calendarEndTime % 60}"
-                                          th:text="|${#numbers.formatInteger(startH, 2)}:${#numbers.formatInteger(startM, 2)} ~ ${#numbers.formatInteger(endH, 2)}:${#numbers.formatInteger(endM, 2)}|">
-                                        09:00 ~ 18:00
-                                    </span>
+                        <!-- 한 줄 소개 / comment (LawyerDTO에서 가져옴, 없으면 기본 문구) -->
+                        <p class="comment"
+                            th:text="${lawyer != null and lawyer.lawyerComment != null ? lawyer.lawyerComment : '의뢰인의 입장에서 끝까지 함께 하겠습니다.'}">
+                            의뢰인의 입장에서 끝까지 함께 하겠습니다.
+                        </p>
+
+                        <!-- 관심분야 / 랭킹 / 좋아요 (LawyerDTO 기준) -->
+                        <div class="meta">
+                            <div class="meta-item">
+                                <span class="label">관심분야</span>
+                                <span class="value"
+                                    th:text="${lawyer != null and lawyer.interestName != null ? lawyer.interestName : '형사 · 민사'}">
+                                    형사 · 민사
+                                </span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">랭킹</span>
+                                <span class="value" th:text="${likeRanking > 0 ? (likeRanking + '위') : '순위 없음'}">
+                                    순위 없음
+                                </span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">좋아요</span>
+                                <span class="value"
+                                    th:text="${lawyer != null and lawyer.lawyerLike != null ? lawyer.lawyerLike : 0}">
+                                    0
                                 </span>
                             </div>
                         </div>
+
                     </div>
-                </div>
 
-                <!-- 우측 상단 버튼들 (정보수정 / 로그아웃) -->
-                <div class="actions-top">
-                    <a class="btn ghost" th:href="@{/member/lmodify}" role="button">정보수정</a>
+                    <!-- 우측 상단 버튼들 (정보수정 / 로그아웃) -->
+                    <div class="actions-top">
+                        <a class="btn ghost" th:href="@{/member/lmodify}" role="button">정보수정</a>
 
-                    <form id="logoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
-                        <th:block th:if="${_csrf != null}">
-                            <input type="hidden"
-                                   th:name="${_csrf.parameterName}"
-                                   th:value="${_csrf.token}"/>
-                        </th:block>
-                    </form>
-                    <button class="btn ghost" type="button"
+                        <form id="logoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
+                            <th:block th:if="${_csrf != null}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            </th:block>
+                        </form>
+                        <button class="btn ghost" type="button"
                             onclick="document.getElementById('logoutForm').submit()">
-                        로그아웃
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 내가 쓴 답글 -->
-        <section class="list-card">
-            <div class="list-title">
-                <span>내가 쓴 답글</span>
-                <a class="link-more" th:href="@{/member/mypage/myPosts}">전체보기</a>
-            </div>
-
-            <div class="item-list">
-                <!-- 변호사가 쓴 답변글 리스트 (model에 myReboards 있을 때) -->
-                <a class="row-item"
-                   th:if="${myReboards != null}"
-                   th:each="r : ${myReboards}"
-                   th:href="@{|/board/detail/${r.boardIdx}#reboard_${r.reboardIdx}|}">
-                    <div class="row-main" th:text="${#strings.abbreviate(r.reboardContent, 50)}">
-                        답변 내용 미리보기
+                            로그아웃
+                        </button>
                     </div>
-                    <div class="row-sub"
-                         th:text="|${#temporals.format(r.reboardRegDate, 'yyyy-MM-dd')} · 원글: ${r.boardTitle != null ? r.boardTitle : ('글번호 ' + r.boardIdx)}|">
-                        2025-11-18 · 원글: 상담글 제목
-                    </div>
-                </a>
-
-                <!-- 답변이 없거나 myReboards가 비어 있을 때 -->
-                <div class="row-item"
-                     th:if="${myReboards == null or #lists.isEmpty(myReboards)}">
-                    <div class="row-main">작성한 답변이 없습니다.</div>
                 </div>
-            </div>
-        </section>
 
-    </div>
-  </main>
-  <div class="include" th:replace="~{include/footer :: footer}"></div>
-  <script th:src="@{/js/js.js}"></script>
-  <script th:src="@{/js/chatIcon.js}"></script>
-  <script th:src="@{/js/lInfo.js}"></script>
+                <!-- 상담 가능 요일 및 시간대 -->
+                <div class="meta meta-calendar">
+                    <div class="meta-item meta-item-full">
+                        <span class="label">상담 가능 시간</span>
+                        <div class="value value-calendar">
+                            <!-- 등록된 시간이 없을 때 -->
+                            <span class="calendar-empty"
+                                th:if="${calendarList == null or #lists.isEmpty(calendarList)}">
+                                등록된 상담 시간이 없습니다.
+                            </span>
+
+                            <!-- 등록된 시간이 있을 때: 각 슬롯 표시 -->
+                            <span class="calendar-slot" th:each="cal : ${calendarList}"
+                                th:if="${calendarList != null and !#lists.isEmpty(calendarList)}">
+                                <!-- 요일 -->
+                                <span th:with="dayNames=${#arrays.toArray({'월', '화', '수', '목', '금', '토', '일'})}"
+                                    th:text="${dayNames[cal.calendarWeekname]}">
+                                    월
+                                </span>
+                                <!-- 시간대: 분 단위 → HH:mm -->
+                                <span th:with="startH=${cal.calendarStartTime / 60},
+                                                           startM=${cal.calendarStartTime % 60},
+                                                           endH=${cal.calendarEndTime / 60},
+                                                           endM=${cal.calendarEndTime % 60}"
+                                    th:text="|${#numbers.formatInteger(startH, 2)}:${#numbers.formatInteger(startM, 2)} ~ ${#numbers.formatInteger(endH, 2)}:${#numbers.formatInteger(endM, 2)}|">
+                                    09:00 ~ 18:00
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 내가 쓴 답글 -->
+            <section class="list-card">
+                <div class="list-title">
+                    <span>내가 쓴 답글</span>
+                    <a class="link-more" th:href="@{/member/mypage/myPosts}">전체보기</a>
+                </div>
+
+                <div class="item-list">
+                    <!-- 변호사가 쓴 답변글 리스트 (model에 myReboards 있을 때) -->
+                    <a class="row-item" th:if="${myReboards != null}" th:each="r : ${myReboards}"
+                        th:href="@{|/board/detail/${r.boardIdx}#reboard_${r.reboardIdx}|}">
+                        <div class="row-main" th:text="${#strings.abbreviate(r.reboardContent, 50)}">
+                            답변 내용 미리보기
+                        </div>
+                        <div class="row-sub"
+                            th:text="|${#temporals.format(r.reboardRegDate, 'yyyy-MM-dd')} · 원글: ${r.boardTitle != null ? r.boardTitle : ('글번호 ' + r.boardIdx)}|">
+                            2025-11-18 · 원글: 상담글 제목
+                        </div>
+                    </a>
+
+                    <!-- 답변이 없거나 myReboards가 비어 있을 때 -->
+                    <div class="row-item" th:if="${myReboards == null or #lists.isEmpty(myReboards)}">
+                        <div class="row-main">작성한 답변이 없습니다.</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/chatIcon.js}"></script>
+    <script th:src="@{/js/lInfo.js}"></script>
 </body>
+
 </html>
