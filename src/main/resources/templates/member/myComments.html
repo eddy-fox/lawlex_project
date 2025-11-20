@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내가 댓글을 남긴 게시글</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/list.css}">
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-list">
+      <div class="wrap">
+      <div class="backdrop">
+        <div class="top">
+          <h1>내가 댓글을 남긴 게시글</h1>
+        </div>
+
+        <div class="card">
+          <table aria-label="게시글 목록">
+            <thead>
+              <tr>
+                <th style="width:12%">번호</th>
+                <th>제목</th>
+                <th style="width:16%">등록일</th>
+                <th style="width:12%">조회수</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr class="text-center" th:each="newsBoard : ${paging.content}">
+                <td th:text="${newsBoard.newsIdx}"></td>
+                <td class="text-start">
+                  <a th:href="@{|/newsBoard/detail?newsIdx=${newsBoard.newsIdx}|}" th:text="${newsBoard.newsTitle}">제목</a>
+                </td>
+                <td th:text="${#temporals.format(newsBoard.newsRegDate, 'yyyy-MM-dd')}">2025-01-01</td>
+                <td th:text="${newsBoard.newsViews != null ? newsBoard.newsViews : 0}">0</td>
+              </tr>
+
+              <tr th:if="${#lists.isEmpty(paging.content)}">
+                <td colspan="4">댓글을 남긴 게시글이 없습니다.</td>
+              </tr>
+
+            </tbody> 
+          </table>
+
+          <div class="below">
+            <div class="controls">
+              <nav aria-label="페이지네이션" th:if="${paging.totalPages > 0}">
+                <ul class="pagination">
+                  <li class="page-item" th:classappend="${paging.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/member/mypage/myComments(page=${paging.number - 1})}" 
+                       th:if="${!paging.first}">이전</a>
+                    <span class="page-link" th:if="${paging.first}">이전</span>
+                  </li>
+                  
+                  <li class="page-item" th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                      th:classappend="${pageNum == paging.number} ? 'active'">
+                    <a class="page-link" th:href="@{/member/mypage/myComments(page=${pageNum})}" 
+                       th:text="${pageNum + 1}">1</a>
+                  </li>
+                  
+                  <li class="page-item" th:classappend="${paging.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/member/mypage/myComments(page=${paging.number + 1})}" 
+                       th:if="${!paging.last}">다음</a>
+                    <span class="page-link" th:if="${paging.last}">다음</span>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  <div class="include" th:replace="~{include/footer :: footer}"></div>
+  <script th:src="@{/js/js.js}"></script>
+  <script th:src="@{/js/chatIcon.js}"></script>
+</body>
+</html>
+

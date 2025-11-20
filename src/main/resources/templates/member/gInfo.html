@@ -101,21 +101,22 @@
       <section class="list-card">
         <div class="list-title">
           <span>내가 쓴 댓글</span>
-          <a class="link-more" href="#">전체보기</a>
+          <a class="link-more" th:href="@{/member/mypage/myComments}">전체보기</a>
         </div>
 
         <div class="item-list">
-          <a class="row-item"
-             th:each="c : ${myComments}"
-             th:href="@{/news/detail(newsIdx=${c.newsIdx})}">
-            <div class="row-main" th:text="${c.commentContent}">
+          <div class="row-item"
+               th:each="c : ${myComments}">
+            <a class="row-main" 
+               th:href="@{/newsBoard/detail(newsIdx=${c.newsIdx})}"
+               th:text="${c.commentContent}">
               “상담 정말 도움됐습니다 감사합니다.”
-            </div>
+            </a>
             <div class="row-sub"
-                 th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd HH:mm')}">
-              2025-09-29 21:14
+                 th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd')}">
+              2025-09-29
             </div>
-          </a>
+          </div>
 
           <div class="row-item" th:if="${#lists.isEmpty(myComments)}">
             <div class="row-main">작성한 댓글이 없습니다.</div>

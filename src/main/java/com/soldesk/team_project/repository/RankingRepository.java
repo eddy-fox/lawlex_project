@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import com.soldesk.team_project.entity.LawyerEntity;
 
@@ -45,9 +44,8 @@ public interface RankingRepository extends JpaRepository<LawyerEntity, Integer> 
                 r.reboard_content,
                 r.reboard_reg_date
             ORDER BY like_cnt DESC, r.reboard_reg_date DESC
-            LIMIT :limit
             """, nativeQuery = true)
-    List<Object[]> findTopLikedAnswersNative(@Param("limit") int limit);
+    List<Object[]> findTopLikedAnswersNative();
 
 /*     @Query(value = """
                         SELECT

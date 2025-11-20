@@ -82,11 +82,22 @@ public class QuestionController {
     }
     
     @GetMapping("/qnaWrite")
-    public String qnaWrite(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite,
+    public String qnaWrite(Model model,
         @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser){
 
         if(loginUser == null){ return "redirect:/member/login"; }
-        System.out.println("\n"+ qnaWrite.toString() + "\n");
+        
+        QuestionDTO qnaWrite = new QuestionDTO();
+        
+        // 세션에서 memberIdx 또는 lawyerIdx 설정
+        if(loginUser.getMemberIdx() != null) {
+            qnaWrite.setMemberIdx(loginUser.getMemberIdx());
+        }
+        if(loginUser.getLawyerIdx() != null) {
+            qnaWrite.setLawyerIdx(loginUser.getLawyerIdx());
+        }
+        
+        model.addAttribute("qnaWrite", qnaWrite);
         return "question/qnaWrite";
     }
     
@@ -94,15 +105,15 @@ public class QuestionController {
     public String qnaWriteSubmit(@ModelAttribute("qnaWrite") QuestionDTO qnaWrite,
                                 @SessionAttribute("loginUser") UserMasterDTO loginUser) {
         
-        if(loginUser.getMemberIdx() != null ) {
+        // 세션에서 memberIdx 또는 lawyerIdx 설정 (폼에서 전송된 값보다 우선)
+        if(loginUser.getMemberIdx() != null) {
             qnaWrite.setMemberIdx(loginUser.getMemberIdx());
         }
         if(loginUser.getLawyerIdx() != null) {
             qnaWrite.setLawyerIdx(loginUser.getLawyerIdx());
         }
-
+        
         questionService.qnaWriting(qnaWrite);
-        System.out.println("\n"+ qnaWrite.toString() + "\n");
         return "redirect:/question/qnaList";
     }
 
@@ -162,7 +173,8 @@ public class QuestionController {
         model.addAttribute("isAdmin", isAdmin);
 
         // 비밀글 조회 권환 확인
-        int secret = infoQ.getQSecret();
+        Integer qSecret = infoQ.getQSecret();
+        int secret = (qSecret != null) ? qSecret : 0;
 
         if (secret == 1 && adminIdx == null && writerIdx != null && userIdx != null && !userIdx.equals(writerIdx)) {
             redirectAttributes.addFlashAttribute("alert", "비밀글은 작성자와 관리자만 열람할 수 있습니다.");
@@ -301,22 +313,29 @@ public class QuestionController {
             return "redirect:/question/qnaInfo";
         }
         
-        model.addAttribute("qnaModify", infoQ);
+        // 수정 모드임을 표시하고 qnaWrite 템플릿 사용
+        model.addAttribute("qnaWrite", infoQ);
+        model.addAttribute("isModify", true);
+        model.addAttribute("qIdx", qIdx);
         return "question/qnaWrite"; // 수정 폼은 작성 폼과 동일하게 사용
     }
     
     // 문의글 수정 처리
     @PostMapping("/qnaModify")
-    public String qnaModifySubmit(@ModelAttribute("qnaModify") QuestionDTO qnaModify,
+    public String qnaModifySubmit(@ModelAttribute("qnaWrite") QuestionDTO qnaModify,
+                                  @RequestParam("qIdx") Integer qIdx,
                                   @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                                   RedirectAttributes redirectAttributes) {
+        
+        // qIdx를 DTO에 설정
+        qnaModify.setQIdx(qIdx);
         
         Integer userIdx = null;
         if (loginUser != null) {
             userIdx = loginUser.getMemberIdx() != null ? loginUser.getMemberIdx() : loginUser.getLawyerIdx();
         }
         
-        QuestionDTO infoQ = questionService.getQ(qnaModify.getQIdx());
+        QuestionDTO infoQ = questionService.getQ(qIdx);
         
         // 작성자만 수정 가능 (관리자는 수정 불가)
         Integer writerIdx = infoQ.getMemberIdx() != null ? infoQ.getMemberIdx() : infoQ.getLawyerIdx();
