@@ -38,6 +38,7 @@ import com.soldesk.team_project.service.PurchaseService;
 import com.soldesk.team_project.service.PythonService;
 import com.soldesk.team_project.service.RankingService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
@@ -328,10 +329,19 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session, HttpServletResponse response) {
+        // 세션 무효화
         session.invalidate();
+        
+        // JWT 토큰 쿠키 삭제
+        Cookie jwtCookie = new Cookie("jwtToken", null);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0); // 즉시 삭제
+        jwtCookie.setHttpOnly(false);
+        response.addCookie(jwtCookie);
+        
         return "redirect:/member/login";
-        }
+    }
 
     // 회원가입/마이페이지/수정
     @GetMapping("/join/type")
@@ -363,10 +373,55 @@ public class MemberController {
 
     @GetMapping("/mypage")
     public String mypage(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
-                     Model model) {
+                     @RequestParam(value = "memberIdx", required = false) Integer memberIdxParam,
+                     @RequestParam(value = "lawyerIdx", required = false) Integer lawyerIdxParam,
+                     Model model, RedirectAttributes redirectAttributes) {
+                        
     if (loginUser == null) return "redirect:/member/login";
     model.addAttribute("loginUser", loginUser);
 
+    // 관리자 권한 확인
+    if (loginUser.getAdminIdx() == null) {
+        redirectAttributes.addFlashAttribute("alert", "관리자 권한이 필요합니다.");
+        return "redirect:/";
+    } else {
+        // 관리자가 다른 회원의 마이페이지를 볼 경우
+        if (memberIdxParam != null) {
+            
+            // 관리자가 일반 회원의 마이페이지 조회
+            MemberDTO member = memberService.getMemberByIdx(memberIdxParam);
+            if (member == null) {
+                return "redirect:/admin/memberManagement";
+            }
+            model.addAttribute("member", member);
+            
+            List<BoardDTO> myBoards = memberService.getMyBoards(memberIdxParam);
+            List<CommentDTO> myComments = memberService.getMyComments(memberIdxParam);
+            model.addAttribute("myBoards", myBoards);
+            model.addAttribute("myComments", myComments);
+            
+            return "member/ginfo";
+        } else if (lawyerIdxParam != null) {
+            // 관리자가 변호사의 마이페이지 조회
+            LawyerDTO lawyer = lawyerService.getLawyerByIdx(lawyerIdxParam);
+            if (lawyer == null) {
+                return "redirect:/admin/lawyerManagement";
+            }
+            model.addAttribute("lawyer", lawyer);
+            
+            List<ReboardDTO> myReboards = lawyerService.getMyReboardsForLawyer(lawyerIdxParam);
+            model.addAttribute("myReboards", myReboards);
+            
+            int likeRanking = rankingService.getLikeRanking(lawyerIdxParam);
+            int answerRanking = rankingService.getAnswerRanking(lawyerIdxParam);
+            model.addAttribute("likeRanking", likeRanking);
+            model.addAttribute("answerRanking", answerRanking);
+            
+            return "member/linfo";
+        }
+    }
+
+    // 일반 사용자가 자신의 마이페이지 조회
     String role = loginUser.getRole() == null ? "" : loginUser.getRole().toUpperCase();
 
     if ("MEMBER".equals(role)) {

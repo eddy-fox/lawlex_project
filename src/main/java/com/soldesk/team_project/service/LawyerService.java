@@ -192,6 +192,14 @@ public class LawyerService {
 
     // 세션의 로그인 유저가 변호사일 때, 그 프로필 DTO 반환
     @Transactional(readOnly = true)
+    // 관리자가 변호사 정보 조회 (lawyerIdx로)
+    public LawyerDTO getLawyerByIdx(Integer lawyerIdx) {
+        if (lawyerIdx == null) return null;
+        LawyerEntity lawyerEntity = lawyerRepository.findById(lawyerIdx).orElse(null);
+        if (lawyerEntity == null) return null;
+        return convertLawyerDTO(lawyerEntity);
+    }
+
     public LawyerDTO getSessionLawyer() {
         UserMasterDTO login = currentLoginUserOrThrow();
         if (login.getRole() == null || !"LAWYER".equalsIgnoreCase(login.getRole())) {

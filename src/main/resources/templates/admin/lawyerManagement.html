@@ -70,7 +70,9 @@
                 </tr>
               </thead>
               <tbody id="tbody-user">
-                <tr th:onclick="|location.href='/member/mypage?lawyerIdx=' + ${lawyer.lawyerIdx}|" style="cursor: pointer;" th:each="lawyer : ${lawyerList}">
+                <tr th:each="lawyer : ${lawyerList}" 
+                    th:onclick="|location.href='/member/mypage?lawyerIdx=' + ${lawyer.lawyerIdx}|" 
+                    style="cursor: pointer;">
                     <td><span th:text="${lawyer.lawyerIdx}"></span></td>
                     <td><span th:text="${lawyer.lawyerId}"></span></td>
                     <td><span th:text="${lawyer.lawyerName}"></span></td>
