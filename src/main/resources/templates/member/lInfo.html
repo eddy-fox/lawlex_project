@@ -20,35 +20,14 @@
         <section class="card">
             <div class="profile-head">
                 <!-- 프로필 이미지 -->
-                <div class="avatar" style="overflow:hidden; padding:0;">
+                <div class="avatar">
                     <img th:if="${lawyer != null and lawyer.lawyerImgPath != null and !lawyer.lawyerImgPath.isEmpty()}"
-                         th:src="${lawyer.lawyerImgPath}"
-                         style="width:100%; height:100%; object-fit:cover; display:block;"
-                         alt="변호사 사진">
+                         th:src="${lawyer.lawyerImgPath}" class="avatar-img" alt="변호사 사진">
                     <span th:if="${lawyer == null or lawyer.lawyerImgPath == null or lawyer.lawyerImgPath.isEmpty()}"
-                          style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">
+                          class="avatar-placeholder">
                         사진
                     </span>
                 </div>
-
-    <main class="page-lInfo" th:with="l=${session.loginLawyer}">
-        <div class="container">
-            <h1>마이페이지</h1>
-
-                    
-            <!-- 프로필 카드 -->
-            <section class="card">
-                <div class="profile-head">
-                    <!-- 프로필 이미지 -->
-                    <div class="avatar">
-                        <img th:if="${lawyer != null and lawyer.lawyerImgPath != null and !lawyer.lawyerImgPath.isEmpty()}"
-                            th:src="${lawyer.lawyerImgPath}" class="avatar-img" alt="변호사 사진">
-                        <span
-                            th:if="${lawyer == null or lawyer.lawyerImgPath == null or lawyer.lawyerImgPath.isEmpty()}"
-                            class="avatar-placeholder">
-                            사진
-                        </span>
-                    </div>
 
                     <div class="info">
                         <div class="nickname">
@@ -180,35 +159,34 @@
                         <div class="row-main">작성한 답변이 없습니다.</div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- 내가 쓴 댓글 -->
-        <section class="list-card">
-            <div class="list-title">
-                <span>내가 쓴 댓글</span>
-                <a class="link-more" th:href="@{/member/mypage/myComments}">전체보기</a>
-            </div>
+            <!-- 내가 쓴 댓글 -->
+            <section class="list-card">
+                <div class="list-title">
+                    <span>내가 쓴 댓글</span>
+                    <a class="link-more" th:href="@{/member/mypage/myComments}">전체보기</a>
+                </div>
 
-            <div class="item-list">
-                <div class="row-item"
-                     th:each="c : ${myComments}">
-                    <a class="row-main" 
-                       th:href="@{/newsBoard/detail(newsIdx=${c.newsIdx})}"
-                       th:text="${c.commentContent}">
-                        "상담 정말 도움됐습니다 감사합니다."
-                    </a>
-                    <div class="row-sub"
-                         th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd')}">
-                        2025-09-29
+                <div class="item-list">
+                    <div class="row-item"
+                         th:each="c : ${myComments}">
+                        <a class="row-main" 
+                           th:href="@{/newsBoard/detail(newsIdx=${c.newsIdx})}"
+                           th:text="${c.commentContent}">
+                            "상담 정말 도움됐습니다 감사합니다."
+                        </a>
+                        <div class="row-sub"
+                             th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd')}">
+                            2025-09-29
+                        </div>
+                    </div>
+
+                    <div class="row-item" th:if="${myComments == null or #lists.isEmpty(myComments)}">
+                        <div class="row-main">작성한 댓글이 없습니다.</div>
                     </div>
                 </div>
-
-                <div class="row-item" th:if="${myComments == null or #lists.isEmpty(myComments)}">
-                    <div class="row-main">작성한 댓글이 없습니다.</div>
-                </div>
-            </div>
-        </section>
+            </section>
 
     </div>
   </main>

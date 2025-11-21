@@ -518,7 +518,7 @@ public class LawyerService {
         }
 
         return reBoardRepository
-                .findTop5ByLawyerIdxOrderByReboardRegDateDesc(lawyerIdx)
+                .findTop5ByLawyerIdxAndReboardActiveOrderByReboardRegDateDesc(lawyerIdx, 1)
                 .stream()
                 .map(this::convertReboardDTO)
                 .collect(Collectors.toList());
