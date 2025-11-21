@@ -35,7 +35,7 @@
   .btn-primary { width: 120px; height: 55px; background: var(--brand); color: var(--bg); }
   .btn-primary:hover { background: #000000; }
   .btn-outline { width: 120px; height: 55px; background: transparent; color: var(--brand); border-color: var(--brand); }
-  .join-card.lawyer .btn-outline { border-color: var(--bg); color: var(--brand); }
+  .join-card.lawyer .btn-outline { border-color: var(--bg); color: var(--bg); }
   .join-card.lawyer .btn-outline:hover { background: var(--bg); color: var(--brand); }
 
   @media (max-width: 560px) {

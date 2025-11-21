@@ -190,15 +190,12 @@ body{
   border-color:var(--navy);
 }
 
-.profile-block{
-  width:min(560px,100%);
-  margin:0 auto 32px;
-}
 .inline-top{
   display:flex;
   flex-wrap:wrap;
-  gap:24px;
+  gap:30px;
   align-items:flex-start;
+  justify-content:flex-start;
 }
 @media(max-width:560px){
   .inline-top{flex-direction:column;}
@@ -367,11 +364,11 @@ body{
 
 .actions{
   width:min(560px,100%);
-  margin:40px auto 0;
   display:flex;
   gap:10px;
   flex-wrap:wrap;
   justify-content:flex-end;
+  margin-left:auto;
 }
 .btn-main{
   cursor:pointer;

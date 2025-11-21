@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>일반회원마이페이지</title>
-    <link rel="stylesheet" th:href="@{/css/gInfo.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/gInfo.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
@@ -15,22 +15,6 @@
       <h1>마이페이지</h1>
 
       <section class="card">
-
-        <!-- ✅ 포인트 영역을 위로 올리기 + 버튼 하나만 -->
-        <div class="split">
-          <div class="pane">
-            <div class="pane-title">
-              <span>포인트</span>
-              <span class="strong-num"
-                    th:text="${member != null ? member.memberPoint : 0}">
-                0 P
-              </span>
-            </div>
-            <div class="pill-row">
-              <a class="pill-btn" th:href="@{/member/point}">포인트 관리</a>
-            </div>
-          </div>
-        </div>
 
         <!-- ✅ 사진(avatar) 제거된 프로필 헤더 -->
         <div class="profile-head">
@@ -46,15 +30,30 @@
             </div>
 
             <div class="meta-line">
-              <span th:text="${m != null ? m.memberId : 'user001'}">user001</span>
-              <span th:text="${m != null ? m.memberPhone : '010-1234-5678'}">
-                010-1234-5678
-              </span>
+              <div class="meta-item">
+                <span th:text="${m != null ? m.memberId : 'user001'}">user001</span>
+                <span th:text="${m != null ? m.memberPhone : '010-1234-5678'}">
+                  010-1234-5678
+                </span>
+              </div>
               <span th:text="${m != null ? m.memberEmail : 'user@example.com'}">
                 user@example.com
               </span>
             </div>
           </div>
+          
+         <!-- ✅ 포인트 영역을 위로 올리기 + 버튼 하나만 -->
+         <div class="split">
+          <div class="pane">
+            <div class="pane-title">
+              <span>포인트</span>
+              <span class="strong-num"
+                    th:text="${member != null ? member.memberPoint : 0}">
+                0 P
+              </span>
+            </div>
+          </div>
+        </div>
 
           <div class="actions-top">
             <a class="btn ghost" th:href="@{/member/gmodify}" role="button">정보수정</a>
@@ -68,8 +67,10 @@
                     onclick="document.getElementById('logoutForm').submit()">
               로그아웃
             </button>
+            <a class="btn ghost" th:href="@{/member/point}" role="button">포인트 관리</a>
           </div>
         </div>
+
       </section>
 
       <section class="list-card">

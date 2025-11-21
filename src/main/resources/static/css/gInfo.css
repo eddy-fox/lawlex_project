@@ -13,32 +13,33 @@
       --shadow:0 1px 2px rgba(0,0,0,.03); --danger:#c1121f; --ok:#0b7d2b; }
 
     *{box-sizing:border-box}
-    body{ margin:0; background:var(--panel); color:var(--ink); line-height:1.5;
+    .page-gInfo{ margin:0; background:var(--paper); color:var(--ink); line-height:1.5;
       font-family:"Gooorm Sans","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,sans-serif; }
     .page-gInfo .container{ width:min(1080px,94%); margin:28px auto 80px; }
     .page-gInfo h1{ font-size:22px; margin:15px; letter-spacing:-.2px; font-weight:700; color:var(--ink); }
 
-    .page-gInfo .card, .pane, .list-card{ background:#fff; border:1px solid var(--line); border-radius:14px;
+    .page-gInfo .card, .list-card{ background:#fff; border:1px solid var(--line); border-radius:14px;
       box-shadow:var(--shadow); transition:box-shadow .15s ease,border-color .15s ease,background-color .15s ease; }
     .page-gInfo .card:hover, .list-card:hover{box-shadow:0 4px 10px rgba(0,0,0,.06);}
-    .page-gInfo .pane:hover{ background:var(--hover); border-color:#c9d0ea; }
+    .page-gInfo .pane{ background:#fff; border:1px solid var(--line); border-radius:14px;
+      box-shadow:var(--shadow); transition:box-shadow .15s ease,border-color .15s ease,background-color .15s ease; }
 
     .page-gInfo .card{ padding:20px; margin:15px; }
-    .page-gInfo .pane{ padding:15px; }
+    .page-gInfo .pane{ padding:15px; flex:1; min-width:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
     .page-gInfo .list-card{ padding:15px; margin:15px; }
 
-    .page-gInfo .profile-head{ display:flex; flex-wrap:wrap; align-items:flex-start; gap:16px;
-      border-bottom:1px solid var(--softline); padding-bottom:16px; margin-bottom:16px; }
+    .page-gInfo .profile-head{ display:flex; flex-wrap:wrap; align-items:flex-start; gap:16px; }
     .page-gInfo .avatar{ width:72px; height:96px; border:1px solid var(--line); border-radius:10px;
       background:#fff; display:flex; align-items:center; justify-content:center;
       color:#6b7280; font-size:13px; flex:0 0 auto; }
     .page-gInfo .info{ flex:1; min-width:200px; }
     .page-gInfo .nickname{ display:flex; flex-wrap:wrap; align-items:center;
       gap:8px; margin-bottom:4px; }
-    .page-gInfo .nickname .name{ font-size:18px; font-weight:700; color:var(--ink); }
+    .page-gInfo .nickname .name{ font-size:30px; font-weight:700; color:var(--ink); }
     .page-gInfo .nickname .tag{ font-size:12px; font-weight:700; line-height:1;
       padding:4px 8px; border-radius:999px; background:#e7f5ec; color:var(--ok); }
-    .page-gInfo .meta-line{ font-size:13px; color:var(--muted); display:flex; flex-wrap:wrap; gap:10px; }
+    .page-gInfo .meta-line{ font-size:15px; color:var(--muted); display:flex; flex-wrap:wrap; gap:10px; align-items:flex-start; }
+    .page-gInfo .meta-line .meta-item{ display:flex; flex-direction:column; gap:4px; }
 
     .page-gInfo .actions-top{ display:flex; flex-direction:column; gap:6px; flex:0 0 auto; }
     .page-gInfo .btn{ cursor:pointer; border:none; border-radius:8px; height:25px; padding:5px 12px;
@@ -48,11 +49,11 @@
     .page-lInfo .btn.ghost:last-of-type{ border: none; color:var(--ink); border:1.6px solid var(--line); }
     .page-gInfo .btn.ghost:hover{ background:var(--navy); color:var(--paper); }
 
-    .page-gInfo .split{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .page-gInfo .split{ display:flex; flex-wrap:wrap; gap:10px; }
     .page-lInfo .pane{ display: flex; flex-direction: column; justify-content: space-between; }
     .page-gInfo .pane-title{ display: flex; flex-direction: column; align-items: center;
-       font-size:15px; font-weight:700; margin:0 0 10px; color:var(--ink); row-gap:6px; }
-    .page-gInfo .strong-num{ font-weight:700; color:var(--navy); font-size: 50px;}
+       font-size:15px; font-weight:700; margin:0; color:var(--ink); row-gap:6px; }
+    .page-gInfo .strong-num{ font-weight:700; color:var(--navy); font-size: 50px; line-height:1.2;}
     .page-gInfo .pill-row{ display:flex; justify-content: flex-end; align-items: flex-end; gap:8px; margin-top:auto; }
     .page-gInfo .pill-btn{ display:flex; align-items:center; justify-content:center;
       height:30px; padding:10px 5px; border-radius:7px; font-size:12px; font-weight:700;
