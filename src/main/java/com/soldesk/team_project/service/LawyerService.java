@@ -84,6 +84,8 @@ public class LawyerService {
         if (lawyerEntity.getInterest() != null) {
             lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
         }
+        lawyerDTO.setLawyerProvider(lawyerEntity.getLawyerProvider());
+        lawyerDTO.setLawyerProviderId(lawyerEntity.getLawyerProviderId());
         return lawyerDTO;
     }
 
@@ -563,6 +565,24 @@ public class LawyerService {
         LawyerEntity le = lawyerRepository.findById(login.getLawyerIdx())
                 .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
         
+        updateLawyerProfile(le, dto, lawyerImage, calendarJson);
+    }
+    
+    // 관리자가 다른 변호사 정보를 수정하는 경우
+    @Transactional
+    public void updateProfileForLawyerByIdx(Integer lawyerIdx, LawyerDTO dto, MultipartFile lawyerImage, String calendarJson) {
+        if (lawyerIdx == null) {
+            throw new IllegalArgumentException("변호사 번호가 필요합니다.");
+        }
+        
+        LawyerEntity le = lawyerRepository.findById(lawyerIdx)
+                .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
+        
+        updateLawyerProfile(le, dto, lawyerImage, calendarJson);
+    }
+    
+    private void updateLawyerProfile(LawyerEntity le, LawyerDTO dto, MultipartFile lawyerImage, String calendarJson) {
+        
         // 🔹 탈퇴(비활성) 변호사이면 접근 차단
         if (le.getLawyerActive() != null && le.getLawyerActive() == 0) {
             throw new IllegalStateException("탈퇴 처리된 계정입니다.");
@@ -646,7 +666,7 @@ public class LawyerService {
                 }
 
                 // 빈 배열이어도 소프트 삭제를 위해 호출 (모든 일정을 active=0으로 변경)
-                calendarService.updateAvailabilityMultiple(login.getLawyerIdx(), timeSlots);
+                calendarService.updateAvailabilityMultiple(le.getLawyerIdx(), timeSlots);
             } catch (Exception e) {
                 // JSON 파싱 실패 시 무시 (기존 일정 유지)
                 e.printStackTrace();

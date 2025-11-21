@@ -8,22 +8,22 @@
 </head>
 <body>
     
-  <nav class="sideMenu" th:fragment="bSide" data-scope="board" aria-label="상담 사이드">
-    <a th:href="@{/board/list(interestIdx=1)}" th:classappend="${interestIdx == 1} ? 'side-choice'" class="side">성범죄</a>
-    <a th:href="@{/board/list(interestIdx=2)}" th:classappend="${interestIdx == 2} ? 'side-choice'" class="side">재산범죄</a>
-    <a th:href="@{/board/list(interestIdx=3)}" th:classappend="${interestIdx == 3} ? 'side-choice'" class="side">교통사고 · 범죄</a>
-    <a th:href="@{/board/list(interestIdx=4)}" th:classappend="${interestIdx == 4} ? 'side-choice'" class="side">형사절차</a>
-    <a th:href="@{/board/list(interestIdx=5)}" th:classappend="${interestIdx == 5} ? 'side-choice'" class="side">폭행 · 협박</a>
-    <a th:href="@{/board/list(interestIdx=6)}" th:classappend="${interestIdx == 6} ? 'side-choice'" class="side">명예훼손 · 모욕</a>
-    <a th:href="@{/board/list(interestIdx=7)}" th:classappend="${interestIdx == 7} ? 'side-choice'" class="side">기타 형사범죄</a>
-    <a th:href="@{/board/list(interestIdx=8)}" th:classappend="${interestIdx == 8} ? 'side-choice'" class="side">부동산 · 임대차</a>
-    <a th:href="@{/board/list(interestIdx=9)}" th:classappend="${interestIdx == 9} ? 'side-choice'" class="side">금전 · 계약 문제</a>
-    <a th:href="@{/board/list(interestIdx=10)}" th:classappend="${interestIdx == 10} ? 'side-choice'" class="side">민사절차</a>
-    <a th:href="@{/board/list(interestIdx=11)}" th:classappend="${interestIdx == 11} ? 'side-choice'" class="side">기타 민사문제</a>
-    <a th:href="@{/board/list(interestIdx=12)}" th:classappend="${interestIdx == 12} ? 'side-choice'" class="side">가족</a>
-    <a th:href="@{/board/list(interestIdx=13)}" th:classappend="${interestIdx == 13} ? 'side-choice'" class="side">회사</a>
-    <a th:href="@{/board/list(interestIdx=14)}" th:classappend="${interestIdx == 14} ? 'side-choice'" class="side">의료 · 세금 · 행정</a>
-    <a th:href="@{/board/list(interestIdx=15)}" th:classappend="${interestIdx == 15} ? 'side-choice'" class="side">지식재산 · 금융</a>
+  <nav class="sideMenu" th:fragment="bSide(interestIdx)" data-scope="board" aria-label="상담 사이드">
+    <a th:href="@{/board/list(interestIdx=1)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 1) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 1) ? 'page' : null}">성범죄</a>
+    <a th:href="@{/board/list(interestIdx=2)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 2) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 2) ? 'page' : null}">재산범죄</a>
+    <a th:href="@{/board/list(interestIdx=3)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 3) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 3) ? 'page' : null}">교통사고 · 범죄</a>
+    <a th:href="@{/board/list(interestIdx=4)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 4) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 4) ? 'page' : null}">형사절차</a>
+    <a th:href="@{/board/list(interestIdx=5)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 5) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 5) ? 'page' : null}">폭행 · 협박</a>
+    <a th:href="@{/board/list(interestIdx=6)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 6) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 6) ? 'page' : null}">명예훼손 · 모욕</a>
+    <a th:href="@{/board/list(interestIdx=7)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 7) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 7) ? 'page' : null}">기타 형사범죄</a>
+    <a th:href="@{/board/list(interestIdx=8)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 8) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 8) ? 'page' : null}">부동산 · 임대차</a>
+    <a th:href="@{/board/list(interestIdx=9)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 9) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 9) ? 'page' : null}">금전 · 계약 문제</a>
+    <a th:href="@{/board/list(interestIdx=10)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 10) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 10) ? 'page' : null}">민사절차</a>
+    <a th:href="@{/board/list(interestIdx=11)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 11) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 11) ? 'page' : null}">기타 민사문제</a>
+    <a th:href="@{/board/list(interestIdx=12)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 12) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 12) ? 'page' : null}">가족</a>
+    <a th:href="@{/board/list(interestIdx=13)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 13) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 13) ? 'page' : null}">회사</a>
+    <a th:href="@{/board/list(interestIdx=14)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 14) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 14) ? 'page' : null}">의료 · 세금 · 행정</a>
+    <a th:href="@{/board/list(interestIdx=15)}" th:class="${(interestIdx != null and interestIdx > 0 and interestIdx == 15) ? 'side side-choice' : 'side'}" th:attr="aria-current=${(interestIdx != null and interestIdx > 0 and interestIdx == 15) ? 'page' : null}">지식재산 · 금융</a>
   </nav>
 
     <script src="js.js"></script>

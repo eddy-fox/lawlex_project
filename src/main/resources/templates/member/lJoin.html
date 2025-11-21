@@ -17,11 +17,6 @@
        th:href="@{/member/mypage}">
       마이페이지
     </a>
-    <a th:if="${session.loginUser == null}"
-       class="small-btn"
-       th:href="@{/member/login(need='mypage')}">
-      로그인하고 마이페이지
-    </a>
   </div>
 
   <main class="page-lJoin">

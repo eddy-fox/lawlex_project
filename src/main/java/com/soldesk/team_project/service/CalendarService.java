@@ -2,6 +2,8 @@ package com.soldesk.team_project.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,10 +45,30 @@ public class CalendarService {
         return t.getHour() * 60 + t.getMinute();
     }
 
-    // "HH:mm" → Integer(분)
+    // "HH:mm" 또는 "H:mm" → Integer(분)
     private static int hhmmToMinutes(String hhmm) {
-        LocalTime t = LocalTime.parse(hhmm);
-        return t.getHour() * 60 + t.getMinute();
+        if (hhmm == null || hhmm.trim().isEmpty()) {
+            throw new IllegalArgumentException("시간 문자열이 비어있습니다.");
+        }
+        
+        // 여러 형식 시도: "HH:mm", "H:mm"
+        DateTimeFormatter[] formatters = {
+            DateTimeFormatter.ofPattern("HH:mm"),
+            DateTimeFormatter.ofPattern("H:mm")
+        };
+        
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                LocalTime t = LocalTime.parse(hhmm.trim(), formatter);
+                return t.getHour() * 60 + t.getMinute();
+            } catch (DateTimeParseException e) {
+                // 다음 형식 시도
+                continue;
+            }
+        }
+        
+        // 모든 형식 실패 시 예외 발생
+        throw new IllegalArgumentException("시간 형식을 파싱할 수 없습니다: " + hhmm);
     }
 
     private CalendarDTO toDTO(CalendarEntity e) {

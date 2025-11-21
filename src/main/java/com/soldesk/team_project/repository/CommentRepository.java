@@ -52,4 +52,19 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
     List<Integer> findDistinctNewsIdxByMemberIdxAndCommentActiveOrderByCommentRegDateDesc(
         @Param("memberIdx") Integer memberIdx
     );
+    
+    // 로그인한 변호사가 쓴 최근 5개 댓글 (활성 댓글만)
+    List<CommentEntity> findTop5ByLawyerIdxAndCommentActiveOrderByCommentRegDateDesc(
+        Integer lawyerIdx,
+        Integer commentActive
+    );
+    
+    // 특정 변호사가 댓글을 남긴 newsIdx 목록 (중복 제거, 최신순)
+    @Query("SELECT c.newsIdx FROM CommentEntity c " +
+           "WHERE c.lawyerIdx = :lawyerIdx AND c.commentActive = 1 " +
+           "GROUP BY c.newsIdx " +
+           "ORDER BY MAX(c.commentRegDate) DESC")
+    List<Integer> findDistinctNewsIdxByLawyerIdxAndCommentActiveOrderByCommentRegDateDesc(
+        @Param("lawyerIdx") Integer lawyerIdx
+    );
 }

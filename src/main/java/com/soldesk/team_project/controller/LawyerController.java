@@ -3,8 +3,10 @@ package com.soldesk.team_project.controller;
 import com.soldesk.team_project.dto.LawyerDTO;
 import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.entity.LawyerEntity;
+import com.soldesk.team_project.entity.AdminEntity;
 import com.soldesk.team_project.repository.InterestRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
+import com.soldesk.team_project.repository.AdminRepository;
 import com.soldesk.team_project.service.CalendarService;
 import com.soldesk.team_project.service.LawyerService;
 import com.soldesk.team_project.service.MemberService;
@@ -31,6 +33,7 @@ public class LawyerController {
     private final LawyerRepository lawyerRepository;     // 마이페이지 뷰용 로딩
     private final CalendarService calendarService;       // 상담 가능 시간 체크용
     private final RankingService rankingService;         // 랭킹 계산용
+    private final AdminRepository adminRepository;       // 관리자 권한 체크용
 
     // 변호사 회원가입 폼
     @GetMapping("/join")
@@ -99,12 +102,30 @@ public class LawyerController {
             @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
             @ModelAttribute LawyerDTO form,
             @RequestParam(value="lawyerImage", required = false) MultipartFile lawyerImage,
-            @RequestParam(value="calendarJson", required = false) String calendarJson) {
+            @RequestParam(value="calendarJson", required = false) String calendarJson,
+            @RequestParam(value="lawyerIdx", required=false) Integer lawyerIdxParam,
+            HttpSession session) {
 
-        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+        if (loginUser == null) {
             return ResponseEntity.status(401).body("UNAUTHORIZED");
         }
+        
         try {
+            // 관리자가 다른 변호사 정보를 수정하는 경우
+            if (loginUser.getAdminIdx() != null && lawyerIdxParam != null) {
+                com.soldesk.team_project.entity.AdminEntity loginAdmin = getLoginAdmin(session);
+                if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
+                    // 관리자 권한으로 다른 변호사 정보 수정
+                    lawyerService.updateProfileForLawyerByIdx(lawyerIdxParam, form, lawyerImage, calendarJson);
+                    return ResponseEntity.ok("OK");
+                }
+            }
+            
+            // 변호사가 자신의 정보를 수정하는 경우
+            if (!"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+                return ResponseEntity.status(401).body("UNAUTHORIZED");
+            }
+            
             lawyerService.updateProfileForCurrent(form, lawyerImage, calendarJson);
             return ResponseEntity.ok("OK");
         } catch (IllegalArgumentException e) {
@@ -113,6 +134,19 @@ public class LawyerController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("SERVER_ERROR");
         }
+    }
+    
+    private AdminEntity getLoginAdmin(HttpSession session) {
+        Object obj = session.getAttribute("loginAdmin");
+        if (obj == null) return null;
+
+        if (obj instanceof AdminEntity ae) {
+            return ae;
+        }
+        if (obj instanceof com.soldesk.team_project.controller.MemberController.AdminSession as) {
+            return adminRepository.findById(as.getAdminIdx()).orElse(null);
+        }
+        return null;
     }
 
     // 변호사 비밀번호 변경(아이디+전화번호+생년월일 검증)

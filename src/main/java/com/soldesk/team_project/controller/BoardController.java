@@ -51,6 +51,98 @@ public class BoardController {
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
     private final com.soldesk.team_project.repository.LawyerRepository lawyerRepository;
+    private final com.soldesk.team_project.repository.BoardRepository boardRepository;
+    private final com.soldesk.team_project.repository.InterestRepository interestRepository;
+
+    @GetMapping("/main")
+    public String main(Model model,
+                       HttpSession session,
+                       @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                       @SessionAttribute(value = "loginMember", required = false) MemberController.MemberSession loginMember,
+                       @SessionAttribute(value = "loginLawyer", required = false) MemberController.LawyerSession loginLawyer) {
+        
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        
+        if (loginUser != null && "MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginMember != null) {
+            // 로그인한 일반회원: 관심분야별로 각각 5개씩
+            java.util.List<java.util.Map<String, Object>> interestBoardsList = new java.util.ArrayList<>();
+            
+            if (loginMember.interestIdx1 != null) {
+                org.springframework.data.domain.Pageable pageable5 = org.springframework.data.domain.PageRequest.of(0, 5);
+                java.util.List<BoardEntity> boards1 = boardRepository.findTop5ActiveBoardsBySingleInterestIdxOrderByBoardViewsDesc(
+                    loginMember.interestIdx1, pageable5);
+                com.soldesk.team_project.entity.InterestEntity interest1 = interestRepository.findById(loginMember.interestIdx1).orElse(null);
+                if (interest1 != null && !boards1.isEmpty()) {
+                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("interestName", interest1.getInterestName());
+                    map.put("interestIdx", loginMember.interestIdx1);
+                    map.put("boards", boards1);
+                    interestBoardsList.add(map);
+                }
+            }
+            
+            if (loginMember.interestIdx2 != null) {
+                org.springframework.data.domain.Pageable pageable5 = org.springframework.data.domain.PageRequest.of(0, 5);
+                java.util.List<BoardEntity> boards2 = boardRepository.findTop5ActiveBoardsBySingleInterestIdxOrderByBoardViewsDesc(
+                    loginMember.interestIdx2, pageable5);
+                com.soldesk.team_project.entity.InterestEntity interest2 = interestRepository.findById(loginMember.interestIdx2).orElse(null);
+                if (interest2 != null && !boards2.isEmpty()) {
+                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("interestName", interest2.getInterestName());
+                    map.put("interestIdx", loginMember.interestIdx2);
+                    map.put("boards", boards2);
+                    interestBoardsList.add(map);
+                }
+            }
+            
+            if (loginMember.interestIdx3 != null) {
+                org.springframework.data.domain.Pageable pageable5 = org.springframework.data.domain.PageRequest.of(0, 5);
+                java.util.List<BoardEntity> boards3 = boardRepository.findTop5ActiveBoardsBySingleInterestIdxOrderByBoardViewsDesc(
+                    loginMember.interestIdx3, pageable5);
+                com.soldesk.team_project.entity.InterestEntity interest3 = interestRepository.findById(loginMember.interestIdx3).orElse(null);
+                if (interest3 != null && !boards3.isEmpty()) {
+                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("interestName", interest3.getInterestName());
+                    map.put("interestIdx", loginMember.interestIdx3);
+                    map.put("boards", boards3);
+                    interestBoardsList.add(map);
+                }
+            }
+            
+            model.addAttribute("interestBoardsList", interestBoardsList);
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("pageTitle", "내 관심분야 인기글");
+        } else if (loginUser != null && "LAWYER".equalsIgnoreCase(loginUser.getRole()) && loginLawyer != null && loginLawyer.interestIdx != null) {
+            // 로그인한 변호사: 관심분야 1개에 대해 상위 5개
+            java.util.List<java.util.Map<String, Object>> interestBoardsList = new java.util.ArrayList<>();
+            
+            org.springframework.data.domain.Pageable pageable5 = org.springframework.data.domain.PageRequest.of(0, 5);
+            java.util.List<BoardEntity> boards = boardRepository.findTop5ActiveBoardsBySingleInterestIdxOrderByBoardViewsDesc(
+                loginLawyer.interestIdx, pageable5);
+            com.soldesk.team_project.entity.InterestEntity interest = interestRepository.findById(loginLawyer.interestIdx).orElse(null);
+            if (interest != null && !boards.isEmpty()) {
+                java.util.Map<String, Object> map = new java.util.HashMap<>();
+                map.put("interestName", interest.getInterestName());
+                map.put("interestIdx", loginLawyer.interestIdx);
+                map.put("boards", boards);
+                interestBoardsList.add(map);
+            }
+            
+            model.addAttribute("interestBoardsList", interestBoardsList);
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("pageTitle", "내 관심분야 인기글");
+        } else {
+            // 로그인하지 않은 회원: 모든 글 중 조회수 높은 순서 10개
+            java.util.List<BoardEntity> topBoards = boardRepository.findTop10ActiveBoardsByOrderByBoardViewsDesc(pageable);
+            model.addAttribute("topBoards", topBoards);
+            model.addAttribute("isLoggedIn", false);
+            model.addAttribute("pageTitle", "현재 인기많은 글");
+        }
+        
+        model.addAttribute("loginUser", loginUser);
+        // 사이드바에 interestIdx를 전달하지 않음 (강조 없이 표시)
+        return "board/main";
+    }
 
     @GetMapping("/list")
     public String list(Model model, 
@@ -60,9 +152,14 @@ public class BoardController {
     HttpSession session,
     @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
+        System.out.println("[DEBUG] BoardController.list - 요청받은 interestIdx: " + interestIdx);
+        
         if(interestIdx == null) {
             interestIdx = 1;
+            System.out.println("[DEBUG] BoardController.list - interestIdx가 null이어서 기본값 1로 설정");
         }
+        
+        System.out.println("[DEBUG] BoardController.list - 최종 사용할 interestIdx: " + interestIdx);
 
         Page<BoardEntity> paging;
        
@@ -160,10 +257,15 @@ public class BoardController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
-    public String boardCreate(BoardForm boardForm) {
+    public String boardCreate(BoardForm boardForm,
+                              @RequestParam(value = "interestIdx", required = false) Integer interestIdx,
+                              Model model) {
 
+        if (interestIdx == null || interestIdx <= 0) {
+            interestIdx = 1;
+        }
+        model.addAttribute("interestIdx", interestIdx);
         return "board/write";
-
     }
 
     /**
@@ -239,21 +341,31 @@ public class BoardController {
         reboardService.gptAutoReboard(writeBoard);
 
         // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
-        // 실제로 저장된 글의 interestIdx를 사용
+        // 저장된 엔티티를 다시 조회하여 interestIdx 확인 (Lazy 로딩 문제 방지)
         Integer interestIdx = null;
-        if (writeBoard.getInterest() != null) {
-            interestIdx = writeBoard.getInterest().getInterestIdx();
+        
+        // 저장 전에 폼에서 넘어온 interestIdx를 먼저 확인
+        if (boardForm.getInterestIdx() != null && boardForm.getInterestIdx() > 0) {
+            interestIdx = boardForm.getInterestIdx();
+        } else {
+            // 폼에서 넘어온 interestIdx가 없으면 저장된 엔티티에서 조회
+            BoardEntity savedBoard = boardService.getBoardEntity(writeBoard.getBoardIdx());
+            if (savedBoard != null && savedBoard.getInterest() != null) {
+                interestIdx = savedBoard.getInterest().getInterestIdx();
+            }
         }
-        // interest가 없으면 카테고리로부터 결정
+        
+        // 여전히 interestIdx가 없으면 카테고리로부터 결정
         if (interestIdx == null || interestIdx <= 0) {
             interestIdx = boardService.getInterestIdxFromCategory(boardForm.getBoardCategory());
         }
         
-        // gpt 답변 대기 알림창 스크립트 설정
-        model.addAttribute("boardIdx", writeBoard.getBoardIdx());
-        model.addAttribute("redirectUrl", "/board/list?interestIdx=" + interestIdx);
+        // 디버깅 로그
+        System.out.println("[DEBUG] BoardController.boardCrete - 리다이렉트 interestIdx: " + interestIdx);
+        System.out.println("[DEBUG] BoardController.boardCrete - boardForm.interestIdx: " + boardForm.getInterestIdx());
+        System.out.println("[DEBUG] BoardController.boardCrete - boardForm.boardCategory: " + boardForm.getBoardCategory());
         
-        return "board/gpt-loading";
+        return "redirect:/board/list?interestIdx=" + interestIdx;
     }
     @GetMapping("/api/check-gpt-answer")
     @ResponseBody

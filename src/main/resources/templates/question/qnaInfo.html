@@ -47,8 +47,10 @@
                     <!-- 답변 있음 -->
                     <div class="box" th:if="${isAnswered}">
                         <div class="box" th:text="${questionAnswer.aContent}"></div>
-                        <a th:href="@{/question/answerModify(aIdx=${questionAnswer.aIdx})}" th:if="${admin != null}" class="btn btn-submit">수정</a>
-                        <a th:href="@{/question/answerDelete(aIdx=${questionAnswer.aIdx})}" th:if="${admin != null}" class="btn btn-delete">삭제</a>
+                        <div class="action-buttons" th:if="${admin != null}">
+                            <a th:href="@{/question/answerModify(aIdx=${questionAnswer.aIdx})}" class="btn btn-submit">수정</a>
+                            <a th:href="@{/question/answerDelete(aIdx=${questionAnswer.aIdx})}" class="btn btn-delete">삭제</a>
+                        </div>
                     </div>
                     
                     <!-- 답변 없음 -->

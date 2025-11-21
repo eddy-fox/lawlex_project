@@ -10,7 +10,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 <main class="page-write">
-  <div class="sideMenu" th:replace="~{include/bSide :: bSide}"></div>
+  <div class="sideMenu" th:replace="~{include/bSide :: bSide(interestIdx=${interestIdx})}"></div>
   <div class="wrap">
     <div class="backdrop">
       <form class="card" th:object="${boardForm}" id="writeForm" method="post" enctype="multipart/form-data">
@@ -26,7 +26,8 @@
             <span class="label">카테고리</span>
             <div>
               <!-- 추천 카테고리 표시 영역 -->
-              <div id="recommendedCategories" style="margin-bottom: 12px; display: none;">
+              <div id="recommendedCategories"
+                   th:style="${boardForm.boardCategory != null and !boardForm.boardCategory.isEmpty() ? 'margin-bottom: 12px;' : 'margin-bottom: 12px; display: none;'}">
                 <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">
                   <span style="color: #3b82f6;">✨ AI 추천 카테고리</span>
                 </div>
@@ -35,7 +36,7 @@
               
               <!-- 선택된 카테고리 저장용 hidden input -->
               <input type="hidden" id="boardCategory" name="boardCategory" th:field="*{boardCategory}">
-              <input type="hidden" id="interestIdx" name="interestIdx">
+              <input type="hidden" id="interestIdx" name="interestIdx" th:value="${boardForm.interestIdx}">
             </div>
           </div>
 

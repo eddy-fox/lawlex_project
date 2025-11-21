@@ -10,7 +10,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 
-  <main class="page-gInfo" th:with="m=${session.loginMember}">
+  <main class="page-gInfo" th:with="m=${member != null ? member : session.loginMember}">
     <div class="container">
       <h1>마이페이지</h1>
 
@@ -30,12 +30,11 @@
             </div>
 
             <div class="meta-line">
-              <div class="meta-item">
-                <span th:text="${m != null ? m.memberId : 'user001'}">user001</span>
-                <span th:text="${m != null ? m.memberPhone : '010-1234-5678'}">
-                  010-1234-5678
-                </span>
-              </div>
+              <span th:if="${m == null or m.memberProvider == null or #strings.isEmpty(m.memberProvider) or m.memberProvider == 'local'}"
+                    th:text="${m != null ? m.memberId : 'user001'}">user001</span>
+              <span th:text="${m != null ? m.memberPhone : '010-1234-5678'}">
+                010-1234-5678
+              </span>
               <span th:text="${m != null ? m.memberEmail : 'user@example.com'}">
                 user@example.com
               </span>
@@ -56,7 +55,11 @@
         </div>
 
           <div class="actions-top">
-            <a class="btn ghost" th:href="@{/member/gmodify}" role="button">정보수정</a>
+            <a class="btn ghost" 
+               th:href="${isAdminView != null and isAdminView and memberIdx != null ? 
+                         '/member/gmodify?memberIdx=' + memberIdx : 
+                         '/member/gmodify'}" 
+               role="button">정보수정</a>
 
             <form id="logoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
               <th:block th:if="${_csrf != null}">
@@ -80,17 +83,18 @@
         </div>
 
         <div class="item-list">
-          <a class="row-item"
-             th:each="b : ${myBoards}"
-             th:href="@{/board/detail(boardIdx=${b.boardIdx})}">
-            <div class="row-main" th:text="${b.boardTitle}">
+          <div class="row-item"
+               th:each="b : ${myBoards}">
+            <a class="row-main" 
+               th:href="@{/board/detail/{boardIdx}(boardIdx=${b.boardIdx})}"
+               th:text="${b.boardTitle}">
               정보통신망법 침입 및 명예훼손 대응방법
-            </div>
+            </a>
             <div class="row-sub"
                  th:text="|${#temporals.format(b.boardRegDate, 'yyyy-MM-dd')} · 조회 ${b.boardViews}|">
               2025-09-29 · 조회 12
             </div>
-          </a>
+          </div>
 
           <div class="row-item" th:if="${#lists.isEmpty(myBoards)}">
             <div class="row-main">작성한 게시글이 없습니다.</div>

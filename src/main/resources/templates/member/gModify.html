@@ -10,7 +10,7 @@
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
 
-  <main class="page-gModify" th:with="me=${m}">
+  <main class="page-gModify" th:with="me=${member != null ? member : session.loginMember}">
     <section class="container-narrow" style="max-width: 720px; margin: 0 auto 3rem;">
 
       <header class="page-head" aria-label="페이지 제목" style="text-align: center; margin-top: 2rem;">
@@ -37,6 +37,8 @@
           <th:block th:if="${_csrf != null}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
           </th:block>
+          <input type="hidden" th:if="${isAdminEdit != null and isAdminEdit and memberIdx != null}" 
+                 name="memberIdx" th:value="${memberIdx}"/>
 
           <div class="form-grid">
             <!-- 아이디는 수정 불가라 입력칸 제거, 필요하면 상단 타이틀이나 마이페이지에서만 노출 -->
