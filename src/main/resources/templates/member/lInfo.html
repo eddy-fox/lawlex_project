@@ -10,7 +10,7 @@
 <body>
 <div class="include" th:replace="~{include/header :: header}"></div>
 
-<main class="page-lInfo" th:with="l=${session.loginLawyer}">
+<main class="page-lInfo" th:with="l=${lawyer != null ? lawyer : session.loginLawyer}">
     <div class="container">
         <h1>마이페이지</h1>
 
@@ -41,7 +41,8 @@
 
                     <!-- 아이디 / 이메일 / 휴대폰 한 줄 -->
                     <div class="meta-line">
-                        <span th:text="${l != null ? l.lawyerId : 'lawyer001'}">lawyer001</span>
+                        <span th:if="${lawyer == null or lawyer.lawyerProvider == null or #strings.isEmpty(lawyer.lawyerProvider) or lawyer.lawyerProvider == 'local'}"
+                              th:text="${l != null ? l.lawyerId : 'lawyer001'}">lawyer001</span>
                         <span th:text="${l != null ? l.lawyerPhone : '010-0000-0000'}">010-0000-0000</span>
                         <span th:text="${l != null ? l.lawyerEmail : 'lawyer@example.com'}">lawyer@example.com</span>
                     </div>
@@ -112,7 +113,11 @@
 
                 <!-- 우측 상단 버튼들 (정보수정 / 로그아웃) -->
                 <div class="actions-top">
-                    <a class="btn ghost" th:href="@{/member/lmodify}" role="button">정보수정</a>
+                    <a class="btn ghost" 
+                       th:href="${isAdminView != null and isAdminView and lawyerIdx != null ? 
+                                 '/member/lmodify?lawyerIdx=' + lawyerIdx : 
+                                 '/member/lmodify'}" 
+                       role="button">정보수정</a>
 
                     <form id="logoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
                         <th:block th:if="${_csrf != null}">
@@ -155,6 +160,33 @@
                 <div class="row-item"
                      th:if="${myReboards == null or #lists.isEmpty(myReboards)}">
                     <div class="row-main">작성한 답변이 없습니다.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 내가 쓴 댓글 -->
+        <section class="list-card">
+            <div class="list-title">
+                <span>내가 쓴 댓글</span>
+                <a class="link-more" th:href="@{/member/mypage/myComments}">전체보기</a>
+            </div>
+
+            <div class="item-list">
+                <div class="row-item"
+                     th:each="c : ${myComments}">
+                    <a class="row-main" 
+                       th:href="@{/newsBoard/detail(newsIdx=${c.newsIdx})}"
+                       th:text="${c.commentContent}">
+                        "상담 정말 도움됐습니다 감사합니다."
+                    </a>
+                    <div class="row-sub"
+                         th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd')}">
+                        2025-09-29
+                    </div>
+                </div>
+
+                <div class="row-item" th:if="${myComments == null or #lists.isEmpty(myComments)}">
+                    <div class="row-main">작성한 댓글이 없습니다.</div>
                 </div>
             </div>
         </section>

@@ -98,7 +98,8 @@ public class CommentController {
     public ResponseEntity<Map<String, Object>> modifyComment(
             @PathVariable("commentIdx") Integer commentIdx,
             @RequestBody CommentUpdateRequest request,
-            HttpSession session) {
+            HttpSession session,
+            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
         
         Map<String, Object> response = new HashMap<>();
         
@@ -106,7 +107,7 @@ public class CommentController {
             CommentEntity comment = commentService.getComment(commentIdx);
             
             // 권한 확인: 작성자 또는 관리자만 수정 가능
-            if (!canModifyOrDelete(comment, session)) {
+            if (!canModifyOrDelete(comment, session, loginUser)) {
                 response.put("success", false);
                 response.put("message", "수정 권한이 없습니다.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
@@ -130,7 +131,8 @@ public class CommentController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteComment(
             @PathVariable("commentIdx") Integer commentIdx,
-            HttpSession session) {
+            HttpSession session,
+            @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
         
         Map<String, Object> response = new HashMap<>();
         
@@ -138,7 +140,7 @@ public class CommentController {
             CommentEntity comment = commentService.getComment(commentIdx);
             
             // 권한 확인: 작성자 또는 관리자만 삭제 가능
-            if (!canModifyOrDelete(comment, session)) {
+            if (!canModifyOrDelete(comment, session, loginUser)) {
                 response.put("success", false);
                 response.put("message", "삭제 권한이 없습니다.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
@@ -158,7 +160,7 @@ public class CommentController {
     }
 
     // 수정/삭제 권한 확인
-    private boolean canModifyOrDelete(CommentEntity comment, HttpSession session) {
+    private boolean canModifyOrDelete(CommentEntity comment, HttpSession session, UserMasterDTO loginUser) {
         // 관리자 권한 확인 (admin_role이 "admin"인 관리자만)
         AdminEntity loginAdmin = getLoginAdmin(session);
         if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
@@ -166,12 +168,20 @@ public class CommentController {
         }
         
         // 작성자 권한 확인 (일반 회원)
+        if (loginUser != null && loginUser.getMemberIdx() != null
+                && commentService.isCommentOwnerByMember(comment, loginUser.getMemberIdx())) {
+            return true;
+        }
         MemberSession loginMember = getLoginMember(session);
         if (loginMember != null && commentService.isCommentOwnerByMember(comment, loginMember.memberIdx)) {
             return true;
         }
         
         // 작성자 권한 확인 (변호사)
+        if (loginUser != null && loginUser.getLawyerIdx() != null
+                && commentService.isCommentOwnerByLawyer(comment, loginUser.getLawyerIdx())) {
+            return true;
+        }
         LawyerSession loginLawyer = getLoginLawyer(session);
         if (loginLawyer != null && commentService.isCommentOwnerByLawyer(comment, loginLawyer.lawyerIdx)) {
             return true;

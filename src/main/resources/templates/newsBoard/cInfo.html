@@ -8,8 +8,8 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body th:attr="data-newsIdx=${board.newsIdx},
-              data-memberIdx=${loginMember != null ? loginMember.memberIdx : ''},
-              data-lawyerIdx=${loginLawyer != null ? loginLawyer.lawyerIdx : ''},
+              data-memberIdx=${(loginUser != null and loginUser.memberIdx != null) ? loginUser.memberIdx : (loginMember != null ? loginMember.memberIdx : '')},
+              data-lawyerIdx=${(loginUser != null and loginUser.lawyerIdx != null) ? loginUser.lawyerIdx : (loginLawyer != null ? loginLawyer.lawyerIdx : '')},
               data-isAdmin=${loginAdmin != null and loginAdmin.adminRole == 'admin'}">
 <div class="include" th:replace="~{include/header :: header}"></div>
 
@@ -101,7 +101,9 @@
         </div>
 
         <!-- 댓글 (공지사항이 아닌 경우에만 표시) -->
-        <section class="cmt open" th:if="${canComment}" th:classappend="${loginMember == null and loginLawyer == null}">
+        <section class="cmt open"
+                 th:if="${canComment}"
+                 th:classappend="${!hasCommentAuth} ? ' guest'">
             <div class="top">
                 <h3>댓글</h3>
             </div>
@@ -109,10 +111,10 @@
             <div class="write">
                 <div class="row">
                     <textarea class="textbox" id="cText" 
-                              th:placeholder="${loginMember == null and loginLawyer == null} ? '로그인 후 댓글을 남길 수 있습니다' : '내용 (Ctrl+Enter 등록)'"
-                              th:disabled="${loginMember == null and loginLawyer == null}"></textarea>
+                              th:placeholder="${hasCommentAuth} ? '내용 (Ctrl+Enter 등록)' : '로그인 후 댓글을 남길 수 있습니다'"
+                              th:disabled="${!hasCommentAuth}"></textarea>
                     <button class="submit" id="cBtn" type="button"
-                            th:disabled="${loginMember == null and loginLawyer == null}">등록</button>
+                            th:disabled="${!hasCommentAuth}">등록</button>
                 </div>
             </div>
 

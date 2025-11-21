@@ -115,8 +115,8 @@
   function init(menu){
     if(!menu) return;
     
-    // 메인 페이지(/newsBoard/main)에서는 normalize와 복원 로직을 건너뛰고 모든 링크를 side로 설정
-    var isMainPage = window.location.pathname === '/newsBoard/main';
+    // 메인 페이지(/newsBoard/main, /board/main)에서는 normalize와 복원 로직을 건너뛰고 모든 링크를 side로 설정
+    var isMainPage = window.location.pathname === '/newsBoard/main' || window.location.pathname === '/board/main';
     
     if(isMainPage){
       // 메인 페이지에서는 모든 링크를 side로 설정하고, side-choice와 aria-current 제거

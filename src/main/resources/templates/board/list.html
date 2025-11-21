@@ -7,14 +7,14 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/list.css}">
 </head>
-<body>
+<body th:attr="data-logged-in=${loginUser != null and loginUser.role == 'MEMBER' ? 'true' : 'false'}">
   <div class="include" th:replace="~{include/header :: header}"></div>
     <main class="page-list">
       <div class="sideMenu" th:replace="~{include/bSide :: bSide(interestIdx=${interestIdx})}"></div>
       <div class="wrap">
       <div class="backdrop">
         <div class="top">
-          <a th:href="@{/board/create}" id="write" class="btn" th:if="${(isAdmin == null or !isAdmin) and (loginUser == null or loginUser.role != 'LAWYER')}">글쓰기</a>
+          <a th:href="@{/board/create(interestIdx=${interestIdx})}" id="write" class="btn" th:if="${(isAdmin == null or !isAdmin) and (loginUser == null or loginUser.role != 'LAWYER')}">글쓰기</a>
         </div>
 
         <div class="card">
@@ -32,8 +32,6 @@
                 <td th:text="${boardEntity.boardIdx}"></td>
                 <td class="text-start">
                   <a th:href="@{|/board/detail/${boardEntity.boardIdx}|}" th:text="${boardEntity.boardTitle}"></a>
-                  <span class="text-danger small ms-2" th:if="${#lists.size(boardEntity.reboardList) > 0}"
-                  th:text="${#lists.size(boardEntity.reboardList)}"></span>
                 </td>
                 <td th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></td>
                 <td th:text="${boardEntity.boardViews}"></td>
@@ -59,7 +57,7 @@
             <div class="number" aria-label="페이지" th:if="${!paging.isEmpty()}">
 		          <ul class="pagination justify-content-center">
 			          <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-				          <a class="page-link" th:data-page="${page}" th:href="@{/board/list(page=${paging.number-1}, kw=${kw}, interestIdx=${interestIdx})}">
+				          <a class="page-link" th:data-page="${paging.number-1}" th:href="@{/board/list(page=${paging.number-1}, kw=${kw}, interestIdx=${interestIdx})}">
 					          <span class="angle">이전</span>
 				          </a>
 			          </li>
@@ -72,7 +70,7 @@
                   th:text="${pageNum + 1}"></a>
 			          </li>
 			          <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-				          <a class="page-link" th:data-page="${page}" th:href="@{/board/list(page=${paging.number+1}, kw=${kw}, interestIdx=${interestIdx})}">
+				          <a class="page-link" th:data-page="${paging.number+1}" th:href="@{/board/list(page=${paging.number+1}, kw=${kw}, interestIdx=${interestIdx})}">
 					          <span class="angle">다음</span>
 				          </a>
 			          </li>

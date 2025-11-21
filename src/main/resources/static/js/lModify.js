@@ -281,14 +281,39 @@
 
         // 2) 프로필(닉네임/이메일/주소/전문분야/사진/한줄소개) 저장
         const result = await postForm(formProfile);
+        console.log("프로필 수정 결과:", result);
 
         if (result === "OK") {
           showMsg("프로필이 수정되었습니다.", true);
           setTimeout(() => {
-            location.href = "/member/mypage";
+            // 관리자가 수정한 경우 수정된 변호사의 마이페이지로, 변호사가 수정한 경우 자신의 마이페이지로
+            // URL 파라미터 또는 폼의 hidden input에서 lawyerIdx 가져오기
+            const lawyerIdxFromUrl = new URLSearchParams(window.location.search).get("lawyerIdx");
+            const lawyerIdxFromForm = formProfile.querySelector('input[name="lawyerIdx"]')?.value;
+            const lawyerIdxParam = lawyerIdxFromUrl || lawyerIdxFromForm;
+            console.log("lawyerIdxParam (URL):", lawyerIdxFromUrl);
+            console.log("lawyerIdxParam (Form):", lawyerIdxFromForm);
+            console.log("lawyerIdxParam (최종):", lawyerIdxParam);
+            if (lawyerIdxParam) {
+              const redirectUrl = "/member/mypage?lawyerIdx=" + lawyerIdxParam;
+              console.log("리다이렉트 URL:", redirectUrl);
+              location.href = redirectUrl;
+            } else {
+              console.log("변호사 - 마이페이지로 이동");
+              location.href = "/member/mypage";
+            }
           }, 1500);
         } else if (result === "REDIRECT") {
-          location.reload();
+          console.log("REDIRECT 감지 - 프로필 수정");
+          // 리다이렉트가 감지되면 관리자가 수정한 경우 변호사 마이페이지로, 아니면 마이페이지로
+          const lawyerIdxFromUrl = new URLSearchParams(window.location.search).get("lawyerIdx");
+          const lawyerIdxFromForm = formProfile.querySelector('input[name="lawyerIdx"]')?.value;
+          const lawyerIdxParam = lawyerIdxFromUrl || lawyerIdxFromForm;
+          if (lawyerIdxParam) {
+            location.href = "/member/mypage?lawyerIdx=" + lawyerIdxParam;
+          } else {
+            location.href = "/member/mypage";
+          }
         } else {
           showMsg(result);
         }

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담 메인</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/list.css}">
+    <style>
+      /* index.html의 스타일을 page-list에 적용 */
+      .page-list .section-ttl {
+        font-size: 30px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 32px;
+        text-align: center;
+        letter-spacing: -0.03em;
+        line-height: 1.3;
+      }
+      .page-list .list-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-card, 12px);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+      }
+      .page-list .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+      .page-list .tbl thead {
+        background: var(--soft, #f1f3f8);
+      }
+      .page-list .tbl th {
+        padding: 16px 12px;
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 14px;
+        text-align: center;
+        border-bottom: 2px solid var(--line);
+      }
+      .page-list .tbl th:nth-child(1) {
+        width: 56px;
+      }
+      .page-list .tbl th:nth-child(2) {
+        width: 120px;
+      }
+      .page-list .tbl th:nth-child(3) {
+        width: auto;
+      }
+      .page-list .tbl th:nth-child(4) {
+        width: 72px;
+      }
+      .page-list .tbl td:nth-child(1) {
+        width: 56px;
+      }
+      .page-list .tbl td:nth-child(2) {
+        width: 120px;
+        text-align: center;
+      }
+      .page-list .tbl td:nth-child(3) {
+        width: auto;
+      }
+      .page-list .tbl td:nth-child(4) {
+        width: 72px;
+      }
+      .page-list .tbl td {
+        padding: 16px 12px;
+        text-align: center;
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        line-height: 1.45;
+        color: var(--ink);
+        word-break: keep-all;
+      }
+      .page-list .tbl td:nth-child(2) {
+        text-align: center;
+      }
+      .page-list .tbl .cell-title {
+        text-align: left;
+      }
+      .page-list .tbl tbody tr:hover {
+        background: #f8f9fa;
+      }
+      .page-list .tbl tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .page-list .tbl .aLink {
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .page-list .tbl .aLink:hover {
+        color: var(--navy);
+        text-decoration: none;
+      }
+      .page-list .badge {
+        background: var(--navy);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.3;
+        display: inline-block;
+        box-sizing: border-box;
+        width: 100px;
+      }
+      .page-list .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        position: relative;
+      }
+      .page-list .section-head .section-ttl {
+        flex: 1;
+        text-align: center;
+        margin-bottom: 0;
+      }
+      .page-list .section-more {
+        font-size: 12px;
+        color: var(--muted, #6b7280);
+        cursor: pointer;
+        user-select: none;
+        text-decoration: none;
+      }
+      .page-list .section-more:hover {
+        color: var(--navy);
+      }
+    </style>
+</head>
+<body>
+  <div class="include" th:replace="~{include/header :: header}"></div>
+    <main class="page-list">
+      <div class="sideMenu" th:replace="~{include/bSide :: bSide(interestIdx=0)}"></div>
+      <div class="wrap">
+        <!-- 로그인하지 않은 회원: 모든 글 중 조회수 높은 순서 10개 -->
+        <div th:if="${!isLoggedIn}">
+          <h2 class="section-ttl" th:text="${pageTitle}">현재 인기많은 글</h2>
+          <div class="list-card">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>분야</th>
+                  <th>제목</th>
+                  <th>조회</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="board, iterStat : ${topBoards}">
+                  <td th:text="${iterStat.count}"></td>
+                  <td><span class="badge" th:text="${board.interest != null ? board.interest.interestName : '기타'}"></span></td>
+                  <td class="cell-title">
+                    <a class="aLink" th:href="@{/board/detail/{id}(id=${board.boardIdx})}" th:text="${board.boardTitle}"></a>
+                  </td>
+                  <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(topBoards)}">
+                  <td colspan="4">등록된 게시글이 없습니다.</td>
+                </tr>
+              </tbody> 
+            </table>
+          </div>
+        </div>
+
+        <!-- 로그인한 회원: 관심분야별로 각각 5개씩 -->
+        <div th:if="${isLoggedIn}">
+          <h2 class="section-ttl" style="margin-bottom: 5rem;">회원님의 관심분야 현재 인기글</h2>
+          <div th:each="interestBoards : ${interestBoardsList}" style="margin-bottom: 7rem;">
+            <div class="section-head">
+              <h2 class="section-ttl" style="margin-bottom: 0;" th:text="${interestBoards.interestName}">관심분야</h2>
+              <a class="section-more" th:href="@{/board/list(interestIdx=${interestBoards.interestIdx})}">더보기 ▸</a>
+            </div>
+            <div class="list-card">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>분야</th>
+                    <th>제목</th>
+                    <th>조회</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="board, iterStat : ${interestBoards.boards}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td><span class="badge" th:text="${board.interest != null ? board.interest.interestName : '기타'}"></span></td>
+                    <td class="cell-title">
+                      <a class="aLink" th:href="@{/board/detail/{id}(id=${board.boardIdx})}" th:text="${board.boardTitle}"></a>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
+                  </tr>
+
+                  <tr th:if="${#lists.isEmpty(interestBoards.boards)}">
+                    <td colspan="4">등록된 게시글이 없습니다.</td>
+                  </tr>
+                </tbody> 
+              </table>
+            </div>
+          </div>
+
+          <div th:if="${#lists.isEmpty(interestBoardsList)}" class="list-card">
+            <div style="padding: 2rem; text-align: center; color: #64748b;">
+              <p>관심분야가 설정되지 않았습니다.</p>
+              <a th:href="@{/member/mypage}" class="btn" style="margin-top: 1rem; display: inline-block;">마이페이지에서 관심분야 설정하기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div class="include" th:replace="~{include/footer :: footer}"></div>
+    <script th:src="@{/js/js.js}"></script>
+    <script th:src="@{/js/chatIcon.js}"></script>
+</body>
+</html>
+

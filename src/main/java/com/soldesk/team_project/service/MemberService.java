@@ -63,7 +63,10 @@ public class MemberService {
         memberDTO.setMemberPoint(memberEntity.getMemberPoint());
         memberDTO.setMemberProvider(memberEntity.getMemberProvider());
         memberDTO.setMemberProviderId(memberEntity.getMemberProviderId());
-        memberDTO.setInterestIdx1(memberEntity.getInterestIdx()); // 기존 로직 유지
+        // interestIdx1, interestIdx2, interestIdx3 모두 설정
+        memberDTO.setInterestIdx1(memberEntity.getInterestIdx1());
+        memberDTO.setInterestIdx2(memberEntity.getInterestIdx2());
+        memberDTO.setInterestIdx3(memberEntity.getInterestIdx3());
         return memberDTO;
     }
 
@@ -420,6 +423,15 @@ public class MemberService {
         return updateMemberProfile(dto, newPassword, confirmPassword, null, login.getMemberIdx());
     }
 
+    // 관리자가 다른 회원 정보를 수정하는 경우
+    @Transactional
+    public MemberUpdateResult updateProfileForMemberByIdx(Integer memberIdx, MemberDTO dto, String newPassword, String confirmPassword) {
+        if (memberIdx == null) {
+            throw new IllegalArgumentException("회원 번호가 필요합니다.");
+        }
+        return updateMemberProfile(dto, newPassword, confirmPassword, null, memberIdx);
+    }
+
     @Transactional
     public String changePasswordWithVerificationForCurrent(String memberPhone, String memberIdnum,
                                                            String newPassword, String confirmPassword) {
@@ -475,6 +487,17 @@ public class MemberService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentDTO> getMyCommentsByLawyer(Integer lawyerIdx) {
+        if (lawyerIdx == null) return java.util.Collections.emptyList();
+
+        return commentRepository
+                .findTop5ByLawyerIdxAndCommentActiveOrderByCommentRegDateDesc(lawyerIdx, 1)
+                .stream()
+                .map(this::toCommentDTO)
+                .toList();
+    }
+
     private BoardDTO toBoardDTO(BoardEntity e) {
         BoardDTO d = new BoardDTO();
         d.setBoardIdx(e.getBoardIdx());
@@ -512,9 +535,12 @@ public class MemberService {
             return org.springframework.data.domain.Page.empty(pageable);
         }
 
-        // newsIdx 목록으로 NewsBoardEntity 조회
+        // newsIdx 목록으로 NewsBoardEntity 조회 (newsActive=1인 것만)
         List<com.soldesk.team_project.entity.NewsBoardEntity> allNewsBoards = 
-                newsBoardRepository.findAllById(newsIdxList);
+                newsBoardRepository.findAllById(newsIdxList)
+                    .stream()
+                    .filter(n -> n.getNewsActive() == 1) // newsActive=1인 것만 필터링
+                    .collect(Collectors.toList());
 
         // 최신 댓글 순으로 정렬 (newsIdxList 순서 유지)
         // Map을 사용하여 빠른 조회
@@ -526,10 +552,64 @@ public class MemberService {
                         (e1, e2) -> e1
                     ));
 
-        // newsIdxList 순서대로 정렬된 리스트 생성
+        // newsIdxList 순서대로 정렬된 리스트 생성 (newsActive=1인 것만)
         List<com.soldesk.team_project.entity.NewsBoardEntity> newsBoards = newsIdxList.stream()
                 .map(newsBoardMap::get)
                 .filter(Objects::nonNull)
+                .filter(n -> n.getNewsActive() == 1) // 추가 필터링 (안전장치)
+                .collect(Collectors.toList());
+
+        // 페이징 처리
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), newsBoards.size());
+        List<com.soldesk.team_project.entity.NewsBoardEntity> pagedList = 
+                start < newsBoards.size() ? newsBoards.subList(start, end) : new ArrayList<>();
+
+        return new org.springframework.data.domain.PageImpl<>(
+                pagedList, 
+                pageable, 
+                newsBoards.size()
+        );
+    }
+
+    // 변호사가 댓글을 남긴 newsboard 게시글 목록 조회
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<com.soldesk.team_project.entity.NewsBoardEntity> getMyCommentedNewsBoardsByLawyer(
+            Integer lawyerIdx, org.springframework.data.domain.Pageable pageable) {
+        if (lawyerIdx == null) {
+            return org.springframework.data.domain.Page.empty(pageable);
+        }
+
+        // 댓글을 남긴 newsIdx 목록 조회 (중복 제거, 최신순)
+        List<Integer> newsIdxList = commentRepository
+                .findDistinctNewsIdxByLawyerIdxAndCommentActiveOrderByCommentRegDateDesc(lawyerIdx);
+
+        if (newsIdxList.isEmpty()) {
+            return org.springframework.data.domain.Page.empty(pageable);
+        }
+
+        // newsIdx 목록으로 NewsBoardEntity 조회 (newsActive=1인 것만)
+        List<com.soldesk.team_project.entity.NewsBoardEntity> allNewsBoards = 
+                newsBoardRepository.findAllById(newsIdxList)
+                    .stream()
+                    .filter(n -> n.getNewsActive() == 1) // newsActive=1인 것만 필터링
+                    .collect(Collectors.toList());
+
+        // 최신 댓글 순으로 정렬 (newsIdxList 순서 유지)
+        // Map을 사용하여 빠른 조회
+        java.util.Map<Integer, com.soldesk.team_project.entity.NewsBoardEntity> newsBoardMap = 
+                allNewsBoards.stream()
+                    .collect(Collectors.toMap(
+                        com.soldesk.team_project.entity.NewsBoardEntity::getNewsIdx,
+                        e -> e,
+                        (e1, e2) -> e1
+                    ));
+
+        // newsIdxList 순서대로 정렬된 리스트 생성 (newsActive=1인 것만)
+        List<com.soldesk.team_project.entity.NewsBoardEntity> newsBoards = newsIdxList.stream()
+                .map(newsBoardMap::get)
+                .filter(Objects::nonNull)
+                .filter(n -> n.getNewsActive() == 1) // 추가 필터링 (안전장치)
                 .collect(Collectors.toList());
 
         // 페이징 처리

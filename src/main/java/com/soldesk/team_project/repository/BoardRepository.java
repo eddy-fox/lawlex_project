@@ -44,6 +44,18 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Integer> {
     @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) ORDER BY b.boardViews DESC")
     List<BoardEntity> findTop5ActiveBoardsByOrderByBoardViewsDesc(Pageable pageable);
     
+    // 조회수 높은 순서로 조회 (상위 10개, 활성 게시물만) - 상담 메인 페이지용
+    @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) ORDER BY b.boardViews DESC")
+    List<BoardEntity> findTop10ActiveBoardsByOrderByBoardViewsDesc(Pageable pageable);
+    
+    // 특정 관심분야별 조회수 높은 순서로 조회 (상위 5개, 활성 게시물만) - 상담 메인 페이지용
+    @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) " +
+           "AND b.interest.interestIdx = :interestIdx " +
+           "ORDER BY b.boardViews DESC")
+    List<BoardEntity> findTop5ActiveBoardsBySingleInterestIdxOrderByBoardViewsDesc(
+        @Param("interestIdx") Integer interestIdx,
+        Pageable pageable);
+    
     // 관심 카테고리별 조회수 높은 순서로 조회 (상위 5개, 활성 게시물만)
     // 기존 findTop5ActiveBoardsByOrderByBoardViewsDesc에 관심 카테고리 조건 추가
     @Query("SELECT b FROM BoardEntity b WHERE (b.boardActive = 1 OR b.boardActive IS NULL) " +

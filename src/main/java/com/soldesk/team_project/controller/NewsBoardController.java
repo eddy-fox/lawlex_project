@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.soldesk.team_project.controller.MemberController.AdminSession;
+import com.soldesk.team_project.controller.MemberController.MemberSession;
 import com.soldesk.team_project.controller.MemberController.LawyerSession;
 import com.soldesk.team_project.entity.AdminEntity;
 import com.soldesk.team_project.entity.LawyerEntity;
 import com.soldesk.team_project.entity.NewsBoardEntity;
 import com.soldesk.team_project.entity.NewsCategoryEntity;
 import com.soldesk.team_project.dto.NewsBoardDTO;
+import com.soldesk.team_project.dto.UserMasterDTO;
 import com.soldesk.team_project.repository.AdminRepository;
 import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.repository.NewsBoardRepository;
@@ -117,7 +119,10 @@ public class NewsBoardController {
 
     /* ================ 상세 ================ */
     @GetMapping("/detail")
-    public String detail(@RequestParam("newsIdx") Integer newsIdx, Model model, HttpSession session) {
+    public String detail(@RequestParam("newsIdx") Integer newsIdx,
+                         Model model,
+                         HttpSession session,
+                         @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
         var board = newsBoardRepository.findById(newsIdx).orElse(null);
         if (board == null || board.getNewsActive() == 0) return "redirect:/newsBoard/list";
 
@@ -136,7 +141,21 @@ public class NewsBoardController {
         LawyerEntity loginLawyer = getLoginLawyer(session);
         model.addAttribute("loginAdmin", loginAdmin);
         model.addAttribute("loginLawyer", loginLawyer);
-        model.addAttribute("loginMember", getLoginMember(session));
+        MemberSession loginMember = getLoginMember(session);
+        model.addAttribute("loginUser", loginUser);
+        model.addAttribute("loginMember", loginMember);
+        
+        boolean hasCommentAuth = false;
+        if (loginUser != null && (loginUser.getMemberIdx() != null || loginUser.getLawyerIdx() != null)) {
+            hasCommentAuth = true;
+        } else if (loginMember != null || loginLawyer != null) {
+            hasCommentAuth = true;
+        }
+        model.addAttribute("hasCommentAuth", hasCommentAuth);
+        
+        System.out.println("[DEBUG] NewsBoardController.detail - loginUser: " + loginUser);
+        System.out.println("[DEBUG] NewsBoardController.detail - loginMember: " + loginMember);
+        System.out.println("[DEBUG] NewsBoardController.detail - hasCommentAuth: " + hasCommentAuth);
         
         // 카테고리 정보 추가 (네비게이션 바에서 사용)
         Integer categoryIdx = board.getCategory().getCategoryIdx();

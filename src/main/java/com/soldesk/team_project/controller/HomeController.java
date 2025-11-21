@@ -16,6 +16,7 @@ import com.soldesk.team_project.entity.BoardEntity;
 import com.soldesk.team_project.entity.NewsBoardEntity;
 import com.soldesk.team_project.repository.BoardRepository;
 import com.soldesk.team_project.repository.NewsBoardRepository;
+import com.soldesk.team_project.repository.LawyerRepository;
 import com.soldesk.team_project.service.AdService;
 import com.soldesk.team_project.service.CalendarService;
 
@@ -29,6 +30,7 @@ public class HomeController {
     private final BoardRepository boardRepository;
     private final NewsBoardRepository newsBoardRepository;
     private final CalendarService calendarService;
+    private final LawyerRepository lawyerRepository;
     
     // 카테고리 상수
     private static final int CATEGORY_NEWS = 2;   // 뉴스
@@ -64,6 +66,25 @@ public class HomeController {
             topBoards = boardRepository.findTop5ActiveBoardsByInterestIdxOrderByBoardViewsDesc(
                 interestIdxList, 
                 pageable);
+        } else if (loginUser != null && "LAWYER".equalsIgnoreCase(loginUser.getRole()) 
+                   && loginUser.getLawyerIdx() != null) {
+            // 변호사 로그인 시 변호사의 interestIdx 기반 인기글 조회
+            var lawyerOpt = lawyerRepository.findById(loginUser.getLawyerIdx());
+            if (lawyerOpt.isPresent()) {
+                var lawyer = lawyerOpt.get();
+                if (lawyer.getInterestIdx() != null) {
+                    List<Integer> interestIdxList = java.util.Collections.singletonList(lawyer.getInterestIdx());
+                    topBoards = boardRepository.findTop5ActiveBoardsByInterestIdxOrderByBoardViewsDesc(
+                        interestIdxList, 
+                        pageable);
+                } else {
+                    // interestIdx가 없으면 전체 인기글 조회
+                    topBoards = boardRepository.findTop5ActiveBoardsByOrderByBoardViewsDesc(pageable);
+                }
+            } else {
+                // 변호사를 찾을 수 없으면 전체 인기글 조회
+                topBoards = boardRepository.findTop5ActiveBoardsByOrderByBoardViewsDesc(pageable);
+            }
         } else {
             // 비로그인 또는 관심 카테고리가 없는 경우 전체 인기글 조회
             topBoards = boardRepository.findTop5ActiveBoardsByOrderByBoardViewsDesc(pageable);

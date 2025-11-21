@@ -9,7 +9,7 @@
   <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 
-<body>
+<body th:attr="data-logged-in=${session.loginUser != null and session.loginUser.role == 'MEMBER' ? 'true' : 'false'}">
   <div class="include" th:replace="~{include/header :: header}"></div>
   <main class="page-index">
     <section class="hero">

@@ -57,3 +57,21 @@ setLoginState(false);
   group.addEventListener('scroll',updateButtons);
   updateButtons();
 })();
+
+// 채팅신청 폼 제출 전 로그인 체크
+(function(){
+  // 모든 채팅신청 폼에 이벤트 리스너 추가
+  document.querySelectorAll('form[action="/chat/request"]').forEach(function(form){
+    form.addEventListener('submit', function(e){
+      // 로그인 상태 확인
+      const isLoggedIn = document.body.getAttribute('data-logged-in') === 'true';
+      
+      if(!isLoggedIn){
+        e.preventDefault();
+        e.stopPropagation();
+        alert('로그인 후 이용이 가능합니다.');
+        return false;
+      }
+    });
+  });
+})();

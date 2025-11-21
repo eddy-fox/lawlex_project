@@ -38,11 +38,15 @@
       redirect: "manual"
     });
 
+    console.log("응답 상태:", res.status, "타입:", res.type, "redirected:", res.redirected);
+
     if (res.type === "opaqueredirect" || res.status === 0 || res.redirected) {
+      console.log("리다이렉트 감지됨");
       return "REDIRECT";
     }
 
     const text = (await res.text()).trim();
+    console.log("응답 텍스트:", text);
     return text || "OK";
   }
 
@@ -70,14 +74,39 @@
 
       try {
         const result = await postForm(formProfile);
+        console.log("프로필 수정 결과:", result);
 
         if (result === "OK") {
           showMsg("프로필이 수정되었습니다.", true);
           setTimeout(() => {
-            location.href = "/member/mypage";
+            // 관리자가 수정한 경우 수정된 회원의 마이페이지로, 일반 회원이 수정한 경우 자신의 마이페이지로
+            // URL 파라미터 또는 폼의 hidden input에서 memberIdx 가져오기
+            const memberIdxFromUrl = new URLSearchParams(window.location.search).get("memberIdx");
+            const memberIdxFromForm = formProfile.querySelector('input[name="memberIdx"]')?.value;
+            const memberIdxParam = memberIdxFromUrl || memberIdxFromForm;
+            console.log("memberIdxParam (URL):", memberIdxFromUrl);
+            console.log("memberIdxParam (Form):", memberIdxFromForm);
+            console.log("memberIdxParam (최종):", memberIdxParam);
+            if (memberIdxParam) {
+              const redirectUrl = "/member/mypage?memberIdx=" + memberIdxParam;
+              console.log("리다이렉트 URL:", redirectUrl);
+              location.href = redirectUrl;
+            } else {
+              console.log("일반 회원 - 마이페이지로 이동");
+              location.href = "/member/mypage";
+            }
           }, 1500);
         } else if (result === "REDIRECT") {
-          location.reload();
+          console.log("REDIRECT 감지 - 프로필 수정");
+          // 리다이렉트가 감지되면 관리자가 수정한 경우 회원 마이페이지로, 아니면 마이페이지로
+          const memberIdxFromUrl = new URLSearchParams(window.location.search).get("memberIdx");
+          const memberIdxFromForm = formProfile.querySelector('input[name="memberIdx"]')?.value;
+          const memberIdxParam = memberIdxFromUrl || memberIdxFromForm;
+          if (memberIdxParam) {
+            location.href = "/member/mypage?memberIdx=" + memberIdxParam;
+          } else {
+            location.href = "/member/mypage";
+          }
         } else {
           showMsg(result);
         }

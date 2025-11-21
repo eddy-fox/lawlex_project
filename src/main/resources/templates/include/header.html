@@ -28,12 +28,17 @@
                 <!-- 관리자 로그인 후: 관리자페이지, 로그아웃만 -->
                 <div th:if="${user != null and role != null and role == 'ADMIN'}">
                     <a th:href="@{/admin/memberManagement}">관리자 페이지</a>
-                    <a th:href="@{/member/logout}">로그아웃</a>
+                    <form id="adminLogoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
+                        <th:block th:if="${_csrf != null}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        </th:block>
+                    </form>
+                    <a href="#" onclick="document.getElementById('adminLogoutForm').submit(); return false;" style="text-decoration: none; color: inherit; cursor: pointer;">로그아웃</a>
                 </div>
             </div>
         </div>
         <nav class="main-menu" th:with="user=${session.loginUser}, role=${user != null ? user.role : null}">
-            <a th:href="@{/board/list}">상담</a>
+            <a th:href="@{/board/main}">상담</a>
             <!-- 로그인한 일반회원이면 → /chat/member -->
             <a th:if="${user != null and role != null and role == 'MEMBER'}"
             th:href="@{/chat/member}">

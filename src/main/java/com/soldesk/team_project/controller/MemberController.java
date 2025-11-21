@@ -361,15 +361,68 @@ public class MemberController {
     public String loginFind() { return "member/loginFind"; }
 
     @GetMapping("/gmodify")
-    public String gmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
-        if (loginUser == null || !"MEMBER".equalsIgnoreCase(loginUser.getRole())) return "redirect:/member/login";
+    public String gmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          @RequestParam(value = "memberIdx", required = false) Integer memberIdxParam,
+                          HttpSession session,
+                          Model model) {
+        if (loginUser == null) return "redirect:/member/login";
+        
+        // 관리자가 다른 회원 정보를 수정하는 경우
+        if (loginUser.getAdminIdx() != null && memberIdxParam != null) {
+            AdminEntity loginAdmin = getLoginAdmin(session);
+            if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
+                MemberDTO member = memberService.getMemberByIdx(memberIdxParam);
+                if (member == null) {
+                    return "redirect:/admin/memberManagement";
+                }
+                model.addAttribute("member", member);
+                model.addAttribute("isAdminEdit", true);
+                model.addAttribute("memberIdx", memberIdxParam);
+                return "member/gmodify";
+            }
+        }
+        
+        // 일반회원이 자신의 정보를 수정하는 경우
+        if (!"MEMBER".equalsIgnoreCase(loginUser.getRole()) || loginUser.getMemberIdx() == null) {
+            return "redirect:/member/login";
+        }
+        MemberDTO member = memberService.getSessionMember();
+        model.addAttribute("member", member);
+        model.addAttribute("isAdminEdit", false);
         return "member/gmodify";
     }
 
     @GetMapping("/lmodify")
     public String lmodify(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
+                          @RequestParam(value = "lawyerIdx", required = false) Integer lawyerIdxParam,
+                          HttpSession session,
                           Model model) {
-        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) return "redirect:/member/login";
+        if (loginUser == null) return "redirect:/member/login";
+        
+        // 관리자가 다른 변호사 정보를 수정하는 경우
+        if (loginUser.getAdminIdx() != null && lawyerIdxParam != null) {
+            AdminEntity loginAdmin = getLoginAdmin(session);
+            if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
+                LawyerDTO lawyer = lawyerService.getLawyerByIdx(lawyerIdxParam);
+                if (lawyer == null) {
+                    return "redirect:/admin/lawyerManagement";
+                }
+                model.addAttribute("lawyer", lawyer);
+                model.addAttribute("interests", interestRepository.findAllByOrderByInterestNameAsc());
+                
+                // 기존 상담 가능 시간 불러오기
+                var calendarList = calendarService.findAllActiveByLawyer(lawyerIdxParam);
+                model.addAttribute("calendarList", calendarList);
+                model.addAttribute("isAdminEdit", true);
+                model.addAttribute("lawyerIdx", lawyerIdxParam);
+                return "member/lmodify";
+            }
+        }
+        
+        // 변호사가 자신의 정보를 수정하는 경우
+        if (!"LAWYER".equalsIgnoreCase(loginUser.getRole()) || loginUser.getLawyerIdx() == null) {
+            return "redirect:/member/login";
+        }
         
         LawyerDTO lawyer = lawyerService.getSessionLawyer();
         model.addAttribute("lawyer", lawyer);
@@ -378,6 +431,7 @@ public class MemberController {
         // 기존 상담 가능 시간 불러오기
         var calendarList = calendarService.findAllActiveByLawyer(loginUser.getLawyerIdx());
         model.addAttribute("calendarList", calendarList);
+        model.addAttribute("isAdminEdit", false);
         
         return "member/lmodify";
     }
@@ -417,6 +471,8 @@ public class MemberController {
                 return "redirect:/admin/memberManagement";
             }
             model.addAttribute("member", member);
+            model.addAttribute("isAdminView", true);
+            model.addAttribute("memberIdx", memberIdxParam);
             
             List<BoardDTO> myBoards = memberService.getMyBoards(memberIdxParam);
             List<CommentDTO> myComments = memberService.getMyComments(memberIdxParam);
@@ -431,14 +487,24 @@ public class MemberController {
                 return "redirect:/admin/lawyerManagement";
             }
             model.addAttribute("lawyer", lawyer);
+            model.addAttribute("isAdminView", true);
+            model.addAttribute("lawyerIdx", lawyerIdxParam);
             
             List<ReboardDTO> myReboards = lawyerService.getMyReboardsForLawyer(lawyerIdxParam);
             model.addAttribute("myReboards", myReboards);
+            
+            // 변호사가 쓴 댓글 5개 (lawyerIdx 기준)
+            List<CommentDTO> myComments = memberService.getMyCommentsByLawyer(lawyerIdxParam);
+            model.addAttribute("myComments", myComments);
             
             int likeRanking = rankingService.getLikeRanking(lawyerIdxParam);
             int answerRanking = rankingService.getAnswerRanking(lawyerIdxParam);
             model.addAttribute("likeRanking", likeRanking);
             model.addAttribute("answerRanking", answerRanking);
+            
+            // 상담 가능 요일 및 시간대
+            var calendarList = calendarService.findAllActiveByLawyer(lawyerIdxParam);
+            model.addAttribute("calendarList", calendarList);
             
             return "member/linfo";
         }
@@ -492,6 +558,10 @@ public class MemberController {
         List<ReboardDTO> myReboards = lawyerService.getMyReboardsForLawyer(lawyerIdx);
         model.addAttribute("myReboards", myReboards);
 
+        // 🔹 변호사가 쓴 댓글 5개 (lawyerIdx 기준)
+        List<CommentDTO> myComments = memberService.getMyCommentsByLawyer(lawyerIdx);
+        model.addAttribute("myComments", myComments);
+
         // 🔹 랭킹 계산 (변호사 프로필 페이지와 동일한 방식)
         int likeRanking = rankingService.getLikeRanking(lawyerIdx);
         int answerRanking = rankingService.getAnswerRanking(lawyerIdx);
@@ -505,8 +575,8 @@ public class MemberController {
         return "member/linfo";
 
     } else if ("ADMIN".equals(role)) {
-
-        return "admin/ainfo";
+        // 관리자는 관리자 메인 페이지로 리다이렉트
+        return "redirect:/admin/memberManagement";
 
     } else {
         return "redirect:/member/login";
@@ -573,10 +643,10 @@ public class MemberController {
                              Model model) {
         if (loginUser == null) return "redirect:/member/login";
 
-        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
-            org.springframework.data.domain.PageRequest pageable = 
-                org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.PageRequest pageable = 
+            org.springframework.data.domain.PageRequest.of(page, 10);
 
+        if ("MEMBER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getMemberIdx() != null) {
             org.springframework.data.domain.Page<com.soldesk.team_project.entity.NewsBoardEntity> paging = 
                 memberService.getMyCommentedNewsBoards(loginUser.getMemberIdx(), pageable);
             
@@ -588,6 +658,23 @@ public class MemberController {
             model.addAttribute("paging", paging);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
+            model.addAttribute("userType", "MEMBER");
+            model.addAttribute("pageTitle", "내가 쓴 댓글");
+            return "member/myComments";
+        } else if ("LAWYER".equalsIgnoreCase(loginUser.getRole()) && loginUser.getLawyerIdx() != null) {
+            org.springframework.data.domain.Page<com.soldesk.team_project.entity.NewsBoardEntity> paging = 
+                memberService.getMyCommentedNewsBoardsByLawyer(loginUser.getLawyerIdx(), pageable);
+            
+            // 페이징 범위 계산
+            int currentBlock = page / 10;
+            int startPage = currentBlock * 10;
+            int endPage = Math.min(startPage + 9, paging.getTotalPages() - 1);
+            
+            model.addAttribute("paging", paging);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            model.addAttribute("userType", "LAWYER");
+            model.addAttribute("pageTitle", "내가 쓴 댓글");
             return "member/myComments";
         }
         
@@ -819,12 +906,30 @@ public class MemberController {
             @SessionAttribute(value="loginUser", required = false) UserMasterDTO loginUser,
             @ModelAttribute MemberDTO form,
             @RequestParam(value="newPassword", required=false) String newPassword,
-            @RequestParam(value="confirmPassword", required=false) String confirmPassword) {
+            @RequestParam(value="confirmPassword", required=false) String confirmPassword,
+            @RequestParam(value="memberIdx", required=false) Integer memberIdxParam,
+            HttpSession session) {
 
-        if (loginUser == null || !"MEMBER".equalsIgnoreCase(loginUser.getRole())) {
+        if (loginUser == null) {
             return ResponseEntity.status(401).body("UNAUTHORIZED");
         }
+        
         try {
+            // 관리자가 다른 회원 정보를 수정하는 경우
+            if (loginUser.getAdminIdx() != null && memberIdxParam != null) {
+                AdminEntity loginAdmin = getLoginAdmin(session);
+                if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
+                    // 관리자 권한으로 다른 회원 정보 수정
+                    memberService.updateProfileForMemberByIdx(memberIdxParam, form, newPassword, confirmPassword);
+                    return ResponseEntity.ok("OK");
+                }
+            }
+            
+            // 일반회원이 자신의 정보를 수정하는 경우
+            if (!"MEMBER".equalsIgnoreCase(loginUser.getRole())) {
+                return ResponseEntity.status(401).body("UNAUTHORIZED");
+            }
+            
             var result = memberService.updateProfileForCurrent(form, newPassword, confirmPassword);
             return ResponseEntity.ok("OK");
         } catch (IllegalArgumentException e) {
@@ -924,6 +1029,19 @@ public class MemberController {
             res.put("message", "서버 오류가 발생했습니다.");
             return ResponseEntity.status(500).body(res);
         }
+    }
+
+    private AdminEntity getLoginAdmin(HttpSession session) {
+        Object obj = session.getAttribute("loginAdmin");
+        if (obj == null) return null;
+
+        if (obj instanceof AdminEntity ae) {
+            return ae;
+        }
+        if (obj instanceof AdminSession as) {
+            return adminRepository.findById(as.getAdminIdx()).orElse(null);
+        }
+        return null;
     }
 
 }

@@ -162,7 +162,13 @@
       selected.push(cb.value);
     });
     
-    const category = selected.length > 0 ? selected[0] : '';
+    if(selected.length === 0){
+      // 선택이 없으면 기존 값 유지
+      validate();
+      return;
+    }
+    
+    const category = selected[0];
     const categoryIdx = getCategoryIdx(category);
     
     const categoryInput = document.getElementById('boardCategory');
@@ -171,7 +177,7 @@
     }
     const interestIdxInput = document.getElementById('interestIdx');
     if(interestIdxInput) {
-      interestIdxInput.value = categoryIdx || '';
+      interestIdxInput.value = categoryIdx || interestIdxInput.value || '';
     }
     
     console.log('카테고리 업데이트:', category, categoryIdx);
@@ -325,8 +331,19 @@
   });
 
   form.addEventListener('submit', (e)=>{
-    // 선택된 카테고리 업데이트
-    updateSelectedCategory();
+    // 이미 선택된 카테고리가 없다면 기존 값 유지
+    // (선택된 항목이 있을 때만 업데이트)
+    const hasSelection = document.querySelector('#recommendedChips input[type="checkbox"]:checked');
+    if(hasSelection){
+      updateSelectedCategory();
+    }
+    
+    // 디버깅: 제출 전 interestIdx 값 확인
+    const interestIdxInput = document.getElementById('interestIdx');
+    const categoryInput = document.getElementById('boardCategory');
+    console.log('[DEBUG] 폼 제출 전 - interestIdx:', interestIdxInput ? interestIdxInput.value : 'null');
+    console.log('[DEBUG] 폼 제출 전 - boardCategory:', categoryInput ? categoryInput.value : 'null');
+    
     // 실제 제출은 서버에서 처리
   });
 

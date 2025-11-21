@@ -70,16 +70,29 @@
           dateSpan.textContent=ymd(c.commentRegDate);
           td3.appendChild(dateSpan);
           
-          // 삭제 버튼 표시 조건: 작성자이거나 관리자
-          const canDelete = isAdmin || 
-                           (loginMemberIdx && c.memberIdx && parseInt(loginMemberIdx) === c.memberIdx) ||
-                           (loginLawyerIdx && c.lawyerIdx && parseInt(loginLawyerIdx) === c.lawyerIdx);
+          // 수정/삭제 버튼 표시 조건: 작성자이거나 관리자
+          const canModify = isAdmin || 
+                           (loginMemberIdx && c.memberIdx && parseInt(loginMemberIdx,10) === c.memberIdx) ||
+                           (loginLawyerIdx && c.lawyerIdx && parseInt(loginLawyerIdx,10) === c.lawyerIdx);
           
-          if(canDelete){
+          if(canModify){
+            const editBtn=document.createElement('button');
+            editBtn.textContent='수정';
+            editBtn.className='btn-edit';
+            editBtn.style.marginLeft='10px';
+            editBtn.style.padding='4px 8px';
+            editBtn.style.fontSize='12px';
+            editBtn.style.border='1px solid #ccc';
+            editBtn.style.borderRadius='4px';
+            editBtn.style.background='#fff';
+            editBtn.style.cursor='pointer';
+            editBtn.onclick=()=>editComment(c);
+            td3.appendChild(editBtn);
+            
             const deleteBtn=document.createElement('button');
             deleteBtn.textContent='삭제';
             deleteBtn.className='btn-delete';
-            deleteBtn.style.marginLeft='10px';
+            deleteBtn.style.marginLeft='6px';
             deleteBtn.style.padding='4px 8px';
             deleteBtn.style.fontSize='12px';
             deleteBtn.style.border='1px solid #ccc';
@@ -169,6 +182,34 @@
     .catch(err=>{
       console.error('댓글 삭제 실패:',err);
       alert('댓글 삭제에 실패했습니다.');
+    });
+  }
+  
+  function editComment(comment){
+    const current = comment.commentContent || '';
+    const next = prompt('수정할 내용을 입력하세요.', current);
+    if(next === null) return;
+    const trimmed = next.trim();
+    if(!trimmed){
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+    fetch(`/comment/modify/${comment.commentIdx}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({commentContent:trimmed})
+    })
+    .then(r=>r.json())
+    .then(result=>{
+      if(result.success){
+        loadComments();
+      }else{
+        alert(result.message || '댓글 수정에 실패했습니다.');
+      }
+    })
+    .catch(err=>{
+      console.error('댓글 수정 실패:',err);
+      alert('댓글 수정에 실패했습니다.');
     });
   }
   
