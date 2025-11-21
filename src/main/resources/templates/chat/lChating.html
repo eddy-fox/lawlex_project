@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${room != null} ? '채팅방 #' + ${room.chatroomIdx} : '채팅방'">채팅방</title>
-  <link rel="stylesheet" th:href="@{/css/lChating.css}">
   <link th:href="@{/css/style.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/lChating.css}">
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
   <script>
@@ -31,9 +31,8 @@
       <header class="head">
         <div class="pic">
           <!-- 일반회원 프로필 사진 / 없으면 이니셜 -->
-          <span th:text="${member != null and member.memberName != null and !member.memberName.isEmpty() ? member.memberName.substring(0, 1) : 'M'}">
-            M
-          </span>
+           <img th:src="@{/img/icon.png}" alt="${member != null and member.memberName != null and !member.memberName.isEmpty() ? member.memberName.substring(0, 1) : 'M'}" srcset="">
+          <!-- <span th:text="${member != null and member.memberName != null and !member.memberName.isEmpty() ? member.memberName.substring(0, 1) : 'M'}"> </span> -->
         </div>
 
         <div class="info">
