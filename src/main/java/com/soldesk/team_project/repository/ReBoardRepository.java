@@ -17,8 +17,8 @@ public interface ReBoardRepository extends JpaRepository<ReBoardEntity, Integer>
     
     List<ReBoardEntity> findByBoardEntityBoardIdxAndReboardActive(Integer boardIdx, Integer reboardActive);
 
-    // 변호사 idx 기준으로 최신 5개
-    List<ReBoardEntity> findTop5ByLawyerIdxOrderByReboardRegDateDesc(Integer lawyerIdx);
+    // 변호사 idx 기준으로 최신 5개 (reboardActive=1만)
+    List<ReBoardEntity> findTop5ByLawyerIdxAndReboardActiveOrderByReboardRegDateDesc(Integer lawyerIdx, Integer reboardActive);
     
     // 변호사별 답변글 조회
     @Query("SELECT r FROM ReBoardEntity r WHERE r.lawyer.lawyerIdx = :lawyerIdx " +
