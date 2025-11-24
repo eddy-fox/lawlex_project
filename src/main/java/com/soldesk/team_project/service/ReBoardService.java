@@ -120,11 +120,13 @@ public class ReBoardService {
     }
 
     // GPT 자동 답변 생성
-    @Async
+    @Async("taskExecutor")
     @Transactional
     public void gptAutoReboard(BoardEntity boardEntity) {
-
         try {
+            System.out.println("[비동기] GPT 자동 답변 생성 시작 - boardIdx: " + boardEntity.getBoardIdx() + ", Thread: " + Thread.currentThread().getName());
+           
+            
             // GPT API 실행
             String answer = pythonService.runPython(
                 "gpt-api.py",
@@ -132,21 +134,37 @@ public class ReBoardService {
                 boardEntity.getInterest().getInterestName(),
                 boardEntity.getBoardContent()
             );
+            
+            System.out.println("GPT 답변 수신 완료 - 길이: " + (answer != null ? answer.length() : 0));
 
-            // 답변 게시글 생성            
+            // 답변이 비어있거나 에러 메시지인 경우 체크
+            if (answer == null || answer.trim().isEmpty() || answer.contains("Python 실행 실패")) {
+                System.out.println("GPT 답변 생성 실패: " + answer);
+                return;
+            }
+
+            // AI 변호사 조회 (lawyerIdx = 205)
+            LawyerEntity aiLawyer = lawyerRepository.findByLawyerIdx(205);
+            if (aiLawyer == null) {
+                System.out.println("AI 변호사를 찾을 수 없습니다 (lawyerIdx=205)");
+                return;
+            }
+
+            // 답변 게시글 생성
             ReBoardEntity reboardEntity = new ReBoardEntity();
+            // reboardIdx는 자동 생성되므로 설정하지 않음
+            reboardEntity.setBoardEntity(boardEntity);  // 중요: boardEntity 연결
             reboardEntity.setReboardContent(answer);
+            reboardEntity.setReboardRegDate(LocalDate.now());
             reboardEntity.setReboardActive(1);
-            reboardEntity.setBoardEntity(boardEntity);
-            LawyerEntity lawyer = lawyerRepository.findByLawyerIdx(205);
-            reboardEntity.setLawyer(lawyer);
+            reboardEntity.setLawyer(aiLawyer);
 
             reboardRepository.save(reboardEntity);
+            System.out.println("GPT 자동 답변 저장 완료 - reboardIdx: " + reboardEntity.getReboardIdx());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("GPT 자동 답변 생성 중 오류 발생: " + e.getMessage());
         }
-
     }
     
 }
