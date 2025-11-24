@@ -81,7 +81,11 @@ public class LawyerService {
         lawyerDTO.setLawyerAnswerCnt(lawyerEntity.getLawyerAnswerCnt());
         lawyerDTO.setLawyerActive(lawyerEntity.getLawyerActive());
         lawyerDTO.setInterestIdx(lawyerEntity.getInterestIdx());
-        if (lawyerEntity.getInterest() != null) {
+        // 관심분야 이름 설정 (LAZY 로딩 대비하여 직접 조회)
+        if (lawyerEntity.getInterestIdx() != null) {
+            interestRepository.findById(lawyerEntity.getInterestIdx())
+                .ifPresent(interest -> lawyerDTO.setInterestName(interest.getInterestName()));
+        } else if (lawyerEntity.getInterest() != null) {
             lawyerDTO.setInterestName(lawyerEntity.getInterest().getInterestName());
         }
         lawyerDTO.setLawyerProvider(lawyerEntity.getLawyerProvider());

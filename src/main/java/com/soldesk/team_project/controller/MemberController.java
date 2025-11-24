@@ -338,7 +338,7 @@ public class MemberController {
         Cookie jwtCookie = new Cookie("jwtToken", null);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(0); // 즉시 삭제
-        jwtCookie.setHttpOnly(false);
+        jwtCookie.setHttpOnly(true);
         response.addCookie(jwtCookie);
         
         return "redirect:/member/login";

@@ -35,7 +35,7 @@
 
         <div class="content" th:each="ad, iterStat : ${adList}" th:id="'slide-' + ${iterStat.index}"
           th:classappend="${iterStat.index == 0} ? ' active' : ''">
-          <a class="aLink" href="#" th:onclick="|adCount(${ad.adIdx})|">
+          <a class="aLink" href="#" th:onclick="|adCount(${ad.adIdx}, '${ad.adLink}'); return false;|">
             <img th:src="${ad.adImgPath}" th:alt="${ad.adName}">
           </a>
         </div>
@@ -298,8 +298,8 @@
       document.addEventListener("DOMContentLoaded", () => showSlide(0));
     }
 
-    // 변호사 페이지 이동 + 조회수 증가
-    function adCount(adIdx, lawyerIdx) {
+    // 광고 클릭 시 조회수 증가 + 새 탭에서 링크 열기
+    function adCount(adIdx, adLink) {
       fetch('/admin/adCount', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -307,8 +307,10 @@
       })
         .then(response => {
           if (response.ok) {
-            // DB에서 adViews 증가 성공 시 변호사 페이지로 이동
-            window.location.href = `/lawyer/myPage?lawyerIdx=${lawyerIdx}`;
+            // DB에서 adViews 증가 성공 시 새 탭에서 링크 열기
+            if (adLink && adLink.trim() !== '') {
+              window.open(adLink, '_blank');
+            }
           } else {
             console.error('조회수 증가 실패');
           }

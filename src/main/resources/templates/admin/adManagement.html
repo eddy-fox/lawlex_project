@@ -22,22 +22,6 @@
         <!-- 광고 리스트 -->
         <div class="ad-list">
           <a th:href="@{/admin/adRegistration}" class="btn">광고 등록</a>
-          <div class="ad-item">
-            <div class="ad-thumb">
-              <img src="#" alt="">하드코딩 임시 광고
-            </div>
-            <div class="meta">
-              <div class="row"><span>게시일</span><span>2025.10.14</span></div>
-              <div class="row"><span>게시기간</span><span>14일</span></div>
-              <div class="row"><span>신청자</span><span>홍길동 변호사</span></div>
-              <div class="row"><span>조회수</span><span>27회</span></div>
-              <div class="actions">
-                <a href="#" class="btn">수정</a>
-                <a href="#" class="btn">삭제</a>
-              </div>
-            </div>
-          </div>
-
           <div class="ad-item" th:each="ad : ${adList}">
             <a class="ad-thumb" th:href="@{/admin/adInfo(adIdx=${ad.adIdx})}">
               <img th:if="${ad.adImgPath != null}" th:src="${ad.adImgPath}" th:alt="${ad.adName}">
