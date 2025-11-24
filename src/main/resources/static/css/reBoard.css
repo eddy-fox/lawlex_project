@@ -419,9 +419,22 @@
   }
 
   .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: #777;
       font-size: 14px;
       margin-bottom: 20px;
+      width: 100%;
+  }
+
+  .post-date {
+      color: #777;
+  }
+
+  .post-views {
+      color: #777;
+      margin-left: auto;
   }
 
   .card-text {

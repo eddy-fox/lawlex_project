@@ -193,6 +193,11 @@ public class BoardController {
                          @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser) {
 
         BoardEntity boardEntity = this.boardService.getBoardEntity(id);
+        
+        // 조회수 증가 (로그인 여부와 상관없이)
+        boardEntity.setBoardViews(boardEntity.getBoardViews() == null ? 1 : boardEntity.getBoardViews() + 1);
+        boardRepository.save(boardEntity);
+        
         model.addAttribute("boardEntity", boardEntity);
         
         // interestIdx 추가 (사이드메뉴 강조 표시용)
