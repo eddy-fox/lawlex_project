@@ -67,6 +67,23 @@ public class MemberService {
         memberDTO.setInterestIdx1(memberEntity.getInterestIdx1());
         memberDTO.setInterestIdx2(memberEntity.getInterestIdx2());
         memberDTO.setInterestIdx3(memberEntity.getInterestIdx3());
+        
+        // 관심분야 이름 합쳐서 설정 (3개)
+        List<String> interestNames = new ArrayList<>();
+        if (memberEntity.getInterestIdx1() != null) {
+            interestRepository.findById(memberEntity.getInterestIdx1())
+                .ifPresent(interest -> interestNames.add(interest.getInterestName()));
+        }
+        if (memberEntity.getInterestIdx2() != null) {
+            interestRepository.findById(memberEntity.getInterestIdx2())
+                .ifPresent(interest -> interestNames.add(interest.getInterestName()));
+        }
+        if (memberEntity.getInterestIdx3() != null) {
+            interestRepository.findById(memberEntity.getInterestIdx3())
+                .ifPresent(interest -> interestNames.add(interest.getInterestName()));
+        }
+        memberDTO.setInterestName(String.join(", ", interestNames));
+        
         return memberDTO;
     }
 
