@@ -97,12 +97,14 @@ public class ChatroomService {
         }
 
         // 기존 활성 방(PENDING / ACTIVE) 재사용
+        // 먼저 회원-변호사 조합의 활성 방을 찾음
         ChatroomEntity existing = chatroomRepo
             .findTopByMemberMemberIdxAndLawyerLawyerIdxAndChatroomActiveOrderByChatroomIdxDesc(
                 memberIdx, lawyerIdx, 1);
 
         if (existing != null) {
             String st = getOrDefault(existing.getState(), "PENDING");
+            // PENDING 또는 ACTIVE 상태인 방은 재사용 (중복 방지)
             if ("PENDING".equalsIgnoreCase(st) || "ACTIVE".equalsIgnoreCase(st)) {
                 return convertDTO(existing);
             }
@@ -157,9 +159,8 @@ public class ChatroomService {
         }
 
         e.setAcceptedAt(LocalDateTime.now());
-        int dur = (e.getDurationMinutes() != null && e.getDurationMinutes() > 0)
-                ? e.getDurationMinutes()
-                : 60;
+        // 시연용: 제한시간 3분으로 설정
+        int dur = 3;
         e.setExpiresAt(e.getAcceptedAt().plusMinutes(dur));
         e.setState("ACTIVE");
 
@@ -560,6 +561,7 @@ public class ChatroomService {
         int pending = chatroomRepo
             .countByLawyerLawyerIdxAndStateAndChatroomActive(lawyerIdx, "PENDING", 1);
         long unread = chatdataRepo.countUnreadMessagesForLawyer(lawyerIdx);
+        System.out.println("[DEBUG] getLawyerRoomBadges - lawyerIdx: " + lawyerIdx + ", pending: " + pending);
         return Map.of("pending", pending, "active", 0, "unread", (int) unread);
     }
 

@@ -129,6 +129,24 @@ public String room(@RequestParam("roomId") Integer roomId,
         return null;
     }
 
+    // 마지막 읽은 메시지 위치 찾기 (---여기까지 읽었습니다--- 마커용)
+    // touchReadAt 호출 전에 기존 readAt 값을 사용하여 마커 위치 찾기
+    Integer lastReadChatIdx = null;
+    System.out.println("[DEBUG] ChatRoomController.room - mId: " + mId + ", lId: " + lId);
+    System.out.println("[DEBUG] ChatRoomController.room - memberReadAt: " + room.getMemberReadAt() + ", lawyerReadAt: " + room.getLawyerReadAt());
+    
+    // 기존 readAt 값 저장 (touchReadAt 호출 전)
+    java.time.LocalDateTime existingReadAt = null;
+    if (mId != null && room.getMemberReadAt() != null) {
+        existingReadAt = room.getMemberReadAt();
+        lastReadChatIdx = chatDataService.findLastReadMessageChatIdx(roomId, room.getMemberReadAt());
+        System.out.println("[DEBUG] ChatRoomController.room - lastReadChatIdx (member, before touchReadAt): " + lastReadChatIdx);
+    } else if (lId != null && room.getLawyerReadAt() != null) {
+        existingReadAt = room.getLawyerReadAt();
+        lastReadChatIdx = chatDataService.findLastReadMessageChatIdx(roomId, room.getLawyerReadAt());
+        System.out.println("[DEBUG] ChatRoomController.room - lastReadChatIdx (lawyer, before touchReadAt): " + lastReadChatIdx);
+    }
+    
     // 채팅방 열 때 즉시 읽음 처리 (마커 표시를 위해)
     if (mId != null) {
         chatroomService.touchReadAt(roomId, "MEMBER");
@@ -140,6 +158,17 @@ public String room(@RequestParam("roomId") Integer roomId,
         room = chatroomService.getRoom(roomId);
     }
 
+    // touchReadAt 호출 후에도 마커 위치 재계산 (기존 readAt이 null이었던 경우 대비)
+    if (lastReadChatIdx == null) {
+        if (mId != null && room.getMemberReadAt() != null) {
+            lastReadChatIdx = chatDataService.findLastReadMessageChatIdx(roomId, room.getMemberReadAt());
+            System.out.println("[DEBUG] ChatRoomController.room - lastReadChatIdx (member, after touchReadAt): " + lastReadChatIdx);
+        } else if (lId != null && room.getLawyerReadAt() != null) {
+            lastReadChatIdx = chatDataService.findLastReadMessageChatIdx(roomId, room.getLawyerReadAt());
+            System.out.println("[DEBUG] ChatRoomController.room - lastReadChatIdx (lawyer, after touchReadAt): " + lastReadChatIdx);
+        }
+    }
+
     List<ChatdataDTO> initBatch = chatDataService.loadLatestBatch(roomId, size);
     model.addAttribute("room", room);
     model.addAttribute("initBatch", initBatch);
@@ -148,17 +177,6 @@ public String room(@RequestParam("roomId") Integer roomId,
     model.addAttribute("meMemberIdx", mId);   // 회원이면 값, 아니면 null
     model.addAttribute("meLawyerIdx", lId);   // 변호사면 값, 아니면 null
 
-    // 마지막 읽은 메시지 위치 찾기 (---여기까지 읽었습니다--- 마커용)
-    Integer lastReadChatIdx = null;
-    System.out.println("[DEBUG] ChatRoomController.room - mId: " + mId + ", lId: " + lId);
-    System.out.println("[DEBUG] ChatRoomController.room - memberReadAt: " + room.getMemberReadAt() + ", lawyerReadAt: " + room.getLawyerReadAt());
-    if (mId != null && room.getMemberReadAt() != null) {
-        lastReadChatIdx = chatDataService.findLastReadMessageChatIdx(roomId, room.getMemberReadAt());
-        System.out.println("[DEBUG] ChatRoomController.room - lastReadChatIdx (member): " + lastReadChatIdx);
-    } else if (lId != null && room.getLawyerReadAt() != null) {
-        lastReadChatIdx = chatDataService.findLastReadMessageChatIdx(roomId, room.getLawyerReadAt());
-        System.out.println("[DEBUG] ChatRoomController.room - lastReadChatIdx (lawyer): " + lastReadChatIdx);
-    }
     model.addAttribute("lastReadChatIdx", lastReadChatIdx);
     System.out.println("[DEBUG] ChatRoomController.room - final lastReadChatIdx: " + lastReadChatIdx);
 
@@ -385,14 +403,18 @@ public String room(@RequestParam("roomId") Integer roomId,
             return null;
         }
 
-        model.addAttribute("pendingRooms",
-                chatroomService.findRoomsForLawyerByState(lawyerIdx, "PENDING", page, size));
+        var pendingRoomsList = chatroomService.findRoomsForLawyerByState(lawyerIdx, "PENDING", page, size);
+        System.out.println("[DEBUG] lawyerMain - lawyerIdx: " + lawyerIdx + ", pendingRooms count: " + pendingRoomsList.size());
+        pendingRoomsList.forEach(r -> System.out.println("[DEBUG] PENDING room: " + r.getChatroomIdx() + ", memberIdx: " + r.getMemberIdx()));
+        
+        model.addAttribute("pendingRooms", pendingRoomsList);
         model.addAttribute("activeRooms",
                 chatroomService.findRoomsForLawyerByState(lawyerIdx, "ACTIVE", page, size));
         model.addAttribute("endedRooms",
                 chatroomService.findRoomsForLawyerByStates(lawyerIdx, List.of("EXPIRED", "CANCELLED"), page, size));
-        model.addAttribute("badge",
-                chatroomService.getLawyerRoomBadges(lawyerIdx));
+        var badgeMap = chatroomService.getLawyerRoomBadges(lawyerIdx);
+        System.out.println("[DEBUG] lawyerMain - badge.pending: " + badgeMap.get("pending"));
+        model.addAttribute("badge", badgeMap);
 
         return "chat/lawyerMain";
     }

@@ -35,6 +35,7 @@ public interface ChatdataRepository extends JpaRepository<ChatdataEntity, Intege
            "AND c.chatActive = 1 AND c.senderType = 'LAWYER' " +
            "AND (c.chatroom.memberReadAt IS NULL OR c.chatRegDate > c.chatroom.memberReadAt) " +
            "AND c.chatroom.chatroomActive = 1 " +
+           "AND c.chatroom.state = 'ACTIVE' " +
            "AND (c.chatroom.memberDeleted IS NULL OR c.chatroom.memberDeleted = 0)")
     long countUnreadMessagesForMember(@Param("memberIdx") Integer memberIdx);
 
@@ -51,6 +52,7 @@ public interface ChatdataRepository extends JpaRepository<ChatdataEntity, Intege
            "AND c.chatActive = 1 AND c.senderType = 'LAWYER' " +
            "AND (c.chatroom.memberReadAt IS NULL OR c.chatRegDate > c.chatroom.memberReadAt) " +
            "AND c.chatroom.chatroomActive = 1 " +
+           "AND c.chatroom.state = 'ACTIVE' " +
            "AND (c.chatroom.memberDeleted IS NULL OR c.chatroom.memberDeleted = 0)")
     long countUnreadMessagesForMemberByRoom(@Param("roomId") Integer roomId);
 
