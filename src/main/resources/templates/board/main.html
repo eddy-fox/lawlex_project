@@ -156,7 +156,7 @@
                   <td class="cell-title">
                     <a class="aLink" th:href="@{/board/detail/{id}(id=${board.boardIdx})}" th:text="${board.boardTitle}"></a>
                   </td>
-                  <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
+                  <td th:text="${#numbers.formatDecimal(board.boardViews != null ? board.boardViews : 0, 0, 'COMMA', 0, 'POINT')}"></td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(topBoards)}">
@@ -192,7 +192,7 @@
                     <td class="cell-title">
                       <a class="aLink" th:href="@{/board/detail/{id}(id=${board.boardIdx})}" th:text="${board.boardTitle}"></a>
                     </td>
-                    <td th:text="${#numbers.formatDecimal(board.boardViews, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${#numbers.formatDecimal(board.boardViews != null ? board.boardViews : 0, 0, 'COMMA', 0, 'POINT')}"></td>
                   </tr>
 
                   <tr th:if="${#lists.isEmpty(interestBoards.boards)}">

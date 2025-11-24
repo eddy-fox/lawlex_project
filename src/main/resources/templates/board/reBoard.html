@@ -16,7 +16,10 @@
        
           <div class="inner">
             <h1 class="post-title" th:text="${boardEntity.boardTitle}"></h1>
-            <div class="post-meta" th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></div>
+            <div class="post-meta">
+              <span class="post-date" th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></span>
+              <span class="post-views" th:text="|조회 ${boardEntity.boardViews != null ? boardEntity.boardViews : 0}|"></span>
+            </div>
             
             <!-- 게시글 이미지 표시 -->
             <div class="post-image" th:if="${boardEntity.boardImgPath != null and boardEntity.boardImgPath != ''}">

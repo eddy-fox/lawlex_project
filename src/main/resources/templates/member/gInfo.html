@@ -91,7 +91,7 @@
               정보통신망법 침입 및 명예훼손 대응방법
             </a>
             <div class="row-sub"
-                 th:text="|${#temporals.format(b.boardRegDate, 'yyyy-MM-dd')} · 조회 ${b.boardViews}|">
+                 th:text="|${#temporals.format(b.boardRegDate, 'yyyy-MM-dd')} · 조회 ${b.boardViews != null ? b.boardViews : 0}|">
               2025-09-29 · 조회 12
             </div>
           </div>

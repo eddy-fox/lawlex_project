@@ -50,7 +50,7 @@
             <div th:text="${ad.adDuration} + ' 일'"></div>
 
             <div class="small">조회수:</div>
-            <div th:text="${ad.adViews} + ' 회'"></div>
+            <div th:text="${(ad.adViews != null ? ad.adViews : 0) + ' 회'}"></div>
 
             <div class="small">이미지:</div>
             <div class="form-thumb">

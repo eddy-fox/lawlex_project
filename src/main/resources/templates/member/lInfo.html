@@ -149,7 +149,7 @@
                             답변 내용 미리보기
                         </div>
                         <div class="row-sub"
-                            th:text="|${#temporals.format(r.reboardRegDate, 'yyyy-MM-dd')} · 원글: ${r.boardTitle != null ? r.boardTitle : ('글번호 ' + r.boardIdx)}|">
+                            th:text="|${r.reboardRegDate != null ? #temporals.format(r.reboardRegDate, 'yyyy-MM-dd') : '날짜 없음'} · 원글: ${r.boardTitle != null ? r.boardTitle : ('글번호 ' + r.boardIdx)}|">
                             2025-11-18 · 원글: 상담글 제목
                         </div>
                     </a>
@@ -177,7 +177,7 @@
                             "상담 정말 도움됐습니다 감사합니다."
                         </a>
                         <div class="row-sub"
-                             th:text="${#temporals.format(c.commentRegDate, 'yyyy-MM-dd')}">
+                             th:text="${c.commentRegDate != null ? #temporals.format(c.commentRegDate, 'yyyy-MM-dd') : '날짜 없음'}">
                             2025-09-29
                         </div>
                     </div>

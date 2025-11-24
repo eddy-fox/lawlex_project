@@ -34,7 +34,7 @@
                   <a th:href="@{|/board/detail/${boardEntity.boardIdx}|}" th:text="${boardEntity.boardTitle}"></a>
                 </td>
                 <td th:text="${#temporals.format(boardEntity.boardRegDate, 'yyyy-MM-dd')}"></td>
-                <td th:text="${boardEntity.boardViews}"></td>
+                <td th:text="${boardEntity.boardViews != null ? boardEntity.boardViews : 0}"></td>
               </tr>
 
               <tr th:if="${#lists.isEmpty(paging.content)}">
