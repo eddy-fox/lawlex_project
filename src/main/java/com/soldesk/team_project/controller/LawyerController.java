@@ -106,21 +106,20 @@ public class LawyerController {
             @RequestParam(value="lawyerIdx", required=false) Integer lawyerIdxParam,
             HttpSession session) {
 
-        if (loginUser == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
-        
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+
         try {
             // 관리자가 다른 변호사 정보를 수정하는 경우
-            if (loginUser.getAdminIdx() != null && lawyerIdxParam != null) {
-                com.soldesk.team_project.entity.AdminEntity loginAdmin = getLoginAdmin(session);
-                if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
-                    // 관리자 권한으로 다른 변호사 정보 수정
-                    lawyerService.updateProfileForLawyerByIdx(lawyerIdxParam, form, lawyerImage, calendarJson);
-                    return ResponseEntity.ok("OK");
-                }
+            if (isAdmin && lawyerIdxParam != null) {
+                lawyerService.updateProfileForLawyerByIdx(lawyerIdxParam, form, lawyerImage, calendarJson);
+                return ResponseEntity.ok("OK");
             }
             
+            if (loginUser == null) {
+                return ResponseEntity.status(401).body("UNAUTHORIZED");
+            }
+
             // 변호사가 자신의 정보를 수정하는 경우
             if (!"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
                 return ResponseEntity.status(401).body("UNAUTHORIZED");
