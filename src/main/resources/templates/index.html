@@ -35,7 +35,9 @@
 
         <div class="content" th:each="ad, iterStat : ${adList}" th:id="'slide-' + ${iterStat.index}"
           th:classappend="${iterStat.index == 0} ? ' active' : ''">
-          <a class="aLink" href="#" th:onclick="|adCount(${ad.adIdx}, '${ad.adLink}'); return false;|">
+          <a class="aLink ad-clickable" href="#" 
+             th:data-ad-idx="${ad.adIdx}" 
+             th:data-ad-link="${ad.adLink}">
             <img th:src="${ad.adImgPath}" th:alt="${ad.adName}">
           </a>
         </div>
@@ -298,25 +300,61 @@
       document.addEventListener("DOMContentLoaded", () => showSlide(0));
     }
 
-    // 광고 클릭 시 조회수 증가 + 새 탭에서 링크 열기
-    function adCount(adIdx, adLink) {
-      fetch('/admin/adCount', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adIdx: adIdx })
-      })
-        .then(response => {
-          if (response.ok) {
-            // DB에서 adViews 증가 성공 시 새 탭에서 링크 열기
-            if (adLink && adLink.trim() !== '') {
-              window.open(adLink, '_blank');
-            }
-          } else {
-            console.error('조회수 증가 실패');
+    // 광고 클릭 이벤트 리스너 등록
+    document.addEventListener('DOMContentLoaded', function() {
+      const adLinks = document.querySelectorAll('.ad-clickable');
+      adLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const adIdx = this.getAttribute('data-ad-idx');
+          const adLink = this.getAttribute('data-ad-link');
+          
+          console.log('광고 클릭:', { adIdx, adLink });
+          
+          if (!adIdx) {
+            console.error('adIdx가 없습니다.');
+            return false;
           }
-        })
-        .catch(err => console.error('에러 발생:', err));
-    }
+          
+          // CSRF 토큰 가져오기
+          const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || 
+                           document.querySelector('input[name="_csrf"]')?.value || '';
+          
+          const headers = { 'Content-Type': 'application/json' };
+          if (csrfToken) {
+            headers['X-CSRF-TOKEN'] = csrfToken;
+          }
+          
+          fetch('/admin/ad/count', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ adIdx: parseInt(adIdx) })
+          })
+            .then(response => {
+              console.log('조회수 증가 응답:', response.status);
+              if (response.ok) {
+                // DB에서 adViews 증가 성공 시 새 탭에서 링크 열기
+                if (adLink && adLink.trim() !== '') {
+                  console.log('새 탭에서 링크 열기:', adLink);
+                  window.open(adLink, '_blank');
+                } else {
+                  console.warn('adLink가 비어있습니다.');
+                }
+              } else {
+                console.error('조회수 증가 실패:', response.status);
+                response.text().then(text => console.error('응답 내용:', text));
+              }
+            })
+            .catch(err => {
+              console.error('에러 발생:', err);
+            });
+          
+          return false;
+        });
+      });
+    });
 
     // 뉴스 탭 전환 (인라인 스크립트로 직접 처리)
     document.addEventListener('DOMContentLoaded', function () {
