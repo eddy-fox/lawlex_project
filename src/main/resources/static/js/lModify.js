@@ -198,7 +198,16 @@
   // ===== 상담시간만 따로 /member/api/lawyer/calendar 로 저장 =====
   async function saveCalendarToServer() {
     // availability 배열 그대로 JSON으로 전송
-    const url = "/member/api/lawyer/calendar";
+    const lawyerIdxFromUrl = new URLSearchParams(window.location.search).get("lawyerIdx");
+    const lawyerIdxFromForm = document
+      .querySelector("#formProfile input[name='lawyerIdx']")
+      ?.value;
+    const lawyerIdxParam = lawyerIdxFromUrl || lawyerIdxFromForm;
+
+    let url = "/member/api/lawyer/calendar";
+    if (lawyerIdxParam) {
+      url += `?lawyerIdx=${encodeURIComponent(lawyerIdxParam)}`;
+    }
     const csrfInput = document.querySelector('input[name="_csrf"]');
 
     const headers = {

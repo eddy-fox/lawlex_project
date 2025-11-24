@@ -319,15 +319,33 @@ public class MemberService {
 
     // 아이디 찾기 member → lawyer 순서
     public String findId(String memberPhone, String memberIdnum) {
-        String phone = digits(memberPhone);
-        String idnum = digits(memberIdnum);
+        String phoneDigits = digits(memberPhone);
+        String idnumDigits = digits(memberIdnum);
 
-        var memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(phone, idnum);
+        Optional<MemberEntity> memOpt = Optional.empty();
+        if (phoneDigits != null) {
+            String formatted = formatPhone(phoneDigits);
+            if (formatted != null) {
+                memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(formatted, idnumDigits);
+            }
+            if (memOpt.isEmpty()) {
+                memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(phoneDigits, idnumDigits);
+            }
+        }
         if (memOpt.isPresent()) {
             return memOpt.get().getMemberId();
         }
 
-        var lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phone, idnum);
+        Optional<LawyerEntity> lawOpt = Optional.empty();
+        if (phoneDigits != null) {
+            String formatted = formatPhone(phoneDigits);
+            if (formatted != null) {
+                lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(formatted, idnumDigits);
+            }
+            if (lawOpt.isEmpty()) {
+                lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phoneDigits, idnumDigits);
+            }
+        }
         if (lawOpt.isPresent()) {
             return lawOpt.get().getLawyerId();
         }
@@ -350,8 +368,8 @@ public class MemberService {
         Optional<MemberEntity> mOpt = memberRepository.findByMemberId(memberId);
         if (mOpt.isPresent()) {
             MemberEntity me = mOpt.get();
-            boolean verified = Objects.equals(phone, me.getMemberPhone())
-                             && Objects.equals(idnum, me.getMemberIdnum());
+            boolean verified = Objects.equals(phone, digits(me.getMemberPhone()))
+                             && Objects.equals(idnum, digits(me.getMemberIdnum()));
             if (!verified) return "FAIL";
             me.setMemberPass(passwordEncoder.encode(newPassword));
             memberRepository.save(me);
@@ -361,8 +379,8 @@ public class MemberService {
         Optional<LawyerEntity> lOpt = lawyerRepository.findByLawyerId(memberId);
         if (lOpt.isPresent()) {
             LawyerEntity le = lOpt.get();
-            boolean verified = Objects.equals(phone, le.getLawyerPhone())
-                             && Objects.equals(idnum, le.getLawyerIdnum());
+            boolean verified = Objects.equals(phone, digits(le.getLawyerPhone()))
+                             && Objects.equals(idnum, digits(le.getLawyerIdnum()));
             if (!verified) return "FAIL";
             le.setLawyerPass(passwordEncoder.encode(newPassword));
             lawyerRepository.save(le);

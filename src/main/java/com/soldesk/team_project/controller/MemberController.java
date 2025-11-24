@@ -397,26 +397,39 @@ public class MemberController {
                           @RequestParam(value = "lawyerIdx", required = false) Integer lawyerIdxParam,
                           HttpSession session,
                           Model model) {
-        if (loginUser == null) return "redirect:/member/login";
+
+        AdminEntity loginAdmin = getLoginAdmin(session);
+        boolean adminSession = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+        boolean adminUser = loginUser != null && loginUser.getAdminIdx() != null;
+        boolean isAdmin = adminSession || adminUser;
+
+        if (loginUser == null && !adminSession) {
+            return "redirect:/member/login";
+        }
         
         // 관리자가 다른 변호사 정보를 수정하는 경우
-        if (loginUser.getAdminIdx() != null && lawyerIdxParam != null) {
-            AdminEntity loginAdmin = getLoginAdmin(session);
-            if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
-                LawyerDTO lawyer = lawyerService.getLawyerByIdx(lawyerIdxParam);
-                if (lawyer == null) {
-                    return "redirect:/admin/lawyerManagement";
-                }
-                model.addAttribute("lawyer", lawyer);
-                model.addAttribute("interests", interestRepository.findAllByOrderByInterestNameAsc());
-                
-                // 기존 상담 가능 시간 불러오기
-                var calendarList = calendarService.findAllActiveByLawyer(lawyerIdxParam);
-                model.addAttribute("calendarList", calendarList);
-                model.addAttribute("isAdminEdit", true);
-                model.addAttribute("lawyerIdx", lawyerIdxParam);
-                return "member/lmodify";
+        if (isAdmin && lawyerIdxParam != null) {
+            LawyerDTO lawyer = lawyerService.getLawyerByIdx(lawyerIdxParam);
+            if (lawyer == null) {
+                return "redirect:/admin/lawyerManagement";
             }
+            model.addAttribute("lawyer", lawyer);
+            model.addAttribute("interests", interestRepository.findAllByOrderByInterestNameAsc());
+            
+            // 기존 상담 가능 시간 불러오기
+            var calendarList = calendarService.findAllActiveByLawyer(lawyerIdxParam);
+            model.addAttribute("calendarList", calendarList);
+            model.addAttribute("isAdminEdit", true);
+            model.addAttribute("lawyerIdx", lawyerIdxParam);
+            return "member/lmodify";
+        }
+
+        if (isAdmin && lawyerIdxParam == null) {
+            return "redirect:/admin/lawyerManagement";
+        }
+
+        if (loginUser == null) {
+            return "redirect:/member/login";
         }
         
         // 변호사가 자신의 정보를 수정하는 경우
@@ -440,7 +453,8 @@ public class MemberController {
     public String mypage(@SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
                      @RequestParam(value = "memberIdx", required = false) Integer memberIdxParam,
                      @RequestParam(value = "lawyerIdx", required = false) Integer lawyerIdxParam,
-                     Model model, RedirectAttributes redirectAttributes) {
+                     Model model, RedirectAttributes redirectAttributes,
+                     HttpSession session) {
         
         // 강제로 출력 버퍼 플러시
         System.out.flush();
@@ -457,8 +471,17 @@ public class MemberController {
         System.err.flush();
                         
         if (loginUser == null) {
-            System.out.println("[DEBUG] MemberController.mypage - loginUser가 null, 로그인 페이지로 리다이렉트");
-            return "redirect:/member/login";
+            AdminEntity loginAdmin = getLoginAdmin(session);
+            if (loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole())) {
+                loginUser = UserMasterDTO.builder()
+                        .adminIdx(loginAdmin.getAdminIdx())
+                        .role("ADMIN")
+                        .userId(loginAdmin.getAdminId())
+                        .build();
+            } else {
+                System.out.println("[DEBUG] MemberController.mypage - loginUser가 null, 로그인 페이지로 리다이렉트");
+                return "redirect:/member/login";
+            }
         }
         model.addAttribute("loginUser", loginUser);
 
@@ -773,13 +796,15 @@ public class MemberController {
     }
     @PostMapping("/joinLawyer-oauth")
     public String OAuth2JoinLawyerSubmit(HttpSession session,
-        @ModelAttribute("joinLawyer") LawyerDTO joinLawyer) {
+        @ModelAttribute("joinLawyer") LawyerDTO joinLawyer,
+        @RequestParam(value = "lawyerImage", required = false) MultipartFile lawyerImage,
+        @RequestParam(value = "availabilityJson", required = false) String availabilityJson) {
 
         TemporaryOauthDTO temp = (TemporaryOauthDTO) session.getAttribute("tempOauth");
 
         System.out.println("🔍 받은 interestIdx: " + joinLawyer.getLawyerAuth());
     
-        lawyerService.joinOAuthLawyer(temp, joinLawyer);
+        lawyerService.joinOAuthLawyer(temp, joinLawyer, lawyerImage, availabilityJson);
 
         session.removeAttribute("tempOauth");
             
@@ -1001,19 +1026,28 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateLawyerCalendar(
             @SessionAttribute(value = "loginUser", required = false) UserMasterDTO loginUser,
-            @RequestBody List<Map<String, Object>> timeSlots
+            @RequestBody List<Map<String, Object>> timeSlots,
+            @RequestParam(value = "lawyerIdx", required = false) Integer lawyerIdxParam,
+            HttpSession session
     ) {
         Map<String, Object> res = new HashMap<>();
 
-        // 로그인/권한 체크
-        if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
-            res.put("success", false);
-            res.put("message", "로그인이 필요하거나 변호사 계정이 아닙니다.");
-            return ResponseEntity.status(401).body(res);
-        }
-
         try {
-            Integer lawyerIdx = loginUser.getLawyerIdx();
+            AdminEntity loginAdmin = getLoginAdmin(session);
+            boolean isAdmin = loginAdmin != null && "admin".equalsIgnoreCase(loginAdmin.getAdminRole());
+
+            Integer lawyerIdx;
+            if (isAdmin && lawyerIdxParam != null) {
+                lawyerIdx = lawyerIdxParam;
+            } else {
+                if (loginUser == null || !"LAWYER".equalsIgnoreCase(loginUser.getRole())) {
+                    res.put("success", false);
+                    res.put("message", "로그인이 필요하거나 변호사 계정이 아닙니다.");
+                    return ResponseEntity.status(401).body(res);
+                }
+                lawyerIdx = loginUser.getLawyerIdx();
+            }
+
             calendarService.updateAvailabilityMultiple(lawyerIdx, timeSlots);
 
             res.put("success", true);

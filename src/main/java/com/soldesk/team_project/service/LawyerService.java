@@ -483,7 +483,21 @@ public class LawyerService {
     
     // OAuth2 변호사 회원가입
     @Transactional
-    public LawyerEntity joinOAuthLawyer(TemporaryOauthDTO temp, LawyerDTO joinLawyer) {
+    public LawyerEntity joinOAuthLawyer(TemporaryOauthDTO temp, LawyerDTO joinLawyer,
+                                        MultipartFile lawyerImage,
+                                        String availabilityJson) {
+
+        if (lawyerImage != null && !lawyerImage.isEmpty()) {
+            try {
+                String filename = nowUuidName(lawyerImage.getOriginalFilename());
+                String objectPath = "lawyerprofile/" + filename;
+                var uploaded = firebaseStorageService.upload(lawyerImage, objectPath);
+                joinLawyer.setLawyerImgPath(uploaded.url());
+            } catch (Exception e) {
+                throw new IllegalArgumentException("변호사 사진 업로드 중 오류가 발생했습니다: " + e.getMessage());
+            }
+        }
+
         LawyerEntity lawyerEntity = convertLawyerEntity(joinLawyer);
         lawyerEntity.setLawyerId(temp.getProvider() + temp.getProviderId());
         lawyerEntity.setLawyerPass(temp.getProviderId() + temp.getEmail());
@@ -499,7 +513,52 @@ public class LawyerService {
         String agreeValue = (joinLawyer.getLawyerAgree() != null && "1".equals(joinLawyer.getLawyerAgree())) ? "1" : "0";
         lawyerEntity.setLawyerAgree(agreeValue);
 
-        return lawyerRepository.save(lawyerEntity);
+        LawyerEntity saved = lawyerRepository.save(lawyerEntity);
+
+        if (availabilityJson != null && !availabilityJson.trim().isEmpty()) {
+            try {
+                JsonNode json = objectMapper.readTree(availabilityJson);
+                List<Map<String, Object>> timeSlots = new ArrayList<>();
+
+                if (json.isArray()) {
+                    for (JsonNode slot : json) {
+                        JsonNode weekdaysNode = slot.has("weekdays") ? slot.get("weekdays") : slot.get("days");
+                        if (weekdaysNode == null || !weekdaysNode.isArray()) continue;
+
+                        List<Integer> weekdays = new ArrayList<>();
+                        for (JsonNode wd : weekdaysNode) {
+                            if (wd.isInt()) {
+                                weekdays.add(wd.asInt());
+                            } else if (wd.isTextual()) {
+                                try {
+                                    weekdays.add(Integer.parseInt(wd.asText()));
+                                } catch (NumberFormatException ignored) {
+                                }
+                            }
+                        }
+
+                        String startHHmm = slot.has("start") ? slot.get("start").asText() : null;
+                        String endHHmm = slot.has("end") ? slot.get("end").asText() : null;
+
+                        if (!weekdays.isEmpty() && startHHmm != null && endHHmm != null) {
+                            Map<String, Object> timeSlot = new HashMap<>();
+                            timeSlot.put("weekdays", weekdays);
+                            timeSlot.put("start", startHHmm);
+                            timeSlot.put("end", endHHmm);
+                            timeSlots.add(timeSlot);
+                        }
+                    }
+                }
+
+                if (!timeSlots.isEmpty()) {
+                    calendarService.updateAvailabilityMultiple(saved.getLawyerIdx(), timeSlots);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return saved;
     }
 
     // 로그인 아이디로 변호사 한 명 가져오기
