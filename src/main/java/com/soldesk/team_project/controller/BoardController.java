@@ -343,7 +343,9 @@ public class BoardController {
         }
         
         // GPT 자동 답변 생성
+        System.out.println("========== GPT 비동기 호출 시작 ==========");
         reboardService.gptAutoReboard(writeBoard);
+        System.out.println("========== GPT 비동기 호출 완료 (백그라운드 실행 중) ==========");
 
         // 작성한 글의 interestIdx에 해당하는 리스트로 리다이렉트
         // 저장된 엔티티를 다시 조회하여 interestIdx 확인 (Lazy 로딩 문제 방지)
@@ -365,12 +367,11 @@ public class BoardController {
             interestIdx = boardService.getInterestIdxFromCategory(boardForm.getBoardCategory());
         }
         
-        // 디버깅 로그
-        System.out.println("[DEBUG] BoardController.boardCrete - 리다이렉트 interestIdx: " + interestIdx);
-        System.out.println("[DEBUG] BoardController.boardCrete - boardForm.interestIdx: " + boardForm.getInterestIdx());
-        System.out.println("[DEBUG] BoardController.boardCrete - boardForm.boardCategory: " + boardForm.getBoardCategory());
+        // GPT 로딩 페이지로 이동하기 위한 정보 설정
+        model.addAttribute("boardIdx", writeBoard.getBoardIdx());
+        model.addAttribute("redirectUrl", "/board/list?interestIdx=" + interestIdx);
         
-        return "redirect:/board/list?interestIdx=" + interestIdx;
+        return "board/gpt-loading";
     }
     @GetMapping("/api/check-gpt-answer")
     @ResponseBody

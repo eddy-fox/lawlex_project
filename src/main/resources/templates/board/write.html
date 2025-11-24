@@ -72,6 +72,41 @@
 <script th:src="@{/js/js.js}"></script>
 <script th:src="@{/js/chatIcon.js}"></script>
 <script th:src="@{/js/boardWrite.js}"></script>  
+<script th:inline="javascript">
+  console.log("========== GPT 로딩 페이지 시작 ==========");
+  
+  const boardIdx = /*[[${boardIdx}]]*/ 0;
+  const redirectUrl = /*[[${redirectUrl}]]*/ '/board/list';
+  
+  console.log("boardIdx:", boardIdx);
+  console.log("redirectUrl:", redirectUrl);
+  
+  // 2초마다 GPT 답변 생성 여부 확인
+  const checkInterval = setInterval(function() {
+      console.log("GPT 답변 확인 중...");
+      
+      fetch('/board/api/check-gpt-answer?boardIdx=' + boardIdx)
+          .then(response => response.json())
+          .then(data => {
+              console.log("응답 데이터:", data);
+              if (data.answerExists) {
+                  console.log("답변 생성 완료! 리다이렉트합니다.");
+                  clearInterval(checkInterval);
+                  window.location.href = redirectUrl;
+              }
+          })
+          .catch(error => {
+              console.error('Error checking GPT answer:', error);
+          });
+  }, 2000);
+  
+  // 최대 30초 후에는 무조건 이동
+  setTimeout(function() {
+      console.log("60초 경과, 강제 이동");
+      clearInterval(checkInterval);
+      window.location.href = redirectUrl;
+  }, 60000);
+</script>
 <script th:if="${alert}" th:inline="javascript">
         /*<![CDATA[*/
         alert('[[${alert}]]'); // 전달된 alert 메세지 출력
