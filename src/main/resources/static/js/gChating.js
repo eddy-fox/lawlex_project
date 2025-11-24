@@ -275,7 +275,7 @@
   }
 
   // ================== 남은 시간 표시 ==================
-  var fiveMinMarkerShown = false; // 5분 마커 표시 여부
+  var oneMinMarkerShown = false; // 1분 마커 표시 여부
   function startRemainTimer() {
     var el = document.getElementById('remainTime');
     if (!el) return;
@@ -284,15 +284,15 @@
 
     var target = new Date(exp).getTime();
 
-    // 초기 로드 시에도 5분 이하인지 체크
+    // 초기 로드 시에도 1분 이하인지 체크
     function checkAndShowMarker() {
       var now = Date.now();
       var diff = target - now;
       if (diff <= 0) return;
       var m = Math.floor(diff / 1000 / 60);
-      if (m <= 5 && !fiveMinMarkerShown) {
-        fiveMinMarkerShown = true;
-        showFiveMinMarker();
+      if (m <= 1 && !oneMinMarkerShown) {
+        oneMinMarkerShown = true;
+        showOneMinMarker();
       }
     }
 
@@ -307,10 +307,10 @@
       var s = Math.floor(diff / 1000) % 60;
       el.textContent = '남은시간 ' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
       
-      // 5분 이하일 때 마커 표시 (한 번만)
-      if (m <= 5 && !fiveMinMarkerShown) {
-        fiveMinMarkerShown = true;
-        showFiveMinMarker();
+      // 1분 이하일 때 마커 표시 (한 번만)
+      if (m <= 1 && !oneMinMarkerShown) {
+        oneMinMarkerShown = true;
+        showOneMinMarker();
       }
       
       setTimeout(tick, 1000);
@@ -321,19 +321,19 @@
     tick();
   }
 
-  // 5분 남았습니다 마커 표시
-  function showFiveMinMarker() {
+  // 1분 남았습니다 마커 표시
+  function showOneMinMarker() {
     if (!msgs) {
-      console.log('[DEBUG] msgs element not found, cannot show 5min marker');
+      console.log('[DEBUG] msgs element not found, cannot show 1min marker');
       return;
     }
     var marker = document.createElement('div');
     marker.className = 'time-marker';
     marker.style.cssText = 'width: 100%; text-align: center; padding: 12px 0; color: #ef4444; font-size: 14px; font-weight: 600; background: #fef2f2; border-top: 2px solid #ef4444; border-bottom: 2px solid #ef4444; margin: 8px 0;';
-    marker.textContent = '⚠️ 5분 남았습니다';
+    marker.textContent = '⚠️ 1분 남았습니다';
     msgs.appendChild(marker);
     scrollBottom();
-    console.log('[DEBUG] 5분 마커 표시됨');
+    console.log('[DEBUG] 1분 마커 표시됨');
   }
 
   // ================== 라이트박스 ==================
