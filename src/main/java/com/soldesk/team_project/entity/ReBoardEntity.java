@@ -34,7 +34,7 @@ public class ReBoardEntity {
     @Column(name = "reboard_content", columnDefinition = "TEXT")
     private String reboardContent;
 
-    @Column(name = "reboard_reg_date")
+    @Column(name = "reboard_regdate")
     private LocalDate reboardRegDate;
 
     @Column(name = "reboard_active")

@@ -98,6 +98,8 @@ public class AdService {
     @Transactional
     public void registProcess(AdDTO adRegistraion) {
         AdEntity adEntity = convertAdEntity(adRegistraion);
+        // 광고 등록 시 active를 1로 설정
+        adEntity.setAdActive(1);
         adRepository.save(adEntity);
     }
 

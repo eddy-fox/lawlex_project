@@ -243,8 +243,6 @@ public class AdminController {
         }
 
         // 광고 이미지 업로드
-        String desiredName = adRegistration.getAdImgPath();
-
         if (imageFile != null && !imageFile.isEmpty()) {
             String filename = nowUuidName(imageFile.getOriginalFilename());
             String objectPath = "ad/" + filename;  // ✅ 광고는 ad 폴더에
