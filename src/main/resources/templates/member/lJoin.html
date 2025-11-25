@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>변호사회원가입</title>
-  <link rel="stylesheet" th:href="@{/css/lJoin.css}">
   <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/lJoin.css}">
 </head>
 <body>
   <div class="include" th:replace="~{include/header :: header}"></div>
@@ -111,7 +111,7 @@
             </div>
           <small id="fileMsg" class="help">등록증 이미지를 첨부해주세요.</small>
           <small id="agreeMsg" class="help"></small>
-          <button type="button" id="verifyBtn">인증</button>
+          <button class="small-btn" type="button" id="verifyBtn">인증</button>
         </div>
 
         <!-- 닉네임 -->
