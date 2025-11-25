@@ -100,6 +100,7 @@ public class AdService {
         AdEntity adEntity = convertAdEntity(adRegistraion);
         // 광고 등록 시 active를 1로 설정
         adEntity.setAdActive(1);
+        adEntity.setAdViews(0);
         adRepository.save(adEntity);
     }
 

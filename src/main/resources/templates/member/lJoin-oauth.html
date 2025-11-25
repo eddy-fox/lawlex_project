@@ -386,7 +386,7 @@
 
         if (result.valid === true) {
           ocrVerified = true;
-          alert((result.message || "자격 검증 성공") + "\n\n📄 OCR 인식 결과:\n" + (result.ocrTexts || []).join("\n"));
+          alert((result.message || "자격 검증 성공"));
           
           // 인증 완료 표시
           document.getElementById("verifyBtn").textContent = "인증 완료";

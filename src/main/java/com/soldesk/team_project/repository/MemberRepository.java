@@ -16,12 +16,12 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer>{
 
     // 검색타입 별 일반 회원 검색
     List<MemberEntity> findByMemberIdxAndMemberActive(Integer memberIdx, Integer memberActive);
-    List<MemberEntity> findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(String memberId, Integer memberActive);
-    List<MemberEntity> findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(String memberName, Integer memberActive);
-    List<MemberEntity> findByMemberIdnumContainingAndMemberActiveOrderByMemberIdnumAsc(String memberIdnum, Integer memberActive);
-    List<MemberEntity> findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberEmailAsc(String memberEmail, Integer memberActive);
-    List<MemberEntity> findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(String memberPhone, Integer memberActive);
-    List<MemberEntity> findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(String memberNickname, Integer memberActive);
+    List<MemberEntity> findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(String memberId, Integer memberActive);
+    List<MemberEntity> findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(String memberName, Integer memberActive);
+    List<MemberEntity> findByMemberIdnumContainingAndMemberActiveOrderByMemberIdxAsc(String memberIdnum, Integer memberActive);
+    List<MemberEntity> findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(String memberEmail, Integer memberActive);
+    List<MemberEntity> findByMemberPhoneContainingAndMemberActiveOrderByMemberIdxAsc(String memberPhone, Integer memberActive);
+    List<MemberEntity> findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(String memberNickname, Integer memberActive);
 
     //
     Optional<MemberEntity> findByMemberId(String memberId);
@@ -32,7 +32,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer>{
     Optional<MemberEntity> findByMemberName(String memberName);
 
     // OAuth2 회원가입 중복체크
-    Optional<MemberEntity> findByMemberProviderAndMemberProviderId(String memberProvider, String memberProviderId);
+    Optional<MemberEntity> findByMemberProviderAndMemberProviderIdAndMemberActive(String memberProvider, String memberProviderId, Integer memberActive);
 
 
 }
