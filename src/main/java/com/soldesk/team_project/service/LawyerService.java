@@ -142,48 +142,48 @@ public class LawyerService {
                 break;
             case "id":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1);
+                        .findByLawyerIdContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "name":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdAsc(keyword, 1);
+                        .findByLawyerNameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "idnum":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerIdnumContainingAndLawyerActiveOrderByLawyerIdnumAsc(keyword, 1);
+                        .findByLawyerIdnumContainingAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "email":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerEmailContainingIgnoreCaseAndLawyerActiveOrderByLawyerEmailAsc(keyword, 1);
+                        .findByLawyerEmailContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "phone":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerPhoneAsc(keyword, 1);
+                        .findByLawyerPhoneContainingAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "nickname":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerNicknameAsc(keyword, 1);
+                        .findByLawyerNicknameContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "auth":
                 try {
                     int auth = Integer.parseInt(keyword);
                     lawyerEntityList = lawyerRepository
-                            .findByLawyerAuthAndLawyerActiveOrderByLawyerAuthAsc(auth, 1);
+                            .findByLawyerAuthAndLawyerActiveOrderByLawyerIdxAsc(auth, 1);
                 } catch (NumberFormatException e) {
                     lawyerEntityList = new ArrayList<>();
                 }
                 break;
             case "address":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerAddressAsc(keyword, 1);
+                        .findByLawyerAddressContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "tel":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerTelContainingAndLawyerActiveOrderByLawyerTelAsc(keyword, 1);
+                        .findByLawyerTelContainingAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             case "comment":
                 lawyerEntityList = lawyerRepository
-                        .findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerCommentAsc(keyword, 1);
+                        .findByLawyerCommentContainingIgnoreCaseAndLawyerActiveOrderByLawyerIdxAsc(keyword, 1);
                 break;
             default:
                 lawyerEntityList = lawyerRepository.findByLawyerActive(1);

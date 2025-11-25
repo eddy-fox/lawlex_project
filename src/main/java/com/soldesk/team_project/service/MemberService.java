@@ -132,27 +132,27 @@ public class MemberService {
                 break;
             case "id":
                 memberEntityList = memberRepository
-                    .findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1);
+                    .findByMemberIdContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(keyword, 1);
                 break;
             case "name":
                 memberEntityList = memberRepository
-                    .findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdAsc(keyword, 1);
+                    .findByMemberNameContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(keyword, 1);
                 break;
             case "idnum":
                 memberEntityList = memberRepository
-                    .findByMemberIdnumContainingAndMemberActiveOrderByMemberIdnumAsc(keyword, 1);
+                    .findByMemberIdnumContainingAndMemberActiveOrderByMemberIdxAsc(keyword, 1);
                 break;
             case "email":
                 memberEntityList = memberRepository
-                    .findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberEmailAsc(keyword, 1);
+                    .findByMemberEmailContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(keyword, 1);
                 break;
             case "phone":
                 memberEntityList = memberRepository
-                    .findByMemberPhoneContainingAndMemberActiveOrderByMemberPhoneAsc(keyword, 1);
+                    .findByMemberPhoneContainingAndMemberActiveOrderByMemberIdxAsc(keyword, 1);
                 break;
             case "nickname":
                 memberEntityList = memberRepository
-                    .findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberNicknameAsc(keyword, 1);
+                    .findByMemberNicknameContainingIgnoreCaseAndMemberActiveOrderByMemberIdxAsc(keyword, 1);
                 break;
             default:
                 memberEntityList = memberRepository.findByMemberActive(1);
@@ -243,6 +243,7 @@ public class MemberService {
                 .memberNickname(dto.getMemberNickname())
                 .memberAgree(agreeValue)
                 .memberActive(1)
+                .memberPoint(0)
                 .memberProvider("local")
                 // 호환 컬럼
                 .interestIdx(dto.getInterestIdx1())
