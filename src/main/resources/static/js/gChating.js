@@ -284,13 +284,14 @@
 
     var target = new Date(exp).getTime();
 
-    // 초기 로드 시에도 1분 이하인지 체크
+    // 초기 로드 시에도 1분 미만인지 체크 (정확히 1:00일 때만 표시)
     function checkAndShowMarker() {
       var now = Date.now();
       var diff = target - now;
       if (diff <= 0) return;
       var m = Math.floor(diff / 1000 / 60);
-      if (m <= 1 && !oneMinMarkerShown) {
+      // 1분 미만일 때만 표시 (0:59 이하)
+      if (m < 1 && !oneMinMarkerShown) {
         oneMinMarkerShown = true;
         showOneMinMarker();
       }
@@ -307,8 +308,8 @@
       var s = Math.floor(diff / 1000) % 60;
       el.textContent = '남은시간 ' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
       
-      // 1분 이하일 때 마커 표시 (한 번만)
-      if (m <= 1 && !oneMinMarkerShown) {
+      // 1분 미만일 때 마커 표시 (한 번만, 정확히 1:00일 때만)
+      if (m < 1 && !oneMinMarkerShown) {
         oneMinMarkerShown = true;
         showOneMinMarker();
       }
