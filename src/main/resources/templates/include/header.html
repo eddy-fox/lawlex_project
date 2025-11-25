@@ -27,7 +27,7 @@
                 
                 <!-- 관리자 로그인 후: 관리자페이지, 로그아웃만 -->
                 <div th:if="${user != null and role != null and role == 'ADMIN'}">
-                    <a th:href="@{/admin/memberManagement}">관리자 페이지</a>
+                    <a th:href="@{/admin/QnAManagement}">관리자 페이지</a>
                     <form id="adminLogoutForm" th:action="@{/member/logout}" method="post" style="display:none;">
                         <th:block th:if="${_csrf != null}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
