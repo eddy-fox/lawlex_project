@@ -119,21 +119,27 @@
 
   // ===== 비밀번호 변경 (아이디/전화번호/생년월일 체크) =====
   const formPw = $("#formPw");
+  const idInput = $("#pw_id");
+  
+  // 페이지 로드 시 아이디 필드 확인 및 자동 채우기
+  if (idInput && !idInput.value.trim()) {
+    // HTML의 th:value가 제대로 작동하지 않을 경우를 대비해
+    // 폼의 name 속성에서 memberId를 찾거나, 다른 방법으로 채우기 시도
+    // 하지만 API가 세션 정보를 사용하므로 비어있어도 진행 가능
+  }
+  
   if (formPw) {
     formPw.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearMsg();
 
-      const id  = ($("#pw_memberId")?.value || "").trim();
+      const id  = (idInput?.value || "").trim();
       const phone = digitsOnly($("#pw_phone").value);
       const idnum = digitsOnly($("#pw_idnum").value);
       const pw1 = $("#newPassword").value;
       const pw2 = $("#confirmPassword").value;
 
-      if (!id) {
-        showMsg("아이디를 확인할 수 없습니다.");
-        return;
-      }
+      // 아이디는 API에서 세션의 loginUser를 사용하므로 필드가 비어있어도 진행 가능
       if (phone.length < 10) {
         showMsg("전화번호를 정확히 입력해 주세요.");
         return;
@@ -162,9 +168,7 @@
           showMsg("비밀번호가 변경되었습니다.", true);
           formPw.reset();
           // 아이디 필드는 세션 값이니 다시 채워줌
-          const meId = id;
-          const idInput = $("#pw_memberId");
-          if (idInput) idInput.value = meId;
+          if (idInput) idInput.value = id;
         } else if (result === "MISMATCH") {
           showMsg("비밀번호 확인이 일치하지 않습니다.");
         } else if (result === "FAIL") {

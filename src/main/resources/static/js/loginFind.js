@@ -157,8 +157,41 @@ if (resetPwForm){
   resetPwForm.addEventListener("submit", async (e)=>{
     e.preventDefault();
 
+    // 간단 검증
+    const memberId = trimText($("fp-memberId").value);
+    const phone = trimText($("fp-memberPhone").value);
+    const idnum = trimText($("fp-memberIdnum").value);
     const newPw = trimText($("fp-newPassword").value);
     const cfPw  = trimText($("fp-confirmPassword").value);
+
+    if (!memberId){
+      $("err-fp-id").textContent = "아이디를 입력해주세요.";
+      return;
+    } else $("err-fp-id").textContent = "";
+
+    if (!phone){
+      $("err-fp-phone").textContent = "전화번호를 입력해주세요.";
+      return;
+    } else $("err-fp-phone").textContent = "";
+
+    // 전화번호 숫자만 추출하여 11자리인지 확인
+    const phoneDigits = digitsOnly(phone);
+    if (phoneDigits.length !== 11){
+      $("err-fp-phone").textContent = "전화번호를 올바르게 입력해주세요. (예: 010-1234-5678)";
+      return;
+    } else $("err-fp-phone").textContent = "";
+
+    if (!idnum){
+      $("err-fp-idnum").textContent = "생년월일(YYMMDD)을 입력해주세요.";
+      return;
+    } else $("err-fp-idnum").textContent = "";
+
+    // 생년월일 숫자만 추출하여 6자리인지 확인
+    const idnumDigits = digitsOnly(idnum);
+    if (idnumDigits.length !== 6){
+      $("err-fp-idnum").textContent = "생년월일을 올바르게 입력해주세요. (YYMMDD)";
+      return;
+    } else $("err-fp-idnum").textContent = "";
 
     if (newPw.length < 3){
       $("err-fp-new").textContent = "비밀번호는 3자 이상이어야 합니다.";
