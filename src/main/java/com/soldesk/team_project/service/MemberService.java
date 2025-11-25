@@ -322,30 +322,65 @@ public class MemberService {
         String phoneDigits = digits(memberPhone);
         String idnumDigits = digits(memberIdnum);
 
+        if (phoneDigits == null || idnumDigits == null) {
+            return "NOT_FOUND";
+        }
+
+        // 여러 형식으로 시도: formatted, phoneDigits, 그리고 모든 회원을 가져와서 digits로 비교
         Optional<MemberEntity> memOpt = Optional.empty();
-        if (phoneDigits != null) {
-            String formatted = formatPhone(phoneDigits);
-            if (formatted != null) {
-                memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(formatted, idnumDigits);
-            }
-            if (memOpt.isEmpty()) {
-                memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(phoneDigits, idnumDigits);
+        
+        // 1. 포맷된 형식으로 시도 (010-1234-5678)
+        String formatted = formatPhone(phoneDigits);
+        if (formatted != null) {
+            memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(formatted, idnumDigits);
+        }
+        
+        // 2. 숫자만으로 시도 (01012345678)
+        if (memOpt.isEmpty()) {
+            memOpt = memberRepository.findByMemberPhoneAndMemberIdnum(phoneDigits, idnumDigits);
+        }
+        
+        // 3. 모든 활성 회원을 가져와서 digits로 비교 (DB에 저장된 형식이 다를 경우 대비)
+        if (memOpt.isEmpty()) {
+            List<MemberEntity> allMembers = memberRepository.findByMemberActive(1);
+            for (MemberEntity member : allMembers) {
+                if (Objects.equals(phoneDigits, digits(member.getMemberPhone())) 
+                    && Objects.equals(idnumDigits, digits(member.getMemberIdnum()))) {
+                    memOpt = Optional.of(member);
+                    break;
+                }
             }
         }
+        
         if (memOpt.isPresent()) {
             return memOpt.get().getMemberId();
         }
 
+        // 변호사도 동일하게 처리
         Optional<LawyerEntity> lawOpt = Optional.empty();
-        if (phoneDigits != null) {
-            String formatted = formatPhone(phoneDigits);
-            if (formatted != null) {
-                lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(formatted, idnumDigits);
-            }
-            if (lawOpt.isEmpty()) {
-                lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phoneDigits, idnumDigits);
+        
+        // 1. 포맷된 형식으로 시도
+        if (formatted != null) {
+            lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(formatted, idnumDigits);
+        }
+        
+        // 2. 숫자만으로 시도
+        if (lawOpt.isEmpty()) {
+            lawOpt = lawyerRepository.findByLawyerPhoneAndLawyerIdnum(phoneDigits, idnumDigits);
+        }
+        
+        // 3. 모든 활성 변호사를 가져와서 digits로 비교
+        if (lawOpt.isEmpty()) {
+            List<LawyerEntity> allLawyers = lawyerRepository.findByLawyerActive(1);
+            for (LawyerEntity lawyer : allLawyers) {
+                if (Objects.equals(phoneDigits, digits(lawyer.getLawyerPhone())) 
+                    && Objects.equals(idnumDigits, digits(lawyer.getLawyerIdnum()))) {
+                    lawOpt = Optional.of(lawyer);
+                    break;
+                }
             }
         }
+        
         if (lawOpt.isPresent()) {
             return lawOpt.get().getLawyerId();
         }
@@ -489,8 +524,8 @@ public class MemberService {
         MemberEntity me = memberRepository.findById(login.getMemberIdx())
                 .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
 
-        boolean verified = Objects.equals(phone, me.getMemberPhone())
-                        && Objects.equals(idnum, me.getMemberIdnum());
+        boolean verified = Objects.equals(phone, digits(me.getMemberPhone()))
+                        && Objects.equals(idnum, digits(me.getMemberIdnum()));
         if (!verified) return false;
 
         me.setMemberActive(0);

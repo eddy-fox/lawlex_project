@@ -792,8 +792,8 @@ public class LawyerService {
         LawyerEntity le = lawyerRepository.findById(login.getLawyerIdx())
                 .orElseThrow(() -> new IllegalStateException("변호사 정보를 찾을 수 없습니다."));
 
-        boolean verified = Objects.equals(phone, le.getLawyerPhone())
-                        && Objects.equals(idnum, le.getLawyerIdnum());
+        boolean verified = Objects.equals(phone, digits(le.getLawyerPhone()))
+                        && Objects.equals(idnum, digits(le.getLawyerIdnum()));
         
         if (!verified) {
             return false;

@@ -120,7 +120,8 @@
             <div class="control">
               <input id="pw_id" name="memberId" class="input" type="text"
                      th:value="${me != null ? me.memberId : ''}"
-                     placeholder="아이디" autocomplete="username">
+                     placeholder="아이디" autocomplete="username" readonly
+                     style="background-color: #f5f5f5; cursor: not-allowed;">
             </div>
 
             <label for="pw_phone" class="label">전화번호</label>
