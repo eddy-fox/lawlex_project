@@ -159,8 +159,8 @@ public class ChatroomService {
         }
 
         e.setAcceptedAt(LocalDateTime.now());
-        // 시연용: 제한시간 3분으로 설정
-        int dur = 3;
+        // 시연용: 제한시간 2분으로 설정
+        int dur = 2;
         e.setExpiresAt(e.getAcceptedAt().plusMinutes(dur));
         e.setState("ACTIVE");
 
